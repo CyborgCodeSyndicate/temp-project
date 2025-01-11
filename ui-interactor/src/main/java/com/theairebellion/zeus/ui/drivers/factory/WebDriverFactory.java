@@ -1,0 +1,42 @@
+package com.theairebellion.zeus.ui.drivers.factory;
+
+import com.theairebellion.zeus.ui.drivers.base.DriverProvider;
+import com.theairebellion.zeus.ui.drivers.config.WebDriverConfig;
+import com.theairebellion.zeus.ui.drivers.providers.ChromeDriverProvider;
+import com.theairebellion.zeus.ui.drivers.providers.EdgeDriverProvider;
+import com.theairebellion.zeus.ui.log.LogUI;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.AbstractDriverOptions;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class WebDriverFactory {
+
+    private static final Map<String, DriverProvider<?>> DRIVER_PROVIDERS = new HashMap<>();
+
+    static {
+        registerDriver("CHROME", new ChromeDriverProvider());
+        registerDriver("EDGE", new EdgeDriverProvider());
+    }
+
+    public static <T extends DriverProvider<?>> void registerDriver(String type, T provider) {
+        LogUI.info("Driver from type: {}, has been registered", type);
+        DRIVER_PROVIDERS.put(type.toUpperCase(), provider);
+    }
+
+
+    public static WebDriver createDriver(String type, WebDriverConfig config) {
+        DriverProvider<?> provider = DRIVER_PROVIDERS.get(type.toUpperCase());
+        if (provider == null) {
+            throw new IllegalArgumentException("No driver registered for type: " + type);
+        }
+        provider.setupDriver(config.getVersion());
+        try {
+            return new DriverCreator<>().createDriver(config, (DriverProvider<AbstractDriverOptions<?>>) provider);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create WebDriver for type: " + type, e);
+        }
+    }
+
+}

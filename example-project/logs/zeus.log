@@ -1,0 +1,9 @@
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:37,432 INFO  [] - Starting ExampleTest using Java 17.0.2 with PID 8552 (started by vsushelski in C:\Users\vsushelski\OneDrive - ENDAVA\Documents\Zeus\zeus-automation-testing-libraries\example-project)
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:37,699 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:38,572 INFO  [] - Started ExampleTest in 1.659 seconds (process running for 4.986)
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:39,515 [scenario=ExampleTest.testExample1] INFO  [TEST] - The : 'testExample1(Quest, Student, Late)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:39,578 [scenario=ExampleTest.testExample1] INFO  [TEST] - Quest crafted for scenario: 'testExample1(Quest, Student, Late)'.
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:39,594 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:53,599 [scenario=ExampleTest.testExample1] INFO  [TEST] - The ripper has arrived
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:53,639 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'DB'
+⚡️ ZEUS ⚡️ 2025-01-10T23:58:53,645 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest of 'testExample1(Quest, Student, Late)' has concluded with glory. Status: SUCCESS. Duration: 14 seconds.

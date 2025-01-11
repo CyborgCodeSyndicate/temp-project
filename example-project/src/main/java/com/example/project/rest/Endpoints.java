@@ -1,0 +1,51 @@
+package com.example.project.rest;
+
+import com.theairebellion.zeus.api.core.Endpoint;
+import io.restassured.http.Method;
+
+import java.util.List;
+import java.util.Map;
+
+public enum Endpoints implements Endpoint {
+    ENDPOINT_EXAMPLE(Method.POST, "/create/{campaignId}/get");
+
+    private final Method method;
+    private final String url;
+
+
+    Endpoints(final Method method, final String url) {
+        this.method = method;
+        this.url = url;
+    }
+
+
+    @Override
+    public String baseUrl() {
+        return null;
+    }
+
+
+    @Override
+    public Method method() {
+        return method;
+    }
+
+
+    @Override
+    public String url() {
+        return url;
+    }
+
+
+    @Override
+    public Enum<?> enumImpl() {
+        return this;
+    }
+
+
+    @Override
+    public Map<String, List<String>> headers() {
+        return Endpoint.super.headers();
+    }
+
+}
