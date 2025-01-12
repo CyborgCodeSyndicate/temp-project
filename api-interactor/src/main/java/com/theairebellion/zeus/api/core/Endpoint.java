@@ -2,6 +2,7 @@ package com.theairebellion.zeus.api.core;
 
 import com.theairebellion.zeus.api.config.ApiConfig;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 import org.aeonbits.owner.ConfigCache;
@@ -59,6 +60,5 @@ public interface Endpoint {
     default Endpoint withPathParam(String key, Object value) {
         return new ParametrizedEndpoint(this).withPathParam(key, value);
     }
-
 
 }

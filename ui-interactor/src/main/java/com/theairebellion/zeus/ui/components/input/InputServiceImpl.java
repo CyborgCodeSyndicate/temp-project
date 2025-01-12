@@ -186,17 +186,17 @@ public class InputServiceImpl implements InputService {
     }
 
 
+
+    @Override
+    public void insertion(final By locator, ComponentType componentType, final Object... values) {
+        insert(locator, (String) values[0], (InputComponentType) componentType);
+    }
+
     private Input inputComponent(InputComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
             components.put(componentType, ComponentFactory.getInputComponent(componentType, smartSelenium));
         }
         return components.get(componentType);
-    }
-
-
-    @Override
-    public void insertion(final By locator, ComponentType componentType, final Object... values) {
-        insert(locator, (String) values[0], (InputComponentType) componentType);
     }
 
 }

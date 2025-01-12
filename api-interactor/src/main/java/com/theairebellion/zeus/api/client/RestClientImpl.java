@@ -9,6 +9,8 @@ import io.restassured.specification.RequestSpecification;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.theairebellion.zeus.api.log.LogAPI.*;
+
 @Component
 @NoArgsConstructor
 public class RestClientImpl implements RestClient {
@@ -48,22 +50,22 @@ public class RestClientImpl implements RestClient {
 
 
     protected void printRequest(final String methodName, final String finalUrl, String body, String headers) {
-        LogAPI.step("Sending request to endpoint {}-{}.", methodName, finalUrl);
-        LogAPI.extended("Request body: {}.", body != null ? body : "");
-        LogAPI.extended("Request headers: {}.", headers != null ? headers : "");
+        step("Sending request to endpoint {}-{}.", methodName, finalUrl);
+        extended("Request body: {}.", body != null ? body : "");
+        extended("Request headers: {}.", headers != null ? headers : "");
     }
 
 
     protected void printResponse(final String methodName, final String finalUrl, final Response response,
                                final long duration) {
-        LogAPI.step("Response with status: {} received from endpoint: {}-{} in {}ms.",
+        step("Response with status: {} received from endpoint: {}-{} in {}ms.",
             response.getStatusCode(), methodName, finalUrl, duration);
-        LogAPI.extended("Response body: {}.", response.body() != null ? response.body().prettyPrint() : "");
-        LogAPI.extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");
+        extended("Response body: {}.", response.body() != null ? response.body().prettyPrint() : "");
+        extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");
     }
 
 
-    private String tryPrettyPrintJson(String content) {
+    protected String tryPrettyPrintJson(String content) {
         if (content == null || content.trim().isEmpty()) {
             return content;
         }

@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.service;
 
+import com.theairebellion.zeus.api.authentication.AuthenticationKey;
 import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.client.RestClient;
 import com.theairebellion.zeus.api.core.Endpoint;
@@ -7,8 +8,6 @@ import com.theairebellion.zeus.api.exceptions.RestServiceException;
 import com.theairebellion.zeus.api.validator.RestResponseValidator;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
-import io.restassured.RestAssured;
-import io.restassured.config.JsonConfig;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -30,7 +29,7 @@ public class RestService {
     @Setter
     private BaseAuthenticationClient baseAuthenticationClient;
 
-    private String authenticatedUser;
+    private AuthenticationKey authenticationKey;
 
 
     @Autowired
@@ -75,8 +74,7 @@ public class RestService {
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-        baseAuthenticationClient.authenticate(this, username, password);
-        authenticatedUser = username;
+        authenticationKey = baseAuthenticationClient.authenticate(this, username, password);
     }
 
 
@@ -84,7 +82,7 @@ public class RestService {
         try {
             RequestSpecification spec = endpoint.prepareRequestSpec(body);
             if (Objects.nonNull(baseAuthenticationClient)) {
-                Header authentication = baseAuthenticationClient.getAuthentication(authenticatedUser);
+                Header authentication = baseAuthenticationClient.getAuthentication(authenticationKey);
                 if (Objects.nonNull(authentication)) {
                     spec.header(authentication);
                 }

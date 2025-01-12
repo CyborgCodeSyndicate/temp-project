@@ -10,24 +10,25 @@ import java.util.Objects;
 
 public abstract class BaseAuthenticationClient implements AuthenticationClient {
 
-    public static final Map<String, Header> userAuthenticationHeaderMap = new HashMap<>();
+    public static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new HashMap<>();
 
 
     @Override
-    public void authenticate(final RestService restService, final String username, final String password) {
-        if (Objects.isNull(userAuthenticationHeaderMap.get(username))) {
-            userAuthenticationHeaderMap.put(username, authenticateImpl(restService, username, password));
+    public AuthenticationKey authenticate(final RestService restService, final String username, final String password) {
+        var authenticationKey = new AuthenticationKey(username, password, this.getClass());
+        if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
+            userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
         }
+        return authenticationKey;
     }
 
 
-    public Header getAuthentication(String username) {
-        return userAuthenticationHeaderMap.get(username);
+    public Header getAuthentication(final AuthenticationKey authenticationKey) {
+        return userAuthenticationHeaderMap.get(authenticationKey);
     }
 
 
     protected abstract Header authenticateImpl(RestService restService, String username, String password);
-
 
 
 }

@@ -1,6 +1,5 @@
 package com.example.project.db;
 
-import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.query.DbQuery;
 
 public enum Queries implements DbQuery {
@@ -18,19 +17,6 @@ public enum Queries implements DbQuery {
     @Override
     public String query() {
         return query;
-    }
-
-
-    @Override
-    public DatabaseConfiguration config() {
-        return DatabaseConfiguration.builder()
-            .dbType(MyDatabases.POSTGRESQL)
-            .host("localhost")
-            .port(5432)
-            .database("db_name")
-            .dbUser("user")
-            .dbPassword("pass")
-            .build();
     }
 
 

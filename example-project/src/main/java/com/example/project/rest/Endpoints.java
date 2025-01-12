@@ -1,13 +1,16 @@
 package com.example.project.rest;
 
 import com.theairebellion.zeus.api.core.Endpoint;
+import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public enum Endpoints implements Endpoint {
-    ENDPOINT_EXAMPLE(Method.POST, "/create/{campaignId}/get");
+    ENDPOINT_EXAMPLE(Method.POST, "/create/{campaignId}/get"),
+    CREATE_PET(Method.POST, "/pet");
 
     private final Method method;
     private final String url;
@@ -19,10 +22,6 @@ public enum Endpoints implements Endpoint {
     }
 
 
-    @Override
-    public String baseUrl() {
-        return null;
-    }
 
 
     @Override
@@ -45,7 +44,10 @@ public enum Endpoints implements Endpoint {
 
     @Override
     public Map<String, List<String>> headers() {
-        return Endpoint.super.headers();
+        return Map.of(
+            "Content-Type", List.of("application/json"),
+            "Accept", List.of("application/json")
+        );
     }
 
 }

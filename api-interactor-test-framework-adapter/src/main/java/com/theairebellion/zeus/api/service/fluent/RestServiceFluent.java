@@ -8,6 +8,7 @@ import com.theairebellion.zeus.framework.base.ClassLevelHook;
 import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
     }
 
 
+    @Step("Request and validations for endpoint: {endpoint}")
     public RestServiceFluent requestAndValidate(Endpoint endpoint, Object body, Assertion<?>... assertions) {
         Response response = restService.request(endpoint, body);
         quest.getStorage().sub(API).put(endpoint.enumImpl(), response);

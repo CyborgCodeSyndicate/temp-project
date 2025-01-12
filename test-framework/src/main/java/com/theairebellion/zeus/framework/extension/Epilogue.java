@@ -41,7 +41,7 @@ public class Epilogue implements AfterTestExecutionCallback {
 
     private static void attachFilteredLogsToAllure(String testName) {
         String logFilePath = System.getProperty("logFileName", "logs/zeus.log");
-        String testIdentifier = "[test=" + testName + "]";
+        String testIdentifier = "[scenario=" + testName + "]";
 
         try (BufferedReader reader = new BufferedReader(new FileReader(logFilePath))) {
             String filteredLogs = reader.lines()

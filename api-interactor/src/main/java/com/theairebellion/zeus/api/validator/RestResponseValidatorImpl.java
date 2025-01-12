@@ -18,14 +18,17 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> List<AssertionResult<T>> validateResponse(final Response response, final Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> validateResponse(final Response response, Assertion<?>... assertions) {
         LogAPI.info("Starting response validation with {} assertion(s).", assertions.length);
 
         Map<String, T> data = new HashMap<>();
 
         for (Assertion<?> assertion : assertions) {
             switch ((RestAssertionTarget) assertion.getTarget()) {
-                case STATUS -> data.put("status", (T) Integer.valueOf(response.getStatusCode()));
+                case STATUS -> {
+                    data.put("status", (T) Integer.valueOf(response.getStatusCode()));
+                    assertion.setKey("status");
+                }
                 case BODY -> data.put(assertion.getKey(), response.jsonPath().get(assertion.getKey()));
                 case HEADER -> data.put(assertion.getKey(), (T) response.getHeader(assertion.getKey()));
             }

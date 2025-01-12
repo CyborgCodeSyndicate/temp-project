@@ -1,9 +1,15 @@
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:37,432 INFO  [] - Starting ExampleTest using Java 17.0.2 with PID 8552 (started by vsushelski in C:\Users\vsushelski\OneDrive - ENDAVA\Documents\Zeus\zeus-automation-testing-libraries\example-project)
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:37,699 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:38,572 INFO  [] - Started ExampleTest in 1.659 seconds (process running for 4.986)
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:39,515 [scenario=ExampleTest.testExample1] INFO  [TEST] - The : 'testExample1(Quest, Student, Late)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:39,578 [scenario=ExampleTest.testExample1] INFO  [TEST] - Quest crafted for scenario: 'testExample1(Quest, Student, Late)'.
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:39,594 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:53,599 [scenario=ExampleTest.testExample1] INFO  [TEST] - The ripper has arrived
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:53,639 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'DB'
-⚡️ ZEUS ⚡️ 2025-01-10T23:58:53,645 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest of 'testExample1(Quest, Student, Late)' has concluded with glory. Status: SUCCESS. Duration: 14 seconds.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:38,455 INFO  [] - Starting ApiTestTry using Java 17.0.2 with PID 692 (started by vsushelski in C:\Users\vsushelski\Documents\TempProject\zeus-automation-testing-libraries\example-project)
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:38,961 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:39,904 INFO  [] - Started ApiTestTry in 2.487 seconds (process running for 6.648)
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:42,393 [scenario=ApiTestTry.testPet] INFO  [TEST] - The : 'testPet(Quest, Pet)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:42,527 [scenario=ApiTestTry.testPet] INFO  [TEST] - Quest crafted for scenario: 'testPet(Quest, Pet)'.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:42,818 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:44,900 [scenario=ApiTestTry.testPet] STEP  [API] - Sending request to endpoint POST-https://petstore.swagger.io/v2/pet.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,262 [scenario=ApiTestTry.testPet] STEP  [API] - Response with status: 200 received from endpoint: POST-https://petstore.swagger.io/v2/pet in 3002ms.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,335 [scenario=ApiTestTry.testPet] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,373 [scenario=ApiTestTry.testPet] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,505 [scenario=ApiTestTry.testPet] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,513 [scenario=ApiTestTry.testPet] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,526 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has leaves the journey.
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,536 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-01-12T21:57:47,554 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest of 'testPet(Quest, Pet)' has concluded with glory. Status: SUCCESS. Duration: 5 seconds.

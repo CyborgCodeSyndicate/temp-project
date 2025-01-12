@@ -67,11 +67,11 @@ public class BaseTest {
 
     @AfterAll
     protected final void afterAll() {
-        afterTestClass(services);
+        afterAll(services);
     }
 
 
-    protected void afterTestClass(Services services) {
+    protected void afterAll(Services services) {
     }
 
 

@@ -39,10 +39,6 @@
             <groupId>org.aeonbits.owner</groupId>
             <artifactId>owner</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

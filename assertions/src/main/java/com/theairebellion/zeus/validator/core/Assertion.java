@@ -6,12 +6,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Builder(builderMethodName = "hiddenBuilder")
 public class Assertion<T> {
 
     private final AssertionTarget target;
-    private final String key;
+    @Setter
+    private String key;
     private final AssertionType type;
     private final T expected;
     private final boolean soft;
