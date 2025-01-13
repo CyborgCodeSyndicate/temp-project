@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public enum Endpoints implements Endpoint {
-    ;
+    GET_ALL_USERS(Method.GET, "/users"),;
 
     private final Method method;
     private final String url;
