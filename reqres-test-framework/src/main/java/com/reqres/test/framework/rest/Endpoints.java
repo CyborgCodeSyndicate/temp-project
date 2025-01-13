@@ -19,11 +19,6 @@ public enum Endpoints implements Endpoint {
     }
 
     @Override
-    public String baseUrl() {
-        return null;
-    }
-
-    @Override
     public Method method() {
         return method;
     }
