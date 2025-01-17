@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.config.file>config</api.config.file>
         <test.data.file>test_data</test.data.file>
+        <framework.config.file>config</framework.config.file>
     </properties>
 
     <dependencies>
@@ -24,6 +25,10 @@
             <groupId>com.theairebellion.zeus</groupId>
             <artifactId>api-interactor-test-framework-adapter</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 

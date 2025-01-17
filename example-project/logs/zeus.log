@@ -1,13 +1,6 @@
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:40,909 INFO  [] - Starting ApiTestTry using Java 17.0.12 with PID 20068 (started by speshevski in C:\Users\speshevski\temp-project\example-project)
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:41,082 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:41,461 INFO  [] - Started ApiTestTry in 0.822 seconds (process running for 2.492)
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:42,060 [scenario=ApiTestTry.testPet] INFO  [TEST] - The : 'testPet(Quest, Pet)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:42,104 [scenario=ApiTestTry.testPet] INFO  [TEST] - Quest crafted for scenario: 'testPet(Quest, Pet)'.
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:42,188 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:43,027 [scenario=ApiTestTry.testPet] STEP  [API] - Sending request to endpoint POST-https://petstore.swagger.io/v2/pet.
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:44,312 [scenario=ApiTestTry.testPet] STEP  [API] - Response with status: 200 received from endpoint: POST-https://petstore.swagger.io/v2/pet in 1594ms.
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:44,344 [scenario=ApiTestTry.testPet] INFO  [API] - Starting response validation with 1 assertion(s).
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:44,357 [scenario=ApiTestTry.testPet] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:44,403 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has leaves the journey.
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:44,407 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-01-13T17:28:44,413 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest of 'testPet(Quest, Pet)' has concluded with glory. Status: SUCCESS. Duration: 2 seconds.
+⚡️ ZEUS ⚡️ 2025-01-17T23:42:34,638 INFO  [] - Starting ApiTestTry using Java 17.0.12 with PID 12796 (started by speshevski in C:\Users\speshevski\temp-project\example-project)
+⚡️ ZEUS ⚡️ 2025-01-17T23:42:34,851 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-17T23:42:35,333 INFO  [] - Started ApiTestTry in 1.031 seconds (process running for 3.213)
+⚡️ ZEUS ⚡️ 2025-01-17T23:42:35,960 [scenario=ApiTestTry.testPet] INFO  [TEST] - The : 'testPet(Quest, Pet)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-17T23:42:36,008 [scenario=ApiTestTry.testPet] INFO  [TEST] - Quest crafted for scenario: 'testPet(Quest, Pet)'.
+⚡️ ZEUS ⚡️ 2025-01-17T23:43:06,878 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has undertaken a journey through: 'API'

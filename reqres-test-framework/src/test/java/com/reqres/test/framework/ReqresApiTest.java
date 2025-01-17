@@ -1,12 +1,15 @@
 package com.reqres.test.framework;
 
+import com.reqres.test.framework.rest.dto.User;
 import com.theairebellion.zeus.api.annotations.API;
+import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.validator.core.Assertion;
 import org.junit.jupiter.api.Test;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
+import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
 import static com.reqres.test.framework.rest.Endpoints.GET_USER;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.BODY;
@@ -39,6 +42,10 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder(String.class).target(BODY).key("support.url").type(IS).expected("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral").soft(true).build()
                 )
                 .complete();
+    }
+
+    @Test
+    public void testCreateUser(Quest quest, @Craft(model = USER_LEADER) User user) {
 
     }
 }
