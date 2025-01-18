@@ -1,6 +1,6 @@
-⚡️ ZEUS ⚡️ 2025-01-17T23:42:34,638 INFO  [] - Starting ApiTestTry using Java 17.0.12 with PID 12796 (started by speshevski in C:\Users\speshevski\temp-project\example-project)
-⚡️ ZEUS ⚡️ 2025-01-17T23:42:34,851 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-01-17T23:42:35,333 INFO  [] - Started ApiTestTry in 1.031 seconds (process running for 3.213)
-⚡️ ZEUS ⚡️ 2025-01-17T23:42:35,960 [scenario=ApiTestTry.testPet] INFO  [TEST] - The : 'testPet(Quest, Pet)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-01-17T23:42:36,008 [scenario=ApiTestTry.testPet] INFO  [TEST] - Quest crafted for scenario: 'testPet(Quest, Pet)'.
-⚡️ ZEUS ⚡️ 2025-01-17T23:43:06,878 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-01-18T16:36:29,854 INFO  [] - Starting ApiTestTry using Java 17.0.12 with PID 10124 (started by speshevski in C:\Users\speshevski\temp-project\example-project)
+⚡️ ZEUS ⚡️ 2025-01-18T16:36:30,028 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-18T16:36:30,442 INFO  [] - Started ApiTestTry in 0.87 seconds (process running for 2.714)
+⚡️ ZEUS ⚡️ 2025-01-18T16:36:31,062 [scenario=ApiTestTry.testPet] INFO  [TEST] - The : 'testPet(Quest, Pet)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-18T16:36:31,105 [scenario=ApiTestTry.testPet] INFO  [TEST] - Quest crafted for scenario: 'testPet(Quest, Pet)'.
+⚡️ ZEUS ⚡️ 2025-01-18T16:36:46,077 [scenario=ApiTestTry.testPet] INFO  [TEST] - The quest has undertaken a journey through: 'API'

@@ -1,6 +1,7 @@
-⚡️ ZEUS ⚡️ 2025-01-18T00:14:54,192 INFO  [] - Starting ReqresApiTest using Java 17.0.12 with PID 24696 (started by speshevski in C:\Users\speshevski\temp-project\reqres-test-framework)
-⚡️ ZEUS ⚡️ 2025-01-18T00:14:54,364 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-01-18T00:14:54,729 INFO  [] - Started ReqresApiTest in 0.791 seconds (process running for 2.302)
-⚡️ ZEUS ⚡️ 2025-01-18T00:14:55,312 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The : 'testCreateUser(Quest, User)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-01-18T00:14:55,351 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - Quest crafted for scenario: 'testCreateUser(Quest, User)'.
-⚡️ ZEUS ⚡️ 2025-01-18T00:14:55,380 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The quest of 'testCreateUser(Quest, User)' has ended in defeat. Status: FAILED. Duration: 0 seconds.
+⚡️ ZEUS ⚡️ 2025-01-18T16:38:00,509 INFO  [] - Starting ReqresApiTest using Java 17.0.12 with PID 26376 (started by speshevski in C:\Users\speshevski\temp-project\reqres-test-framework)
+⚡️ ZEUS ⚡️ 2025-01-18T16:38:00,686 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-18T16:38:01,048 INFO  [] - Started ReqresApiTest in 0.822 seconds (process running for 2.504)
+⚡️ ZEUS ⚡️ 2025-01-18T16:38:01,703 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The : 'testCreateUser(Quest, User)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-18T16:38:01,750 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - Quest crafted for scenario: 'testCreateUser(Quest, User)'.
+⚡️ ZEUS ⚡️ 2025-01-18T16:38:01,820 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-01-18T16:38:02,166 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The quest of 'testCreateUser(Quest, User)' has ended in defeat. Status: FAILED. Duration: 0 seconds.
