@@ -9,7 +9,8 @@ import java.util.Map;
 public enum Endpoints implements Endpoint {
     GET_ALL_USERS(Method.GET, "/users?{page}"),
     GET_USER(Method.GET, "/users/{id}"),
-    CREATE_USER(Method.POST, "/users");
+    CREATE_USER(Method.POST, "/users"),
+    LOGIN_USER(Method.POST, "/login"),;
 
     private final Method method;
     private final String url;

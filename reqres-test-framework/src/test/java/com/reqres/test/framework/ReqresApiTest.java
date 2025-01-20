@@ -1,5 +1,6 @@
 package com.reqres.test.framework;
 
+import com.reqres.test.framework.rest.dto.LoginUser;
 import com.reqres.test.framework.rest.dto.User;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.framework.annotation.Craft;
@@ -10,6 +11,7 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
+import static com.reqres.test.framework.data.creator.TestDataCreator.LOGIN_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER;
 import static com.reqres.test.framework.rest.Endpoints.*;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.BODY;
@@ -49,6 +51,16 @@ public class ReqresApiTest extends BaseTest {
                         CREATE_USER,
                         user,
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(201).build()
+                ).complete();
+    }
+
+    @Test
+    public void testLoginUser(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
+        quest.enters(OLYMPYS)
+                .requestAndValidate(
+                        LOGIN_USER,
+                        loginUser,
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(200).build()
                 ).complete();
     }
 }
