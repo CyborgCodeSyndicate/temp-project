@@ -13,34 +13,29 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DbClientManager {
 
     private final Map<String, DbClient> clientCache = new ConcurrentHashMap<>();
-    @Getter
     private final BaseDbConnectorService connector;
-
 
     @Autowired
     public DbClientManager(final BaseDbConnectorService connector) {
         this.connector = connector;
     }
 
-
     public DbClient getClient(DatabaseConfiguration dbConfig) {
-        String urlKey = dbConfig.getDbType()
-                            .protocol() + "://" + dbConfig.getHost() + ":" + dbConfig.getPort() + "/" + dbConfig.getDatabase();
+        String urlKey = buildUrlKey(dbConfig);
 
-        if (clientCache.containsKey(urlKey)) {
-            return clientCache.get(urlKey);
-        }
-
-        DbClient newClient = initializeDbCLient(dbConfig);
-        clientCache.put(urlKey, newClient);
-
-        return newClient;
+        return clientCache.computeIfAbsent(urlKey, key -> initializeDbClient(dbConfig));
     }
 
-
-    protected DbClient initializeDbCLient(DatabaseConfiguration dbConfig) {
+    protected DbClient initializeDbClient(DatabaseConfiguration dbConfig) {
         return new RelationalDbClient(connector, dbConfig);
     }
 
+    private String buildUrlKey(DatabaseConfiguration dbConfig) {
+        return String.format("%s://%s:%d/%s",
+                dbConfig.getDbType().protocol(),
+                dbConfig.getHost(),
+                dbConfig.getPort(),
+                dbConfig.getDatabase());
+    }
 }
 
