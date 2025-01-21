@@ -3,6 +3,7 @@ package com.example.project.rest;
 import com.theairebellion.zeus.api.core.Endpoint;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
+import io.restassured.specification.RequestSpecification;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,7 @@ public enum Endpoints implements Endpoint {
         this.method = method;
         this.url = url;
     }
+
 
 
 
@@ -49,5 +51,6 @@ public enum Endpoints implements Endpoint {
             "Accept", List.of("application/json")
         );
     }
+
 
 }

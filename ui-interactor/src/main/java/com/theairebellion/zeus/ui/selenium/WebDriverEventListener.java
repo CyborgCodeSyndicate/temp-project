@@ -26,6 +26,7 @@ public class WebDriverEventListener implements WebDriverListener {
     }
 
 
+
     @Override
     public void onError(final Object target, final Method method, final Object[] args,
                         final InvocationTargetException e) {

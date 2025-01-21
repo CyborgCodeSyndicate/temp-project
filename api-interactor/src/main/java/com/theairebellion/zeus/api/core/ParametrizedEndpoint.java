@@ -5,6 +5,7 @@ import io.restassured.specification.RequestSpecification;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,19 +13,22 @@ import java.util.Map;
 public class ParametrizedEndpoint implements Endpoint {
 
     private final Endpoint original;
-    private final Map<String, Object> pathParams = new HashMap<>();
-    private final Map<String, Object> queryParams = new HashMap<>();
-    private final Map<String, List<String>> additionalHeaders = new HashMap<>();
+    private final Map<String, Object> pathParams;
+    private final Map<String, Object> queryParams;
+    private final Map<String, List<String>> additionalHeaders;
 
 
     ParametrizedEndpoint(Endpoint original) {
-        this.original = original;
+        this(original, new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
 
-    @Override
-    public String baseUrl() {
-        return original.baseUrl();
+    private ParametrizedEndpoint(Endpoint original, Map<String, Object> pathParams, Map<String, Object> queryParams,
+                                 Map<String, List<String>> additionalHeaders) {
+        this.original = original;
+        this.pathParams = Collections.unmodifiableMap(new HashMap<>(pathParams));
+        this.queryParams = Collections.unmodifiableMap(new HashMap<>(queryParams));
+        this.additionalHeaders = Collections.unmodifiableMap(new HashMap<>(additionalHeaders));
     }
 
 
@@ -47,75 +51,72 @@ public class ParametrizedEndpoint implements Endpoint {
 
 
     @Override
+    public String baseUrl() {
+        return original.baseUrl();
+    }
+
+
+    @Override
     public Map<String, List<String>> headers() {
-        return original.headers();
+        Map<String, List<String>> mergedHeaders = new HashMap<>(original.headers());
+        additionalHeaders.forEach(
+            (key, value) -> mergedHeaders.computeIfAbsent(key, k -> new ArrayList<>()).addAll(value));
+        return Collections.unmodifiableMap(mergedHeaders);
     }
 
 
     @Override
     public RequestSpecification prepareRequestSpec(Object body) {
         RequestSpecification spec = original.prepareRequestSpec(body);
-
-        // Apply path params
-        for (Map.Entry<String, Object> entry : pathParams.entrySet()) {
-            spec.pathParam(entry.getKey(), entry.getValue());
-        }
-
-        // Apply query params
-        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-            Object val = entry.getValue();
-            if (val instanceof Collection) {
-                spec.queryParams(entry.getKey(), ((Collection<?>) val).toArray());
-            } else {
-                spec.queryParam(entry.getKey(), val);
-            }
-        }
-
-        for (Map.Entry<String, List<String>> entry : additionalHeaders.entrySet()) {
-            spec.header(entry.getKey(), entry.getValue());
-        }
-
+        spec.pathParams(pathParams);
+        spec.queryParams(queryParams);
+        headers().forEach((key, values) -> spec.header(key, String.join(",", values)));
         return spec;
     }
 
 
     public ParametrizedEndpoint withQueryParam(String key, Object value) {
-        ParametrizedEndpoint copy = new ParametrizedEndpoint(this.original);
-        copy.pathParams.putAll(this.pathParams);
-        copy.queryParams.putAll(this.queryParams);
-        copy.queryParams.put(key, value);
-        return copy;
+        validateParam(key, value);
+        Map<String, Object> newQueryParams = new HashMap<>(this.queryParams);
+        newQueryParams.put(key, value);
+        return new ParametrizedEndpoint(this.original, this.pathParams, newQueryParams, this.additionalHeaders);
     }
 
 
     public ParametrizedEndpoint withPathParam(String key, Object value) {
-        ParametrizedEndpoint copy = new ParametrizedEndpoint(this.original);
-        copy.pathParams.putAll(this.pathParams);
-        copy.queryParams.putAll(this.queryParams);
-        copy.pathParams.put(key, value);
-        return copy;
+        validateParam(key, value);
+        Map<String, Object> newPathParams = new HashMap<>(this.pathParams);
+        newPathParams.put(key, value);
+        return new ParametrizedEndpoint(this.original, newPathParams, this.queryParams, this.additionalHeaders);
     }
 
 
     public ParametrizedEndpoint withHeader(String key, String value) {
-        ParametrizedEndpoint copy = new ParametrizedEndpoint(this.original);
-        copy.pathParams.putAll(this.pathParams);
-        copy.queryParams.putAll(this.queryParams);
-        copy.additionalHeaders.putAll(this.additionalHeaders);
-        copy.additionalHeaders.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-        return copy;
+        validateParam(key, value);
+        Map<String, List<String>> newHeaders = new HashMap<>(this.additionalHeaders);
+        newHeaders.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        return new ParametrizedEndpoint(this.original, this.pathParams, this.queryParams, newHeaders);
     }
 
 
-    public ParametrizedEndpoint withHeaders(Map<String, String> headers) {
-        ParametrizedEndpoint copy = new ParametrizedEndpoint(this.original);
-        copy.pathParams.putAll(this.pathParams);
-        copy.queryParams.putAll(this.queryParams);
-        copy.additionalHeaders.putAll(this.additionalHeaders);
-        headers.forEach((key, value) ->
-                            copy.additionalHeaders.computeIfAbsent(key, k -> new ArrayList<>()).add(value)
-        );
-        return copy;
+    public ParametrizedEndpoint withHeader(String key, List<String> values) {
+        validateParam(key, values);
+        Map<String, List<String>> newHeaders = new HashMap<>(this.additionalHeaders);
+        newHeaders.computeIfAbsent(key, k -> new ArrayList<>()).addAll(values);
+        return new ParametrizedEndpoint(this.original, this.pathParams, this.queryParams, newHeaders);
+    }
+
+
+    private void validateParam(String key, Object value) {
+        if (key == null || key.isEmpty()) {
+            throw new IllegalArgumentException("Header key must not be null or empty");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Header value must not be null for key: " + key);
+        }
+        if (value instanceof Collection && ((Collection<?>) value).isEmpty()) {
+            throw new IllegalArgumentException("Header value list must not be empty for key: " + key);
+        }
     }
 
 }

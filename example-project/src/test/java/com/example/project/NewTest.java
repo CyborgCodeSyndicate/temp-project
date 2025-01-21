@@ -10,6 +10,7 @@ import com.example.project.ui.elements.InputFields;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.annotations.AuthenticateAs;
 import com.theairebellion.zeus.api.storage.DataExtractorsApi;
+import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.framework.annotation.Craft;
@@ -24,9 +25,11 @@ import org.junit.jupiter.api.Test;
 
 import static com.example.project.data.creator.TestDataCreator.VALID_STUDENT;
 import static com.example.project.rest.Endpoints.ENDPOINT_EXAMPLE;
+import static com.theairebellion.zeus.api.storage.DataExtractorsApi.*;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.BODY;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
 import static com.theairebellion.zeus.db.validator.DbAssertionTarget.NUMBER_ROWS;
+import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.NOT_NULL;
 
@@ -47,11 +50,12 @@ public class NewTest extends BaseTest {
             .validateResponse(
                 retrieve(ENDPOINT_EXAMPLE, Response.class),
                 Assertion.builder(Integer.class).target(STATUS).type(IS).expected(200).build(),
-                Assertion.builder(Long.class).target(BODY).key("id").type(NOT_NULL).build())
+                Assertion.builder(Long.class).target(BODY).key("id").type(NOT_NULL).build(),
+                Assertion.builder(String.class).target(BODY).key("list").type(CONTAINS).expected("Ssfsdf").build())
             .then()
             .enters(World.UNDERWORLD)
             .query(Queries.EXAMPLE.withParam("id",
-                retrieve(DataExtractorsApi.responseBodyExtraction(ENDPOINT_EXAMPLE, "$.id"), Long.class)))
+                retrieve(responseBodyExtraction(ENDPOINT_EXAMPLE, "$.id"), Long.class)))
             .validate(retrieve(Queries.EXAMPLE, QueryResponse.class),
                 Assertion.builder(Integer.class).target(NUMBER_ROWS).type(IS).expected(3).soft(true)
                     .build())
@@ -64,7 +68,6 @@ public class NewTest extends BaseTest {
                     retrieve(DataExtractorsUi.responseBodyExtraction("api/create-campaign", "$.id"), Long.class)))
             .then()
             .enters(World.FORGE)
-            .somethingCustom()
             .complete();
     }
 

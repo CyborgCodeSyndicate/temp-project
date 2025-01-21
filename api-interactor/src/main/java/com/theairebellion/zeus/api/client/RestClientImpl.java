@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.api.client;
 
-import com.theairebellion.zeus.api.log.LogAPI;
 import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -9,42 +8,54 @@ import io.restassured.specification.RequestSpecification;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.theairebellion.zeus.api.log.LogAPI.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+
+import static com.theairebellion.zeus.api.log.LogAPI.extended;
+import static com.theairebellion.zeus.api.log.LogAPI.step;
 
 @Component
 @NoArgsConstructor
 public class RestClientImpl implements RestClient {
 
+    private static final Map<Method, Function<RequestSpecification, Response>> METHOD_EXECUTORS = Map.of(
+        Method.GET, RequestSpecification::get,
+        Method.POST, RequestSpecification::post,
+        Method.PUT, RequestSpecification::put,
+        Method.DELETE, RequestSpecification::delete,
+        Method.PATCH, RequestSpecification::patch,
+        Method.HEAD, RequestSpecification::head
+    );
+
 
     @Override
     public Response execute(final RequestSpecification spec, final Method method) {
-        long startTime = System.currentTimeMillis();
-        FilterableRequestSpecification filterableSpec = (FilterableRequestSpecification) spec;
+        if (!(spec instanceof FilterableRequestSpecification filterableSpec)) {
+            throw new IllegalArgumentException("RequestSpecification is not of type FilterableRequestSpecification");
+        }
+
+        long startTime = System.nanoTime();
 
         String url = filterableSpec.getURI();
         String methodName = method.name();
 
-        String rawRequestBody = filterableSpec.getBody() != null ? filterableSpec.getBody().toString() : null;
+        String rawRequestBody = Optional.ofNullable(filterableSpec.getBody()).map(Object::toString).orElse(null);
         String prettyRequestBody = tryPrettyPrintJson(rawRequestBody);
 
-        String requestHeaders = filterableSpec.getHeaders() != null
-                                    ? filterableSpec.getHeaders().toString()
-                                    : "";
+        String requestHeaders = Optional.ofNullable(filterableSpec.getHeaders())
+                                    .map(Object::toString)
+                                    .orElse("");
 
         printRequest(methodName, url, prettyRequestBody, requestHeaders);
 
-        Response response = switch (method) {
-            case GET -> spec.get();
-            case PUT -> spec.put();
-            case POST -> spec.post();
-            case DELETE -> spec.delete();
-            case HEAD -> spec.head();
-            case PATCH -> spec.patch();
-            default -> throw new UnsupportedOperationException("Method not supported");
-        };
-        long duration = System.currentTimeMillis() - startTime;
+        Response response = Optional.ofNullable(METHOD_EXECUTORS.get(method))
+                                .orElseThrow(() -> new IllegalArgumentException("HTTP method " + method + " is not supported"))
+                                .apply(spec);
 
+        long duration = (System.nanoTime() - startTime) / 1_000_000;
         printResponse(methodName, url, response, duration);
+
         return response;
     }
 
