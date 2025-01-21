@@ -71,7 +71,7 @@ public class RestClientImpl implements RestClient {
                                final long duration) {
         step("Response with status: {} received from endpoint: {}-{} in {}ms.",
             response.getStatusCode(), methodName, finalUrl, duration);
-        extended("Response body: {}.", response.body() != null ? response.body().prettyPrint() : "");
+        extended("Response body: {}.", response.body() != null ? response.body().asPrettyString() : "");
         extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");
     }
 
@@ -81,7 +81,7 @@ public class RestClientImpl implements RestClient {
             return content;
         }
         try {
-            return new JsonPath(content).prettyPrint();
+            return new JsonPath(content).prettify();
         } catch (Exception e) {
             return content;
         }

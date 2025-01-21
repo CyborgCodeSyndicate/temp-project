@@ -14,6 +14,7 @@
     <CustomLevels>
         <CustomLevel name="STEP" intLevel="350"/>
         <CustomLevel name="VALIDATION" intLevel="350"/>
+        <CustomLevel name="EXTENDED" intLevel="350"/>
     </CustomLevels>
 
     <!-- 3) Appenders -->

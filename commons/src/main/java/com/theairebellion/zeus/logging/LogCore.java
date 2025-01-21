@@ -11,9 +11,9 @@ public abstract class LogCore {
 
     private static final Level STEP_LEVEL = Level.forName("STEP", 350);
     private static final Level VALIDATION_LEVEL = Level.forName("VALIDATION", 350);
-    private static final Level EXTENDED_LEVEL = Level.forName("EXTENDED", 450);
+    private static final Level EXTENDED_LEVEL = Level.forName("EXTENDED", 350);
     private static final boolean EXTENDED_LOGGING =
-        Boolean.parseBoolean(System.getProperty("zeus.extendedLogging", "false"));
+        Boolean.parseBoolean(System.getProperty("extendedLogging", "false"));
 
 
     protected LogCore(String loggerName, String markerName) {
