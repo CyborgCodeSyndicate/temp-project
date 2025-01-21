@@ -9,12 +9,19 @@ public enum AssertionTypes implements AssertionType {
     NOT_NULL(Object.class),
     ALL_NOT_NULL(Collection.class),
     IS_NULL(Object.class),
-
     ALL_NULL(Collection.class),
     GREATER_THAN(Number.class),
     LESS_THAN(Number.class),
     CONTAINS_ALL(Collection.class),
-    CONTAINS_ANY(Collection.class);
+    CONTAINS_ANY(Collection.class),
+    STARTS_WITH(String.class),
+    ENDS_WITH(String.class),
+    LENGTH(Number.class),
+    MATCHES_REGEX(String.class),
+    EMPTY(Collection.class),
+    NOT_EMPTY(Collection.class),
+    BETWEEN(Number.class),
+    EQUALS_IGNORE_CASE(String.class);
 
 
     private final Class<?> supportedType;
@@ -26,13 +33,13 @@ public enum AssertionTypes implements AssertionType {
 
 
     @Override
-    public Enum type() {
+    public Enum<?> type() {
         return this;
     }
 
 
     @Override
-    public Class getSupportedType() {
+    public Class<?> getSupportedType() {
         return supportedType;
     }
 }

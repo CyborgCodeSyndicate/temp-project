@@ -1,5 +1,6 @@
 package com.example.project.db;
 
+import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.query.DbQuery;
 
 public enum Queries implements DbQuery {
@@ -21,8 +22,15 @@ public enum Queries implements DbQuery {
 
 
     @Override
+    public DatabaseConfiguration config() {
+        return DbQuery.super.config();
+    }
+
+
+    @Override
     public Enum<?> enumImpl() {
         return this;
     }
+
 
 }

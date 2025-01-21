@@ -12,9 +12,9 @@ public interface FluentChain {
     Quest then();
 
     default FluentChain validate(Consumer<SoftAssertions> assertion) {
-        @Jailbreak Quest then = then();
+        @Jailbreak Quest quest = then();
         LogTest.validation("Starting soft validation.");
-        assertion.accept(then.getSoftAssertions());
+        assertion.accept(quest.getSoftAssertions());
         return this;
     }
 
