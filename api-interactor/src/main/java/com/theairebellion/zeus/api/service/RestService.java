@@ -5,6 +5,7 @@ import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.client.RestClient;
 import com.theairebellion.zeus.api.core.Endpoint;
 import com.theairebellion.zeus.api.exceptions.RestServiceException;
+import com.theairebellion.zeus.api.log.LogAPI;
 import com.theairebellion.zeus.api.validator.RestResponseValidator;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
@@ -79,15 +80,23 @@ public class RestService {
 
 
     private Response execute(Endpoint endpoint, Object body) {
+        LogAPI.info("Executing request for endpoint: {} with method: {}", endpoint.url(), endpoint.method());
         try {
             RequestSpecification spec = endpoint.prepareRequestSpec(body);
+            LogAPI.debug("RequestSpecification prepared: {}", spec);
             if (Objects.nonNull(baseAuthenticationClient)) {
                 Header authentication = baseAuthenticationClient.getAuthentication(authenticationKey);
                 if (Objects.nonNull(authentication)) {
                     spec.header(authentication);
+                    LogAPI.debug("Authentication header applied: {}", authentication);
+                } else {
+                    LogAPI.warn("Authentication header is null. Proceeding without authentication.");
                 }
             }
-            return restClient.execute(spec, endpoint.method());
+
+            Response response = restClient.execute(spec, endpoint.method());
+            LogAPI.info("Request executed successfully. Status code: {}", response.getStatusCode());
+            return response;
         } catch (Exception e) {
             throw new RestServiceException("Error executing request: " + e.getMessage(), e);
         }

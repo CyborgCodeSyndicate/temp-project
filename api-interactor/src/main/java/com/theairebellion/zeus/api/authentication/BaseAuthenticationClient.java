@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.authentication;
 
+import com.theairebellion.zeus.api.log.LogAPI;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
 
@@ -17,13 +18,23 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
     public AuthenticationKey authenticate(final RestService restService, final String username, final String password) {
         var authenticationKey = new AuthenticationKey(username, password, this.getClass());
         if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
-            userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
+            try {
+                userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
+                LogAPI.info("Successfully authenticated user: {}", username);
+            } catch (Exception e) {
+                LogAPI.error("Authentication failed for user: {}. Error: {}", username, e.getMessage(), e);
+                throw e;
+            }
+        } else {
+            LogAPI.debug("User already authenticated: {}", username);
         }
+
         return authenticationKey;
     }
 
 
     public Header getAuthentication(final AuthenticationKey authenticationKey) {
+        LogAPI.debug("Retrieving authentication header for user: {}", authenticationKey.getUsername());
         return userAuthenticationHeaderMap.get(authenticationKey);
     }
 

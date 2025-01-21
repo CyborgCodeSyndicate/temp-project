@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.api.core;
 
 import com.theairebellion.zeus.api.config.ApiConfig;
+import com.theairebellion.zeus.api.log.LogAPI;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
@@ -48,16 +49,19 @@ public interface Endpoint {
     default RequestSpecification prepareRequestSpec(Object body) {
         RequestSpecification spec = defaultConfiguration().basePath(url());
         if (body != null) {
+            LogAPI.debug("Request body: {}", body.toString());
             spec.body(body);
         }
         return spec;
     }
 
     default Endpoint withQueryParam(String key, Object value) {
+        LogAPI.debug("Adding query param: {}={}", key, value);
         return new ParametrizedEndpoint(this).withQueryParam(key, value);
     }
 
     default Endpoint withPathParam(String key, Object value) {
+        LogAPI.debug("Adding path param: {}={}", key, value);
         return new ParametrizedEndpoint(this).withPathParam(key, value);
     }
 
