@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
+@Getter
 @Component
 @Lazy
 @Scope("prototype")
 public class QuestFactory {
 
-    @Getter
     private final Collection<FluentService> fluentServices;
 
 

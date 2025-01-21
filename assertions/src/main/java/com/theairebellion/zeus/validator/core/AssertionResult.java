@@ -3,8 +3,6 @@ package com.theairebellion.zeus.validator.core;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Map;
-
 @Getter
 @AllArgsConstructor
 public class AssertionResult<T> {

@@ -2,12 +2,11 @@ package com.theairebellion.zeus.api.core;
 
 import com.theairebellion.zeus.api.config.ApiConfig;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 import org.aeonbits.owner.ConfigCache;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,19 +14,18 @@ public interface Endpoint {
 
     ApiConfig apiConfig = ConfigCache.getOrCreate(ApiConfig.class);
 
-
-    default String baseUrl() {
-        return apiConfig.baseUrl();
-    }
-
     Method method();
 
     String url();
 
     Enum<?> enumImpl();
 
+    default String baseUrl() {
+        return apiConfig.baseUrl();
+    }
+
     default Map<String, List<String>> headers() {
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
     default RequestSpecification defaultConfiguration() {
@@ -35,10 +33,11 @@ public interface Endpoint {
                                         .baseUri(baseUrl())
                                         .headers(headers());
         if (apiConfig.restAssuredLoggingEnabled()) {
-            if (apiConfig.restAssuredLoggingLevel().equals("BASIC")) {
-                spec.log().ifValidationFails();
-            } else {
-                spec.log().all();
+            switch (apiConfig.restAssuredLoggingLevel()) {
+                case "BASIC" -> spec.log().ifValidationFails();
+                case "ALL" -> spec.log().all();
+                case "NONE" -> { /* No logging */ }
+                default -> throw new IllegalArgumentException("Unsupported logging level");
             }
         }
 
@@ -46,6 +45,7 @@ public interface Endpoint {
     }
 
     default RequestSpecification prepareRequestSpec(Object body) {
+        validateEndpoint();
         RequestSpecification spec = defaultConfiguration().basePath(url());
         if (body != null) {
             spec.body(body);
@@ -59,6 +59,24 @@ public interface Endpoint {
 
     default Endpoint withPathParam(String key, Object value) {
         return new ParametrizedEndpoint(this).withPathParam(key, value);
+    }
+
+    default Endpoint withHeader(String key, String value) {
+        return new ParametrizedEndpoint(this).withHeader(key, value);
+    }
+
+    default Endpoint withHeader(String key, List<String> values) {
+        return new ParametrizedEndpoint(this).withHeader(key, values);
+    }
+
+
+    private void validateEndpoint() {
+        if (url() == null || url().isEmpty()) {
+            throw new IllegalStateException("URL must not be null or empty for endpoint: " + enumImpl().name());
+        }
+        if (method() == null) {
+            throw new IllegalStateException("HTTP method must not be null for endpoint: " + enumImpl().name());
+        }
     }
 
 }

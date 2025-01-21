@@ -10,6 +10,7 @@ import com.theairebellion.zeus.api.annotations.AuthenticateAs;
 import com.theairebellion.zeus.api.service.RestService;
 import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.db.query.QueryResponse;
+import com.theairebellion.zeus.db.service.DatabaseService;
 import com.theairebellion.zeus.db.validator.DbAssertionTarget;
 import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.annotation.Journey;
@@ -22,10 +23,12 @@ import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.components.input.InputService;
+import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import com.theairebellion.zeus.ui.service.facade.UIService;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionTypes;
 import manifold.ext.rt.api.Jailbreak;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static com.example.project.base.World.EARTH;
@@ -96,6 +99,7 @@ public class ExampleTest extends BaseTest {
     @Override
     protected void beforeAll(final Services services) {
         RestService restService1 = services.service(OLYMPYS, RestService.class);
+        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
     }
 
 

@@ -29,8 +29,34 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
                     data.put("status", (T) Integer.valueOf(response.getStatusCode()));
                     assertion.setKey("status");
                 }
-                case BODY -> data.put(assertion.getKey(), response.jsonPath().get(assertion.getKey()));
-                case HEADER -> data.put(assertion.getKey(), (T) response.getHeader(assertion.getKey()));
+                case BODY -> {
+                    String key = assertion.getKey();
+                    if (key == null) {
+                        throw new IllegalArgumentException(
+                            "Key is not specified in the assertion: " + assertion);
+                    }
+
+                    T value = response.jsonPath().get(key);
+                    if (value == null) {
+                        throw new IllegalArgumentException(
+                            "Jsonpath expression: '" + key + "' not found in response body.");
+                    }
+                    data.put(key, value);
+                }
+                case HEADER -> {
+                    String key = assertion.getKey();
+                    if (key == null) {
+                        throw new IllegalArgumentException(
+                            "Key is not specified in the assertion: " + assertion);
+                    }
+
+                    String header = response.getHeader(key);
+                    if (header == null) {
+                        throw new IllegalArgumentException(
+                            "Header '" + key + "' not found in response.");
+                    }
+                    data.put(key, (T) header);
+                }
             }
         }
 

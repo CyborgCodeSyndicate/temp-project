@@ -7,8 +7,10 @@ import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import lombok.Getter;
 import org.openqa.selenium.WebDriver;
 
+@Getter
 public class UIService {
 
 
