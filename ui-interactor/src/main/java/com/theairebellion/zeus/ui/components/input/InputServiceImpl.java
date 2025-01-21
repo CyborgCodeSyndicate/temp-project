@@ -105,7 +105,7 @@ public class InputServiceImpl implements InputService {
                            final InputComponentType componentType) {
         LogUI.info("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-        return inputComponent(componentType).getValue(container);
+        return inputComponent(componentType).getValue(container, inputFieldLabel);
     }
 
 

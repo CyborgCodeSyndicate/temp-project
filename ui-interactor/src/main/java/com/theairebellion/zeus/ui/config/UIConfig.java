@@ -27,8 +27,20 @@ public interface UIConfig extends Config {
     @Key("input.default.type")
     String inputDefaultType();
 
+    @Key("button.default.type")
+    String buttonDefaultType();
+
     @Key("radio.default.type")
     String radioDefaultType();
+
+    @Key("select.default.type")
+    String selectDefaultType();
+
+    @Key("list.default.type")
+    String listDefaultType();
+
+    @Key("loader.default.type")
+    String loaderDefaultType();
 
 
 }

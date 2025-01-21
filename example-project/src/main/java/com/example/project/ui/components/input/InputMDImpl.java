@@ -1,4 +1,4 @@
-package com.example.project.ui.components;
+package com.example.project.ui.components.input;
 
 import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;

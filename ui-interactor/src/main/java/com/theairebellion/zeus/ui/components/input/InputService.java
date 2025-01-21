@@ -423,7 +423,11 @@ public interface InputService extends Insertion {
      */
     String getErrorMessage(By inputFieldContainerLocator, InputComponentType componentType);
 
-
+    /**
+     * Retrieves the default input component type from the configuration.
+     *
+     * @return The default RadioComponentType.
+     */
     private static InputComponentType getDefaultType() {
         return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
             uiConfig.inputDefaultType(),

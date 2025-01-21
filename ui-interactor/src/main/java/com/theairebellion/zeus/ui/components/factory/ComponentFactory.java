@@ -1,11 +1,21 @@
 package com.theairebellion.zeus.ui.components.factory;
 
-import com.theairebellion.zeus.ui.components.input.Input;
+import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.components.button.Button;
+import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
+import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
+import com.theairebellion.zeus.ui.components.list.ItemList;
+import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
+import com.theairebellion.zeus.ui.components.loader.Loader;
+import com.theairebellion.zeus.ui.components.loader.LoaderComponentType;
+import com.theairebellion.zeus.ui.components.radio.Radio;
+import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
+import com.theairebellion.zeus.ui.components.select.Select;
+import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
-import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.aeonbits.owner.ConfigCache;
 
@@ -20,6 +30,26 @@ public class ComponentFactory {
 
     public static Input getInputComponent(InputComponentType type, SmartSelenium smartSelenium) {
         return getComponent(Input.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Button getButtonComponent(ButtonComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Button.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Radio getRadioComponent(RadioComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Radio.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Select getSelectComponent(SelectComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Select.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static ItemList getListComponent(ItemListComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(ItemList.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Loader getLoaderComponent(LoaderComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Loader.class, type, uiConfig.projectPackage(), smartSelenium);
     }
 
 
