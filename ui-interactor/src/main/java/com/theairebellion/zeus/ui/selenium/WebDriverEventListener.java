@@ -31,7 +31,11 @@ public class WebDriverEventListener implements WebDriverListener {
     public void onError(final Object target, final Method method, final Object[] args,
                         final InvocationTargetException e) {
         Throwable cause = e.getCause();
-        LogUI.extended("Exception in method {}: {}", method.getName(), cause.getMessage(), cause);
+        LogUI.extended("Method [{}] on target [{}] threw exception: [{}]",
+                method.getName(), target.getClass().getSimpleName(), cause.getMessage());
+        if (args != null && args.length > 0) {
+            LogUI.debug("Arguments: {}", Arrays.toString(args));
+        }
         exceptionLogging(target, method, args, e, cause);
     }
 

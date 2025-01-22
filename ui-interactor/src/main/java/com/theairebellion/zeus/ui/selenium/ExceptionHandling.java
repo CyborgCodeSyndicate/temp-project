@@ -23,33 +23,33 @@ public class ExceptionHandling {
 
 
     public static final Map<Class<? extends Exception>, TriConsumer<WebDriver, WebElement, String>>
-        exceptionSendKeysMap =
-        Map.of(StaleElementReferenceException.class, ExceptionHandling::staleElement,
-            InvalidElementStateException.class, ExceptionHandling::invalidElementStateSendKeys);
+            exceptionSendKeysMap =
+            Map.of(StaleElementReferenceException.class, ExceptionHandling::staleElement,
+                    InvalidElementStateException.class, ExceptionHandling::invalidElementStateSendKeys);
 
     public static final Map<Class<? extends Exception>, TriConsumer<WebDriver, WebElement, Consumer<WebElement>>>
-        exceptionElementActionMap =
-        Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateElementAction);
+            exceptionElementActionMap =
+            Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateElementAction);
 
     public static final Map<Class<? extends Exception>, TriFunction<WebDriver, WebElement, Function<WebElement, String>, String>>
-        exceptionElementActionMapReturn =
-        Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateElementActionReturn);
+            exceptionElementActionMapReturn =
+            Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateElementActionReturn);
 
     public static final Map<Class<? extends Exception>, FourConsumer<WebDriver, Actions, WebElement, Consumer<WebElement>>>
-        exceptionActionMap =
-        Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateAction);
+            exceptionActionMap =
+            Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateAction);
 
     public static final Map<Class<? extends Exception>, TriFunction<WebDriver, WebElement, By, WebElement>>
-        exceptionFindElementMap =
-        Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateFindElement);
+            exceptionFindElementMap =
+            Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateFindElement);
 
     public static final Map<Class<? extends Exception>, TriFunction<WebDriver, WebElement, By, List<WebElement>>>
-        exceptionFindElementsMap =
-        Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateFindElements);
+            exceptionFindElementsMap =
+            Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateFindElements);
 
     public static final Map<Class<? extends Exception>, TriFunction<WebDriver, WebElement, String, String>>
-        exceptionGetAttributeMap =
-        Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateGetAttribute);
+            exceptionGetAttributeMap =
+            Map.of(StaleElementReferenceException.class, ExceptionHandling::invalidElementStateGetAttribute);
 
     public static void staleElement(WebDriver driver, WebElement element, String value) {
         updateWebElement(driver, element);
@@ -67,7 +67,7 @@ public class ExceptionHandling {
         function.accept(element);
     }
 
-    public static String  invalidElementStateElementActionReturn(WebDriver driver, WebElement element, Function<WebElement, String> function) {
+    public static String invalidElementStateElementActionReturn(WebDriver driver, WebElement element, Function<WebElement, String> function) {
         element = updateWebElement(driver, element);
         return function.apply(element);
     }
@@ -98,9 +98,12 @@ public class ExceptionHandling {
         LogUI.extended("Element: '{}' is being relocated.", element.toString());
         String s = element.toString();
         List<String> locators = Arrays.asList(s.split("->"));
+        LogUI.debug("Split element string into [{}] parts: {}", locators.size(), locators);
+
         List<String> trimmedLocators = locators.stream()
-            .map(String::trim)
-            .collect(Collectors.toList());
+                .map(String::trim)
+                .collect(Collectors.toList());
+        LogUI.debug("Trimmed locator parts: {}", trimmedLocators);
 
         WebElement result = null;
         String s1 = trimmedLocators.get(trimmedLocators.size() - 1);
@@ -113,50 +116,56 @@ public class ExceptionHandling {
         //        By.className()
 
         for (int i = 1; i < trimmedLocators.size(); i++) {
-            if (trimmedLocators.get(i).contains("tag name:")) {
-                String locator = findLocator(trimmedLocators.get(i));
-                if (result == null) {
-                    result = driver.findElement(By.tagName(locator));
-                } else {
-                    result = result.findElement(By.tagName(locator));
-                }
+            String part = trimmedLocators.get(i);
+            LogUI.debug("Analyzing locator part [{}]: {}", i, part);
+            if (part.contains("tag name:")) {
+                String locator = findLocator(part);
+                LogUI.debug("Using By.tagName('{}')", locator);
+                result = (result == null)
+                        ? driver.findElement(By.tagName(locator))
+                        : result.findElement(By.tagName(locator));
+            } else if (part.contains("css selector:")) {
+                String locator = findLocator(part);
+                LogUI.debug("Using By.cssSelector('{}')", locator);
+                result = (result == null)
+                        ? driver.findElement(By.cssSelector(locator))
+                        : result.findElement(By.cssSelector(locator));
+            } else if (part.contains("xpath:")) {
+                String locator = findLocator(part);
+                LogUI.debug("Using By.xpath('{}')", locator);
+                result = (result == null)
+                        ? driver.findElement(By.xpath(locator))
+                        : result.findElement(By.xpath(locator));
+            } else if (part.contains("id:")) {
+                String locator = findLocator(part);
+                LogUI.debug("Using By.id('{}')", locator);
+                result = (result == null)
+                        ? driver.findElement(By.id(locator))
+                        : result.findElement(By.id(locator));
+            } else if (part.contains("class name:")) {
+                String locator = findLocator(part);
+                LogUI.debug("Using By.className('{}')", locator);
+                result = (result == null)
+                        ? driver.findElement(By.className(locator))
+                        : result.findElement(By.className(locator));
+            } else {
+                LogUI.warn("Unknown locator type in part [{}]. Skipping.", part);
             }
-            if (trimmedLocators.get(i).contains("css selector:")) {
-                String locator = findLocator(trimmedLocators.get(i));
-                if (result == null) {
-                    result = driver.findElement(By.cssSelector(locator));
-                } else {
-                    result = result.findElement(By.cssSelector(locator));
-                }
-            }
-            if (trimmedLocators.get(i).contains("xpath:")) {
-                String locator = findLocator(trimmedLocators.get(i));
-                if (result == null) {
-                    result = driver.findElement(By.xpath(locator));
-                } else {
-                    result = result.findElement(By.xpath(locator));
-                }
-            }
-            if (trimmedLocators.get(i).contains("id:")) {
-                String locator = findLocator(trimmedLocators.get(i));
-                if (result == null) {
-                    result = driver.findElement(By.id(locator));
-                } else {
-                    result = result.findElement(By.id(locator));
-                }
-            }
-            if (trimmedLocators.get(i).contains("class name:")) {
-                String locator = findLocator(trimmedLocators.get(i));
-                if (result == null) {
-                    result = driver.findElement(By.className(locator));
-                } else {
-                    result = result.findElement(By.className(locator));
-                }
+            if (result != null) {
+                LogUI.debug("Successfully found an element so far: [{}]", result.toString());
+            } else {
+                LogUI.warn("No element found yet for part: [{}]", part);
             }
         }
+
+        if (result != null) {
+            LogUI.info("Successfully relocated element. New reference: [{}]", result.toString());
+        } else {
+            LogUI.error("Failed to relocate the stale element. No final result found.");
+        }
+
         return result;
     }
-
 
     private static String findLocator(String locator) {
         String loc = locator.split(":")[1];

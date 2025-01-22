@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.insertion;
 
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.log.LogUI;
 import org.openqa.selenium.By;
 
 import java.lang.reflect.Field;
@@ -21,6 +22,9 @@ public abstract class BaseInsertionService implements InsertionService {
         Field[] fields = data.getClass().getDeclaredFields();
         List<Field> targetedFields = filterAndSortFields(fields);
 
+        LogUI.info("Starting data insertion for [{}]. Found [{}] fields to process.",
+                data.getClass().getSimpleName(), targetedFields.size());
+
         for (Field field : targetedFields) {
             Object annotation = getFieldAnnotation(field);
             if (annotation == null) {
@@ -32,23 +36,32 @@ public abstract class BaseInsertionService implements InsertionService {
                 Class<? extends ComponentType> componentTypeClass = getComponentType(annotation);
                 Insertion service = serviceRegistry.getService(componentTypeClass);
                 if (service == null) {
+                    LogUI.error("No InsertionService registered for: [{}].", componentTypeClass.getSimpleName());
                     throw new IllegalStateException(
                         "No InsertionService registered for: " + componentTypeClass.getSimpleName()
                     );
                 }
 
                 By locator = buildLocator(annotation);
+                LogUI.debug("Field [{}] -> Locator: [{}]", field.getName(), locator);
+
                 Enum<?> enumValue = getEnumValue(annotation);
+                LogUI.debug("Field [{}] -> Enum component type: [{}]", field.getName(), enumValue);
+
                 Object valueForField = field.get(data);
 
                 if (valueForField != null) {
+                    LogUI.info("Inserting value into field [{}] -> [value: '{}', type: '{}']",
+                            field.getName(), valueForField, enumValue);
                     service.insertion(locator, (ComponentType) enumValue, valueForField);
                 }
 
             } catch (IllegalAccessException e) {
+                LogUI.error("Failed to access field [{}]: {}", field.getName(), e.getMessage());
                 throw new RuntimeException(e);
             }
         }
+        LogUI.info("Finished data insertion for [{}].", data.getClass().getSimpleName());
     }
 
 

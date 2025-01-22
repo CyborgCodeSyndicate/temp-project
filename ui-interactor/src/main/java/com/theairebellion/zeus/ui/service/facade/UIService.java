@@ -6,6 +6,7 @@ import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
+import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import lombok.Getter;
 import org.openqa.selenium.WebDriver;
@@ -23,10 +24,13 @@ public class UIService {
     public UIService(WebDriver driver) {
         SmartSelenium smartSelenium = new SmartSelenium(driver);
         this.driver = driver;
+        LogUI.info("UIService initialized with driver: [{}]", driver.getClass().getSimpleName());
         inputField = new InputServiceImpl(smartSelenium);
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);
+        LogUI.debug("UIService is fully set up. InputService: [{}], InsertionService: [{}]",
+                inputField.getClass().getSimpleName(), insertionService.getClass().getSimpleName());
     }
 
 
