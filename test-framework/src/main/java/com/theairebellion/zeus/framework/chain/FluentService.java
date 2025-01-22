@@ -16,7 +16,7 @@ public class FluentService implements FluentChain {
 
     @Override
     public Quest then() {
-        LogTest.info("The quest has leaves the journey.");
+        LogTest.info("The quest has left the journey.");
         return quest;
     }
 
@@ -31,16 +31,23 @@ public class FluentService implements FluentChain {
             String message = assertionResult.toString();
             LogTest.validation(message);
             Allure.step(message);
+
+            boolean isPassed = assertionResult.isPassed();
             if (assertionResult.isSoft()) {
-                quest.getSoftAssertions().assertThat(assertionResult.isPassed()).as(message)
+                quest.getSoftAssertions()
+                    .assertThat(isPassed)
+                    .as(message)
                     .isTrue();
             } else {
-                Assertions.assertThat(assertionResult.isPassed()).as(message).isTrue();
+                Assertions.assertThat(isPassed)
+                    .as(message)
+                    .isTrue();
             }
         });
     }
 
-    protected void postQuestSetupInitialization(){
+
+    protected void postQuestSetupInitialization() {
 
     }
 

@@ -15,12 +15,10 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.ARGUMENTS;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
-import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
 public class Craftsman implements ParameterResolver {
 
-    protected static final FrameworkConfig frameworkConfig = ConfigCache.getOrCreate(FrameworkConfig.class);
-
+    protected static final FrameworkConfig FRAMEWORK_CONFIG = ConfigCache.getOrCreate(FrameworkConfig.class);
 
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
@@ -28,19 +26,22 @@ public class Craftsman implements ParameterResolver {
         return parameterContext.isAnnotated(Craft.class);
     }
 
-
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
         throws ParameterResolutionException {
 
         Class<?> parameterType = parameterContext.getParameter().getType();
 
-        Craft craft = parameterContext.findAnnotation(Craft.class).get();
+        Craft craft = parameterContext.findAnnotation(Craft.class)
+                          .orElseThrow(() -> new ParameterResolutionException("@Craft annotation not found"));
 
-        @Jailbreak Quest quest = (Quest) extensionContext.getStore(GLOBAL).get(QUEST.getKey());
+        @Jailbreak Quest quest = (Quest) extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST);
+        if (quest == null) {
+            throw new IllegalStateException("Quest not found in the global store");
+        }
 
-        DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(DataForge.class, craft.model(),
-            frameworkConfig.projectPackage());
+        DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
+            DataForge.class, craft.model(), FRAMEWORK_CONFIG.projectPackage());
 
         Object argument = parameterType.isAssignableFrom(Late.class)
                               ? dataForge.dataCreator()
@@ -49,5 +50,4 @@ public class Craftsman implements ParameterResolver {
         quest.getStorage().sub(ARGUMENTS).put(dataForge.enumImpl(), argument);
         return argument;
     }
-
 }

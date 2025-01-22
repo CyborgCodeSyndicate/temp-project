@@ -48,7 +48,7 @@ public class Oracle implements ParameterResolver {
         if (Objects.nonNull(consumers)) {
             consumers.forEach(questConsumer -> questConsumer.accept(quest));
         }
-        store.put(QUEST.getKey(), quest);
+        store.put(QUEST, quest);
         return quest;
     }
 

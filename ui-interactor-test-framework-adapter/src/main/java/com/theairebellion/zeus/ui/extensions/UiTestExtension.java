@@ -138,7 +138,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
     private WebDriver getWebDriver(ExtensionContext context) {
         @Jailbreak Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(
-            StoreKeys.QUEST.getKey());
+            StoreKeys.QUEST);
         UIDriver artifact = quest.artifact(UIServiceFluent.class, UIDriver.class);
         WebDriver driver = artifact.getDriver();
         return unwrapDriver(driver);

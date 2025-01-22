@@ -18,31 +18,38 @@ import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 
 public class RipperMan implements AfterTestExecutionCallback {
 
-    protected static final FrameworkConfig frameworkConfig = ConfigCache.getOrCreate(FrameworkConfig.class);
+    protected static final FrameworkConfig FRAMEWORK_CONFIG = ConfigCache.getOrCreate(FrameworkConfig.class);
 
 
     @Override
     public void afterTestExecution(final ExtensionContext context) throws Exception {
-        if (context.getTestMethod().isPresent()) {
-            Ripper annotation = context.getTestMethod().get().getAnnotation(Ripper.class);
+        context.getTestMethod().ifPresent(method -> {
+            Ripper annotation = method.getAnnotation(Ripper.class);
             if (annotation != null) {
                 executeRipperLogic(context, annotation.targets());
             }
-        }
+        });
     }
 
 
     private void executeRipperLogic(ExtensionContext context, String[] targets) {
         LogTest.info("The ripper has arrived");
-        @Jailbreak Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST.getKey());
+
+        @Jailbreak Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST);
+        if (quest == null) {
+            throw new IllegalStateException("Quest not found in the global store");
+        }
 
         quest.getStorage().sub(StorageKeysTest.ARGUMENTS).joinLateArguments();
 
-        Arrays.asList(targets).forEach(target -> {
+        Arrays.stream(targets).forEach(target -> {
             DataRipper dataRipper = ReflectionUtil.findEnumImplementationsOfInterface(
-                DataRipper.class, target, frameworkConfig.projectPackage());
+                DataRipper.class, target, FRAMEWORK_CONFIG.projectPackage());
+
             dataRipper.eliminate().accept(quest);
+            LogTest.info("DataRipper processed target: '{}'.", target);
         });
     }
 
 }
+

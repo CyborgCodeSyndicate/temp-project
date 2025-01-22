@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DbClientManager {
 
     private final Map<String, DbClient> clientCache = new ConcurrentHashMap<>();
+    @Getter
     private final BaseDbConnectorService connector;
 
     @Autowired
@@ -26,7 +27,7 @@ public class DbClientManager {
         return clientCache.computeIfAbsent(urlKey, key -> initializeDbClient(dbConfig));
     }
 
-    protected DbClient initializeDbClient(DatabaseConfiguration dbConfig) {
+    protected DbClient initializeDbClient(final DatabaseConfiguration dbConfig) {
         return new RelationalDbClient(connector, dbConfig);
     }
 
