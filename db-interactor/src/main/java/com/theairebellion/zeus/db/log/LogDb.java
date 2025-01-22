@@ -2,12 +2,12 @@ package com.theairebellion.zeus.db.log;
 
 import com.theairebellion.zeus.logging.LogCore;
 
-public final class LogDB extends LogCore {
+public final class LogDb extends LogCore {
 
-    private static LogDB INSTANCE = new LogDB();
+    private static LogDb INSTANCE = new LogDb();
 
 
-    private LogDB() {
+    private LogDb() {
         super("Zeus.DB", "DB");
     }
 
@@ -53,7 +53,7 @@ public final class LogDB extends LogCore {
 
 
     public static <T extends LogCore> void extend(final T INSTANCE) {
-        LogDB.INSTANCE = (LogDB) INSTANCE;
+        LogDb.INSTANCE = (LogDb) INSTANCE;
     }
 
 }

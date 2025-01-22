@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.db.validator;
 
 import com.theairebellion.zeus.db.json.JsonPathExtractor;
-import com.theairebellion.zeus.db.log.LogDB;
+import com.theairebellion.zeus.db.log.LogDb;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
@@ -29,17 +29,30 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
     @SuppressWarnings("unchecked")
     public <T> List<AssertionResult<T>> validateQueryResponse(final QueryResponse queryResponse,
                                                               final Assertion<?>... assertions) {
-        LogDB.info("Starting query response validation with {} assertion(s).", assertions.length);
+        LogDb.info("Starting query response validation with {} assertion(s).", assertions.length);
         Map<String, T> data = new HashMap<>();
 
         for (Assertion<?> assertion : assertions) {
+            String key = assertion.getKey();
             switch ((DbAssertionTarget) assertion.getTarget()) {
                 case NUMBER_ROWS -> data.put("numRows", (T) Integer.valueOf(queryResponse.getRows().size()));
-                case QUERY_RESULT -> data.put(assertion.getKey(),
-                    (T) jsonPathExtractor.extract(queryResponse.getRows(), assertion.getKey(), Object.class));
-                case COLUMNS -> data.put(assertion.getKey(),
-                    (T) jsonPathExtractor.extract(queryResponse.getRows().get(0).keySet(), assertion.getKey(),
-                        Object.class));
+                case QUERY_RESULT -> {
+                    Object value = jsonPathExtractor.extract(queryResponse.getRows(), assertion.getKey(), Object.class);
+                    if (value == null) {
+                        throw new IllegalArgumentException("Jsonpath expression: '" + key + "' not found in query result.");
+                    }
+                    data.put(assertion.getKey(), (T) value);
+                }
+                case COLUMNS -> {
+                    if (queryResponse.getRows().isEmpty()) {
+                        throw new IllegalArgumentException("Query result is empty; cannot validate columns.");
+                    }
+                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0).keySet(), key, Object.class);
+                    if (value == null) {
+                        throw new IllegalArgumentException("Column: '" + key + "' not found in query result.");
+                    }
+                    data.put(key, (T) value);
+                }
             }
         }
         printAssertionTarget((Map<String, Object>) data);
@@ -49,7 +62,7 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
 
 
     protected void printAssertionTarget(Map<String, Object> data) {
-        LogDB.extended("Validation target: [{}]", data.toString());
+        LogDb.extended("Validation target: [{}]", data.toString());
     }
 
 }

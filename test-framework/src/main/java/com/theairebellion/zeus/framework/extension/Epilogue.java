@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
-import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
 @Order(Integer.MAX_VALUE)
 public class Epilogue implements AfterTestExecutionCallback {
@@ -23,23 +22,32 @@ public class Epilogue implements AfterTestExecutionCallback {
         Throwable throwable = context.getExecutionException().orElse(null);
         String status = (throwable == null) ? "SUCCESS" : "FAILED";
 
-        long startTime = context.getStore(GLOBAL).get(START_TIME.getKey(), long.class);
+        long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);
         long durationInSeconds = (System.currentTimeMillis() - startTime) / 1000;
 
-        if (throwable == null) {
-            LogTest.info("The quest of '{}' has concluded with glory. Status: {}. Duration: {} seconds.",
-                context.getDisplayName(), status, durationInSeconds);
-        } else {
-            LogTest.info("The quest of '{}' has ended in defeat. Status: {}. Duration: {} seconds.",
-                context.getDisplayName(), status, durationInSeconds);
-            LogTest.debug("Failure reason:", throwable);
-        }
+        logTestOutcome(context.getDisplayName(), status, durationInSeconds, throwable);
+
         attachFilteredLogsToAllure(ThreadContext.get("testName"));
         ThreadContext.remove("testName");
     }
 
+    private void logTestOutcome(String testName, String status, long durationInSeconds, Throwable throwable) {
+        if (throwable == null) {
+            LogTest.info("The quest of '{}' has concluded with glory. Status: {}. Duration: {} seconds.",
+                testName, status, durationInSeconds);
+        } else {
+            LogTest.info("The quest of '{}' has ended in defeat. Status: {}. Duration: {} seconds.",
+                testName, status, durationInSeconds);
+            LogTest.debug("Failure reason:", throwable);
+        }
+    }
 
     private static void attachFilteredLogsToAllure(String testName) {
+        if (testName == null || testName.isEmpty()) {
+            Allure.addAttachment("Filtered Logs", "text/plain", "Test name is not available.", ".log");
+            return;
+        }
+
         String logFilePath = System.getProperty("logFileName", "logs/zeus.log");
         String testIdentifier = "[scenario=" + testName + "]";
 
@@ -59,5 +67,4 @@ public class Epilogue implements AfterTestExecutionCallback {
             Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain", errorMessage, ".log");
         }
     }
-
 }

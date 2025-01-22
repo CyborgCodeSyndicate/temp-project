@@ -15,7 +15,7 @@ public class AllureDbClientManager extends DbClientManager {
 
 
     @Override
-    protected DbClient initializeDbCLient(final DatabaseConfiguration dbConfig) {
+    protected DbClient initializeDbClient(final DatabaseConfiguration dbConfig) {
         return new RelationalDbClientAllure(getConnector(), dbConfig);
     }
 

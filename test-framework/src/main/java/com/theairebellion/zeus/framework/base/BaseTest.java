@@ -47,11 +47,9 @@ public class BaseTest {
 
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         @Jailbreak Quest quest = QuestHolder.get();
-        //todo change log
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
             clazz.getName());
-        Object result = quest.getStorage().sub(extractor.getSubKey()).get(extractor.getKey(), Object.class);
-        return clazz.cast(extractor.extract(result));
+        return quest.getStorage().get(extractor, clazz);
     }
 
 

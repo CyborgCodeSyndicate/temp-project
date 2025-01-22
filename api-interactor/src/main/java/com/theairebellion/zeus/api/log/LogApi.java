@@ -2,12 +2,12 @@ package com.theairebellion.zeus.api.log;
 
 import com.theairebellion.zeus.logging.LogCore;
 
-public final class LogAPI extends LogCore {
+public final class LogApi extends LogCore {
 
-    private static LogAPI INSTANCE = new LogAPI();
+    private static LogApi INSTANCE = new LogApi();
 
 
-    private LogAPI() {
+    private LogApi() {
         super("Zeus.API", "API");
     }
 
@@ -53,7 +53,7 @@ public final class LogAPI extends LogCore {
 
 
     public static <T extends LogCore> void extend(final T INSTANCE) {
-        LogAPI.INSTANCE = (LogAPI) INSTANCE;
+        LogApi.INSTANCE = (LogApi) INSTANCE;
     }
 
 }
