@@ -39,7 +39,6 @@ public class BaseDbConnectorService {
                         registeredTypes.add(dbType);
                         LogDb.info("Registered database driver for type: {}", dbType);
                     } catch (SQLException e) {
-                        LogDb.error("Failed to register database driver for type: {}", dbType, e);
                         throw new IllegalStateException("Failed to register database driver for type: " + dbType, e);
                     }
                 }
@@ -63,7 +62,6 @@ public class BaseDbConnectorService {
             LogDb.info("Successfully created connection for URL: {}", url);
             return connection;
         } catch (SQLException e) {
-            LogDb.error("Failed to create connection for URL: {}", url, e);
             throw new IllegalStateException("Failed to create connection for URL: " + url, e);
         }
     }

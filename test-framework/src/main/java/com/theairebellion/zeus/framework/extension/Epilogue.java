@@ -38,7 +38,6 @@ public class Epilogue implements AfterTestExecutionCallback {
         } else {
             LogTest.info("The quest of '{}' has ended in defeat. Status: {}. Duration: {} seconds.",
                 testName, status, durationInSeconds);
-            LogTest.debug("Failure reason:", throwable);
         }
     }
 
