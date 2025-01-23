@@ -5,7 +5,6 @@ import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.client.RestClient;
 import com.theairebellion.zeus.api.core.Endpoint;
 import com.theairebellion.zeus.api.exceptions.RestServiceException;
-import com.theairebellion.zeus.api.log.LogAPI;
 import com.theairebellion.zeus.api.validator.RestResponseValidator;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;

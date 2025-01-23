@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.client;
 
+import com.theairebellion.zeus.api.log.LogApi;
 import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -55,6 +56,10 @@ public class RestClientImpl implements RestClient {
 
         long duration = (System.nanoTime() - startTime) / 1_000_000;
         printResponse(methodName, url, response, duration);
+
+        if (duration > 2000) {
+            LogApi.warn("Request to endpoint {}-{} took too long: {}ms.", methodName, url, duration);
+        }
 
         return response;
     }
