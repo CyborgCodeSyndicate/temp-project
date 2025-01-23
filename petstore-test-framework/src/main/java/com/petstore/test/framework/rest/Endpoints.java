@@ -6,7 +6,8 @@ import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
 public enum Endpoints implements Endpoint {
-    ;
+    GET_PET_BY_ID(Method.GET, "/pet/{petId}");
+
     private final Method method;
     private final String url;
 

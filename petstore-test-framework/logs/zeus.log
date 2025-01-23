@@ -1,0 +1,16 @@
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:21,051 INFO  [] - Starting PetTest using Java 17.0.14 with PID 15520 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\petstore-test-framework)
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:21,516 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:22,517 INFO  [] - Started PetTest in 2.08 seconds (process running for 7.185)
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:24,148 [scenario=PetTest.testGetPetById] INFO  [TEST] - The : 'testGetPetById(Quest)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:24,272 [scenario=PetTest.testGetPetById] INFO  [TEST] - Quest crafted for scenario: 'testGetPetById(Quest)'.
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:24,299 [scenario=PetTest.testGetPetById] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:25,511 [scenario=PetTest.testGetPetById] STEP  [API] - Sending request to endpoint GET-https://petstore.swagger.io/v2/pet/589.
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:27,541 [scenario=PetTest.testGetPetById] STEP  [API] - Response with status: 200 received from endpoint: GET-https://petstore.swagger.io/v2/pet/589 in 2489ms.
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:27,645 [scenario=PetTest.testGetPetById] INFO  [API] - Starting response validation with 4 assertion(s).
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:28,955 [scenario=PetTest.testGetPetById] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:29,120 [scenario=PetTest.testGetPetById] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 589, Actual: 589)
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:29,632 [scenario=PetTest.testGetPetById] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Clare, Actual: Clare)
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:29,644 [scenario=PetTest.testGetPetById] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: sold, Actual: sold)
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:29,657 [scenario=PetTest.testGetPetById] INFO  [TEST] - The quest has leaves the journey.
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:29,666 [scenario=PetTest.testGetPetById] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-01-23T16:17:29,681 [scenario=PetTest.testGetPetById] INFO  [TEST] - The quest of 'testGetPetById(Quest)' has concluded with glory. Status: SUCCESS. Duration: 5 seconds.

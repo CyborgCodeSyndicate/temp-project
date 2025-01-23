@@ -25,7 +25,6 @@ public enum Endpoints implements Endpoint {
 
 
 
-
     @Override
     public Method method() {
         return method;
