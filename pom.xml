@@ -22,6 +22,7 @@
         <module>example-project</module>
         <module>commons</module>
         <module>reqres-test-framework</module>
+        <module>petstore-test-framework</module>
     </modules>
 
     <properties>
