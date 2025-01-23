@@ -1,4 +1,4 @@
-package com.reqres.test.framework.rest;
+package com.petstore.test.framework.rest;
 
 import com.theairebellion.zeus.api.core.Endpoint;
 import io.restassured.http.ContentType;
@@ -6,15 +6,9 @@ import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
 public enum Endpoints implements Endpoint {
-    GET_ALL_USERS(Method.GET, "/users?{page}"),
-    GET_USER(Method.GET, "/users/{id}"),
-    CREATE_USER(Method.POST, "/users"),
-    LOGIN_USER(Method.POST, "/login"),
     ;
-
     private final Method method;
     private final String url;
-
 
     Endpoints(final Method method, final String url) {
         this.method = method;
