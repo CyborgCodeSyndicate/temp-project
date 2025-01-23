@@ -1,18 +1,17 @@
 package com.theairebellion.zeus.ui.components.factory;
 
-import com.theairebellion.zeus.ui.components.input.Input;
+import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
-import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.aeonbits.owner.ConfigCache;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Objects;
 
 public class ComponentFactory {
 

@@ -29,7 +29,6 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
         T options = provider.createOptions();
 
         provider.applyDefaultArguments(options);
-        LogUI.debug("Default arguments applied to [{}].", options.getClass().getSimpleName());
 
         if (config.isHeadless()) {
             options.setCapability("headless", config.isHeadless());
@@ -50,7 +49,6 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
         }
 
         if (config.getEventFiringDecorator() != null) {
-            LogUI.debug("Wrapping the driver with EventFiringDecorator.");
             return config.getEventFiringDecorator().decorate(driver);
         }
 

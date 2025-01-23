@@ -24,13 +24,10 @@ public class UIService {
     public UIService(WebDriver driver) {
         SmartSelenium smartSelenium = new SmartSelenium(driver);
         this.driver = driver;
-        LogUI.info("UIService initialized with driver: [{}]", driver.getClass().getSimpleName());
         inputField = new InputServiceImpl(smartSelenium);
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);
-        LogUI.debug("UIService is fully set up. InputService: [{}], InsertionService: [{}]",
-                inputField.getClass().getSimpleName(), insertionService.getClass().getSimpleName());
     }
 
 
