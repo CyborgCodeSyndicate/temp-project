@@ -31,15 +31,15 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public void insert(final WebElement container, final String value, final InputComponentType componentType) {
+    public void insert(final InputComponentType componentType, final WebElement container, final String value) {
         LogUI.info("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
         inputComponent(componentType).insert(container, value);
     }
 
 
     @Override
-    public void insert(final WebElement container, final String inputFieldLabel, final String value,
-                       final InputComponentType componentType) {
+    public void insert(final InputComponentType componentType, final WebElement container, final String inputFieldLabel,
+                       final String value) {
         LogUI.info("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
             componentType.getType().name());
         inputComponent(componentType).insert(container, inputFieldLabel, value);
@@ -47,7 +47,7 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public void insert(final String inputFieldLabel, final String value, final InputComponentType componentType) {
+    public void insert(final InputComponentType componentType, final String inputFieldLabel, final String value) {
         LogUI.info("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
             componentType.getType().name());
         inputComponent(componentType).insert(inputFieldLabel, value);
@@ -55,23 +55,23 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public void insert(final By inputFieldContainerLocator, final String value,
-                       final InputComponentType componentType) {
+    public void insert(final InputComponentType componentType, final By inputFieldContainerLocator,
+                       final String value) {
         LogUI.info("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
         inputComponent(componentType).insert(inputFieldContainerLocator, value);
     }
 
 
     @Override
-    public void clear(final WebElement container, final InputComponentType componentType) {
+    public void clear(final InputComponentType componentType, final WebElement container) {
         LogUI.info("Clearing value in input component of type: '{}'.", componentType.getType().name());
         inputComponent(componentType).clear(container);
     }
 
 
     @Override
-    public void clear(final WebElement container, final String inputFieldLabel,
-                      final InputComponentType componentType) {
+    public void clear(final InputComponentType componentType, final WebElement container,
+                      final String inputFieldLabel) {
         LogUI.info("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
         inputComponent(componentType).clear(container, inputFieldLabel);
@@ -79,7 +79,7 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public void clear(final String inputFieldLabel, final InputComponentType componentType) {
+    public void clear(final InputComponentType componentType, final String inputFieldLabel) {
         LogUI.info("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
         inputComponent(componentType).clear(inputFieldLabel);
@@ -87,22 +87,21 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public void clear(final By inputFieldContainerLocator, final InputComponentType componentType) {
+    public void clear(final InputComponentType componentType, final By inputFieldContainerLocator) {
         LogUI.info("Clearing value in input component of type: '{}'.", componentType.getType().name());
         inputComponent(componentType).clear(inputFieldContainerLocator);
     }
 
 
     @Override
-    public String getValue(final WebElement container, final InputComponentType componentType) {
+    public String getValue(final InputComponentType componentType, final WebElement container) {
         LogUI.info("Fetching value from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getValue(container);
     }
 
 
     @Override
-    public String getValue(final WebElement container, final String inputFieldLabel,
-                           final InputComponentType componentType) {
+    public String getValue(final InputComponentType componentType, final WebElement container, final String inputFieldLabel) {
         LogUI.info("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
         return inputComponent(componentType).getValue(container, inputFieldLabel);
@@ -110,7 +109,7 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public String getValue(final String inputFieldLabel, final InputComponentType componentType) {
+    public String getValue(final InputComponentType componentType, final String inputFieldLabel) {
         LogUI.info("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
         return inputComponent(componentType).getValue(inputFieldLabel);
@@ -118,22 +117,22 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public String getValue(final By inputFieldContainerLocator, final InputComponentType componentType) {
+    public String getValue(final InputComponentType componentType, final By inputFieldContainerLocator) {
         LogUI.info("Fetching value from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getValue(inputFieldContainerLocator);
     }
 
 
     @Override
-    public boolean isEnabled(final WebElement container, final InputComponentType componentType) {
+    public boolean isEnabled(final InputComponentType componentType, final WebElement container) {
         LogUI.info("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
         return inputComponent(componentType).isEnabled(container);
     }
 
 
     @Override
-    public boolean isEnabled(final WebElement container, final String inputFieldLabel,
-                             final InputComponentType componentType) {
+    public boolean isEnabled(final InputComponentType componentType, final WebElement container,
+                             final String inputFieldLabel) {
         LogUI.info("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
             componentType.getType().name());
         return inputComponent(componentType).isEnabled(container, inputFieldLabel);
@@ -141,7 +140,7 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public boolean isEnabled(final String inputFieldLabel, final InputComponentType componentType) {
+    public boolean isEnabled(final InputComponentType componentType, final String inputFieldLabel) {
         LogUI.info("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
             componentType.getType().name());
         return inputComponent(componentType).isEnabled(inputFieldLabel);
@@ -149,22 +148,22 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public boolean isEnabled(final By inputFieldContainerLocator, final InputComponentType componentType) {
+    public boolean isEnabled(final InputComponentType componentType, final By inputFieldContainerLocator) {
         LogUI.info("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
         return inputComponent(componentType).isEnabled(inputFieldContainerLocator);
     }
 
 
     @Override
-    public String getErrorMessage(final WebElement container, final InputComponentType componentType) {
+    public String getErrorMessage(final InputComponentType componentType, final WebElement container) {
         LogUI.info("Fetching error message from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(container);
     }
 
 
     @Override
-    public String getErrorMessage(final WebElement container, final String inputFieldLabel,
-                                  final InputComponentType componentType) {
+    public String getErrorMessage(final InputComponentType componentType, final WebElement container,
+                                  final String inputFieldLabel) {
         LogUI.info("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(container, inputFieldLabel);
@@ -172,7 +171,7 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public String getErrorMessage(final String inputFieldLabel, final InputComponentType componentType) {
+    public String getErrorMessage(final InputComponentType componentType, final String inputFieldLabel) {
         LogUI.info("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(inputFieldLabel);
@@ -180,7 +179,7 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public String getErrorMessage(final By inputFieldContainerLocator, final InputComponentType componentType) {
+    public String getErrorMessage(final InputComponentType componentType, final By inputFieldContainerLocator) {
         LogUI.info("Fetching error message from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(inputFieldContainerLocator);
     }
@@ -188,11 +187,11 @@ public class InputServiceImpl implements InputService {
 
 
     @Override
-    public void insertion(final By locator, ComponentType componentType, final Object... values) {
-        insert(locator, (String) values[0], (InputComponentType) componentType);
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        insert((InputComponentType) componentType, locator, (String) values[0]);
     }
 
-    private Input inputComponent(InputComponentType componentType) {
+    private Input inputComponent(final InputComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
             components.put(componentType, ComponentFactory.getInputComponent(componentType, smartSelenium));
         }

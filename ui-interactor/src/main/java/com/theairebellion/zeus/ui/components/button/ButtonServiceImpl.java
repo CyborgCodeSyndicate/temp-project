@@ -26,66 +26,68 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public void click(ButtonComponentType componentType, WebElement container, String buttonText) {
+    public void click(final ButtonComponentType componentType, final WebElement container, final String buttonText) {
         buttonComponent(componentType).click(container, buttonText);
     }
 
     @Override
-    public void click(ButtonComponentType componentType, WebElement container) {
+    public void click(final ButtonComponentType componentType, final WebElement container) {
         buttonComponent(componentType).click(container);
     }
 
     @Override
-    public void click(ButtonComponentType componentType, String buttonText) {
+    public void click(final ButtonComponentType componentType, final String buttonText) {
         buttonComponent(componentType).click(buttonText);
     }
 
     @Override
-    public void click(ButtonComponentType componentType, By buttonLocator) {
+    public void click(final ButtonComponentType componentType, final By buttonLocator) {
         buttonComponent(componentType).click(buttonLocator);
     }
 
     @Override
-    public boolean isEnabled(ButtonComponentType componentType, WebElement container, String buttonText) {
+    public boolean isEnabled(final ButtonComponentType componentType, final WebElement container,
+                             final String buttonText) {
         return buttonComponent(componentType).isEnabled(container, buttonText);
     }
 
     @Override
-    public boolean isEnabled(ButtonComponentType componentType, WebElement container) {
+    public boolean isEnabled(final ButtonComponentType componentType, final WebElement container) {
         return buttonComponent(componentType).isEnabled(container);
     }
 
     @Override
-    public boolean isEnabled(ButtonComponentType componentType, String buttonText) {
+    public boolean isEnabled(final ButtonComponentType componentType, final String buttonText) {
         return buttonComponent(componentType).isEnabled(buttonText);
     }
 
     @Override
-    public boolean isEnabled(ButtonComponentType componentType, By buttonLocator) {
+    public boolean isEnabled(final ButtonComponentType componentType, final By buttonLocator) {
         return buttonComponent(componentType).isEnabled(buttonLocator);
     }
 
     @Override
-    public boolean isPresent(ButtonComponentType componentType, WebElement container, String buttonText) {
+    public boolean isPresent(final ButtonComponentType componentType, final WebElement container,
+                             final String buttonText) {
         return buttonComponent(componentType).isPresent(container, buttonText);
     }
 
     @Override
-    public boolean isPresent(ButtonComponentType componentType, WebElement container) {
+    public boolean isPresent(final ButtonComponentType componentType, final WebElement container) {
         return buttonComponent(componentType).isPresent(container);
     }
 
     @Override
-    public boolean isPresent(ButtonComponentType componentType, String buttonText) {
+    public boolean isPresent(final ButtonComponentType componentType, final String buttonText) {
         return buttonComponent(componentType).isPresent(buttonText);
     }
 
     @Override
-    public boolean isPresent(ButtonComponentType componentType, By buttonLocator) {
+    public boolean isPresent(final ButtonComponentType componentType, final By buttonLocator) {
         return buttonComponent(componentType).isPresent(buttonLocator);
     }
 
-    private Button buttonComponent(ButtonComponentType componentType) {
+    private Button buttonComponent(final ButtonComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
             components.put(componentType, ComponentFactory.getButtonComponent(componentType, smartSelenium));
         }

@@ -22,17 +22,17 @@ public interface InputService extends Insertion {
      * @param value     The value to be inserted.
      */
     default void insert(WebElement container, String value) {
-        insert(container, value, DEFAULT_TYPE);
+        insert(DEFAULT_TYPE, container, value);
     }
 
     /**
      * Inserts a given value into a specified container element, considering a specific input component type.
      *
+     * @param componentType The type of the input component.
      * @param container     The WebElement container where the value will be inserted.
      * @param value         The value to be inserted.
-     * @param componentType The type of the input component.
      */
-    void insert(WebElement container, String value, InputComponentType componentType);
+    void insert(InputComponentType componentType, WebElement container, String value);
 
     /**
      * Inserts a given value into a specified container element identified by a label
@@ -43,18 +43,18 @@ public interface InputService extends Insertion {
      * @param value           The value to be inserted.
      */
     default void insert(WebElement container, String inputFieldLabel, String value) {
-        insert(container, inputFieldLabel, value, DEFAULT_TYPE);
+        insert(DEFAULT_TYPE, container, inputFieldLabel, value);
     }
 
     /**
      * Inserts a given value into a specified container element identified by a label, considering a specific input component type.
      *
+     * @param componentType   The type of the input component.
      * @param container       The WebElement container where the value will be inserted.
      * @param inputFieldLabel The label of the input field.
      * @param value           The value to be inserted.
-     * @param componentType   The type of the input component.
      */
-    void insert(WebElement container, String inputFieldLabel, String value, InputComponentType componentType);
+    void insert(InputComponentType componentType, WebElement container, String inputFieldLabel, String value);
 
     /**
      * Inserts a given value into an input field identified by a label
@@ -64,17 +64,17 @@ public interface InputService extends Insertion {
      * @param value           The value to be inserted.
      */
     default void insert(String inputFieldLabel, String value) {
-        insert(inputFieldLabel, value, DEFAULT_TYPE);
+        insert(DEFAULT_TYPE, inputFieldLabel, value);
     }
 
     /**
      * Inserts a given value into an input field identified by a label, considering a specific input component type.
      *
+     * @param componentType   The type of the input component.
      * @param inputFieldLabel The label of the input field.
      * @param value           The value to be inserted.
-     * @param componentType   The type of the input component.
      */
-    void insert(String inputFieldLabel, String value, InputComponentType componentType);
+    void insert(InputComponentType componentType, String inputFieldLabel, String value);
 
     /**
      * Inserts a given value into an input field located using a By locator
@@ -84,17 +84,17 @@ public interface InputService extends Insertion {
      * @param value                      The value to be inserted.
      */
     default void insert(By inputFieldContainerLocator, String value) {
-        insert(inputFieldContainerLocator, value, DEFAULT_TYPE);
+        insert(DEFAULT_TYPE, inputFieldContainerLocator, value);
     }
 
     /**
      * Inserts a given value into an input field located using a By locator, considering a specific input component type.
      *
+     * @param componentType              The type of the input component.
      * @param inputFieldContainerLocator The By locator for the input field container.
      * @param value                      The value to be inserted.
-     * @param componentType              The type of the input component.
      */
-    void insert(By inputFieldContainerLocator, String value, InputComponentType componentType);
+    void insert(InputComponentType componentType, By inputFieldContainerLocator, String value);
 
     /**
      * Clears the value from a specified container element using the default input component type.
@@ -102,16 +102,16 @@ public interface InputService extends Insertion {
      * @param container The WebElement container to be cleared.
      */
     default void clear(WebElement container) {
-        clear(container, DEFAULT_TYPE);
+        clear(DEFAULT_TYPE, container);
     }
 
     /**
      * Clears the value from a specified container element, considering a specific input component type.
      *
-     * @param container     The WebElement container to be cleared.
      * @param componentType The type of the input component.
+     * @param container     The WebElement container to be cleared.
      */
-    void clear(WebElement container, InputComponentType componentType);
+    void clear(InputComponentType componentType, WebElement container);
 
     /**
      * Clears the value from a specified container element identified by a label
@@ -121,18 +121,18 @@ public interface InputService extends Insertion {
      * @param inputFieldLabel The label of the input field.
      */
     default void clear(WebElement container, String inputFieldLabel) {
-        clear(container, inputFieldLabel, DEFAULT_TYPE);
+        clear(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
     /**
      * Clears the value from a specified container element identified by a label,
      * considering a specific input component type.
      *
+     * @param componentType   The type of the input component.
      * @param container       The WebElement container to be cleared.
      * @param inputFieldLabel The label of the input field.
-     * @param componentType   The type of the input component.
      */
-    void clear(WebElement container, String inputFieldLabel, InputComponentType componentType);
+    void clear(InputComponentType componentType, WebElement container, String inputFieldLabel);
 
     /**
      * Clears the value from an input field identified by a label using the default input component type.
@@ -140,16 +140,16 @@ public interface InputService extends Insertion {
      * @param inputFieldLabel The label of the input field to be cleared.
      */
     default void clear(String inputFieldLabel) {
-        clear(inputFieldLabel, DEFAULT_TYPE);
+        clear(DEFAULT_TYPE, inputFieldLabel);
     }
 
     /**
      * Clears the value from an input field identified by a label, considering a specific input component type.
      *
-     * @param inputFieldLabel The label of the input field to be cleared.
      * @param componentType   The type of the input component.
+     * @param inputFieldLabel The label of the input field to be cleared.
      */
-    void clear(String inputFieldLabel, InputComponentType componentType);
+    void clear(InputComponentType componentType, String inputFieldLabel);
 
     /**
      * Clears the value from an input field located using a By locator
@@ -158,17 +158,17 @@ public interface InputService extends Insertion {
      * @param inputFieldContainerLocator The By locator for the input field container to be cleared.
      */
     default void clear(By inputFieldContainerLocator) {
-        clear(inputFieldContainerLocator, DEFAULT_TYPE);
+        clear(DEFAULT_TYPE, inputFieldContainerLocator);
     }
 
     /**
      * Clears the value from an input field located using a By locator,
      * considering a specific input component type.
      *
-     * @param inputFieldContainerLocator The By locator for the input field container to be cleared.
      * @param componentType              The type of the input component.
+     * @param inputFieldContainerLocator The By locator for the input field container to be cleared.
      */
-    void clear(By inputFieldContainerLocator, InputComponentType componentType);
+    void clear(InputComponentType componentType, By inputFieldContainerLocator);
 
     /**
      * Retrieves the value from a specified container element
@@ -178,17 +178,17 @@ public interface InputService extends Insertion {
      * @return The value from the specified container.
      */
     default String getValue(WebElement container) {
-        return getValue(container, DEFAULT_TYPE);
+        return getValue(DEFAULT_TYPE, container);
     }
 
     /**
      * Retrieves the value from a specified container element, considering a specific input component type.
      *
-     * @param container     The WebElement container from which the value will be retrieved.
      * @param componentType The type of the input component.
+     * @param container     The WebElement container from which the value will be retrieved.
      * @return The value from the specified container.
      */
-    String getValue(WebElement container, InputComponentType componentType);
+    String getValue(InputComponentType componentType, WebElement container);
 
     /**
      * Retrieves the value from a specified container element identified by a label
@@ -199,19 +199,19 @@ public interface InputService extends Insertion {
      * @return The value from the specified container.
      */
     default String getValue(WebElement container, String inputFieldLabel) {
-        return getValue(container, inputFieldLabel, DEFAULT_TYPE);
+        return getValue(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
     /**
      * Retrieves the value from a specified container element identified by a label,
      * considering a specific input component type.
      *
+     * @param componentType   The type of the input component.
      * @param container       The WebElement container from which the value will be retrieved.
      * @param inputFieldLabel The label of the input field.
-     * @param componentType   The type of the input component.
      * @return The value from the specified container.
      */
-    String getValue(WebElement container, String inputFieldLabel, InputComponentType componentType);
+    String getValue(InputComponentType componentType, WebElement container, String inputFieldLabel);
 
     /**
      * Retrieves the value from an input field identified by a label
@@ -221,18 +221,18 @@ public interface InputService extends Insertion {
      * @return The value from the specified input field.
      */
     default String getValue(String inputFieldLabel) {
-        return getValue(inputFieldLabel, DEFAULT_TYPE);
+        return getValue(DEFAULT_TYPE, inputFieldLabel);
     }
 
     /**
      * Retrieves the value from an input field identified by a label,
      * considering a specific input component type.
      *
-     * @param inputFieldLabel The label of the input field from which the value will be retrieved.
      * @param componentType   The type of the input component.
+     * @param inputFieldLabel The label of the input field from which the value will be retrieved.
      * @return The value from the specified input field.
      */
-    String getValue(String inputFieldLabel, InputComponentType componentType);
+    String getValue(InputComponentType componentType, String inputFieldLabel);
 
     /**
      * Retrieves the value from an input field located using a By locator
@@ -242,18 +242,18 @@ public interface InputService extends Insertion {
      * @return The value from the specified input field container.
      */
     default String getValue(By inputFieldContainerLocator) {
-        return getValue(inputFieldContainerLocator, DEFAULT_TYPE);
+        return getValue(DEFAULT_TYPE, inputFieldContainerLocator);
     }
 
     /**
      * Retrieves the value from an input field located using a By locator,
      * considering a specific input component type.
      *
-     * @param inputFieldContainerLocator The By locator for the input field container from which the value will be retrieved.
      * @param componentType              The type of the input component.
+     * @param inputFieldContainerLocator The By locator for the input field container from which the value will be retrieved.
      * @return The value from the specified input field container.
      */
-    String getValue(By inputFieldContainerLocator, InputComponentType componentType);
+    String getValue(InputComponentType componentType, By inputFieldContainerLocator);
 
     /**
      * Checks if the specified container element is enabled using the default input component type.
@@ -262,17 +262,17 @@ public interface InputService extends Insertion {
      * @return true if the container is enabled, false otherwise.
      */
     default boolean isEnabled(WebElement container) {
-        return isEnabled(container, DEFAULT_TYPE);
+        return isEnabled(DEFAULT_TYPE, container);
     }
 
     /**
      * Checks if the specified container element is enabled, considering a specific input component type.
      *
-     * @param container     The WebElement container to be checked.
      * @param componentType The type of the input component.
+     * @param container     The WebElement container to be checked.
      * @return true if the container is enabled, false otherwise.
      */
-    boolean isEnabled(WebElement container, InputComponentType componentType);
+    boolean isEnabled(InputComponentType componentType, WebElement container);
 
     /**
      * Checks if the specified container element identified by a label is enabled
@@ -283,19 +283,19 @@ public interface InputService extends Insertion {
      * @return true if the container is enabled, false otherwise.
      */
     default boolean isEnabled(WebElement container, String inputFieldLabel) {
-        return isEnabled(container, inputFieldLabel, DEFAULT_TYPE);
+        return isEnabled(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
     /**
      * Checks if the specified container element identified by a label is enabled,
      * considering a specific input component type.
      *
+     * @param componentType   The type of the input component.
      * @param container       The WebElement container to be checked.
      * @param inputFieldLabel The label of the input field.
-     * @param componentType   The type of the input component.
      * @return true if the container is enabled, false otherwise.
      */
-    boolean isEnabled(WebElement container, String inputFieldLabel, InputComponentType componentType);
+    boolean isEnabled(InputComponentType componentType, WebElement container, String inputFieldLabel);
 
     /**
      * Checks if an input field identified by a label is enabled using the default input component type.
@@ -304,17 +304,17 @@ public interface InputService extends Insertion {
      * @return true if the input field is enabled, false otherwise.
      */
     default boolean isEnabled(String inputFieldLabel) {
-        return isEnabled(inputFieldLabel, DEFAULT_TYPE);
+        return isEnabled(DEFAULT_TYPE, inputFieldLabel);
     }
 
     /**
      * Checks if an input field identified by a label is enabled, considering a specific input component type.
      *
-     * @param inputFieldLabel The label of the input field to be checked.
      * @param componentType   The type of the input component.
+     * @param inputFieldLabel The label of the input field to be checked.
      * @return true if the input field is enabled, false otherwise.
      */
-    boolean isEnabled(String inputFieldLabel, InputComponentType componentType);
+    boolean isEnabled(InputComponentType componentType, String inputFieldLabel);
 
     /**
      * Checks if an input field located using a By locator is enabled
@@ -324,18 +324,18 @@ public interface InputService extends Insertion {
      * @return true if the input field container is enabled, false otherwise.
      */
     default boolean isEnabled(By inputFieldContainerLocator) {
-        return isEnabled(inputFieldContainerLocator, DEFAULT_TYPE);
+        return isEnabled(DEFAULT_TYPE, inputFieldContainerLocator);
     }
 
     /**
      * Checks if an input field located using a By locator is enabled,
      * considering a specific input component type.
      *
-     * @param inputFieldContainerLocator The By locator for the input field container to be checked.
      * @param componentType              The type of the input component.
+     * @param inputFieldContainerLocator The By locator for the input field container to be checked.
      * @return true if the input field container is enabled, false otherwise.
      */
-    boolean isEnabled(By inputFieldContainerLocator, InputComponentType componentType);
+    boolean isEnabled(InputComponentType componentType, By inputFieldContainerLocator);
 
     /**
      * Retrieves the error message from a specified container element
@@ -345,18 +345,18 @@ public interface InputService extends Insertion {
      * @return The error message from the specified container.
      */
     default String getErrorMessage(WebElement container) {
-        return getErrorMessage(container, DEFAULT_TYPE);
+        return getErrorMessage(DEFAULT_TYPE, container);
     }
 
     /**
      * Retrieves the error message from a specified container element,
      * considering a specific input component type.
      *
-     * @param container     The WebElement container from which the error message will be retrieved.
      * @param componentType The type of the input component.
+     * @param container     The WebElement container from which the error message will be retrieved.
      * @return The error message from the specified container.
      */
-    String getErrorMessage(WebElement container, InputComponentType componentType);
+    String getErrorMessage(InputComponentType componentType, WebElement container);
 
     /**
      * Retrieves the error message from a specified container element identified by a label
@@ -367,19 +367,19 @@ public interface InputService extends Insertion {
      * @return The error message from the specified container.
      */
     default String getErrorMessage(WebElement container, String inputFieldLabel) {
-        return getErrorMessage(container, inputFieldLabel, DEFAULT_TYPE);
+        return getErrorMessage(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
     /**
      * Retrieves the error message from a specified container element identified by a label,
      * considering a specific input component type.
      *
+     * @param componentType   The type of the input component.
      * @param container       The WebElement container from which the error message will be retrieved.
      * @param inputFieldLabel The label of the input field.
-     * @param componentType   The type of the input component.
      * @return The error message from the specified container.
      */
-    String getErrorMessage(WebElement container, String inputFieldLabel, InputComponentType componentType);
+    String getErrorMessage(InputComponentType componentType, WebElement container, String inputFieldLabel);
 
     /**
      * Retrieves the error message from an input field identified by a label
@@ -389,18 +389,18 @@ public interface InputService extends Insertion {
      * @return The error message from the specified input field.
      */
     default String getErrorMessage(String inputFieldLabel) {
-        return getErrorMessage(inputFieldLabel, DEFAULT_TYPE);
+        return getErrorMessage(DEFAULT_TYPE, inputFieldLabel);
     }
 
     /**
      * Retrieves the error message from an input field identified by a label,
      * considering a specific input component type.
      *
-     * @param inputFieldLabel The label of the input field from which the error message will be retrieved.
      * @param componentType   The type of the input component.
+     * @param inputFieldLabel The label of the input field from which the error message will be retrieved.
      * @return The error message from the specified input field.
      */
-    String getErrorMessage(String inputFieldLabel, InputComponentType componentType);
+    String getErrorMessage(InputComponentType componentType, String inputFieldLabel);
 
     /**
      * Retrieves the error message from an input field located using a By locator
@@ -410,18 +410,18 @@ public interface InputService extends Insertion {
      * @return The error message from the specified input field container.
      */
     default String getErrorMessage(By inputFieldContainerLocator) {
-        return getErrorMessage(inputFieldContainerLocator, DEFAULT_TYPE);
+        return getErrorMessage(DEFAULT_TYPE, inputFieldContainerLocator);
     }
 
     /**
      * Retrieves the error message from an input field located using a By locator,
      * considering a specific input component type.
      *
-     * @param inputFieldContainerLocator The By locator for the input field container from which the error message will be retrieved.
      * @param componentType              The type of the input component.
+     * @param inputFieldContainerLocator The By locator for the input field container from which the error message will be retrieved.
      * @return The error message from the specified input field container.
      */
-    String getErrorMessage(By inputFieldContainerLocator, InputComponentType componentType);
+    String getErrorMessage(InputComponentType componentType, By inputFieldContainerLocator);
 
     /**
      * Retrieves the default input component type from the configuration.

@@ -26,17 +26,17 @@ public interface ItemListService extends Insertion {
      * @param itemText  The text of the items to be selected.
      */
     default void select(WebElement container, String... itemText) {
-        select(container, DEFAULT_TYPE, itemText);
+        select(DEFAULT_TYPE, container, itemText);
     }
 
     /**
      * Selects items with the specified text and component type within the given container.
      *
-     * @param container     The WebElement representing the container.
      * @param componentType The type of the item list component.
+     * @param container     The WebElement representing the container.
      * @param itemText      The text of the items to be selected.
      */
-    void select(WebElement container, ItemListComponentType componentType, String... itemText);
+    void select(ItemListComponentType componentType, WebElement container, String... itemText);
 
     /**
      * Selects items with the specified text within the container located
@@ -46,18 +46,18 @@ public interface ItemListService extends Insertion {
      * @param itemText         The text of the items to be selected.
      */
     default void select(By containerLocator, String... itemText) {
-        select(containerLocator, DEFAULT_TYPE, itemText);
+        select(DEFAULT_TYPE, containerLocator, itemText);
     }
 
     /**
      * Selects items with the specified text and component type within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be selected.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the items to be selected.
      */
-    void select(By containerLocator, ItemListComponentType componentType, String... itemText);
+    void select(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
      * Selects items using the specified strategy within the given container
@@ -68,18 +68,18 @@ public interface ItemListService extends Insertion {
      * @return The selected item.
      */
     default String select(WebElement container, Strategy strategy) {
-        return select(container, strategy, DEFAULT_TYPE);
+        return select(DEFAULT_TYPE, container, strategy);
     }
 
     /**
      * Selects items using the specified strategy and component type within the given container.
      *
-     * @param container             The WebElement representing the container.
-     * @param strategy              The strategy to be used for selecting items.
      * @param componentType The type of the item list component.
+     * @param container     The WebElement representing the container.
+     * @param strategy      The strategy to be used for selecting items.
      * @return The selected item.
      */
-    String select(WebElement container, Strategy strategy, ItemListComponentType componentType);
+    String select(ItemListComponentType componentType, WebElement container, Strategy strategy);
 
     /**
      * Selects items using the specified strategy within the container located
@@ -90,19 +90,19 @@ public interface ItemListService extends Insertion {
      * @return The selected item.
      */
     default String select(By containerLocator, Strategy strategy) {
-        return select(containerLocator, strategy, DEFAULT_TYPE);
+        return select(DEFAULT_TYPE, containerLocator, strategy);
     }
 
     /**
      * Selects items using the specified strategy and component type within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param strategy              The strategy to be used for selecting items.
-     * @param componentType The type of the item list component.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param strategy         The strategy to be used for selecting items.
      * @return The selected item.
      */
-    String select(By containerLocator, Strategy strategy, ItemListComponentType componentType);
+    String select(ItemListComponentType componentType, By containerLocator, Strategy strategy);
 
     /**
      * Selects items with the specified text using the default item list component type.
@@ -117,7 +117,7 @@ public interface ItemListService extends Insertion {
      * Selects items with the specified text and component type.
      *
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be selected.
+     * @param itemText      The text of the items to be selected.
      */
     void select(ItemListComponentType componentType, String... itemText);
 
@@ -133,8 +133,8 @@ public interface ItemListService extends Insertion {
     /**
      * Selects items using the specified component type and locator.
      *
-     * @param componentType The type of the item list component.
-     * @param itemListLocator       The locator for the item list.
+     * @param componentType   The type of the item list component.
+     * @param itemListLocator The locator for the item list.
      */
     void select(ItemListComponentType componentType, By... itemListLocator);
 
@@ -146,17 +146,17 @@ public interface ItemListService extends Insertion {
      * @param itemText  The text of the items to be deselected.
      */
     default void deSelect(WebElement container, String... itemText) {
-        deSelect(container, DEFAULT_TYPE, itemText);
+        deSelect(DEFAULT_TYPE, container, itemText);
     }
 
     /**
      * Deselects items with the specified text and component type within the given container.
      *
-     * @param container             The WebElement representing the container.
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be deselected.
+     * @param container     The WebElement representing the container.
+     * @param itemText      The text of the items to be deselected.
      */
-    void deSelect(WebElement container, ItemListComponentType componentType, String... itemText);
+    void deSelect(ItemListComponentType componentType, WebElement container, String... itemText);
 
     /**
      * Deselects items with the specified text within the container located
@@ -166,18 +166,18 @@ public interface ItemListService extends Insertion {
      * @param itemText         The text of the items to be deselected.
      */
     default void deSelect(By containerLocator, String... itemText) {
-        deSelect(containerLocator, DEFAULT_TYPE, itemText);
+        deSelect(DEFAULT_TYPE, containerLocator, itemText);
     }
 
     /**
      * Deselects items with the specified text and component type within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be deselected.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the items to be deselected.
      */
-    void deSelect(By containerLocator, ItemListComponentType componentType, String... itemText);
+    void deSelect(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
      * Deselects items using the specified strategy within the given container
@@ -188,18 +188,18 @@ public interface ItemListService extends Insertion {
      * @return The deselected item.
      */
     default String deSelect(WebElement container, Strategy strategy) {
-        return deSelect(container, strategy, DEFAULT_TYPE);
+        return deSelect(DEFAULT_TYPE, container, strategy);
     }
 
     /**
      * Deselects items using the specified strategy and component type within the given container.
      *
-     * @param container             The WebElement representing the container.
-     * @param strategy              The strategy to be used for deselecting items.
      * @param componentType The type of the item list component.
+     * @param container     The WebElement representing the container.
+     * @param strategy      The strategy to be used for deselecting items.
      * @return The deselected item.
      */
-    String deSelect(WebElement container, Strategy strategy, ItemListComponentType componentType);
+    String deSelect(ItemListComponentType componentType, WebElement container, Strategy strategy);
 
     /**
      * Deselects items using the specified strategy within the container located
@@ -210,19 +210,19 @@ public interface ItemListService extends Insertion {
      * @return The deselected item.
      */
     default String deSelect(By containerLocator, Strategy strategy) {
-        return deSelect(containerLocator, strategy, DEFAULT_TYPE);
+        return deSelect(DEFAULT_TYPE, containerLocator, strategy);
     }
 
     /**
      * Deselects items using the specified strategy and component type within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param strategy              The strategy to be used for deselecting items.
-     * @param componentType The type of the item list component.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param strategy         The strategy to be used for deselecting items.
      * @return The deselected item.
      */
-    String deSelect(By containerLocator, Strategy strategy, ItemListComponentType componentType);
+    String deSelect(ItemListComponentType componentType, By containerLocator, Strategy strategy);
 
     /**
      * Deselects items with the specified text using the default item list component type.
@@ -237,7 +237,7 @@ public interface ItemListService extends Insertion {
      * Deselects items with the specified text and component type.
      *
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be deselected.
+     * @param itemText      The text of the items to be deselected.
      */
     void deSelect(ItemListComponentType componentType, String... itemText);
 
@@ -253,8 +253,8 @@ public interface ItemListService extends Insertion {
     /**
      * Deselects items using the specified component type and locator.
      *
-     * @param componentType The type of the item list component.
-     * @param itemListLocator       The locator for the item list.
+     * @param componentType   The type of the item list component.
+     * @param itemListLocator The locator for the item list.
      */
     void deSelect(ItemListComponentType componentType, By... itemListLocator);
 
@@ -267,18 +267,18 @@ public interface ItemListService extends Insertion {
      * @return true if all items are selected, {@code false} otherwise.
      */
     default boolean areSelected(WebElement container, String... itemText) {
-        return areSelected(container, DEFAULT_TYPE, itemText);
+        return areSelected(DEFAULT_TYPE, container, itemText);
     }
 
     /**
      * Checks if items with the specified text and component type are selected within the given container.
      *
-     * @param container             The WebElement representing the container.
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param container     The WebElement representing the container.
+     * @param itemText      The text of the items to be checked.
      * @return true if all items are selected, {@code false} otherwise.
      */
-    boolean areSelected(WebElement container, ItemListComponentType componentType, String... itemText);
+    boolean areSelected(ItemListComponentType componentType, WebElement container, String... itemText);
 
     /**
      * Checks if items with the specified text are selected within the container
@@ -289,19 +289,19 @@ public interface ItemListService extends Insertion {
      * @return true if all items are selected, {@code false} otherwise.
      */
     default boolean areSelected(By containerLocator, String... itemText) {
-        return areSelected(containerLocator, DEFAULT_TYPE, itemText);
+        return areSelected(DEFAULT_TYPE, containerLocator, itemText);
     }
 
     /**
      * Checks if items with the specified text and component type are selected within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the items to be checked.
      * @return true if all items are selected, {@code false} otherwise.
      */
-    boolean areSelected(By containerLocator, ItemListComponentType componentType, String... itemText);
+    boolean areSelected(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
      * Checks if items with the specified text are selected using the default item list component type.
@@ -317,7 +317,7 @@ public interface ItemListService extends Insertion {
      * Checks if items with the specified text and component type are selected.
      *
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param itemText      The text of the items to be checked.
      * @return true if all items are selected, {@code false} otherwise.
      */
     boolean areSelected(ItemListComponentType componentType, String... itemText);
@@ -335,8 +335,8 @@ public interface ItemListService extends Insertion {
     /**
      * Checks if items using the specified component type and locator are selected.
      *
-     * @param componentType The type of the item list component.
-     * @param itemListLocator       The locator for the item list.
+     * @param componentType   The type of the item list component.
+     * @param itemListLocator The locator for the item list.
      * @return true if all items are selected, {@code false} otherwise.
      */
     boolean areSelected(ItemListComponentType componentType, By... itemListLocator);
@@ -350,18 +350,18 @@ public interface ItemListService extends Insertion {
      * @return true if all items are enabled, {@code false} otherwise.
      */
     default boolean areEnabled(WebElement container, String... itemText) {
-        return areEnabled(container, DEFAULT_TYPE, itemText);
+        return areEnabled(DEFAULT_TYPE, container, itemText);
     }
 
     /**
      * Checks if items with the specified text and component type are enabled within the given container.
      *
-     * @param container             The WebElement representing the container.
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param container     The WebElement representing the container.
+     * @param itemText      The text of the items to be checked.
      * @return true if all items are enabled, {@code false} otherwise.
      */
-    boolean areEnabled(WebElement container, ItemListComponentType componentType, String... itemText);
+    boolean areEnabled(ItemListComponentType componentType, WebElement container, String... itemText);
 
     /**
      * Checks if items with the specified text are enabled within the container
@@ -372,19 +372,19 @@ public interface ItemListService extends Insertion {
      * @return true if all items are enabled, {@code false} otherwise.
      */
     default boolean areEnabled(By containerLocator, String... itemText) {
-        return areEnabled(containerLocator, DEFAULT_TYPE, itemText);
+        return areEnabled(DEFAULT_TYPE, containerLocator, itemText);
     }
 
     /**
      * Checks if items with the specified text and component type are enabled within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the items to be checked.
      * @return true if all items are enabled, {@code false} otherwise.
      */
-    boolean areEnabled(By containerLocator, ItemListComponentType componentType, String... itemText);
+    boolean areEnabled(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
      * Checks if items with the specified text are enabled using the default item list component type.
@@ -400,7 +400,7 @@ public interface ItemListService extends Insertion {
      * Checks if items with the specified text and component type are enabled.
      *
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param itemText      The text of the items to be checked.
      * @return true if all items are enabled, {@code false} otherwise.
      */
     boolean areEnabled(ItemListComponentType componentType, String... itemText);
@@ -419,7 +419,7 @@ public interface ItemListService extends Insertion {
      * Checks if items using the specified component type and locator are enabled.
      *
      * @param componentType The type of the item list component.
-     * @param itemLocator           The locator for the items.
+     * @param itemLocator   The locator for the items.
      * @return true if all items are enabled, {@code false} otherwise.
      */
     boolean areEnabled(ItemListComponentType componentType, By... itemLocator);
@@ -433,18 +433,18 @@ public interface ItemListService extends Insertion {
      * @return true if list items are present, {@code false} otherwise.
      */
     default boolean arePresent(WebElement container, String... itemText) {
-        return arePresent(container, DEFAULT_TYPE, itemText);
+        return arePresent(DEFAULT_TYPE, container, itemText);
     }
 
     /**
      * Checks if list items with the specified text and component type are present within the given container.
      *
-     * @param container             The WebElement representing the container.
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param container     The WebElement representing the container.
+     * @param itemText      The text of the items to be checked.
      * @return true if list items are present, {@code false} otherwise.
      */
-    boolean arePresent(WebElement container, ItemListComponentType componentType, String... itemText);
+    boolean arePresent(ItemListComponentType componentType, WebElement container, String... itemText);
 
     /**
      * Checks if list items with the specified text are present within the container
@@ -455,19 +455,19 @@ public interface ItemListService extends Insertion {
      * @return true if list items are present, {@code false} otherwise.
      */
     default boolean arePresent(By containerLocator, String... itemText) {
-        return arePresent(containerLocator, DEFAULT_TYPE, itemText);
+        return arePresent(DEFAULT_TYPE, containerLocator, itemText);
     }
 
     /**
      * Checks if list items with the specified text and component type are present within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the items to be checked.
      * @return true if list items are present, {@code false} otherwise.
      */
-    boolean arePresent(By containerLocator, ItemListComponentType componentType, String... itemText);
+    boolean arePresent(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
      * Checks if list items with the specified text are present
@@ -484,7 +484,7 @@ public interface ItemListService extends Insertion {
      * Checks if list items with the specified text and component type are present.
      *
      * @param componentType The type of the item list component.
-     * @param itemText              The text of the items to be checked.
+     * @param itemText      The text of the items to be checked.
      * @return true if list items are present, {@code false} otherwise.
      */
     boolean arePresent(ItemListComponentType componentType, String... itemText);
@@ -504,7 +504,7 @@ public interface ItemListService extends Insertion {
      * Checks if list items using the specified component type and locator are present.
      *
      * @param componentType The type of the item list component.
-     * @param itemLocator           The locator for the items.
+     * @param itemLocator   The locator for the items.
      * @return true if list items are present, {@code false} otherwise.
      */
     boolean arePresent(ItemListComponentType componentType, By... itemLocator);
@@ -517,17 +517,17 @@ public interface ItemListService extends Insertion {
      * @return A list of text of selected items.
      */
     default List<String> getSelected(WebElement container) {
-        return getSelected(container, DEFAULT_TYPE);
+        return getSelected(DEFAULT_TYPE, container);
     }
 
     /**
      * Retrieves the text of selected items with the specified component type within the given container.
      *
-     * @param container             The WebElement representing the container.
      * @param componentType The type of the item list component.
+     * @param container     The WebElement representing the container.
      * @return A list of text of selected items.
      */
-    List<String> getSelected(WebElement container, ItemListComponentType componentType);
+    List<String> getSelected(ItemListComponentType componentType, WebElement container);
 
     /**
      * Retrieves the text of selected items within the container located by the given locator
@@ -537,18 +537,18 @@ public interface ItemListService extends Insertion {
      * @return A list of text of selected items.
      */
     default List<String> getSelected(By containerLocator) {
-        return getSelected(containerLocator, DEFAULT_TYPE);
+        return getSelected(DEFAULT_TYPE, containerLocator);
     }
 
     /**
      * Retrieves the text of selected items with the specified component type within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param componentType The type of the item list component.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
      * @return A list of text of selected items.
      */
-    List<String> getSelected(By containerLocator, ItemListComponentType componentType);
+    List<String> getSelected(ItemListComponentType componentType, By containerLocator);
 
     /**
      * Retrieves the text of all items within the given container using the default item list component type.
@@ -557,17 +557,17 @@ public interface ItemListService extends Insertion {
      * @return A list of text of all items.
      */
     default List<String> getAll(WebElement container) {
-        return getAll(container, DEFAULT_TYPE);
+        return getAll(DEFAULT_TYPE, container);
     }
 
     /**
      * Retrieves the text of all items with the specified component type within the given container.
      *
-     * @param container             The WebElement representing the container.
      * @param componentType The type of the item list component.
+     * @param container     The WebElement representing the container.
      * @return A list of text of all items.
      */
-    List<String> getAll(WebElement container, ItemListComponentType componentType);
+    List<String> getAll(ItemListComponentType componentType, WebElement container);
 
     /**
      * Retrieves the text of all items within the container located by the given locator
@@ -577,18 +577,18 @@ public interface ItemListService extends Insertion {
      * @return A list of text of all items.
      */
     default List<String> getAll(By containerLocator) {
-        return getAll(containerLocator, DEFAULT_TYPE);
+        return getAll(DEFAULT_TYPE, containerLocator);
     }
 
     /**
      * Retrieves the text of all items with the specified component type within the container
      * located by the given locator.
      *
-     * @param containerLocator      The {@link By} locator representing the container.
-     * @param componentType The type of the item list component.
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
      * @return A list of text of all items.
      */
-    List<String> getAll(By containerLocator, ItemListComponentType componentType);
+    List<String> getAll(ItemListComponentType componentType, By containerLocator);
 
     /**
      * Retrieves the default list component type from the configuration.

@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemListServiceImpl;
-import com.theairebellion.zeus.ui.components.loader.LoaderComponentType;
 import com.theairebellion.zeus.ui.components.loader.LoaderServiceImpl;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.radio.RadioServiceImpl;

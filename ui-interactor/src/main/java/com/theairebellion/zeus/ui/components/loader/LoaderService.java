@@ -203,17 +203,6 @@ public interface LoaderService {
     }
 
     /**
-     * Waits for multiple loader component types to be shown and removed within the given durations.
-     *
-     * @param secondsShown        The maximum time to wait for the loader to be shown, in seconds.
-     * @param secondsRemoved      The maximum time to wait for the loader to be removed, in seconds.
-     * @param loaderComponentType The loader component types.
-     */
-    default void waitToBeShownAndRemoved(int secondsShown, int secondsRemoved, LoaderComponentType... loaderComponentType) {
-        Arrays.stream(loaderComponentType).forEach(loader -> waitToBeShownAndRemoved(loader, secondsShown, secondsRemoved));
-    }
-
-    /**
      * Retrieves the default loader component type from the configuration.
      *
      * @return The default LoaderComponentType.
