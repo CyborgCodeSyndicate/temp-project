@@ -17,10 +17,9 @@ import static com.reqres.test.framework.rest.Endpoints.*;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.BODY;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
-import static com.theairebellion.zeus.validator.core.AssertionTypes.NOT;
 
 @API
-public class ReqresApiTest extends BaseTest {
+public class ReqresApiNewTest extends BaseTest {
 
     @Test
     public void testGetAllUsers(Quest quest) {
