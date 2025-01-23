@@ -47,8 +47,6 @@ public abstract class BaseInsertionService implements InsertionService {
                 Object valueForField = field.get(data);
 
                 if (valueForField != null) {
-                    LogUI.info("Inserting value into field [{}] -> [value: '{}', type: '{}']",
-                            field.getName(), valueForField, enumValue);
                     service.insertion(locator, (ComponentType) enumValue, valueForField);
                 }
 

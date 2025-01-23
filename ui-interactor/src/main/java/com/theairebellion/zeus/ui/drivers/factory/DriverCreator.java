@@ -22,29 +22,21 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
                 config.isRemote(),
                 config.getRemoteUrl());
 
-        if (config.getVersion() != null && !config.getVersion().isEmpty()) {
-            LogUI.debug("Browser version specified: [{}]", config.getVersion());
-        }
-
         T options = provider.createOptions();
 
         provider.applyDefaultArguments(options);
 
         if (config.isHeadless()) {
             options.setCapability("headless", config.isHeadless());
-            LogUI.info("Enabled headless mode for options [{}].", options.getClass().getSimpleName());
         }
 
         if (config.getOptionsCustomizer() != null) {
-            LogUI.debug("Applying custom options via config.getOptionsCustomizer()...");
             config.getOptionsCustomizer().accept(options);
         }
         WebDriver driver;
         if (config.isRemote()) {
-            LogUI.info("Creating a RemoteWebDriver at URL: [{}].", config.getRemoteUrl());
             driver = new RemoteWebDriver(new URL(config.getRemoteUrl()), options);
         } else {
-            LogUI.info("Creating a local WebDriver using provider: [{}].", provider.getClass().getSimpleName());
             driver = provider.createDriver(options);
         }
 
@@ -52,7 +44,6 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
             return config.getEventFiringDecorator().decorate(driver);
         }
 
-        LogUI.info("WebDriver successfully created with options: [{}].", options);
         return driver;
     }
 

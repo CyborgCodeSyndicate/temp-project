@@ -27,7 +27,7 @@ public class ComponentFactory {
                                      SmartSelenium smartSelenium) {
         List<Class<? extends T>> implementationsOfInterface = ReflectionUtil.findImplementationsOfInterface(
                 interfaceType, projectPackage);
-        LogUI.debug("Found [{}] classes implementing [{}] in package [{}].",
+        LogUI.debug("Found {} classes implementing {} in package {}.",
                 implementationsOfInterface.size(),
                 interfaceType.getSimpleName(),
                 projectPackage);
@@ -39,21 +39,13 @@ public class ComponentFactory {
                                 && ann.value().equals(componentType.getType().name());
                     })
                     .findFirst()
-                    .orElseThrow(() -> {
-                        LogUI.error("No class found with @ImplementationOfType matching [{}].",
-                                componentType.getType().name());
-                        return new RuntimeException("There is no implementation using ImplementationOfType for: "
-                                + componentType.getType().name());
-                    });
-            LogUI.info("Selected [{}] for componentType [{}].",
-                    matchedClass.getSimpleName(), componentType.getType().name());
-            T instance = matchedClass.getDeclaredConstructor(SmartSelenium.class)
+                    .orElseThrow(() -> new RuntimeException("There is no implementation using ImplementationOfType for: "
+                            + componentType.getType().name()));
+            return matchedClass.getDeclaredConstructor(SmartSelenium.class)
                     .newInstance(smartSelenium);
-            LogUI.debug("Successfully created instance of [{}].", matchedClass.getSimpleName());
-            return instance;
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {
-            LogUI.error("Failed to instantiate component of type [{}] in package [{}]: {}",
+            LogUI.error("Failed to instantiate component of type {} in package {}: {}",
                     componentType.getType().name(), projectPackage, e.getMessage());
             throw new RuntimeException(e);
         }
