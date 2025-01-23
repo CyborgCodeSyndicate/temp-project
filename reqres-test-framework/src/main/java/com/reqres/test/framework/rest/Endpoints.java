@@ -1,7 +1,9 @@
 package com.reqres.test.framework.rest;
 
 import com.theairebellion.zeus.api.core.Endpoint;
+import io.restassured.http.ContentType;
 import io.restassured.http.Method;
+import io.restassured.specification.RequestSpecification;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,14 @@ public enum Endpoints implements Endpoint {
         return this;
     }
 
+
+
+
+
     @Override
-    public Map<String, List<String>> headers() {
-        return Endpoint.super.headers();
+    public RequestSpecification defaultConfiguration() {
+        RequestSpecification spec = Endpoint.super.defaultConfiguration();
+        spec.contentType(ContentType.JSON);
+        return spec;
     }
 }
