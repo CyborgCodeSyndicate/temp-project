@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.client;
 
+import com.theairebellion.zeus.api.config.ApiConfig;
 import com.theairebellion.zeus.api.log.LogApi;
 import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
@@ -7,6 +8,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.RequestSpecification;
 import lombok.NoArgsConstructor;
+import org.aeonbits.owner.ConfigCache;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -19,6 +21,8 @@ import static com.theairebellion.zeus.api.log.LogApi.step;
 @Component
 @NoArgsConstructor
 public class RestClientImpl implements RestClient {
+
+    ApiConfig apiConfig = ConfigCache.getOrCreate(ApiConfig.class);
 
     private static final Map<Method, Function<RequestSpecification, Response>> METHOD_EXECUTORS = Map.of(
         Method.GET, RequestSpecification::get,
@@ -75,8 +79,13 @@ public class RestClientImpl implements RestClient {
     protected void printResponse(final String methodName, final String finalUrl, final Response response,
                                final long duration) {
         step("Response with status: {} received from endpoint: {}-{} in {}ms.",
-            response.getStatusCode(), methodName, finalUrl, duration);
-        extended("Response body: {}.", response.body() != null ? response.body().asPrettyString() : "");
+                response.getStatusCode(), methodName, finalUrl, duration);
+        if (apiConfig.logFullBody()) {
+            extended("Response body: {}.", response.body() != null ? response.body().asPrettyString() : "");
+        } else {
+            extended("Response body: {}.", response.body() != null ? response.body().asPrettyString()
+                    .substring(0, apiConfig.shortenBody()) + "..." : "");
+        }
         extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");
     }
 
