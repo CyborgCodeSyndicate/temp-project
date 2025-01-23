@@ -6,6 +6,8 @@ import com.theairebellion.zeus.ui.components.button.Button;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
+import com.theairebellion.zeus.ui.components.link.Link;
+import com.theairebellion.zeus.ui.components.link.LinkComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemList;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
 import com.theairebellion.zeus.ui.components.loader.Loader;
@@ -52,22 +54,26 @@ public class ComponentFactory {
         return getComponent(Loader.class, type, uiConfig.projectPackage(), smartSelenium);
     }
 
+    public static Link getLinkComponent(LinkComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Link.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
 
     public static <T> T getComponent(Class<T> interfaceType, ComponentType componentType, String projectPackage,
                                      SmartSelenium smartSelenium) {
         List<Class<? extends T>> implementationsOfInterface = ReflectionUtil.findImplementationsOfInterface(
-            interfaceType, projectPackage);
+                interfaceType, projectPackage);
         try {
             return implementationsOfInterface.stream()
-                .filter(aClass -> Objects.nonNull(aClass.getAnnotation(ImplementationOfType.class)) &&
-                    aClass.getAnnotation(ImplementationOfType.class).value().equals(componentType.getType().name()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException(
-                    "There is no implementation using ImplementationOfType for: " + componentType.getType().name()))
-                .getDeclaredConstructor(SmartSelenium.class)
-                .newInstance(smartSelenium);
+                    .filter(aClass -> Objects.nonNull(aClass.getAnnotation(ImplementationOfType.class)) &&
+                            aClass.getAnnotation(ImplementationOfType.class).value().equals(componentType.getType().name()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException(
+                            "There is no implementation using ImplementationOfType for: " + componentType.getType().name()))
+                    .getDeclaredConstructor(SmartSelenium.class)
+                    .newInstance(smartSelenium);
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
-                 IllegalAccessException e) {
+                IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,8 +1,12 @@
 package com.theairebellion.zeus.ui.service.facade;
 
+import com.theairebellion.zeus.ui.components.button.ButtonService;
+import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
+import com.theairebellion.zeus.ui.components.link.LinkService;
+import com.theairebellion.zeus.ui.components.link.LinkServiceImpl;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemListService;
 import com.theairebellion.zeus.ui.components.list.ItemListServiceImpl;
@@ -27,10 +31,12 @@ public class UIService {
 
     private final WebDriver driver;
     private InputService inputField;
+    private ButtonService buttonField;
     private RadioService radioField;
     private SelectService selectField;
     private ItemListService listField;
     private LoaderService loaderField;
+    private LinkService linkField;
     private final InsertionServiceRegistry serviceRegistry;
     private final InsertionService insertionService;
 
@@ -39,10 +45,12 @@ public class UIService {
         SmartSelenium smartSelenium = new SmartSelenium(driver);
         this.driver = driver;
         inputField = new InputServiceImpl(smartSelenium);
+        buttonField = new ButtonServiceImpl(smartSelenium);
         radioField = new RadioServiceImpl(smartSelenium);
         selectField = new SelectServiceImpl(smartSelenium);
         listField = new ItemListServiceImpl(smartSelenium);
         loaderField = new LoaderServiceImpl(smartSelenium);
+        linkField = new LinkServiceImpl(smartSelenium);
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);

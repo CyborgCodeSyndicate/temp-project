@@ -5,6 +5,7 @@ import lombok.Getter;
 public enum Features {
 
     INPUT_FIELDS("inputField"),
+    BUTTON_FIELDS("buttonField"),
     RADIO_FIELDS("radioField"),
     SELECT_FIELDS("selectField"),
     LIST_FIELDS("listField"),

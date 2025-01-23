@@ -63,13 +63,30 @@ public class SmartSelenium {
             element.click();
         } catch (Exception e) {
             TriConsumer<WebDriver, WebElement, Consumer<WebElement>> exceptionHandling =
-                ExceptionHandling.exceptionElementActionMap.get(e.getClass());
+                    ExceptionHandling.exceptionElementActionMap.get(e.getClass());
 
             if (Objects.isNull(exceptionHandling)) {
                 throw e;
             }
 
             exceptionHandling.accept(driver, element, WebElement::click);
+        }
+    }
+
+
+    public void smartDoubleClick(WebElement element) {
+        LogUI.extended("Smart click of element: '{}' is about to be performed" , element.toString());
+        try {
+            getActions().doubleClick().perform();
+        } catch (Exception e) {
+            TriConsumer<WebDriver, WebElement, Consumer<WebElement>> exceptionHandling =
+                    ExceptionHandling.exceptionElementActionMap.get(e.getClass());
+
+            if (Objects.isNull(exceptionHandling)) {
+                throw e;
+            }
+
+            exceptionHandling.accept(driver, element, actions::doubleClick);
         }
     }
 

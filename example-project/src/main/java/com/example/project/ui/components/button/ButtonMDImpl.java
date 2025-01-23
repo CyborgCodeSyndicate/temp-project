@@ -1,23 +1,19 @@
 package com.example.project.ui.components.button;
 
 import com.example.project.ui.types.ButtonFieldTypes;
-import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.button.Button;
-import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
-import org.openqa.selenium.*;
-
-import java.util.List;
-import java.util.Objects;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 
 
 @ImplementationOfType(ButtonFieldTypes.MD_BUTTON)
 public class ButtonMDImpl extends BaseComponent implements Button {
 
     private static final By BUTTON_CLASS_NAME_SELECTOR = By.className("mat-button-base");
-    private static final By BUTTON_ICON_SELECTOR = By.tagName("mat-icon");
     private static final String DISABLED_STATE = "mat-button-disabled";
 
 
@@ -29,28 +25,28 @@ public class ButtonMDImpl extends BaseComponent implements Button {
     @Override
     public void click(WebElement container, String buttonText) {
         WebElement button = findButtonInContainer(container, buttonText);
-        clickAndCheckClassChange(button);
+        smartSelenium.smartClick(button);
     }
 
 
     @Override
     public void click(WebElement container) {
         WebElement button = findButtonInContainer(container, null);
-        clickAndCheckClassChange(button);
+        smartSelenium.smartClick(button);
     }
 
 
     @Override
     public void click(String buttonText) {
         WebElement button = findButtonByText(buttonText);
-        clickAndCheckClassChange(button);
+        smartSelenium.smartClick(button);
     }
 
 
     @Override
     public void click(By buttonLocator) {
         WebElement button = smartSelenium.waitAndFindElement(buttonLocator);
-        clickAndCheckClassChange(button);
+        smartSelenium.smartClick(button);
     }
 
 
@@ -128,14 +124,6 @@ public class ButtonMDImpl extends BaseComponent implements Button {
 
     private boolean isButtonEnabled(WebElement button) {
         return !smartSelenium.smartGetAttribute(button, "class").contains(DISABLED_STATE);
-    }
-
-
-    private void clickAndCheckClassChange(WebElement button) {
-        String buttonClass = smartSelenium.smartGetAttribute(button, "class");
-        smartSelenium.smartClick(button);
-        smartSelenium.waitUntilAttributeValueIsChanged(button, "class", buttonClass);
-        smartSelenium.waitUntilAttributeValueIsChanged(button, "class", smartSelenium.smartGetAttribute(button, "class"));
     }
 
 }

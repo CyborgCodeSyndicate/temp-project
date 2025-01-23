@@ -31,7 +31,7 @@ public interface ButtonService {
      * @param container     The WebElement container that contains the button.
      * @param buttonText    The text of the button to click.
      */
-    void click(ButtonComponentType componentType, WebElement container, String buttonText);
+    <T extends ButtonComponentType> void click(T componentType, WebElement container, String buttonText);
 
     /**
      * Clicks a button inside a container, using the default button component type.
@@ -48,7 +48,7 @@ public interface ButtonService {
      * @param componentType The specific button component type.
      * @param container     The WebElement container that contains the button.
      */
-    void click(ButtonComponentType componentType, WebElement container);
+    <T extends ButtonComponentType> void click(T componentType, WebElement container);
 
     /**
      * Clicks a button with the specified text, using the default button component type.
@@ -65,7 +65,7 @@ public interface ButtonService {
      * @param componentType The specific button component type.
      * @param buttonText    The text of the button to click.
      */
-    void click(ButtonComponentType componentType, String buttonText);
+    <T extends ButtonComponentType> void click(T componentType, String buttonText);
 
     /**
      * Clicks a button located by the specified locator, using the default button component type.
@@ -82,7 +82,7 @@ public interface ButtonService {
      * @param componentType The specific button component type.
      * @param buttonLocator The By locator for the button to click.
      */
-    void click(ButtonComponentType componentType, By buttonLocator);
+    <T extends ButtonComponentType> void click(T componentType, By buttonLocator);
 
     /**
      * Checks if a button with the specified text inside a container is enabled, using the default button component type.
@@ -103,7 +103,7 @@ public interface ButtonService {
      * @param buttonText    The text of the button to check.
      * @return true if the button is enabled, false otherwise.
      */
-    boolean isEnabled(ButtonComponentType componentType, WebElement container, String buttonText);
+    <T extends ButtonComponentType> boolean isEnabled(T componentType, WebElement container, String buttonText);
 
     /**
      * Checks if a button inside a container is enabled, using the default button component type.
@@ -122,7 +122,7 @@ public interface ButtonService {
      * @param container     The WebElement container that contains the button.
      * @return true if the button is enabled, false otherwise.
      */
-    boolean isEnabled(ButtonComponentType componentType, WebElement container);
+    <T extends ButtonComponentType> boolean isEnabled(T componentType, WebElement container);
 
     /**
      * Checks if a button with the specified text is enabled, using the default button component type.
@@ -141,7 +141,7 @@ public interface ButtonService {
      * @param buttonText    The text of the button to check.
      * @return true if the button is enabled, false otherwise.
      */
-    boolean isEnabled(ButtonComponentType componentType, String buttonText);
+    <T extends ButtonComponentType> boolean isEnabled(T componentType, String buttonText);
 
     /**
      * Checks if a button located by the specified locator is enabled, using the default button component type.
@@ -160,7 +160,7 @@ public interface ButtonService {
      * @param buttonLocator The By locator for the button to check.
      * @return true if the button is enabled, false otherwise.
      */
-    boolean isEnabled(ButtonComponentType componentType, By buttonLocator);
+    <T extends ButtonComponentType> boolean isEnabled(T componentType, By buttonLocator);
 
     /**
      * Checks if a button with the specified text inside a container is present, using the default button component type.
@@ -181,7 +181,7 @@ public interface ButtonService {
      * @param buttonText    The text of the button to check.
      * @return true if the button is present, false otherwise.
      */
-    boolean isPresent(ButtonComponentType componentType, WebElement container, String buttonText);
+    <T extends ButtonComponentType> boolean isPresent(T componentType, WebElement container, String buttonText);
 
     /**
      * Checks if a button inside a container is present, using the default button component type.
@@ -200,7 +200,7 @@ public interface ButtonService {
      * @param container     The WebElement container that contains the button.
      * @return true if the button is present, false otherwise.
      */
-    boolean isPresent(ButtonComponentType componentType, WebElement container);
+    <T extends ButtonComponentType> boolean isPresent(T componentType, WebElement container);
 
     /**
      * Checks if a button with the specified text is present, using the default button component type.
@@ -219,7 +219,7 @@ public interface ButtonService {
      * @param buttonText    The text of the button to check.
      * @return true if the button is present, false otherwise.
      */
-    boolean isPresent(ButtonComponentType componentType, String buttonText);
+    <T extends ButtonComponentType> boolean isPresent(T componentType, String buttonText);
 
     /**
      * Checks if a button located by the specified locator is present, using the default button component type.
@@ -238,7 +238,7 @@ public interface ButtonService {
      * @param buttonLocator The By locator for the button to check.
      * @return true if the button is present, false otherwise.
      */
-    boolean isPresent(ButtonComponentType componentType, By buttonLocator);
+    <T extends ButtonComponentType> boolean isPresent(T componentType, By buttonLocator);
 
     /**
      * Retrieves the default button component type from the configuration.

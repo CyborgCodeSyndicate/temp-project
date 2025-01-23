@@ -16,6 +16,12 @@ public class UIComponentsInUse {
     }
 
 
+    public static ButtonServiceFluent button(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.BUTTON_FIELDS.getFieldName(), uiServiceFluent,
+                ButtonServiceFluent.class);
+    }
+
+
     public static RadioServiceFluent radio(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.RADIO_FIELDS.getFieldName(), uiServiceFluent,
                 RadioServiceFluent.class);
