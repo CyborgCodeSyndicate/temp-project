@@ -6,6 +6,7 @@ import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import com.theairebellion.zeus.framework.log.LogTest;
 import manifold.ext.rt.api.Jailbreak;
 import org.aeonbits.owner.ConfigCache;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -43,9 +44,14 @@ public class Craftsman implements ParameterResolver {
         DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
             DataForge.class, craft.model(), FRAMEWORK_CONFIG.projectPackage());
 
-        Object argument = parameterType.isAssignableFrom(Late.class)
-                              ? dataForge.dataCreator()
-                              : dataForge.dataCreator().join();
+        Object argument;
+        if (parameterType.isAssignableFrom(Late.class)) {
+            LogTest.extended("Creating Late argument for parameter: {}", parameterContext.getParameter().getName());
+            argument = dataForge.dataCreator();
+        } else {
+            LogTest.extended("Creating immediate argument for parameter: {}", parameterContext.getParameter().getName());
+            argument = dataForge.dataCreator().join();
+        }
 
         quest.getStorage().sub(ARGUMENTS).put(dataForge.enumImpl(), argument);
         return argument;
