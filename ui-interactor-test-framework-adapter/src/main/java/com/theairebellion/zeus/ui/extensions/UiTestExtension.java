@@ -5,6 +5,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
+import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.UIDriver;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import io.qameta.allure.Allure;
@@ -42,6 +43,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             InterceptRequests annotation = testMethod.get().getAnnotation(InterceptRequests.class);
             if (annotation != null) {
                 String[] urlsForIntercepting = annotation.requestUrlSubStrings();
+                LogUI.extended("Intercepting requests for URLs: {}", (Object) urlsForIntercepting);
                 Consumer<Quest> questConsumer = (@Jailbreak Quest quest) -> postQuestCreation(quest,
                     urlsForIntercepting);
 
@@ -53,18 +55,20 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                                                                       );
                 consumers.add(questConsumer);
             }
+        } else {
+            LogUI.warn("No test method found for beforeTestExecution.");
         }
     }
 
 
     private static void addResponseInStorage(Storage storage, ApiResponse apiResponse) {
-        List<ApiResponse> responses = storage.sub(UI).get(RESPONSES, new ParameterizedTypeReference<>() {
-        });
+        List<ApiResponse> responses = storage.sub(UI).get(RESPONSES, new ParameterizedTypeReference<>() {});
         if (responses == null) {
             responses = new ArrayList<>();
         }
         responses.add(apiResponse);
         storage.sub(UI).put(RESPONSES, responses);
+        LogUI.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
     }
 
 
@@ -78,20 +82,21 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     public void afterTestExecution(ExtensionContext context) {
         WebDriver driver = getWebDriver(context);
         if (context.getExecutionException().isPresent()) {
+            LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName());
             // System.out.println("URL at failure: " + driver.getCurrentUrl());
         }
         driver.close();
         driver.quit();
-        // System.out.println("UI Test ended: " + context.getDisplayName());
+        LogUI.info("WebDriver closed successfully.");
     }
 
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
         WebDriver driver = getWebDriver(context);
+        LogUI.error("Exception during test execution: {}", throwable.getMessage());
         takeScreenshot(driver, context.getDisplayName());
-        System.err.println("Exception during UI test: " + throwable.getMessage());
         throw throwable;
     }
 
@@ -129,9 +134,9 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             byte[] screenshotBytes = screenshot.getScreenshotAs(OutputType.BYTES);
 
             Allure.addAttachment(testName, new ByteArrayInputStream(screenshotBytes));
-            System.out.println("Screenshot taken for: " + testName);
+            LogUI.info("Screenshot taken for test: {}", testName);
         } catch (Exception e) {
-            System.err.println("Failed to take screenshot: " + e.getMessage());
+            LogUI.error("Failed to take screenshot for test '{}': {}", testName, e.getMessage());
         }
     }
 

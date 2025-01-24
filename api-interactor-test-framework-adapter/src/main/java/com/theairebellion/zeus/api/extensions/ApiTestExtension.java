@@ -3,6 +3,7 @@ package com.theairebellion.zeus.api.extensions;
 import com.theairebellion.zeus.api.annotations.AuthenticateAs;
 import com.theairebellion.zeus.api.authentication.Credentials;
 import com.theairebellion.zeus.api.service.fluent.RestServiceFluent;
+import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import manifold.ext.rt.api.Jailbreak;
@@ -22,6 +23,8 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
         if (context.getTestMethod().isPresent()) {
             AuthenticateAs authenticateAs = context.getTestMethod().get().getAnnotation(AuthenticateAs.class);
             if (authenticateAs != null) {
+                LogApi.extended("Detected @AuthenticateAs annotation in test '{}'. Initializing credentials for user type: '{}'.",
+                        context.getDisplayName(), authenticateAs.type());
                 Credentials credentials = authenticateAs.credentials().getDeclaredConstructor().newInstance();
                 String username = credentials.username();
                 String password = credentials.password();
@@ -35,7 +38,10 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
                                                                           key -> new java.util.ArrayList<Consumer<Quest>>()
                                                                       );
                 consumers.add(questConsumer);
+                LogApi.extended("Added quest consumer for username: {} to global store.", username);
             }
+        } else {
+            LogApi.warn("No test method found in the current context for test: {}", context.getDisplayName());
         }
     }
 
@@ -45,6 +51,7 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
         Consumer<Quest> questConsumer = (@Jailbreak Quest quest) -> {
             quest.getStorage().sub(API).put(USERNAME, username);
             quest.getStorage().sub(API).put(PASSWORD, password);
+            LogApi.extended("Updated quest storage with credentials for username: {}", username);
             @Jailbreak RestServiceFluent restServiceFluent = quest.enters(RestServiceFluent.class);
             restServiceFluent.authenticate(username, password, authenticateAs.type());
         };
