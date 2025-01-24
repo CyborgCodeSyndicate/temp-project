@@ -89,4 +89,9 @@ public class UIServiceFluent extends FluentService {
                 quest.getStorage());
     }
 
+    public UIServiceFluent navigate(String url) {
+        uiDriver.getDriver().manage().window().maximize();
+        uiDriver.getDriver().get(url);
+        return this;
+    }
 }

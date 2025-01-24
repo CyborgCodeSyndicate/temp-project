@@ -92,8 +92,12 @@ public interface LinkService extends ButtonService {
      * @return The default LinkComponentType.
      */
     private static LinkComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(LinkComponentType.class,
-                uiConfig.linkDefaultType(),
-                uiConfig.projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(LinkComponentType.class,
+                    uiConfig.linkDefaultType(),
+                    uiConfig.projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

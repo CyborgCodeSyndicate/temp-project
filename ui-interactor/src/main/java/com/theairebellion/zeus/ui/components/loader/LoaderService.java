@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.loader;
 
+import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.aeonbits.owner.ConfigCache;
@@ -206,8 +207,12 @@ public interface LoaderService {
      * @return The default LoaderComponentType.
      */
     private static LoaderComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(LoaderComponentType.class,
-                uiConfig.loaderDefaultType(),
-                uiConfig.projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(LoaderComponentType.class,
+                    uiConfig.loaderDefaultType(),
+                    uiConfig.projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

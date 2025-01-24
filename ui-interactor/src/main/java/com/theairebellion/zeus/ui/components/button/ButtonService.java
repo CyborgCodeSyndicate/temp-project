@@ -246,8 +246,12 @@ public interface ButtonService {
      * @return The default ButtonComponentType.
      */
     private static ButtonComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(ButtonComponentType.class,
-                uiConfig.buttonDefaultType(),
-                uiConfig.projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(ButtonComponentType.class,
+                    uiConfig.buttonDefaultType(),
+                    uiConfig.projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }
