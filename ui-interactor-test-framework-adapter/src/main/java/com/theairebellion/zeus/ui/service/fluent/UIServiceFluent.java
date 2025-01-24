@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.annotation.WorldName;
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
@@ -38,6 +39,7 @@ public class UIServiceFluent extends FluentService {
     private ItemListServiceFluent listField;
     private LoaderServiceFluent loaderField;
     private LinkServiceFluent linkField;
+    private AlertServiceFluent alertField;
     private SmartSelenium smartSelenium;
     private UIDriver uiDriver;
     private InterceptorServiceFluent interceptor;
@@ -79,6 +81,7 @@ public class UIServiceFluent extends FluentService {
         listField = new ItemListServiceFluent(this, quest.getStorage(), new ItemListServiceImpl(smartSelenium));
         loaderField = new LoaderServiceFluent(this, quest.getStorage(), new LoaderServiceImpl(smartSelenium));
         linkField = new LinkServiceFluent(this, quest.getStorage(), new LinkServiceImpl(smartSelenium));
+        alertField = new AlertServiceFluent(this, quest.getStorage(), new AlertServiceImpl(smartSelenium));
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();

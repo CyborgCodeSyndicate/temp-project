@@ -107,28 +107,28 @@ public class LinkMDImpl extends BaseComponent implements Link {
 
 
     @Override
-    public boolean isPresent(WebElement container, String linkText) {
+    public boolean isVisible(WebElement container, String linkText) {
         WebElement link = findLinkInContainer(container, linkText);
         return isLinkEnabled(link);
     }
 
 
     @Override
-    public boolean isPresent(WebElement container) {
+    public boolean isVisible(WebElement container) {
         WebElement link = findLinkInContainer(container, null);
         return isLinkEnabled(link);
     }
 
 
     @Override
-    public boolean isPresent(String linkText) {
+    public boolean isVisible(String linkText) {
         WebElement link = findLinkByText(linkText);
         return isLinkEnabled(link);
     }
 
 
     @Override
-    public boolean isPresent(By linkLocator) {
+    public boolean isVisible(By linkLocator) {
         WebElement link = smartSelenium.waitAndFindElement(linkLocator);
         return isLinkEnabled(link);
     }

@@ -137,25 +137,25 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public boolean arePresent(final ItemListComponentType componentType, final WebElement container,
+    public boolean areVisible(final ItemListComponentType componentType, final WebElement container,
                               final String... itemText) {
-        return ItemListComponent(componentType).arePresent(container, itemText);
+        return ItemListComponent(componentType).areVisible(container, itemText);
     }
 
     @Override
-    public boolean arePresent(final ItemListComponentType componentType, final By containerLocator,
+    public boolean areVisible(final ItemListComponentType componentType, final By containerLocator,
                               final String... itemText) {
-        return ItemListComponent(componentType).arePresent(containerLocator, itemText);
+        return ItemListComponent(componentType).areVisible(containerLocator, itemText);
     }
 
     @Override
-    public boolean arePresent(final ItemListComponentType componentType, final String... itemText) {
-        return ItemListComponent(componentType).arePresent(itemText);
+    public boolean areVisible(final ItemListComponentType componentType, final String... itemText) {
+        return ItemListComponent(componentType).areVisible(itemText);
     }
 
     @Override
-    public boolean arePresent(final ItemListComponentType componentType, final By... itemLocator) {
-        return ItemListComponent(componentType).arePresent(itemLocator);
+    public boolean areVisible(final ItemListComponentType componentType, final By... itemLocator) {
+        return ItemListComponent(componentType).areVisible(itemLocator);
     }
 
     @Override

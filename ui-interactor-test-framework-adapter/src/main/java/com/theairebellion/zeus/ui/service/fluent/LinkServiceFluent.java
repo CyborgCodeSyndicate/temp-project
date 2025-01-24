@@ -44,9 +44,9 @@ public class LinkServiceFluent {
     }
 
 
-    public UIServiceFluent isPresent(final UIElement element) {
-        boolean present = linkService.isPresent(element.componentType(), element.locator());
-        storage.sub(UI).put(element.enumImpl(), present);
+    public UIServiceFluent isVisible(final UIElement element) {
+        boolean visible = linkService.isVisible(element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), visible);
         return uiServiceFluent;
     }
 }

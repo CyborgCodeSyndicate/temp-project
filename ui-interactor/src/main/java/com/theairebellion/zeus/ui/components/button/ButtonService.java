@@ -163,82 +163,82 @@ public interface ButtonService {
     <T extends ButtonComponentType> boolean isEnabled(T componentType, By buttonLocator);
 
     /**
-     * Checks if a button with the specified text inside a container is present, using the default button component type.
+     * Checks if a button with the specified text inside a container is visible, using the default button component type.
      *
      * @param container  The WebElement container that contains the button.
      * @param buttonText The text of the button to check.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    default boolean isPresent(WebElement container, String buttonText) {
-        return isPresent(DEFAULT_TYPE, container, buttonText);
+    default boolean isVisible(WebElement container, String buttonText) {
+        return isVisible(DEFAULT_TYPE, container, buttonText);
     }
 
     /**
-     * Checks if a button with the specified text inside a container is present, using the given button component type.
+     * Checks if a button with the specified text inside a container is visible, using the given button component type.
      *
      * @param componentType The specific button component type.
      * @param container     The WebElement container that contains the button.
      * @param buttonText    The text of the button to check.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isPresent(T componentType, WebElement container, String buttonText);
+    <T extends ButtonComponentType> boolean isVisible(T componentType, WebElement container, String buttonText);
 
     /**
-     * Checks if a button inside a container is present, using the default button component type.
+     * Checks if a button inside a container is visible, using the default button component type.
      *
      * @param container The WebElement container that contains the button.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    default boolean isPresent(WebElement container) {
-        return isPresent(DEFAULT_TYPE, container);
+    default boolean isVisible(WebElement container) {
+        return isVisible(DEFAULT_TYPE, container);
     }
 
     /**
-     * Checks if a button inside a container is present, using the given button component type.
+     * Checks if a button inside a container is visible, using the given button component type.
      *
      * @param componentType The specific button component type.
      * @param container     The WebElement container that contains the button.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isPresent(T componentType, WebElement container);
+    <T extends ButtonComponentType> boolean isVisible(T componentType, WebElement container);
 
     /**
-     * Checks if a button with the specified text is present, using the default button component type.
+     * Checks if a button with the specified text is visible, using the default button component type.
      *
      * @param buttonText The text of the button to check.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    default boolean isPresent(String buttonText) {
-        return isPresent(DEFAULT_TYPE, buttonText);
+    default boolean isVisible(String buttonText) {
+        return isVisible(DEFAULT_TYPE, buttonText);
     }
 
     /**
-     * Checks if a button with the specified text is present, using the given button component type.
+     * Checks if a button with the specified text is visible, using the given button component type.
      *
      * @param componentType The specific button component type.
      * @param buttonText    The text of the button to check.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isPresent(T componentType, String buttonText);
+    <T extends ButtonComponentType> boolean isVisible(T componentType, String buttonText);
 
     /**
-     * Checks if a button located by the specified locator is present, using the default button component type.
+     * Checks if a button located by the specified locator is visible, using the default button component type.
      *
      * @param buttonLocator The By locator for the button to check.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    default boolean isPresent(By buttonLocator) {
-        return isPresent(DEFAULT_TYPE, buttonLocator);
+    default boolean isVisible(By buttonLocator) {
+        return isVisible(DEFAULT_TYPE, buttonLocator);
     }
 
     /**
-     * Checks if a button located by the specified locator is present, using the given button component type.
+     * Checks if a button located by the specified locator is visible, using the given button component type.
      *
      * @param componentType The specific button component type.
      * @param buttonLocator The By locator for the button to check.
-     * @return true if the button is present, false otherwise.
+     * @return true if the button is visible, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isPresent(T componentType, By buttonLocator);
+    <T extends ButtonComponentType> boolean isVisible(T componentType, By buttonLocator);
 
     /**
      * Retrieves the default button component type from the configuration.

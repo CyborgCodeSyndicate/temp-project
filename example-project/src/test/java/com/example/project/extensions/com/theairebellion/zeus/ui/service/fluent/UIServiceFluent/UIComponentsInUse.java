@@ -46,6 +46,18 @@ public class UIComponentsInUse {
     }
 
 
+    public static LinkServiceFluent link(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.LINK_FIELDS.getFieldName(), uiServiceFluent,
+                LinkServiceFluent.class);
+    }
+
+
+    public static AlertServiceFluent alert(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.ALERT_FIELDS.getFieldName(), uiServiceFluent,
+                AlertServiceFluent.class);
+    }
+
+
     public static InterceptorServiceFluent interceptor(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.REQUESTS_INTERCEPTOR.getFieldName(), uiServiceFluent,
                 InterceptorServiceFluent.class);

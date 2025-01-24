@@ -26,13 +26,13 @@ public class LoaderServiceImpl implements LoaderService {
     }
 
     @Override
-    public boolean isPresent(final LoaderComponentType componentType, final WebElement container) {
-        return loaderComponent(componentType).isPresent(container);
+    public boolean isVisible(final LoaderComponentType componentType, final WebElement container) {
+        return loaderComponent(componentType).isVisible(container);
     }
 
     @Override
-    public boolean isPresent(final LoaderComponentType componentType, final By loaderLocator) {
-        return loaderComponent(componentType).isPresent(loaderLocator);
+    public boolean isVisible(final LoaderComponentType componentType, final By loaderLocator) {
+        return loaderComponent(componentType).isVisible(loaderLocator);
     }
 
     @Override
@@ -54,18 +54,18 @@ public class LoaderServiceImpl implements LoaderService {
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final WebElement container,
                                 final int secondsRemoved) {
-        loaderComponent(componentType).waitToBeShown(container, secondsRemoved);
+        loaderComponent(componentType).waitToBeRemoved(container, secondsRemoved);
     }
 
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final int secondsRemoved) {
-        loaderComponent(componentType).waitToBeShown(secondsRemoved);
+        loaderComponent(componentType).waitToBeRemoved(secondsRemoved);
     }
 
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final By loaderLocator,
                                 final int secondsRemoved) {
-        loaderComponent(componentType).waitToBeShown(loaderLocator, secondsRemoved);
+        loaderComponent(componentType).waitToBeRemoved(loaderLocator, secondsRemoved);
     }
 
     private Loader loaderComponent(final LoaderComponentType componentType) {

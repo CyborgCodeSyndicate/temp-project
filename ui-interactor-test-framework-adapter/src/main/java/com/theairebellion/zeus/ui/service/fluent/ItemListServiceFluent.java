@@ -56,9 +56,9 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent arePresent(final UIElement element, final String... values) {
-        boolean present = itemListService.arePresent(element.componentType(), element.locator(), values);
-        storage.sub(UI).put(element.enumImpl(), present);
+    public UIServiceFluent areVisible(final UIElement element, final String... values) {
+        boolean visible = itemListService.areVisible(element.componentType(), element.locator(), values);
+        storage.sub(UI).put(element.enumImpl(), visible);
         return uiServiceFluent;
     }
 

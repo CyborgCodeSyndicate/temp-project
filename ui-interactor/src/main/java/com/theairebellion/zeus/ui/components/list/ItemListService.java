@@ -425,89 +425,89 @@ public interface ItemListService extends Insertion {
     boolean areEnabled(ItemListComponentType componentType, By... itemLocator);
 
     /**
-     * Checks if list items with the specified text are present within the given container
+     * Checks if list items with the specified text are visible within the given container
      * using the default item list component type.
      *
      * @param container The WebElement representing the container.
      * @param itemText  The text of the items to be checked.
-     * @return true if list items are present, {@code false} otherwise.
+     * @return true if list items are visible, {@code false} otherwise.
      */
-    default boolean arePresent(WebElement container, String... itemText) {
-        return arePresent(DEFAULT_TYPE, container, itemText);
+    default boolean areVisible(WebElement container, String... itemText) {
+        return areVisible(DEFAULT_TYPE, container, itemText);
     }
 
     /**
-     * Checks if list items with the specified text and component type are present within the given container.
+     * Checks if list items with the specified text and component type are visible within the given container.
      *
      * @param componentType The type of the item list component.
      * @param container     The WebElement representing the container.
      * @param itemText      The text of the items to be checked.
-     * @return true if list items are present, {@code false} otherwise.
+     * @return true if list items are visible, {@code false} otherwise.
      */
-    boolean arePresent(ItemListComponentType componentType, WebElement container, String... itemText);
+    boolean areVisible(ItemListComponentType componentType, WebElement container, String... itemText);
 
     /**
-     * Checks if list items with the specified text are present within the container
+     * Checks if list items with the specified text are visible within the container
      * located by the given locator using the default item list component type.
      *
      * @param containerLocator The {@link By} locator representing the container.
      * @param itemText         The text of the items to be checked.
-     * @return true if list items are present, {@code false} otherwise.
+     * @return true if list items are visible, {@code false} otherwise.
      */
-    default boolean arePresent(By containerLocator, String... itemText) {
-        return arePresent(DEFAULT_TYPE, containerLocator, itemText);
+    default boolean areVisible(By containerLocator, String... itemText) {
+        return areVisible(DEFAULT_TYPE, containerLocator, itemText);
     }
 
     /**
-     * Checks if list items with the specified text and component type are present within the container
+     * Checks if list items with the specified text and component type are visible within the container
      * located by the given locator.
      *
      * @param componentType    The type of the item list component.
      * @param containerLocator The {@link By} locator representing the container.
      * @param itemText         The text of the items to be checked.
-     * @return true if list items are present, {@code false} otherwise.
+     * @return true if list items are visible, {@code false} otherwise.
      */
-    boolean arePresent(ItemListComponentType componentType, By containerLocator, String... itemText);
+    boolean areVisible(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
-     * Checks if list items with the specified text are present
+     * Checks if list items with the specified text are visible
      * using the default item list component type.
      *
      * @param itemText The text of the items to be checked.
-     * @return true if avatars are present, {@code false} otherwise.
+     * @return true if avatars are visible, {@code false} otherwise.
      */
-    default boolean arePresent(String... itemText) {
-        return arePresent(DEFAULT_TYPE, itemText);
+    default boolean areVisible(String... itemText) {
+        return areVisible(DEFAULT_TYPE, itemText);
     }
 
     /**
-     * Checks if list items with the specified text and component type are present.
+     * Checks if list items with the specified text and component type are visible.
      *
      * @param componentType The type of the item list component.
      * @param itemText      The text of the items to be checked.
-     * @return true if list items are present, {@code false} otherwise.
+     * @return true if list items are visible, {@code false} otherwise.
      */
-    boolean arePresent(ItemListComponentType componentType, String... itemText);
+    boolean areVisible(ItemListComponentType componentType, String... itemText);
 
     /**
-     * Checks if list items using the specified locator are present
+     * Checks if list items using the specified locator are visible
      * using the default item list component type.
      *
      * @param itemLocator The locator for the items.
-     * @return true if list items are present, {@code false} otherwise.
+     * @return true if list items are visible, {@code false} otherwise.
      */
-    default boolean arePresent(By... itemLocator) {
-        return arePresent(DEFAULT_TYPE, itemLocator);
+    default boolean areVisible(By... itemLocator) {
+        return areVisible(DEFAULT_TYPE, itemLocator);
     }
 
     /**
-     * Checks if list items using the specified component type and locator are present.
+     * Checks if list items using the specified component type and locator are visible.
      *
      * @param componentType The type of the item list component.
      * @param itemLocator   The locator for the items.
-     * @return true if list items are present, {@code false} otherwise.
+     * @return true if list items are visible, {@code false} otherwise.
      */
-    boolean arePresent(ItemListComponentType componentType, By... itemLocator);
+    boolean areVisible(ItemListComponentType componentType, By... itemLocator);
 
     /**
      * Retrieves the text of selected items within the given container

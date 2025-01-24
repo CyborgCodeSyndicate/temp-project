@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.ui.service.facade;
 
+import com.theairebellion.zeus.ui.components.alert.AlertService;
+import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
@@ -37,6 +39,7 @@ public class UIService {
     private ItemListService listField;
     private LoaderService loaderField;
     private LinkService linkField;
+    private AlertService alertField;
     private final InsertionServiceRegistry serviceRegistry;
     private final InsertionService insertionService;
 
@@ -51,6 +54,7 @@ public class UIService {
         listField = new ItemListServiceImpl(smartSelenium);
         loaderField = new LoaderServiceImpl(smartSelenium);
         linkField = new LinkServiceImpl(smartSelenium);
+        alertField = new AlertServiceImpl(smartSelenium);
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);

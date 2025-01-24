@@ -235,40 +235,40 @@ public interface SelectService extends Insertion {
     List<String> getSelectedItems(SelectComponentType componentType, By containerLocator);
 
     /**
-     * Checks if a specific option is present in a select component. Uses the default select component type.
+     * Checks if a specific option is visible in a select component. Uses the default select component type.
      *
      * @param container The WebElement representing the container of the select component.
      * @param value     The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    default boolean isOptionPresent(WebElement container, String value) {
-        return isOptionPresent(DEFAULT_TYPE, container, value);
+    default boolean isOptionVisible(WebElement container, String value) {
+        return isOptionVisible(DEFAULT_TYPE, container, value);
     }
 
     /**
-     * Checks if a specific option is present in a select component.
+     * Checks if a specific option is visible in a select component.
      *
      * @param componentType The type of select component.
      * @param container     The WebElement representing the container of the select component.
      * @param value         The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    boolean isOptionPresent(SelectComponentType componentType, WebElement container, String value);
+    boolean isOptionVisible(SelectComponentType componentType, WebElement container, String value);
 
     /**
-     * Checks if a specific option is present in a select component.
+     * Checks if a specific option is visible in a select component.
      * The select component is identified by the provided container locator, using the default select component type.
      *
      * @param containerLocator The By locator that identifies the container of the select component.
      * @param value            The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    default boolean isOptionPresent(By containerLocator, String value) {
-        return isOptionPresent(DEFAULT_TYPE, containerLocator, value);
+    default boolean isOptionVisible(By containerLocator, String value) {
+        return isOptionVisible(DEFAULT_TYPE, containerLocator, value);
     }
 
     /**
-     * Checks if a specific option is present in a select component.
+     * Checks if a specific option is visible in a select component.
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
@@ -276,7 +276,7 @@ public interface SelectService extends Insertion {
      * @param value            The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    boolean isOptionPresent(SelectComponentType componentType, By containerLocator, String value);
+    boolean isOptionVisible(SelectComponentType componentType, By containerLocator, String value);
 
     /**
      * Checks if a specific option is enabled in a select component. Uses the default select component type.

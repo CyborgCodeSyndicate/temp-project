@@ -82,15 +82,15 @@ public class SelectServiceImpl implements SelectService {
     }
 
     @Override
-    public boolean isOptionPresent(final SelectComponentType componentType, final WebElement container,
+    public boolean isOptionVisible(final SelectComponentType componentType, final WebElement container,
                                    final String value) {
-        return selectComponent(componentType).isOptionPresent(container, value);
+        return selectComponent(componentType).isOptionVisible(container, value);
     }
 
     @Override
-    public boolean isOptionPresent(final SelectComponentType componentType, final By containerLocator,
+    public boolean isOptionVisible(final SelectComponentType componentType, final By containerLocator,
                                    final String value) {
-        return selectComponent(componentType).isOptionPresent(containerLocator, value);
+        return selectComponent(componentType).isOptionVisible(containerLocator, value);
     }
 
     @Override

@@ -51,8 +51,8 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isOptionPresent(final UIElement element, final String value) {
-        boolean present = selectService.isOptionPresent(element.componentType(), element.locator(), value);
+    public UIServiceFluent isOptionVisible(final UIElement element, final String value) {
+        boolean present = selectService.isOptionVisible(element.componentType(), element.locator(), value);
         storage.sub(UI).put(element.enumImpl(), present);
         return uiServiceFluent;
     }

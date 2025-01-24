@@ -45,5 +45,8 @@ public interface UIConfig extends Config {
     @Key("link.default.type")
     String linkDefaultType();
 
+    @Key("alert.default.type")
+    String alertDefaultType();
+
 
 }

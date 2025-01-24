@@ -48,13 +48,13 @@ public interface ItemList {
 
     boolean areEnabled(By... itemLocator);
 
-    boolean arePresent(WebElement container, String... itemText);
+    boolean areVisible(WebElement container, String... itemText);
 
-    boolean arePresent(By containerLocator, String... itemText);
+    boolean areVisible(By containerLocator, String... itemText);
 
-    boolean arePresent(String... itemText);
+    boolean areVisible(String... itemText);
 
-    boolean arePresent(By... itemLocator);
+    boolean areVisible(By... itemLocator);
 
     List<String> getSelected(WebElement container);
 

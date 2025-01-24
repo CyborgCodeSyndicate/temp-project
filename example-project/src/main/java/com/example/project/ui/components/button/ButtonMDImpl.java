@@ -14,7 +14,8 @@ import org.openqa.selenium.WebElement;
 public class ButtonMDImpl extends BaseComponent implements Button {
 
     private static final By BUTTON_CLASS_NAME_SELECTOR = By.className("mat-button-base");
-    private static final String DISABLED_STATE = "mat-button-disabled";
+    private static final String DISABLED_STATE_INDICATOR = "mat-button-disabled";
+    public static final String NOT_VISIBLE_STATE_INDICATOR = "hidden";
 
 
     public ButtonMDImpl(SmartSelenium smartSelenium) {
@@ -79,30 +80,30 @@ public class ButtonMDImpl extends BaseComponent implements Button {
 
 
     @Override
-    public boolean isPresent(WebElement container, String buttonText) {
+    public boolean isVisible(WebElement container, String buttonText) {
         WebElement button = findButtonInContainer(container, buttonText);
-        return isButtonEnabled(button);
+        return isButtonVisible(button);
     }
 
 
     @Override
-    public boolean isPresent(WebElement container) {
+    public boolean isVisible(WebElement container) {
         WebElement button = findButtonInContainer(container, null);
-        return isButtonEnabled(button);
+        return isButtonVisible(button);
     }
 
 
     @Override
-    public boolean isPresent(String buttonText) {
+    public boolean isVisible(String buttonText) {
         WebElement button = findButtonByText(buttonText);
-        return isButtonEnabled(button);
+        return isButtonVisible(button);
     }
 
 
     @Override
-    public boolean isPresent(By buttonLocator) {
+    public boolean isVisible(By buttonLocator) {
         WebElement button = smartSelenium.waitAndFindElement(buttonLocator);
-        return isButtonEnabled(button);
+        return isButtonVisible(button);
     }
 
 
@@ -123,7 +124,12 @@ public class ButtonMDImpl extends BaseComponent implements Button {
 
 
     private boolean isButtonEnabled(WebElement button) {
-        return !smartSelenium.smartGetAttribute(button, "class").contains(DISABLED_STATE);
+        return !smartSelenium.smartGetAttribute(button, "class").contains(DISABLED_STATE_INDICATOR);
+    }
+
+
+    private boolean isButtonVisible(WebElement button) {
+        return !smartSelenium.smartGetAttribute(button, "class").contains(NOT_VISIBLE_STATE_INDICATOR);
     }
 
 }

@@ -49,22 +49,22 @@ public class LinkServiceImpl implements LinkService {
     @Override
     public void doubleClick(final LinkComponentType componentType, final WebElement container,
                             final String buttonText) {
-        linkComponent(componentType).click(container, buttonText);
+        linkComponent(componentType).doubleClick(container, buttonText);
     }
 
     @Override
     public void doubleClick(final LinkComponentType componentType, final WebElement container) {
-        linkComponent(componentType).click(container);
+        linkComponent(componentType).doubleClick(container);
     }
 
     @Override
     public void doubleClick(final LinkComponentType componentType, final String buttonText) {
-        linkComponent(componentType).click(buttonText);
+        linkComponent(componentType).doubleClick(buttonText);
     }
 
     @Override
     public void doubleClick(final LinkComponentType componentType, final By buttonLocator) {
-        linkComponent(componentType).click(buttonLocator);
+        linkComponent(componentType).doubleClick(buttonLocator);
     }
 
     @Override
@@ -89,24 +89,24 @@ public class LinkServiceImpl implements LinkService {
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isPresent(final T componentType, final WebElement container,
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final WebElement container,
                                                              final String buttonText) {
-        return linkComponent((LinkComponentType) componentType).isPresent(container, buttonText);
+        return linkComponent((LinkComponentType) componentType).isVisible(container, buttonText);
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isPresent(final T componentType, final WebElement container) {
-        return linkComponent((LinkComponentType) componentType).isPresent(container);
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final WebElement container) {
+        return linkComponent((LinkComponentType) componentType).isVisible(container);
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isPresent(final T componentType, final String buttonText) {
-        return linkComponent((LinkComponentType) componentType).isPresent(buttonText);
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final String buttonText) {
+        return linkComponent((LinkComponentType) componentType).isVisible(buttonText);
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isPresent(final T componentType, final By buttonLocator) {
-        return linkComponent((LinkComponentType) componentType).isPresent(buttonLocator);
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final By buttonLocator) {
+        return linkComponent((LinkComponentType) componentType).isVisible(buttonLocator);
     }
 
     private Link linkComponent(final LinkComponentType componentType) {

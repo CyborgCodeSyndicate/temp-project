@@ -1,6 +1,8 @@
 package com.theairebellion.zeus.ui.components.factory;
 
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
+import com.theairebellion.zeus.ui.components.alert.Alert;
+import com.theairebellion.zeus.ui.components.alert.AlertComponentType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.Button;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
@@ -56,6 +58,10 @@ public class ComponentFactory {
 
     public static Link getLinkComponent(LinkComponentType type, SmartSelenium smartSelenium) {
         return getComponent(Link.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Alert getAlertComponent(AlertComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Alert.class, type, uiConfig.projectPackage(), smartSelenium);
     }
 
 

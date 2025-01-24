@@ -67,24 +67,24 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public boolean isPresent(final ButtonComponentType componentType, final WebElement container,
+    public boolean isVisible(final ButtonComponentType componentType, final WebElement container,
                              final String buttonText) {
-        return buttonComponent(componentType).isPresent(container, buttonText);
+        return buttonComponent(componentType).isVisible(container, buttonText);
     }
 
     @Override
-    public boolean isPresent(final ButtonComponentType componentType, final WebElement container) {
-        return buttonComponent(componentType).isPresent(container);
+    public boolean isVisible(final ButtonComponentType componentType, final WebElement container) {
+        return buttonComponent(componentType).isVisible(container);
     }
 
     @Override
-    public boolean isPresent(final ButtonComponentType componentType, final String buttonText) {
-        return buttonComponent(componentType).isPresent(buttonText);
+    public boolean isVisible(final ButtonComponentType componentType, final String buttonText) {
+        return buttonComponent(componentType).isVisible(buttonText);
     }
 
     @Override
-    public boolean isPresent(final ButtonComponentType componentType, final By buttonLocator) {
-        return buttonComponent(componentType).isPresent(buttonLocator);
+    public boolean isVisible(final ButtonComponentType componentType, final By buttonLocator) {
+        return buttonComponent(componentType).isVisible(buttonLocator);
     }
 
     private Button buttonComponent(final ButtonComponentType componentType) {
