@@ -109,7 +109,7 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public void insertion(By locator, ComponentType componentType, Object... values) {
+    public void insertion(ComponentType componentType, By locator, Object... values) {
         select((CheckboxComponentType) componentType, (String) values[0]);
     }
 
