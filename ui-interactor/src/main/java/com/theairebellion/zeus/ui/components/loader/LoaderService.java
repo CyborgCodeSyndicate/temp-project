@@ -6,8 +6,6 @@ import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.util.Arrays;
-
 /**
  * Interface defining operations for interacting with loader elements within a web interface using Selenium.
  */
@@ -17,42 +15,42 @@ public interface LoaderService {
     LoaderComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
-     * Checks if a loader is present within the specified container using the default loader component type.
+     * Checks if a loader is visible within the specified container using the default loader component type.
      *
      * @param container The WebElement container to check for the presence of the loader.
-     * @return true if the loader is present, false otherwise.
+     * @return true if the loader is visible, false otherwise.
      */
-    default boolean isPresent(WebElement container) {
-        return isPresent(DEFAULT_TYPE, container);
+    default boolean isVisible(WebElement container) {
+        return isVisible(DEFAULT_TYPE, container);
     }
 
     /**
-     * Checks if a loader is present within the specified container using the given loader component type.
+     * Checks if a loader is visible within the specified container using the given loader component type.
      *
      * @param componentType The specific loader component type.
      * @param container     The WebElement container to check for the presence of the loader.
-     * @return true if the loader is present, false otherwise.
+     * @return true if the loader is visible, false otherwise.
      */
-    boolean isPresent(LoaderComponentType componentType, WebElement container);
+    boolean isVisible(LoaderComponentType componentType, WebElement container);
 
     /**
-     * Checks if a loader is present using the specified locator and the default loader component type.
+     * Checks if a loader is visible using the specified locator and the default loader component type.
      *
      * @param loaderLocator The By locator to check for the presence of the loader.
-     * @return true if the loader is present, false otherwise.
+     * @return true if the loader is visible, false otherwise.
      */
-    default boolean isPresent(By loaderLocator) {
-        return isPresent(DEFAULT_TYPE, loaderLocator);
+    default boolean isVisible(By loaderLocator) {
+        return isVisible(DEFAULT_TYPE, loaderLocator);
     }
 
     /**
-     * Checks if a loader is present using the specified locator and loader component type.
+     * Checks if a loader is visible using the specified locator and loader component type.
      *
      * @param componentType The specific loader component type.
      * @param loaderLocator The By locator to check for the presence of the loader.
-     * @return true if the loader is present, false otherwise.
+     * @return true if the loader is visible, false otherwise.
      */
-    boolean isPresent(LoaderComponentType componentType, By loaderLocator);
+    boolean isVisible(LoaderComponentType componentType, By loaderLocator);
 
     /**
      * Waits for the loader to be shown within the specified container for the given duration, using the default loader component type.
@@ -200,17 +198,6 @@ public interface LoaderService {
     default void waitToBeShownAndRemoved(LoaderComponentType componentType, By loaderLocator, int secondsShown, int secondsRemoved) {
         waitToBeShown(componentType, loaderLocator, secondsShown);
         waitToBeRemoved(componentType, loaderLocator, secondsRemoved);
-    }
-
-    /**
-     * Waits for multiple loader component types to be shown and removed within the given durations.
-     *
-     * @param secondsShown        The maximum time to wait for the loader to be shown, in seconds.
-     * @param secondsRemoved      The maximum time to wait for the loader to be removed, in seconds.
-     * @param loaderComponentType The loader component types.
-     */
-    default void waitToBeShownAndRemoved(int secondsShown, int secondsRemoved, LoaderComponentType... loaderComponentType) {
-        Arrays.stream(loaderComponentType).forEach(loader -> waitToBeShownAndRemoved(loader, secondsShown, secondsRemoved));
     }
 
     /**

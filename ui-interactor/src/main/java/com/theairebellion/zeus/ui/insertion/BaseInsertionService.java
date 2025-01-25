@@ -42,7 +42,7 @@ public abstract class BaseInsertionService implements InsertionService {
                 Object valueForField = field.get(data);
 
                 if (valueForField != null) {
-                    service.insertion(locator, (ComponentType) enumValue, valueForField);
+                    service.insertion((ComponentType) enumValue, locator, valueForField);
                 }
 
             } catch (IllegalAccessException e) {

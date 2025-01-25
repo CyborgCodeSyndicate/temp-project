@@ -22,11 +22,11 @@ public class LoaderServiceFluent {
     }
 
 
-    public UIServiceFluent isPresent(final UIElement element) {
-        Allure.step(String.format("Checking if loader is present for loader component of type: '%s'.",
+    public UIServiceFluent isVisible(final UIElement element) {
+        Allure.step(String.format("Checking if loader is visible for loader component of type: '%s'.",
                 element.componentType().toString()));
-        boolean present = loaderService.isPresent(element.componentType(), element.locator());
-        storage.sub(UI).put(element.enumImpl(), present);
+        boolean visible = loaderService.isVisible(element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), visible);
         return uiServiceFluent;
     }
 

@@ -87,7 +87,7 @@ public abstract class BaseSelect extends BaseComponent implements Select {
     }
 
     @Override
-    public boolean isOptionPresent(WebElement container, String value) {
+    public boolean isOptionVisible(WebElement container, String value) {
         openDdl(container);
         List<WebElement> options = getAllOptionsElements();
         try {
@@ -99,9 +99,9 @@ public abstract class BaseSelect extends BaseComponent implements Select {
     }
 
     @Override
-    public boolean isOptionPresent(By containerLocator, String value) {
+    public boolean isOptionVisible(By containerLocator, String value) {
         WebElement container = smartSelenium.waitAndFindElement(containerLocator);
-        return isOptionPresent(container, value);
+        return isOptionVisible(container, value);
     }
 
     @Override

@@ -29,101 +29,100 @@ public class RadioServiceImpl implements RadioService {
     }
 
     @Override
-    public void select(final WebElement container, final String radioButtonText,
-                       final RadioComponentType componentType) {
+    public void select(final RadioComponentType componentType, final WebElement container,
+                       final String radioButtonText) {
         radioComponent(componentType).select(container, radioButtonText);
     }
 
     @Override
-    public String select(final WebElement container, final Strategy strategy,
-                         final RadioComponentType componentType) {
+    public String select(final RadioComponentType componentType, final WebElement container, final Strategy strategy) {
         return radioComponent(componentType).select(container, strategy);
     }
 
     @Override
-    public void select(final String radioButtonText, final RadioComponentType componentType) {
+    public void select(final RadioComponentType componentType, final String radioButtonText) {
         radioComponent(componentType).select(radioButtonText);
     }
 
     @Override
-    public void select(final By radioButtonLocator, final RadioComponentType componentType) {
+    public void select(final RadioComponentType componentType, final By radioButtonLocator) {
         radioComponent(componentType).select(radioButtonLocator);
     }
 
     @Override
-    public boolean isEnabled(final WebElement container, final String radioButtonText,
-                             final RadioComponentType componentType) {
+    public boolean isEnabled(final RadioComponentType componentType, final WebElement container,
+                             final String radioButtonText) {
         return radioComponent(componentType).isEnabled(container, radioButtonText);
     }
 
     @Override
-    public boolean isEnabled(final String radioButtonText, final RadioComponentType componentType) {
+    public boolean isEnabled(final RadioComponentType componentType, final String radioButtonText) {
         return radioComponent(componentType).isEnabled(radioButtonText);
     }
 
     @Override
-    public boolean isEnabled(final By radioButtonLocator, final RadioComponentType componentType) {
+    public boolean isEnabled(final RadioComponentType componentType, final By radioButtonLocator) {
         return radioComponent(componentType).isEnabled(radioButtonLocator);
     }
 
     @Override
-    public boolean isSelected(final WebElement container, final String radioButtonText,
-                              final RadioComponentType componentType) {
+    public boolean isSelected(final RadioComponentType componentType, final WebElement container,
+                              final String radioButtonText) {
         return radioComponent(componentType).isSelected(container, radioButtonText);
     }
 
     @Override
-    public boolean isSelected(final String radioButtonText, final RadioComponentType componentType) {
+    public boolean isSelected(final RadioComponentType componentType, final String radioButtonText) {
         return radioComponent(componentType).isSelected(radioButtonText);
     }
 
     @Override
-    public boolean isSelected(final By radioButtonLocator, final RadioComponentType componentType) {
+    public boolean isSelected(final RadioComponentType componentType, final By radioButtonLocator) {
         return radioComponent(componentType).isSelected(radioButtonLocator);
     }
 
     @Override
-    public boolean isVisible(final WebElement container, final String radioButtonText,
-                             final RadioComponentType componentType) {
+    public boolean isVisible(final RadioComponentType componentType, final WebElement container,
+                             final String radioButtonText) {
         return radioComponent(componentType).isVisible(container, radioButtonText);
     }
 
     @Override
-    public boolean isVisible(final String radioButtonText, final RadioComponentType componentType) {
+    public boolean isVisible(final RadioComponentType componentType, final String radioButtonText) {
         return radioComponent(componentType).isVisible(radioButtonText);
     }
 
     @Override
-    public boolean isVisible(final By radioButtonLocator, final RadioComponentType componentType) {
+    public boolean isVisible(final RadioComponentType componentType, final By radioButtonLocator) {
         return radioComponent(componentType).isVisible(radioButtonLocator);
     }
 
     @Override
-    public String getSelected(final WebElement container, final RadioComponentType componentType) {
+    public String getSelected(final RadioComponentType componentType, final WebElement container) {
         return radioComponent(componentType).getSelected(container);
     }
 
     @Override
-    public String getSelected(final By containerLocator, final RadioComponentType componentType) {
+    public String getSelected(final RadioComponentType componentType, final By containerLocator) {
         return radioComponent(componentType).getSelected(containerLocator);
     }
 
     @Override
-    public List<String> getAll(final WebElement container, final RadioComponentType componentType) {
+    public List<String> getAll(final RadioComponentType componentType, final WebElement container) {
         return radioComponent(componentType).getAll(container);
     }
 
     @Override
-    public List<String> getAll(final By containerLocator, final RadioComponentType componentType) {
+    public List<String> getAll(final RadioComponentType componentType, final By containerLocator) {
         return radioComponent(componentType).getAll(containerLocator);
     }
 
     @Override
-    public void insertion(By locator, ComponentType componentType, Object... values) {
-        select((String) values[0], (RadioComponentType) componentType);
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        select((RadioComponentType) componentType, (String) values[0]);
     }
 
-    private Radio radioComponent(RadioComponentType componentType) {
+    private Radio radioComponent(final RadioComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
             components.put(componentType, ComponentFactory.getRadioComponent(componentType, smartSelenium));
         }

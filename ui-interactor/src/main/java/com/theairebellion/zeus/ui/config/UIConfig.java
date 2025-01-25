@@ -45,5 +45,11 @@ public interface UIConfig extends Config {
     @Key("loader.default.type")
     String loaderDefaultType();
 
+    @Key("link.default.type")
+    String linkDefaultType();
+
+    @Key("alert.default.type")
+    String alertDefaultType();
+
 
 }

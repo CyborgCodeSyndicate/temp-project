@@ -8,8 +8,6 @@ import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
-
 @ImplementationOfType(LoaderFieldTypes.MD_LOADER)
 public class LoaderMDImpl extends BaseComponent implements Loader {
 
@@ -20,12 +18,12 @@ public class LoaderMDImpl extends BaseComponent implements Loader {
     }
 
     @Override
-    public boolean isPresent(WebElement container) {
+    public boolean isVisible(WebElement container) {
         return smartSelenium.checkNoException(() -> smartSelenium.waitAndFindElement(container, LOADER_LOCATOR));
     }
 
     @Override
-    public boolean isPresent(By loaderLocator) {
+    public boolean isVisible(By loaderLocator) {
         return smartSelenium.checkNoException(() -> smartSelenium.waitAndFindElement(LOADER_LOCATOR));
     }
 

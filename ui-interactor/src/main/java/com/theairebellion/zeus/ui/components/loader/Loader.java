@@ -5,9 +5,9 @@ import org.openqa.selenium.WebElement;
 
 public interface Loader {
 
-    boolean isPresent(WebElement container);
+    boolean isVisible(WebElement container);
 
-    boolean isPresent(By loaderLocator);
+    boolean isVisible(By loaderLocator);
 
     void waitToBeShown(WebElement container, int secondsShown);
 

@@ -25,51 +25,51 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent select(final UIElement element, final String value) {
-        Allure.step(String.format("Selecting value: '%s' from radio component of type: '%s'.", value,
-            element.componentType().toString()));
-        radioService.select(value, element.componentType());
+    public UIServiceFluent select(final UIElement element) {
+        Allure.step(String.format("Selecting radio with locator: '%s' from radio component of type: '%s'.",
+                element.locator().toString(),
+                element.componentType().toString()));
+        radioService.select(element.componentType(), element.locator());
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent isEnabled(final UIElement element) {
-        boolean enabled = radioService.isEnabled(element.locator(), element.componentType());
+        boolean enabled = radioService.isEnabled(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent isSelected(final UIElement element) {
-        boolean selected = radioService.isSelected(element.locator(), element.componentType());
+        boolean selected = radioService.isSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent isVisible(final UIElement element) {
-        boolean visible = radioService.isVisible(element.locator(), element.componentType());
+        boolean visible = radioService.isVisible(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), visible);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent getSelected(final UIElement element) {
-        String selectedValue = radioService.getSelected(element.locator(), element.componentType());
+        String selectedValue = radioService.getSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selectedValue);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent getAll(final UIElement element) {
-        radioService.getAll(element.locator(), element.componentType());
+        radioService.getAll(element.componentType(), element.locator());
         return uiServiceFluent;
     }
 
 
     @Override
-    public void insertion(final By locator, final ComponentType componentType, final Object... values) {
-        radioService.insertion(locator, componentType, values);
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        radioService.insertion(componentType, locator, values);
     }
-
 }

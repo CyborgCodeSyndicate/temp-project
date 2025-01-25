@@ -32,20 +32,20 @@ public interface SelectService extends Insertion {
     /**
      * Selects one or more items in a select component based on the given values.
      *
-     * @param selectComponentType The type of select component.
-     * @param mode                The mode of dropdown list to interact with.
-     * @param container           The WebElement representing the container of the select component.
-     * @param values              The values of the items to be selected. Varargs argument to select multiple items.
+     * @param componentType The type of select component.
+     * @param mode          The mode of dropdown list to interact with.
+     * @param container     The WebElement representing the container of the select component.
+     * @param values        The values of the items to be selected. Varargs argument to select multiple items.
      */
-    void selectItems(SelectComponentType selectComponentType, DdlMode mode, WebElement container, String... values);
+    void selectItems(SelectComponentType componentType, DdlMode mode, WebElement container, String... values);
 
     /**
      * Selects one or more items in a select component based on the given values using the default select component type.
      * The select component is identified by the provided container locator.
      *
-     * @param mode              The mode of the dropdown list to interact with.
-     * @param containerLocator  The By locator that identifies the container of the select component.
-     * @param values            The values of the items to be selected. Varargs argument to select multiple items.
+     * @param mode             The mode of the dropdown list to interact with.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param values           The values of the items to be selected. Varargs argument to select multiple items.
      */
     default void selectItems(DdlMode mode, By containerLocator, String... values) {
         selectItems(DEFAULT_TYPE, mode, containerLocator, values);
@@ -55,12 +55,12 @@ public interface SelectService extends Insertion {
      * Selects one or more items in a select component based on the given values.
      * The select component is identified by the provided container locator and the specified component type.
      *
-     * @param selectComponentType The type of select component.
-     * @param mode                The mode of dropdown list to interact with.
-     * @param containerLocator    The By locator that identifies the container of the select component.
-     * @param values              The values of the items to be selected. Varargs argument to select multiple items.
+     * @param componentType    The type of select component.
+     * @param mode             The mode of dropdown list to interact with.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param values           The values of the items to be selected. Varargs argument to select multiple items.
      */
-    void selectItems(SelectComponentType selectComponentType, DdlMode mode, By containerLocator, String... values);
+    void selectItems(SelectComponentType componentType, DdlMode mode, By containerLocator, String... values);
 
     /**
      * Selects items in a select component based on a specific strategy. Uses the default select component type.
@@ -77,21 +77,21 @@ public interface SelectService extends Insertion {
     /**
      * Selects items in a select component based on a specific strategy.
      *
-     * @param selectComponentType The type of select component.
-     * @param mode                The mode of dropdown list to interact with.
-     * @param container           The WebElement representing the container of the select component.
-     * @param strategy            The strategy to use for selecting items.
+     * @param componentType The type of select component.
+     * @param mode          The mode of dropdown list to interact with.
+     * @param container     The WebElement representing the container of the select component.
+     * @param strategy      The strategy to use for selecting items.
      * @return A List of Strings representing the values of the selected item(s).
      */
-    List<String> selectItems(SelectComponentType selectComponentType, DdlMode mode, WebElement container, Strategy strategy);
+    List<String> selectItems(SelectComponentType componentType, DdlMode mode, WebElement container, Strategy strategy);
 
     /**
      * Selects items in a select component based on a specific strategy using the default select component type.
      * The select component is identified by the provided container locator.
      *
-     * @param mode              The mode of the dropdown list to interact with.
-     * @param containerLocator  The By locator that identifies the container of the select component.
-     * @param strategy          The strategy to use for selecting items.
+     * @param mode             The mode of the dropdown list to interact with.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param strategy         The strategy to use for selecting items.
      * @return A List of Strings representing the values of the selected item(s).
      */
     default List<String> selectItems(DdlMode mode, By containerLocator, Strategy strategy) {
@@ -102,13 +102,13 @@ public interface SelectService extends Insertion {
      * Selects items in a select component based on a specific strategy.
      * The select component is identified by the provided container locator and the specified component type.
      *
-     * @param selectComponentType The type of select component.
-     * @param mode                The mode of dropdown list to interact with.
-     * @param containerLocator    The By locator that identifies the container of the select component.
-     * @param strategy            The strategy to use for selecting items.
+     * @param componentType    The type of select component.
+     * @param mode             The mode of dropdown list to interact with.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param strategy         The strategy to use for selecting items.
      * @return A List of Strings representing the values of the selected item(s).
      */
-    List<String> selectItems(SelectComponentType selectComponentType, DdlMode mode, By containerLocator, Strategy strategy);
+    List<String> selectItems(SelectComponentType componentType, DdlMode mode, By containerLocator, Strategy strategy);
 
     /**
      * Retrieves a list of available items in a select component. Uses the default select component type.
@@ -123,11 +123,11 @@ public interface SelectService extends Insertion {
     /**
      * Retrieves a list of available items in a select component.
      *
-     * @param selectComponentType The type of select component.
-     * @param container           The WebElement representing the container of the select component.
+     * @param componentType The type of select component.
+     * @param container     The WebElement representing the container of the select component.
      * @return A List of Strings representing the available items.
      */
-    List<String> getAvailableItems(SelectComponentType selectComponentType, WebElement container);
+    List<String> getAvailableItems(SelectComponentType componentType, WebElement container);
 
     /**
      * Retrieves a list of available items in a select component using the default select component type.
@@ -144,11 +144,11 @@ public interface SelectService extends Insertion {
      * Retrieves a list of available items in a select component.
      * The select component is identified by the provided container locator and the specified component type.
      *
-     * @param selectComponentType The type of select component.
-     * @param containerLocator    The By locator that identifies the container of the select component.
+     * @param componentType    The type of select component.
+     * @param containerLocator The By locator that identifies the container of the select component.
      * @return A List of Strings representing the available items.
      */
-    List<String> getAvailableItems(SelectComponentType selectComponentType, By containerLocator);
+    List<String> getAvailableItems(SelectComponentType componentType, By containerLocator);
 
     /**
      * Retrieves a list of available items in a select component that match a given search term. Uses the default select component type.
@@ -164,12 +164,12 @@ public interface SelectService extends Insertion {
     /**
      * Retrieves a list of available items in a select component that match a given search term.
      *
-     * @param selectComponentType The type of select component.
-     * @param container           The WebElement representing the container of the select component.
-     * @param search              The search term to filter the available items.
+     * @param componentType The type of select component.
+     * @param container     The WebElement representing the container of the select component.
+     * @param search        The search term to filter the available items.
      * @return A List of Strings representing the filtered available items.
      */
-    List<String> getAvailableItems(SelectComponentType selectComponentType, WebElement container, String search);
+    List<String> getAvailableItems(SelectComponentType componentType, WebElement container, String search);
 
     /**
      * Retrieves a list of available items in a select component that match a given search term.
@@ -187,12 +187,12 @@ public interface SelectService extends Insertion {
      * Retrieves a list of available items in a select component that match a given search term.
      * The select component is identified by the provided container locator and the specified component type.
      *
-     * @param selectComponentType The type of select component.
-     * @param containerLocator    The By locator that identifies the container of the select component.
-     * @param search              The search term to filter the available items.
+     * @param componentType    The type of select component.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param search           The search term to filter the available items.
      * @return A List of Strings representing the filtered available items.
      */
-    List<String> getAvailableItems(SelectComponentType selectComponentType, By containerLocator, String search);
+    List<String> getAvailableItems(SelectComponentType componentType, By containerLocator, String search);
 
     /**
      * Retrieves a list of currently selected items in a select component. Uses the default select component type.
@@ -207,11 +207,11 @@ public interface SelectService extends Insertion {
     /**
      * Retrieves a list of currently selected items in a select component.
      *
-     * @param selectComponentType The type of select component.
-     * @param container           The WebElement representing the container of the select component.
+     * @param componentType The type of select component.
+     * @param container     The WebElement representing the container of the select component.
      * @return A List of Strings representing the selected items.
      */
-    List<String> getSelectedItems(SelectComponentType selectComponentType, WebElement container);
+    List<String> getSelectedItems(SelectComponentType componentType, WebElement container);
 
     /**
      * Retrieves a list of currently selected items in a select component.
@@ -228,55 +228,55 @@ public interface SelectService extends Insertion {
      * Retrieves a list of currently selected items in a select component.
      * The select component is identified by the provided container locator and the specified component type.
      *
-     * @param selectComponentType The type of select component.
-     * @param containerLocator    The By locator that identifies the container of the select component.
+     * @param componentType    The type of select component.
+     * @param containerLocator The By locator that identifies the container of the select component.
      * @return A List of Strings representing the selected items.
      */
-    List<String> getSelectedItems(SelectComponentType selectComponentType, By containerLocator);
+    List<String> getSelectedItems(SelectComponentType componentType, By containerLocator);
 
     /**
-     * Checks if a specific option is present in a select component. Uses the default select component type.
+     * Checks if a specific option is visible in a select component. Uses the default select component type.
      *
      * @param container The WebElement representing the container of the select component.
      * @param value     The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    default boolean isOptionPresent(WebElement container, String value) {
-        return isOptionPresent(container, value, DEFAULT_TYPE);
+    default boolean isOptionVisible(WebElement container, String value) {
+        return isOptionVisible(DEFAULT_TYPE, container, value);
     }
 
     /**
-     * Checks if a specific option is present in a select component.
+     * Checks if a specific option is visible in a select component.
      *
-     * @param container           The WebElement representing the container of the select component.
-     * @param value               The value of the option to check.
-     * @param selectComponentType The type of select component.
+     * @param componentType The type of select component.
+     * @param container     The WebElement representing the container of the select component.
+     * @param value         The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    boolean isOptionPresent(WebElement container, String value, SelectComponentType selectComponentType);
+    boolean isOptionVisible(SelectComponentType componentType, WebElement container, String value);
 
     /**
-     * Checks if a specific option is present in a select component.
+     * Checks if a specific option is visible in a select component.
      * The select component is identified by the provided container locator, using the default select component type.
      *
      * @param containerLocator The By locator that identifies the container of the select component.
      * @param value            The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    default boolean isOptionPresent(By containerLocator, String value) {
-        return isOptionPresent(containerLocator, value, DEFAULT_TYPE);
+    default boolean isOptionVisible(By containerLocator, String value) {
+        return isOptionVisible(DEFAULT_TYPE, containerLocator, value);
     }
 
     /**
-     * Checks if a specific option is present in a select component.
+     * Checks if a specific option is visible in a select component.
      * The select component is identified by the provided container locator and the specified component type.
      *
-     * @param containerLocator  The By locator that identifies the container of the select component.
-     * @param value             The value of the option to check.
-     * @param selectComponentType The type of select component.
+     * @param componentType    The type of select component.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param value            The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    boolean isOptionPresent(By containerLocator, String value, SelectComponentType selectComponentType);
+    boolean isOptionVisible(SelectComponentType componentType, By containerLocator, String value);
 
     /**
      * Checks if a specific option is enabled in a select component. Uses the default select component type.
@@ -286,18 +286,18 @@ public interface SelectService extends Insertion {
      * @return true if the option is enabled, false otherwise.
      */
     default boolean isOptionEnabled(WebElement container, String value) {
-        return isOptionEnabled(container, value, DEFAULT_TYPE);
+        return isOptionEnabled(DEFAULT_TYPE, container, value);
     }
 
     /**
      * Checks if a specific option is enabled in a select component.
      *
-     * @param container           The WebElement representing the container of the select component.
-     * @param value               The value of the option to check.
-     * @param selectComponentType The type of select component.
+     * @param componentType The type of select component.
+     * @param container     The WebElement representing the container of the select component.
+     * @param value         The value of the option to check.
      * @return true if the option is enabled, false otherwise.
      */
-    boolean isOptionEnabled(WebElement container, String value, SelectComponentType selectComponentType);
+    boolean isOptionEnabled(SelectComponentType componentType, WebElement container, String value);
 
     /**
      * Checks if a specific option is enabled in a select component.
@@ -308,19 +308,19 @@ public interface SelectService extends Insertion {
      * @return true if the option is enabled, false otherwise.
      */
     default boolean isOptionEnabled(By containerLocator, String value) {
-        return isOptionEnabled(containerLocator, value, DEFAULT_TYPE);
+        return isOptionEnabled(DEFAULT_TYPE, containerLocator, value);
     }
 
     /**
      * Checks if a specific option is enabled in a select component.
      * The select component is identified by the provided container locator and the specified component type.
      *
-     * @param containerLocator  The By locator that identifies the container of the select component.
-     * @param value             The value of the option to check.
-     * @param selectComponentType The type of select component.
+     * @param componentType    The type of select component.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param value            The value of the option to check.
      * @return true if the option is enabled, false otherwise.
      */
-    boolean isOptionEnabled(By containerLocator, String value, SelectComponentType selectComponentType);
+    boolean isOptionEnabled(SelectComponentType componentType, By containerLocator, String value);
 
     /**
      * Retrieves the default select component type from the configuration.

@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.components.loader;
 
-import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import org.openqa.selenium.By;
@@ -27,46 +26,49 @@ public class LoaderServiceImpl implements LoaderService {
     }
 
     @Override
-    public boolean isPresent(LoaderComponentType componentType, WebElement container) {
-        return loaderComponent(componentType).isPresent(container);
+    public boolean isVisible(final LoaderComponentType componentType, final WebElement container) {
+        return loaderComponent(componentType).isVisible(container);
     }
 
     @Override
-    public boolean isPresent(LoaderComponentType componentType, By loaderLocator) {
-        return loaderComponent(componentType).isPresent(loaderLocator);
+    public boolean isVisible(final LoaderComponentType componentType, final By loaderLocator) {
+        return loaderComponent(componentType).isVisible(loaderLocator);
     }
 
     @Override
-    public void waitToBeShown(LoaderComponentType componentType, WebElement container, int secondsShown) {
+    public void waitToBeShown(final LoaderComponentType componentType, final WebElement container,
+                              final int secondsShown) {
         loaderComponent(componentType).waitToBeShown(container, secondsShown);
     }
 
     @Override
-    public void waitToBeShown(LoaderComponentType componentType, int secondsShown) {
+    public void waitToBeShown(final LoaderComponentType componentType, final int secondsShown) {
         loaderComponent(componentType).waitToBeShown(secondsShown);
     }
 
     @Override
-    public void waitToBeShown(LoaderComponentType componentType, By loaderLocator, int secondsShown) {
+    public void waitToBeShown(final LoaderComponentType componentType, final By loaderLocator, final int secondsShown) {
         loaderComponent(componentType).waitToBeShown(loaderLocator, secondsShown);
     }
 
     @Override
-    public void waitToBeRemoved(LoaderComponentType componentType, WebElement container, int secondsRemoved) {
-        loaderComponent(componentType).waitToBeShown(container, secondsRemoved);
+    public void waitToBeRemoved(final LoaderComponentType componentType, final WebElement container,
+                                final int secondsRemoved) {
+        loaderComponent(componentType).waitToBeRemoved(container, secondsRemoved);
     }
 
     @Override
-    public void waitToBeRemoved(LoaderComponentType componentType, int secondsRemoved) {
-        loaderComponent(componentType).waitToBeShown(secondsRemoved);
+    public void waitToBeRemoved(final LoaderComponentType componentType, final int secondsRemoved) {
+        loaderComponent(componentType).waitToBeRemoved(secondsRemoved);
     }
 
     @Override
-    public void waitToBeRemoved(LoaderComponentType componentType, By loaderLocator, int secondsRemoved) {
-        loaderComponent(componentType).waitToBeShown(loaderLocator, secondsRemoved);
+    public void waitToBeRemoved(final LoaderComponentType componentType, final By loaderLocator,
+                                final int secondsRemoved) {
+        loaderComponent(componentType).waitToBeRemoved(loaderLocator, secondsRemoved);
     }
 
-    private Loader loaderComponent(LoaderComponentType componentType) {
+    private Loader loaderComponent(final LoaderComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
             components.put(componentType, ComponentFactory.getLoaderComponent(componentType, smartSelenium));
         }

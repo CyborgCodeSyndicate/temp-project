@@ -31,55 +31,55 @@ public class ItemListServiceFluent implements Insertion {
     public UIServiceFluent select(final UIElement element, final String... values) {
         Allure.step(String.format("Selecting items: '%s' from list component of type: '%s'.", Arrays.toString(values),
                 element.componentType().toString()));
-        itemListService.select(element.locator(), element.componentType(), values);
+        itemListService.select(element.componentType(), element.locator(), values);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent deSelect(final UIElement element, final String... values) {
-        itemListService.deSelect(element.locator(), element.componentType(), values);
+        itemListService.deSelect(element.componentType(), element.locator(), values);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent areSelected(final UIElement element, final String... values) {
-        boolean selected = itemListService.areSelected(element.locator(), element.componentType(), values);
+        boolean selected = itemListService.areSelected(element.componentType(), element.locator(), values);
         storage.sub(UI).put(element.enumImpl(), selected);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent areEnabled(final UIElement element, final String... values) {
-        boolean enabled = itemListService.areEnabled(element.locator(), element.componentType(), values);
+        boolean enabled = itemListService.areEnabled(element.componentType(), element.locator(), values);
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
     }
 
 
-    public UIServiceFluent arePresent(final UIElement element, final String... values) {
-        boolean present = itemListService.arePresent(element.locator(), element.componentType(), values);
-        storage.sub(UI).put(element.enumImpl(), present);
+    public UIServiceFluent areVisible(final UIElement element, final String... values) {
+        boolean visible = itemListService.areVisible(element.componentType(), element.locator(), values);
+        storage.sub(UI).put(element.enumImpl(), visible);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent getSelected(final UIElement element) {
-        List<String> selectedItems = itemListService.getSelected(element.locator(), element.componentType());
+        List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selectedItems);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent getAll(final UIElement element) {
-        List<String> allItems = itemListService.getAll(element.locator(), element.componentType());
+        List<String> allItems = itemListService.getAll(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), allItems);
         return uiServiceFluent;
     }
 
 
     @Override
-    public void insertion(final By locator, final ComponentType componentType, final Object... values) {
-        itemListService.insertion(locator, componentType, values);
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        itemListService.insertion(componentType, locator, values);
     }
 
 }

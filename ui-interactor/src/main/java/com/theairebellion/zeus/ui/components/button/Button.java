@@ -21,11 +21,11 @@ public interface Button {
 
     boolean isEnabled(By buttonLocator);
 
-    boolean isPresent(WebElement container, String buttonText);
+    boolean isVisible(WebElement container, String buttonText);
 
-    boolean isPresent(WebElement container);
+    boolean isVisible(WebElement container);
 
-    boolean isPresent(String buttonText);
+    boolean isVisible(String buttonText);
 
-    boolean isPresent(By buttonLocator);
+    boolean isVisible(By buttonLocator);
 }

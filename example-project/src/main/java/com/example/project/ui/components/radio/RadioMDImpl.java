@@ -152,19 +152,12 @@ public class RadioMDImpl extends BaseComponent implements Radio {
         }
         if (Objects.nonNull(strategy)) {
 
-            switch (strategy) {
-                case RANDOM:
-                    targetedRadioButton = StrategyGenerator.getRandomElementFromElements(radioButtons);
-                    break;
-                case FIRST:
-                    targetedRadioButton = StrategyGenerator.getFirstElementFromElements(radioButtons);
-                    break;
-                case LAST:
-                    targetedRadioButton = StrategyGenerator.getLastElementFromElements(radioButtons);
-                    break;
-                case ALL:
-                    throw new IllegalArgumentException("Only single radio button can be selected");
-            }
+            targetedRadioButton = switch (strategy) {
+                case RANDOM -> StrategyGenerator.getRandomElementFromElements(radioButtons);
+                case FIRST -> StrategyGenerator.getFirstElementFromElements(radioButtons);
+                case LAST -> StrategyGenerator.getLastElementFromElements(radioButtons);
+                case ALL -> throw new IllegalArgumentException("Only single radio button can be selected");
+            };
         }
 
         return targetedRadioButton;

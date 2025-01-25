@@ -16,6 +16,12 @@ public class UIComponentsInUse {
     }
 
 
+    public static ButtonServiceFluent button(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.BUTTON_FIELDS.getFieldName(), uiServiceFluent,
+                ButtonServiceFluent.class);
+    }
+
+
     public static RadioServiceFluent radio(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.RADIO_FIELDS.getFieldName(), uiServiceFluent,
                 RadioServiceFluent.class);
@@ -42,6 +48,18 @@ public class UIComponentsInUse {
     public static LoaderServiceFluent loader(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.LOADER_FIELDS.getFieldName(), uiServiceFluent,
                 LoaderServiceFluent.class);
+    }
+
+
+    public static LinkServiceFluent link(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.LINK_FIELDS.getFieldName(), uiServiceFluent,
+                LinkServiceFluent.class);
+    }
+
+
+    public static AlertServiceFluent alert(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.ALERT_FIELDS.getFieldName(), uiServiceFluent,
+                AlertServiceFluent.class);
     }
 
 

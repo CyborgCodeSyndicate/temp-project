@@ -51,23 +51,23 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isOptionPresent(final UIElement element, final String value) {
-        boolean present = selectService.isOptionPresent(element.locator(), value, element.componentType());
+    public UIServiceFluent isOptionVisible(final UIElement element, final String value) {
+        boolean present = selectService.isOptionVisible(element.componentType(), element.locator(), value);
         storage.sub(UI).put(element.enumImpl(), present);
         return uiServiceFluent;
     }
 
 
     public UIServiceFluent isOptionEnabled(final UIElement element, final String value) {
-        boolean enabled = selectService.isOptionEnabled(element.locator(), value, element.componentType());
+        boolean enabled = selectService.isOptionEnabled(element.componentType(), element.locator(), value);
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
     }
 
 
     @Override
-    public void insertion(final By locator, final ComponentType componentType, final Object... values) {
-        selectService.insertion(locator, componentType, values);
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        selectService.insertion(componentType, locator, values);
     }
 
 }

@@ -28,9 +28,9 @@ public interface Select {
 
     List<String> getSelectedItems(By containerLocator);
 
-    boolean isOptionPresent(WebElement container, String value);
+    boolean isOptionVisible(WebElement container, String value);
 
-    boolean isOptionPresent(By containerLocator, String value);
+    boolean isOptionVisible(By containerLocator, String value);
 
     boolean isOptionEnabled(WebElement container, String value);
 

@@ -26,84 +26,94 @@ public class SelectServiceImpl implements SelectService {
     }
 
     @Override
-    public void selectItems(SelectComponentType componentType, DdlMode mode, WebElement container, String... values) {
+    public void selectItems(final SelectComponentType componentType, final DdlMode mode, final WebElement container,
+                            final String... values) {
         selectComponent(componentType).selectItems(mode, container, values);
     }
 
     @Override
-    public void selectItems(SelectComponentType componentType, DdlMode mode, By containerLocator, String... values) {
+    public void selectItems(final SelectComponentType componentType, final DdlMode mode, final By containerLocator,
+                            final String... values) {
         selectComponent(componentType).selectItems(mode, containerLocator, values);
     }
 
     @Override
-    public List<String> selectItems(SelectComponentType componentType, DdlMode mode, WebElement container, Strategy strategy) {
+    public List<String> selectItems(final SelectComponentType componentType, final DdlMode mode,
+                                    final WebElement container, final Strategy strategy) {
         return selectComponent(componentType).selectItems(mode, container, strategy);
     }
 
     @Override
-    public List<String> selectItems(SelectComponentType componentType, DdlMode mode, By containerLocator, Strategy strategy) {
+    public List<String> selectItems(final SelectComponentType componentType, final DdlMode mode,
+                                    final By containerLocator, final Strategy strategy) {
         return selectComponent(componentType).selectItems(mode, containerLocator, strategy);
     }
 
     @Override
-    public List<String> getAvailableItems(SelectComponentType componentType, WebElement container) {
+    public List<String> getAvailableItems(final SelectComponentType componentType, final WebElement container) {
         return selectComponent(componentType).getAvailableItems(container);
     }
 
     @Override
-    public List<String> getAvailableItems(SelectComponentType componentType, By containerLocator) {
+    public List<String> getAvailableItems(final SelectComponentType componentType, final By containerLocator) {
         return selectComponent(componentType).getAvailableItems(containerLocator);
     }
 
     @Override
-    public List<String> getAvailableItems(SelectComponentType componentType, WebElement container, String search) {
+    public List<String> getAvailableItems(final SelectComponentType componentType, final WebElement container,
+                                          final String search) {
         return selectComponent(componentType).getAvailableItems(container, search);
     }
 
     @Override
-    public List<String> getAvailableItems(SelectComponentType componentType, By containerLocator, String search) {
+    public List<String> getAvailableItems(final SelectComponentType componentType, final By containerLocator,
+                                          final String search) {
         return selectComponent(componentType).getAvailableItems(containerLocator, search);
     }
 
     @Override
-    public List<String> getSelectedItems(SelectComponentType componentType, WebElement container) {
+    public List<String> getSelectedItems(final SelectComponentType componentType, final WebElement container) {
         return selectComponent(componentType).getSelectedItems(container);
     }
 
     @Override
-    public List<String> getSelectedItems(SelectComponentType componentType, By containerLocator) {
+    public List<String> getSelectedItems(final SelectComponentType componentType, final By containerLocator) {
         return selectComponent(componentType).getSelectedItems(containerLocator);
     }
 
     @Override
-    public boolean isOptionPresent(WebElement container, String value, SelectComponentType componentType) {
-        return selectComponent(componentType).isOptionPresent(container, value);
+    public boolean isOptionVisible(final SelectComponentType componentType, final WebElement container,
+                                   final String value) {
+        return selectComponent(componentType).isOptionVisible(container, value);
     }
 
     @Override
-    public boolean isOptionPresent(By containerLocator, String value, SelectComponentType componentType) {
-        return selectComponent(componentType).isOptionPresent(containerLocator, value);
+    public boolean isOptionVisible(final SelectComponentType componentType, final By containerLocator,
+                                   final String value) {
+        return selectComponent(componentType).isOptionVisible(containerLocator, value);
     }
 
     @Override
-    public boolean isOptionEnabled(WebElement container, String value, SelectComponentType componentType) {
+    public boolean isOptionEnabled(final SelectComponentType componentType, final WebElement container,
+                                   final String value) {
         return selectComponent(componentType).isOptionEnabled(container, value);
     }
 
     @Override
-    public boolean isOptionEnabled(By containerLocator, String value, SelectComponentType componentType) {
+    public boolean isOptionEnabled(final SelectComponentType componentType, final By containerLocator,
+                                   final String value) {
         return selectComponent(componentType).isOptionEnabled(containerLocator, value);
     }
 
     @Override
-    public void insertion(By locator, ComponentType componentType, Object... values) {
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
         String[] stringValues = Arrays.stream(values)
                 .map(String::valueOf)
                 .toArray(String[]::new);
         selectItems((SelectComponentType) componentType, DdlMode.MULTI_SELECT_WITH_CHOOSING, locator, stringValues);
     }
 
-    private Select selectComponent(SelectComponentType componentType) {
+    private Select selectComponent(final SelectComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
             components.put(componentType, ComponentFactory.getSelectComponent(componentType, smartSelenium));
         }
