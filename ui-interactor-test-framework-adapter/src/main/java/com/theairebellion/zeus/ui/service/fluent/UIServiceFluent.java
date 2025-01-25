@@ -2,6 +2,8 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.annotation.WorldName;
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
@@ -35,6 +37,7 @@ public class UIServiceFluent extends FluentService {
     private SelectServiceFluent selectField;
     private ItemListServiceFluent listField;
     private LoaderServiceFluent loaderField;
+    private CheckboxServiceFluent checkboxField;
     private SmartSelenium smartSelenium;
     private UIDriver uiDriver;
     private InterceptorServiceFluent interceptor;
@@ -52,6 +55,7 @@ public class UIServiceFluent extends FluentService {
     private void registerInsertionServices() {
         serviceRegistry.registerService(InputComponentType.class, inputField);
         serviceRegistry.registerService(RadioComponentType.class, radioField);
+        serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
         serviceRegistry.registerService(SelectComponentType.class, selectField);
         serviceRegistry.registerService(ItemListComponentType.class, listField);
     }
@@ -71,6 +75,7 @@ public class UIServiceFluent extends FluentService {
     protected void postQuestSetupInitialization() {
         inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(smartSelenium));
         radioField = new RadioServiceFluent(this, quest.getStorage(), new RadioServiceImpl(smartSelenium));
+        checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(smartSelenium));
         selectField = new SelectServiceFluent(this, quest.getStorage(), new SelectServiceImpl(smartSelenium));
         listField = new ItemListServiceFluent(this, quest.getStorage(), new ItemListServiceImpl(smartSelenium));
         loaderField = new LoaderServiceFluent(this, quest.getStorage(), new LoaderServiceImpl(smartSelenium));

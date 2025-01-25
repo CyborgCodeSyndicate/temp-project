@@ -1,5 +1,8 @@
 package com.theairebellion.zeus.ui.service.facade;
 
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxService;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
@@ -28,6 +31,7 @@ public class UIService {
     private final WebDriver driver;
     private InputService inputField;
     private RadioService radioField;
+    private CheckboxService checkboxField;
     private SelectService selectField;
     private ItemListService listField;
     private LoaderService loaderField;
@@ -40,6 +44,7 @@ public class UIService {
         this.driver = driver;
         inputField = new InputServiceImpl(smartSelenium);
         radioField = new RadioServiceImpl(smartSelenium);
+        checkboxField = new CheckboxServiceImpl(smartSelenium);
         selectField = new SelectServiceImpl(smartSelenium);
         listField = new ItemListServiceImpl(smartSelenium);
         loaderField = new LoaderServiceImpl(smartSelenium);
@@ -52,6 +57,7 @@ public class UIService {
     private void registerInsertionServices() {
         serviceRegistry.registerService(InputComponentType.class, inputField);
         serviceRegistry.registerService(RadioComponentType.class, radioField);
+        serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
         serviceRegistry.registerService(SelectComponentType.class, selectField);
         serviceRegistry.registerService(ItemListComponentType.class, listField);
     }

@@ -4,6 +4,8 @@ import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.Button;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
+import com.theairebellion.zeus.ui.components.checkbox.Checkbox;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
 import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemList;
@@ -38,6 +40,10 @@ public class ComponentFactory {
 
     public static Radio getRadioComponent(RadioComponentType type, SmartSelenium smartSelenium) {
         return getComponent(Radio.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Checkbox getCheckBoxComponent(CheckboxComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Checkbox.class, type, uiConfig.projectPackage(), smartSelenium);
     }
 
     public static Select getSelectComponent(SelectComponentType type, SmartSelenium smartSelenium) {

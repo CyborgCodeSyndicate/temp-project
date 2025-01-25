@@ -30,6 +30,9 @@ public interface UIConfig extends Config {
     @Key("button.default.type")
     String buttonDefaultType();
 
+    @Key("checkbox.default.type")
+    String checkboxDefaultType();
+
     @Key("radio.default.type")
     String radioDefaultType();
 

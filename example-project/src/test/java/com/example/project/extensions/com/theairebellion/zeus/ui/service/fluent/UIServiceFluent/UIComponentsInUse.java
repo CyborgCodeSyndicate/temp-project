@@ -21,6 +21,11 @@ public class UIComponentsInUse {
                 RadioServiceFluent.class);
     }
 
+    public static CheckboxServiceFluent radio(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.CHECKBOX_FIELDS.getFieldName(), uiServiceFluent,
+                CheckboxServiceFluent.class);
+    }
+
 
     public static SelectServiceFluent select(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.SELECT_FIELDS.getFieldName(), uiServiceFluent,
