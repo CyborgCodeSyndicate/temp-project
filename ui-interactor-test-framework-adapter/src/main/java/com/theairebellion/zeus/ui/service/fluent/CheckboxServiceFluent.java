@@ -10,6 +10,8 @@ import com.theairebellion.zeus.ui.selenium.UIElement;
 import io.qameta.allure.Allure;
 import org.openqa.selenium.By;
 
+import java.util.List;
+
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 public class CheckboxServiceFluent implements Insertion {
@@ -25,10 +27,54 @@ public class CheckboxServiceFluent implements Insertion {
         this.storage = storage;
     }
 
-    public UIServiceFluent select(final UIElement element, final String value) {
-        Allure.step(String.format("Selecting value: '%s' from checkbox component of type: '%s'.", value,
-            element.componentType().toString()));
-        checkboxService.select((CheckboxComponentType) element.componentType(), value); //todo: Check why cast is needed here
+    public UIServiceFluent select(final UIElement element) {
+        Allure.step(String.format("Selecting checkbox with locator: '%s' from checkbox component of type: '%s'.",
+                element.locator().toString(),
+                element.componentType().toString()));
+        checkboxService.select((CheckboxComponentType) element.componentType(), element.locator()); //todo: Check why cast is needed here
+        return uiServiceFluent;
+    }
+
+    public UIServiceFluent deSelect(final UIElement element) {
+        Allure.step(String.format("Deselecting checkbox with locator: '%s' from checkbox component of type: '%s'.",
+                element.locator().toString(),
+                element.componentType().toString()));
+        checkboxService.deSelect((CheckboxComponentType) element.componentType(), element.locator());
+        return uiServiceFluent;
+    }
+
+    public UIServiceFluent isSelected(final UIElement element) {
+        boolean selected = checkboxService.isSelected(element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), selected);
+        return uiServiceFluent;
+    }
+
+    public UIServiceFluent areSelected(final UIElement element) {
+        boolean selected = checkboxService.areSelected((CheckboxComponentType) element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), selected);
+        return uiServiceFluent;
+    }
+
+    public UIServiceFluent isEnabled(final UIElement element) {
+        boolean selected = checkboxService.isEnabled(element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), selected);
+        return uiServiceFluent;
+    }
+
+    public UIServiceFluent areEnabled(final UIElement element) {
+        boolean selected = checkboxService.areEnabled((CheckboxComponentType) element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), selected);
+        return uiServiceFluent;
+    }
+
+    public UIServiceFluent getSelected(final UIElement element) {
+        List<String> selectedValues = checkboxService.getSelected(element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), selectedValues);
+        return uiServiceFluent;
+    }
+
+    public UIServiceFluent getAll(final UIElement element) {
+        checkboxService.getAll(element.componentType(), element.locator()); //todo: Do we need storage
         return uiServiceFluent;
     }
 

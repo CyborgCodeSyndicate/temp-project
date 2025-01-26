@@ -89,10 +89,6 @@ public interface CheckboxService extends Insertion {
      */
     void select(CheckboxComponentType componentType, By... checkBoxLocator);
 
-
-
-
-
     /**
      * Deselects checkboxes with their specified text inside a container, using the default checkbox component type.
      *
@@ -167,11 +163,6 @@ public interface CheckboxService extends Insertion {
      */
     void deSelect(CheckboxComponentType componentType, By... checkBoxLocator);
 
-
-
-
-
-
     /**
      * Checks if the checkboxes with the specified text inside a container are selected, using the default checkbox component type.
      *
@@ -232,6 +223,65 @@ public interface CheckboxService extends Insertion {
     boolean areSelected(CheckboxComponentType componentType, By... checkBoxLocator);
 
 
+    /**
+     * Checks if the checkbox with the specified text inside a container is selected, using the default checkbox component type.
+     *
+     * @param container    The WebElement container that contains the checkbox.
+     * @param checkBoxText The text of the checkbox to verify.
+     * @return true if the checkbox is selected, false otherwise.
+     */
+    default boolean isSelected(WebElement container, String checkBoxText) {
+        return areSelected(DEFAULT_TYPE, container, checkBoxText);
+    }
+
+    /**
+     * Checks if the checkbox with the specified text inside a container is selected, using the given checkbox component type.
+     *
+     * @param componentType The specific checkbox component type.
+     * @param container     The WebElement container that contains the checkbox.
+     * @param checkBoxText  The text of the checkbox to verify.
+     * @return true if the checkbox is selected, false otherwise.
+     */
+    boolean isSelected(CheckboxComponentType componentType, WebElement container, String checkBoxText);
+
+    /**
+     * Checks if the checkbox with the specified text is selected, using the default checkbox component type.
+     *
+     * @param checkBoxText The text of the checkbox to verify.
+     * @return true if the checkbox is selected, false otherwise.
+     */
+    default boolean isSelected(String checkBoxText) {
+        return areSelected(DEFAULT_TYPE, checkBoxText);
+    }
+
+    /**
+     * Checks if the checkbox with the specified text is selected, using the given checkbox component type.
+     *
+     * @param componentType The specific checkbox component type.
+     * @param checkBoxText  The text of the checkbox to verify.
+     * @return true if the checkbox is selected, false otherwise.
+     */
+    boolean isSelected(CheckboxComponentType componentType, String checkBoxText);
+
+    /**
+     * Checks if the checkbox identified by the specified locator is selected, using the default checkbox component type.
+     *
+     * @param checkBoxLocator The locator for the checkbox to verify.
+     * @return true if the checkbox is selected, false otherwise.
+     */
+    default boolean isSelected(By checkBoxLocator) {
+        return areSelected(DEFAULT_TYPE, checkBoxLocator);
+    }
+
+    /**
+     * Checks if the checkbox identified by the specified locator is selected, using the given checkbox component type.
+     *
+     * @param componentType   The specific checkbox component type.
+     * @param checkBoxLocator The locator for the checkbox to verify.
+     * @return true if the checkbox is selected, false otherwise.
+     */
+    boolean isSelected(CheckboxComponentType componentType, By checkBoxLocator);
+
 
 
     /**
@@ -242,7 +292,7 @@ public interface CheckboxService extends Insertion {
      * @return true if all specified checkboxes are enabled, false otherwise.
      */
     default boolean areEnabled(WebElement container, String... checkBoxText) {
-        return areSelected(DEFAULT_TYPE, container, checkBoxText);
+        return areEnabled(DEFAULT_TYPE, container, checkBoxText);
     }
 
     /**
@@ -293,7 +343,64 @@ public interface CheckboxService extends Insertion {
      */
     boolean areEnabled(CheckboxComponentType componentType, By... checkBoxLocator);
 
+    /**
+     * Checks if the checkbox with the specified text inside a container is enabled, using the default checkbox component type.
+     *
+     * @param container    The WebElement container that contains the checkbox.
+     * @param checkBoxText The text of the checkbox to verify.
+     * @return true if the checkbox is enabled, false otherwise.
+     */
+    default boolean isEnabled(WebElement container, String checkBoxText) {
+        return areEnabled(DEFAULT_TYPE, container, checkBoxText);
+    }
 
+    /**
+     * Checks if the checkbox with the specified text inside a container is enabled, using the given checkbox component type.
+     *
+     * @param componentType The specific checkbox component type.
+     * @param container     The WebElement container that contains the checkbox.
+     * @param checkBoxText  The text of the checkbox to verify.
+     * @return true if the checkbox is enabled, false otherwise.
+     */
+    boolean isEnabled(CheckboxComponentType componentType, WebElement container, String checkBoxText);
+
+    /**
+     * Checks if the checkbox with the specified text is enabled, using the default checkbox component type.
+     *
+     * @param checkBoxText The text of the checkbox to verify.
+     * @return true if the checkbox is enabled, false otherwise.
+     */
+    default boolean isEnabled(String checkBoxText) {
+        return areEnabled(DEFAULT_TYPE, checkBoxText);
+    }
+
+    /**
+     * Checks if the checkbox with the specified text is enabled, using the given checkbox component type.
+     *
+     * @param componentType The specific checkbox component type.
+     * @param checkBoxText  The text of the checkbox to verify.
+     * @return true if the checkbox is enabled, false otherwise.
+     */
+    boolean isEnabled(CheckboxComponentType componentType, String checkBoxText);
+
+    /**
+     * Checks if the checkbox identified by the specified locator is enabled, using the default checkbox component type.
+     *
+     * @param checkBoxLocator The locator for the checkbox to verify.
+     * @return true if the checkbox is enabled, false otherwise.
+     */
+    default boolean isEnabled(By checkBoxLocator) {
+        return areEnabled(DEFAULT_TYPE, checkBoxLocator);
+    }
+
+    /**
+     * Checks if the checkbox identified by the specified locator is enabled, using the given checkbox component type.
+     *
+     * @param componentType   The specific checkbox component type.
+     * @param checkBoxLocator The locator for the checkbox to verify.
+     * @return true if the checkbox is enabled, false otherwise.
+     */
+    boolean isEnabled(CheckboxComponentType componentType, By checkBoxLocator);
 
     /**
      * Retrieves the text of all selected checkboxes inside a container, using the default checkbox component type.
@@ -315,6 +422,25 @@ public interface CheckboxService extends Insertion {
     List<String> getSelected(CheckboxComponentType componentType, WebElement container);
 
     /**
+     * Retrieves the text of all selected checkboxes inside a container identified by the specified locator, using the default checkbox component type.
+     *
+     * @param containerLocator The locator for the container that contains the checkboxes.
+     * @return A list of strings representing the text of all selected checkboxes.
+     */
+    default List<String> getSelected(By containerLocator) {
+        return getSelected(DEFAULT_TYPE, containerLocator);
+    }
+
+    /**
+     * Retrieves the text of all selected checkboxes inside a container identified by the specified locator, using the given checkbox component type.
+     *
+     * @param componentType    The specific checkbox component type.
+     * @param containerLocator The locator for the container that contains the checkboxes.
+     * @return A list of strings representing the text of all selected checkboxes.
+     */
+    List<String> getSelected(CheckboxComponentType componentType, By containerLocator);
+
+    /**
      * Retrieves the text of all checkboxes inside a container, regardless of their state, using the default checkbox component type.
      *
      * @param container The WebElement container that contains the checkboxes.
@@ -333,6 +459,24 @@ public interface CheckboxService extends Insertion {
      */
     List<String> getAll(CheckboxComponentType componentType, WebElement container);
 
+    /**
+     * Retrieves the text of all checkboxes inside a container identified by the specified locator, regardless of their state, using the default checkbox component type.
+     *
+     * @param containerLocator The locator for the container that contains the checkboxes.
+     * @return A list of strings representing the text of all checkboxes.
+     */
+    default List<String> getAll(By containerLocator) {
+        return getAll(DEFAULT_TYPE, containerLocator);
+    }
+
+    /**
+     * Retrieves the text of all checkboxes inside a container identified by the specified locator, regardless of their state, using the given checkbox component type.
+     *
+     * @param componentType    The specific checkbox component type.
+     * @param containerLocator The locator for the container that contains the checkboxes.
+     * @return A list of strings representing the text of all checkboxes.
+     */
+    List<String> getAll(CheckboxComponentType componentType, By containerLocator);
 
     /**
      * Retrieves the default checkbox component type from the configuration.

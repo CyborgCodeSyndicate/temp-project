@@ -69,47 +69,87 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public boolean areSelected(CheckboxComponentType componentType, WebElement container, String... checkBoxText) {
+    public boolean areSelected(final CheckboxComponentType componentType, final WebElement container, final String... checkBoxText) {
         return checkboxComponent(componentType).areSelected(container, checkBoxText);
     }
 
     @Override
-    public boolean areSelected(CheckboxComponentType componentType, String... checkBoxText) {
+    public boolean areSelected(final CheckboxComponentType componentType, final String... checkBoxText) {
         return checkboxComponent(componentType).areSelected(checkBoxText);
     }
 
     @Override
-    public boolean areSelected(CheckboxComponentType componentType, By... checkBoxLocator) {
+    public boolean areSelected(final CheckboxComponentType componentType, final By... checkBoxLocator) {
         return checkboxComponent(componentType).areSelected(checkBoxLocator);
     }
 
     @Override
-    public boolean areEnabled(CheckboxComponentType componentType, WebElement container, String... checkBoxText) {
+    public boolean isSelected(final CheckboxComponentType componentType, final WebElement container, final String checkBoxText) {
+        return checkboxComponent(componentType).areSelected(container, checkBoxText);
+    }
+
+    @Override
+    public boolean isSelected(final CheckboxComponentType componentType, final String checkBoxText) {
+        return checkboxComponent(componentType).areSelected(checkBoxText);
+    }
+
+    @Override
+    public boolean isSelected(final CheckboxComponentType componentType, final By checkBoxLocator) {
+        return checkboxComponent(componentType).areSelected(checkBoxLocator);
+    }
+
+    @Override
+    public boolean areEnabled(final CheckboxComponentType componentType, final WebElement container, final String... checkBoxText) {
         return checkboxComponent(componentType).areEnabled(container, checkBoxText);
     }
 
     @Override
-    public boolean areEnabled(CheckboxComponentType componentType, String... checkBoxText) {
+    public boolean areEnabled(final CheckboxComponentType componentType, final String... checkBoxText) {
         return checkboxComponent(componentType).areEnabled(checkBoxText);
     }
 
     @Override
-    public boolean areEnabled(CheckboxComponentType componentType, By... checkBoxLocator) {
+    public boolean areEnabled(final CheckboxComponentType componentType, final By... checkBoxLocator) {
         return checkboxComponent(componentType).areEnabled(checkBoxLocator);
     }
 
     @Override
-    public List<String> getSelected(CheckboxComponentType componentType, WebElement container) {
+    public boolean isEnabled(final CheckboxComponentType componentType, final WebElement container, final String checkBoxText) {
+        return checkboxComponent(componentType).areEnabled(container, checkBoxText);
+    }
+
+    @Override
+    public boolean isEnabled(final CheckboxComponentType componentType, final String checkBoxText) {
+        return checkboxComponent(componentType).areEnabled(checkBoxText);
+    }
+
+    @Override
+    public boolean isEnabled(final CheckboxComponentType componentType, final By checkBoxLocator) {
+        return checkboxComponent(componentType).areEnabled(checkBoxLocator);
+    }
+
+    @Override
+    public List<String> getSelected(final CheckboxComponentType componentType, final WebElement container) {
         return checkboxComponent(componentType).getSelected(container);
     }
 
     @Override
-    public List<String> getAll(CheckboxComponentType componentType, WebElement container) {
+    public List<String> getSelected(final CheckboxComponentType componentType, final By containerLocator) {
+        return checkboxComponent(componentType).getSelected(containerLocator);
+    }
+
+    @Override
+    public List<String> getAll(final CheckboxComponentType componentType, final WebElement container) {
         return checkboxComponent(componentType).getAll(container);
     }
 
     @Override
-    public void insertion(ComponentType componentType, By locator, Object... values) {
+    public List<String> getAll(final CheckboxComponentType componentType, final By containerLocator) {
+        return checkboxComponent(componentType).getAll(containerLocator);
+    }
+
+    @Override
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
         select((CheckboxComponentType) componentType, (String) values[0]);
     }
 

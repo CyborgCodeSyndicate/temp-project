@@ -38,5 +38,9 @@ public interface Checkbox {
 
     List<String> getSelected(WebElement container);
 
-    List<String> getAll(WebElement container);
+    List<String> getSelected(By containerLocator);
+
+    List<String> getAll(WebElement WebElement);
+
+    List<String> getAll(By containerLocator);
 }
