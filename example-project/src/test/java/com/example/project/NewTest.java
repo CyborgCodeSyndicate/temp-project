@@ -9,8 +9,6 @@ import com.example.project.rest.authentication.PortalAuthentication;
 import com.example.project.ui.elements.InputFields;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.annotations.AuthenticateAs;
-import com.theairebellion.zeus.api.storage.DataExtractorsApi;
-import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.framework.annotation.Craft;
@@ -23,15 +21,13 @@ import com.theairebellion.zeus.validator.core.Assertion;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
-import static com.example.project.data.creator.TestDataCreator.VALID_STUDENT;
+import static com.example.project.data.creator.TestDataCreator.Data;
 import static com.example.project.rest.Endpoints.ENDPOINT_EXAMPLE;
-import static com.theairebellion.zeus.api.storage.DataExtractorsApi.*;
+import static com.theairebellion.zeus.api.storage.DataExtractorsApi.responseBodyExtraction;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.BODY;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
 import static com.theairebellion.zeus.db.validator.DbAssertionTarget.NUMBER_ROWS;
-import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS;
-import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
-import static com.theairebellion.zeus.validator.core.AssertionTypes.NOT_NULL;
+import static com.theairebellion.zeus.validator.core.AssertionTypes.*;
 
 // @UI
 @API
@@ -42,8 +38,8 @@ public class NewTest extends BaseTest {
     @Test
     @AuthenticateAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
     @InterceptRequests(requestUrlSubStrings = {"api/create-campaign", "upload"})
-    public void scenario_some(Quest quest, @Craft(model = VALID_STUDENT) Student student,
-                              @Craft(model = VALID_STUDENT) Late<Student> student1) {
+    public void scenario_some(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student,
+                              @Craft(model = Data.VALID_STUDENT) Late<Student> student1) {
         quest
             .enters(World.OLYMPYS)
             .request(ENDPOINT_EXAMPLE.withPathParam("campaignId", 17).withQueryParam("page", 1), student)

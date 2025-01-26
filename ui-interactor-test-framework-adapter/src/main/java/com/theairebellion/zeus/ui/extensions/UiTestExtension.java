@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
-import com.theairebellion.zeus.ui.selenium.UIDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import io.qameta.allure.Allure;
 import manifold.ext.rt.api.Jailbreak;
@@ -97,8 +97,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
 
     private static void postQuestCreation(final @Jailbreak Quest quest, final String[] urlsForIntercepting) {
-        UIDriver artifact = quest.artifact(UIServiceFluent.class, UIDriver.class);
-        WebDriver driver = unwrapDriver(artifact.getDriver());
+        SmartWebDriver artifact = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
+        WebDriver driver = unwrapDriver(artifact.getOriginal());
         if (driver instanceof ChromeDriver) {
             DevTools chromeDevTools = ((ChromeDriver) driver).getDevTools();
             chromeDevTools.createSession();
@@ -139,8 +139,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     private WebDriver getWebDriver(ExtensionContext context) {
         @Jailbreak Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(
             StoreKeys.QUEST);
-        UIDriver artifact = quest.artifact(UIServiceFluent.class, UIDriver.class);
-        WebDriver driver = artifact.getDriver();
+        SmartWebDriver artifact = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
+        WebDriver driver = artifact.getOriginal();
         return unwrapDriver(driver);
     }
 

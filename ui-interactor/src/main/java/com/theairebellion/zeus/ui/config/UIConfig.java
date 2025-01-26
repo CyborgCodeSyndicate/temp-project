@@ -30,5 +30,9 @@ public interface UIConfig extends Config {
     @Key("radio.default.type")
     String radioDefaultType();
 
+    @DefaultValue("true")
+    @Key("use.wrap.selenium.function")
+    boolean useWrappedSeleniumFunctions();
+
 
 }

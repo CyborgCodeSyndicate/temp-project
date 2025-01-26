@@ -2,8 +2,8 @@ package com.theairebellion.zeus.ui.config;
 
 import com.theairebellion.zeus.ui.drivers.config.WebDriverConfig;
 import com.theairebellion.zeus.ui.drivers.factory.WebDriverFactory;
-import com.theairebellion.zeus.ui.selenium.UIDriver;
-import com.theairebellion.zeus.ui.selenium.WebDriverEventListener;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.listeners.WebDriverEventListener;
 import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 import org.springframework.context.annotation.Bean;
@@ -20,15 +20,15 @@ public class UIInteractionAutoConfiguration {
     @Bean
     @Lazy
     @Scope("prototype")
-    public UIDriver webDriver() {
-        return new UIDriver(WebDriverFactory.createDriver(uiConfig.browserType(), WebDriverConfig.builder()
-                                                                                      .version(
-                                                                                          uiConfig.browserVersion())
-                                                                                      .headless(uiConfig.headless())
-                                                                                      .eventFiringDecorator(
-                                                                                          new EventFiringDecorator<>(
-                                                                                              new WebDriverEventListener()))
-                                                                                      .build()));
+    public SmartWebDriver webDriver() {
+        return new SmartWebDriver(WebDriverFactory.createDriver(uiConfig.browserType(), WebDriverConfig.builder()
+                .version(
+                        uiConfig.browserVersion())
+                .headless(uiConfig.headless())
+                .eventFiringDecorator(
+                        new EventFiringDecorator<>(
+                                new WebDriverEventListener()))
+                .build()));
     }
 
 

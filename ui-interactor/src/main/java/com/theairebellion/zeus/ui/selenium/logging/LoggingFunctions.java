@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.ui.selenium;
+package com.theairebellion.zeus.ui.selenium.logging;
 
 import com.theairebellion.zeus.ui.log.LogUI;
 import org.openqa.selenium.By;
@@ -64,5 +64,6 @@ public class LoggingFunctions {
                    .map(arg -> arg == null ? "null" : arg.getClass().getSimpleName())
                    .collect(Collectors.joining(","));
     }
+
 
 }

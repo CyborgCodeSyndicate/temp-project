@@ -4,11 +4,16 @@ import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 
 public enum TestDataCreator implements DataForge {
-    VALID_STUDENT_FLOW(DataCreationFunctions::createValidStudent),
-    DOG_PET_FLOW(DataCreationFunctions::createDog);
+    VALID_STUDENT(DataCreationFunctions::createValidStudent),
+    DOG_PET(DataCreationFunctions::createDog);
 
-    public static final String VALID_STUDENT = "VALID_STUDENT_FLOW";
-    public static final String DOG_PET = "DOG_PET_FLOW";
+    public static final class Data {
+        public static final String VALID_STUDENT = "VALID_STUDENT";
+        public static final String DOG_PET = "DOG_PET";
+
+        private Data() {
+        }
+    }
 
     private final Late<Object> createDataFunction;
 
