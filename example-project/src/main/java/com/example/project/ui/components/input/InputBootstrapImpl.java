@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
 

@@ -19,11 +19,15 @@ import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import com.theairebellion.zeus.ui.selenium.UIDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.function.Consumer;
 
 @WorldName("UI")
@@ -92,6 +96,11 @@ public class UIServiceFluent extends FluentService {
     public UIServiceFluent navigate(String url) {
         uiDriver.getDriver().manage().window().maximize();
         uiDriver.getDriver().get(url);
+        return this;
+    }
+
+    public UIServiceFluent back() {
+        uiDriver.getDriver().navigate().back();
         return this;
     }
 }

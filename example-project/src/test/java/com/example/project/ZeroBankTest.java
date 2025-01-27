@@ -22,7 +22,7 @@ public class ZeroBankTest extends BaseTest {
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .navigate("http://zero.webappsecurity.com/")
+                .back()
             .complete();
     }
 
