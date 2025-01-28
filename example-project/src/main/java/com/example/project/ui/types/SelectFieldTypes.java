@@ -1,8 +1,9 @@
 package com.example.project.ui.types;
 
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
+import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 
-public enum SelectFieldTypes implements RadioComponentType {
+public enum SelectFieldTypes implements SelectComponentType {
 
     MD_SELECT_TYPE;
 

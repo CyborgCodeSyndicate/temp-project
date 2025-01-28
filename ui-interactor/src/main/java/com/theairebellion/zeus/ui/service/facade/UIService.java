@@ -20,6 +20,8 @@ import com.theairebellion.zeus.ui.components.radio.RadioServiceImpl;
 import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
 import com.theairebellion.zeus.ui.components.checkbox.CheckboxService;
 import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
+import com.theairebellion.zeus.ui.components.toggle.ToggleService;
+import com.theairebellion.zeus.ui.components.toggle.ToggleServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
@@ -39,6 +41,7 @@ public class UIService {
     private ButtonService buttonField;
     private RadioService radioField;
     private CheckboxService checkboxField;
+    private ToggleService toggleField;
     private SelectService selectField;
     private ItemListService listField;
     private LoaderService loaderField;
@@ -55,6 +58,7 @@ public class UIService {
         buttonField = new ButtonServiceImpl(smartSelenium);
         radioField = new RadioServiceImpl(smartSelenium);
         checkboxField = new CheckboxServiceImpl(smartSelenium);
+        toggleField = new ToggleServiceImpl(smartSelenium);
         selectField = new SelectServiceImpl(smartSelenium);
         listField = new ItemListServiceImpl(smartSelenium);
         loaderField = new LoaderServiceImpl(smartSelenium);

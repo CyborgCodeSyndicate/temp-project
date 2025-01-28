@@ -32,6 +32,10 @@ public class UIComponentsInUse {
                 CheckboxServiceFluent.class);
     }
 
+    public static ToggleServiceFluent toggle(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.TOGGLE_FIELDS.getFieldName(), uiServiceFluent,
+                ToggleServiceFluent.class);
+    }
 
     public static SelectServiceFluent select(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.SELECT_FIELDS.getFieldName(), uiServiceFluent,

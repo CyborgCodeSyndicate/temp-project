@@ -8,6 +8,7 @@ public enum Features {
     BUTTON_FIELDS("buttonField"),
     RADIO_FIELDS("radioField"),
     CHECKBOX_FIELDS("checkboxField"),
+    TOGGLE_FIELDS("toggleField"),
     SELECT_FIELDS("selectField"),
     LIST_FIELDS("listField"),
     LOADER_FIELDS("loaderField"),

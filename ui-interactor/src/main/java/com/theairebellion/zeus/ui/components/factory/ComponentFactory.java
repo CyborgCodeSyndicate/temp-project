@@ -20,6 +20,8 @@ import com.theairebellion.zeus.ui.components.radio.Radio;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.select.Select;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
+import com.theairebellion.zeus.ui.components.toggle.Toggle;
+import com.theairebellion.zeus.ui.components.toggle.ToggleComponentType;
 import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -48,6 +50,10 @@ public class ComponentFactory {
 
     public static Checkbox getCheckBoxComponent(CheckboxComponentType type, SmartSelenium smartSelenium) {
         return getComponent(Checkbox.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Toggle getToggleComponent(ToggleComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Toggle.class, type, uiConfig.projectPackage(), smartSelenium);
     }
 
     public static Select getSelectComponent(SelectComponentType type, SmartSelenium smartSelenium) {
@@ -89,5 +95,4 @@ public class ComponentFactory {
             throw new RuntimeException(e);
         }
     }
-
 }

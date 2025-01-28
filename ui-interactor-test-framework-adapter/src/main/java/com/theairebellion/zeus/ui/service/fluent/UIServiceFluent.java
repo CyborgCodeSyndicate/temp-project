@@ -94,4 +94,9 @@ public class UIServiceFluent extends FluentService {
                 quest.getStorage());
     }
 
+
+
+    public UIServiceFluent navigate() {
+        return this;
+    }
 }
