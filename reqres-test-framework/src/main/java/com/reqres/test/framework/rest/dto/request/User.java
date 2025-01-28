@@ -1,4 +1,4 @@
-package com.reqres.test.framework.rest.dto;
+package com.reqres.test.framework.rest.dto.request;
 
 import lombok.Builder;
 import lombok.Data;

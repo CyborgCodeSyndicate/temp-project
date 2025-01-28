@@ -1,13 +1,18 @@
 package com.reqres.test.framework;
 
-import com.reqres.test.framework.rest.dto.LoginUser;
-import com.reqres.test.framework.rest.dto.User;
+import com.reqres.test.framework.rest.dto.request.LoginUser;
+import com.reqres.test.framework.rest.dto.request.User;
+import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
+import com.reqres.test.framework.rest.dto.response.UserResponse;
 import com.theairebellion.zeus.api.annotations.API;
+import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.validator.core.Assertion;
+import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,8 +22,10 @@ import static com.reqres.test.framework.base.World.OLYMPYS;
 import static com.reqres.test.framework.data.creator.TestDataCreator.LOGIN_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER;
 import static com.reqres.test.framework.rest.Endpoints.*;
+import static com.theairebellion.zeus.api.storage.DataExtractorsApi.responseBodyExtraction;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @API
 public class ReqresApiTest extends BaseTest {
@@ -69,6 +76,18 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder(String.class).target(BODY).key("data.email").type(IS).expected("emma.wong@reqres.in").soft(true).build(),
                         Assertion.builder(String.class).target(BODY).key("support.url").type(IS).expected("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral").soft(true).build()
                 ).complete();
+    }
+
+    @Test
+    public void testGetUserNew(Quest quest) {
+        quest.enters(OLYMPYS)
+                .request(
+                        GET_ALL_USERS.withQueryParam("page", 2))
+                .validate(() -> {
+                    GetUsersResponse usersResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);
+                    assertEquals(6, usersResponse.getData().size(), "User data size not correct");
+                    assertEquals(7, usersResponse.getData().get(0).getFirstName().length(), "Name length incorrect!");
+                });
     }
 
     @Test

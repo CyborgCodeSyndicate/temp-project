@@ -1,7 +1,7 @@
 package com.reqres.test.framework;
 
-import com.reqres.test.framework.rest.dto.LoginUser;
-import com.reqres.test.framework.rest.dto.User;
+import com.reqres.test.framework.rest.dto.request.LoginUser;
+import com.reqres.test.framework.rest.dto.request.User;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.base.BaseTest;

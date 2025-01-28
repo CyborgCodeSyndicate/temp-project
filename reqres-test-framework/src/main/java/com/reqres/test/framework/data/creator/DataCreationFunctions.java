@@ -1,7 +1,7 @@
 package com.reqres.test.framework.data.creator;
 
-import com.reqres.test.framework.rest.dto.LoginUser;
-import com.reqres.test.framework.rest.dto.User;
+import com.reqres.test.framework.rest.dto.request.LoginUser;
+import com.reqres.test.framework.rest.dto.request.User;
 
 public class DataCreationFunctions {
 
