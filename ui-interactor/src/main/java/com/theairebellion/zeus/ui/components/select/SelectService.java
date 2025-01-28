@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.select;
 
+import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
@@ -329,8 +330,12 @@ public interface SelectService extends Insertion {
      */
 
     private static SelectComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(SelectComponentType.class,
-                uiConfig.selectDefaultType(),
-                uiConfig.projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(SelectComponentType.class,
+                    uiConfig.selectDefaultType(),
+                    uiConfig.projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

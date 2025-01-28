@@ -429,10 +429,12 @@ public interface InputService extends Insertion {
      * @return The default RadioComponentType.
      */
     private static InputComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
-            uiConfig.inputDefaultType(),
-            uiConfig.projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
+                    uiConfig.inputDefaultType(),
+                    uiConfig.projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
-
-
 }

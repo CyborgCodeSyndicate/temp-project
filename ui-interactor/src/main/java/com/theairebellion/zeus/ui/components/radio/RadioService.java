@@ -351,8 +351,12 @@ public interface RadioService extends Insertion {
      * @return The default RadioComponentType.
      */
     private static RadioComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(RadioComponentType.class,
-                uiConfig.radioDefaultType(),
-                uiConfig.projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(RadioComponentType.class,
+                    uiConfig.radioDefaultType(),
+                    uiConfig.projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

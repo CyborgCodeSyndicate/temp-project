@@ -596,8 +596,12 @@ public interface ItemListService extends Insertion {
      * @return The default ItemListComponentType.
      */
     private static ItemListComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(ItemListComponentType.class,
-                uiConfig.listDefaultType(),
-                uiConfig.projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(ItemListComponentType.class,
+                    uiConfig.listDefaultType(),
+                    uiConfig.projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }
