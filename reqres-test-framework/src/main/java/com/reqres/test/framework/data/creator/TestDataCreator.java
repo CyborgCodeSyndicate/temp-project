@@ -5,10 +5,11 @@ import com.theairebellion.zeus.framework.parameters.Late;
 
 public enum TestDataCreator implements DataForge {
     USER_LEADER_FLOW(DataCreationFunctions::createLeaderUser),
-    LOGIN_ADMIN_USER_FLOW(DataCreationFunctions::createLoginUser),;
+    LOGIN_ADMIN_USER_FLOW(DataCreationFunctions::createLoginUser);
 
     public static final String USER_LEADER = "USER_LEADER_FLOW";
     public static final String LOGIN_ADMIN_USER = "LOGIN_ADMIN_USER_FLOW";
+
 
     private final Late<Object> createDataFunction;
 
