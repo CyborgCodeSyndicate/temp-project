@@ -12,7 +12,9 @@ import java.util.Map;
 
 public interface Endpoint {
 
-    ApiConfig apiConfig = ConfigCache.getOrCreate(ApiConfig.class);
+    default ApiConfig getApiConfig() {
+        return ConfigCache.getOrCreate(ApiConfig.class);
+    }
 
     Method method();
 
@@ -21,7 +23,7 @@ public interface Endpoint {
     Enum<?> enumImpl();
 
     default String baseUrl() {
-        return apiConfig.baseUrl();
+        return getApiConfig().baseUrl();
     }
 
     default Map<String, List<String>> headers() {
@@ -32,8 +34,8 @@ public interface Endpoint {
         RequestSpecification spec = RestAssured.given()
                                         .baseUri(baseUrl())
                                         .headers(headers());
-        if (apiConfig.restAssuredLoggingEnabled()) {
-            switch (apiConfig.restAssuredLoggingLevel()) {
+        if (getApiConfig().restAssuredLoggingEnabled()) {
+            switch (getApiConfig().restAssuredLoggingLevel()) {
                 case "BASIC" -> spec.log().ifValidationFails();
                 case "ALL" -> spec.log().all();
                 case "NONE" -> { /* No logging */ }

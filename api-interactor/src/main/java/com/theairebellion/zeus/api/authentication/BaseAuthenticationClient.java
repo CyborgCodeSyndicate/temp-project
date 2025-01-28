@@ -14,7 +14,8 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
 
 
     @Override
-    public AuthenticationKey authenticate(final RestService restService, final String username, final String password) {
+    public AuthenticationKey authenticate(RestService restService, String username, String password) {
+        Objects.requireNonNull(restService, "RestService must not be null");
         var authenticationKey = new AuthenticationKey(username, password, this.getClass());
         if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
             userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
