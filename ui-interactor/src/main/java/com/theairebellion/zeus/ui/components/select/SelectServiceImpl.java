@@ -26,27 +26,38 @@ public class SelectServiceImpl implements SelectService {
     }
 
     @Override
-    public void selectItems(final SelectComponentType componentType, final DdlMode mode, final WebElement container,
+    public void selectItems(final SelectComponentType componentType, final WebElement container,
                             final String... values) {
-        selectComponent(componentType).selectItems(mode, container, values);
+        selectComponent(componentType).selectItems(container, values);
     }
 
     @Override
-    public void selectItems(final SelectComponentType componentType, final DdlMode mode, final By containerLocator,
+    public void selectItem(SelectComponentType componentType, WebElement container, String value) {
+        selectItems(componentType, container, value);
+    }
+
+    @Override
+    public void selectItems(final SelectComponentType componentType, final By containerLocator,
                             final String... values) {
-        selectComponent(componentType).selectItems(mode, containerLocator, values);
+        selectComponent(componentType).selectItems(containerLocator, values);
     }
 
     @Override
-    public List<String> selectItems(final SelectComponentType componentType, final DdlMode mode,
-                                    final WebElement container, final Strategy strategy) {
-        return selectComponent(componentType).selectItems(mode, container, strategy);
+    public void selectItem(final SelectComponentType componentType, final By containerLocator,
+                           final String value) {
+        selectItems(componentType, containerLocator, value);
     }
 
     @Override
-    public List<String> selectItems(final SelectComponentType componentType, final DdlMode mode,
-                                    final By containerLocator, final Strategy strategy) {
-        return selectComponent(componentType).selectItems(mode, containerLocator, strategy);
+    public List<String> selectItems(final SelectComponentType componentType, final WebElement container,
+                                    final Strategy strategy) {
+        return selectComponent(componentType).selectItems(container, strategy);
+    }
+
+    @Override
+    public List<String> selectItems(final SelectComponentType componentType, final By containerLocator,
+                                    final Strategy strategy) {
+        return selectComponent(componentType).selectItems(containerLocator, strategy);
     }
 
     @Override
@@ -60,25 +71,21 @@ public class SelectServiceImpl implements SelectService {
     }
 
     @Override
-    public List<String> getAvailableItems(final SelectComponentType componentType, final WebElement container,
-                                          final String search) {
-        return selectComponent(componentType).getAvailableItems(container, search);
-    }
-
-    @Override
-    public List<String> getAvailableItems(final SelectComponentType componentType, final By containerLocator,
-                                          final String search) {
-        return selectComponent(componentType).getAvailableItems(containerLocator, search);
-    }
-
-    @Override
     public List<String> getSelectedItems(final SelectComponentType componentType, final WebElement container) {
         return selectComponent(componentType).getSelectedItems(container);
+    }
+
+    public String getSelectedItem(final SelectComponentType componentType, final WebElement container) {
+        return selectComponent(componentType).getSelectedItems(container).get(0);
     }
 
     @Override
     public List<String> getSelectedItems(final SelectComponentType componentType, final By containerLocator) {
         return selectComponent(componentType).getSelectedItems(containerLocator);
+    }
+
+    public String getSelectedItem(final SelectComponentType componentType, final By containerLocator) {
+        return selectComponent(componentType).getSelectedItems(containerLocator).get(0);
     }
 
     @Override
@@ -110,7 +117,7 @@ public class SelectServiceImpl implements SelectService {
         String[] stringValues = Arrays.stream(values)
                 .map(String::valueOf)
                 .toArray(String[]::new);
-        selectItems((SelectComponentType) componentType, DdlMode.MULTI_SELECT_WITH_CHOOSING, locator, stringValues);
+        selectItems((SelectComponentType) componentType, locator, stringValues);
     }
 
     private Select selectComponent(final SelectComponentType componentType) {

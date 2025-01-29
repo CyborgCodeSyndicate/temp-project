@@ -10,6 +10,8 @@ public enum InputFields implements UIElement {
 
     USERNAME_FIELD(By.id("user_login"), InputFieldTypes.BOOTSTRAP_INPUT_TYPE),
     PASSWORD_FIELD(By.id("user_password"), InputFieldTypes.BOOTSTRAP_INPUT_TYPE),
+    AMOUNT_FIELD(By.id("tf_amount"), InputFieldTypes.BOOTSTRAP_INPUT_TYPE),
+    DESCRIPTION_FIELD(By.id("tf_description"), InputFieldTypes.BOOTSTRAP_INPUT_TYPE),
     ;
 
     public static final String USERNAME = "USERNAME_FIELD";

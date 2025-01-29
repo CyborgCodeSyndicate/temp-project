@@ -1,22 +1,22 @@
 package com.example.project.ui.elements.bootstrap;
 
-import com.example.project.ui.types.ButtonFieldTypes;
+import com.example.project.ui.types.LinkFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
+import com.theairebellion.zeus.ui.components.link.LinkComponentType;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import org.openqa.selenium.By;
 
-public enum ButtonFields implements UIElement {
+public enum LinkFields implements UIElement {
 
-    SIGN_IN_BUTTON(By.id("signin_button"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
-    SIGN_IN_FORM_BUTTON(By.cssSelector("input[value='Sign in']"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
-    SUBMIT_BUTTON(By.id("btn_submit"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE);
+    CHECKING_ACCOUNT_ACTIVITY(By.id("account_activity_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
+    TRANSFER_FUNDS(By.id("transfer_funds_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
+    MY_MONEY_MAP(By.id("money_map_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE);
 
     private final By locator;
-    private final ButtonComponentType componentType;
+    private final LinkComponentType componentType;
 
 
-    ButtonFields(final By locator, final ButtonComponentType componentType) {
+    LinkFields(final By locator, final LinkComponentType componentType) {
         this.locator = locator;
         this.componentType = componentType;
     }
