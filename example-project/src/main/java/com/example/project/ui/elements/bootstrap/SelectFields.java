@@ -1,22 +1,21 @@
 package com.example.project.ui.elements.bootstrap;
 
-import com.example.project.ui.types.ButtonFieldTypes;
+import com.example.project.ui.types.SelectFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
+import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import org.openqa.selenium.By;
 
-public enum ButtonFields implements UIElement {
+public enum SelectFields implements UIElement {
 
-    SIGN_IN_BUTTON(By.id("signin_button"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
-    SIGN_IN_FORM_BUTTON(By.cssSelector("input[value='Sign in']"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
-    SUBMIT_BUTTON(By.id("btn_submit"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE);
+    FROM_ACCOUNT_DDL(By.id("tf_fromAccountId"), SelectFieldTypes.BOOTSTRAP_SELECT_TYPE),
+    TO_ACCOUNT(By.id("tf_toAccountId"), SelectFieldTypes.BOOTSTRAP_SELECT_TYPE);
 
     private final By locator;
-    private final ButtonComponentType componentType;
+    private final SelectComponentType componentType;
 
 
-    ButtonFields(final By locator, final ButtonComponentType componentType) {
+    SelectFields(final By locator, final SelectComponentType componentType) {
         this.locator = locator;
         this.componentType = componentType;
     }

@@ -8,21 +8,17 @@ import java.util.List;
 
 public interface Select {
 
-    void selectItems(DdlMode mode, WebElement container, String... values);
+    void selectItems(WebElement container, String... values);
 
-    void selectItems(DdlMode mode, By containerLocator, String... values);
+    void selectItems(By containerLocator, String... values);
 
-    List<String> selectItems(DdlMode mode, WebElement container, Strategy strategy);
+    List<String> selectItems(WebElement container, Strategy strategy);
 
-    List<String> selectItems(DdlMode mode, By containerLocator, Strategy strategy);
+    List<String> selectItems(By containerLocator, Strategy strategy);
 
     List<String> getAvailableItems(WebElement container);
 
     List<String> getAvailableItems(By containerLocator);
-
-    List<String> getAvailableItems(WebElement container, String search);
-
-    List<String> getAvailableItems(By containerLocator, String search);
 
     List<String> getSelectedItems(WebElement container);
 

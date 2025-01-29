@@ -3,7 +3,6 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.components.select.DdlMode;
 import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.UIElement;
@@ -29,10 +28,18 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent selectItems(DdlMode mode, final UIElement element, final String... values) {
+    public UIServiceFluent selectItems(final UIElement element, final String... values) {
         Allure.step(String.format("Selecting items: '%s' from select component of type: '%s'.", Arrays.toString(values),
-            element.componentType().toString()));
-        selectService.selectItems(element.componentType(), mode, element.locator(), values);
+                element.componentType().toString()));
+        selectService.selectItems(element.componentType(), element.locator(), values);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent selectItem(final UIElement element, final String value) {
+        Allure.step(String.format("Selecting items: '%s' from select component of type: '%s'.", value,
+                element.componentType().toString()));
+        selectService.selectItem(element.componentType(), element.locator(), value);
         return uiServiceFluent;
     }
 

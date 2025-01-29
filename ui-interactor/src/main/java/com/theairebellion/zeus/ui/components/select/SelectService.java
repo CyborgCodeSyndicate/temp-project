@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.components.select;
 
-import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
@@ -22,34 +21,50 @@ public interface SelectService extends Insertion {
     /**
      * Selects one or more items in a select component based on the given values. Uses the default select component type.
      *
-     * @param mode      The mode of dropdown list to interact with.
      * @param container The WebElement representing the container of the select component.
      * @param values    The values of the items to be selected. Varargs argument to select multiple items.
      */
-    default void selectItems(DdlMode mode, WebElement container, String... values) {
-        selectItems(DEFAULT_TYPE, mode, container, values);
+    default void selectItems(WebElement container, String... values) {
+        selectItems(DEFAULT_TYPE, container, values);
     }
 
     /**
      * Selects one or more items in a select component based on the given values.
      *
      * @param componentType The type of select component.
-     * @param mode          The mode of dropdown list to interact with.
      * @param container     The WebElement representing the container of the select component.
      * @param values        The values of the items to be selected. Varargs argument to select multiple items.
      */
-    void selectItems(SelectComponentType componentType, DdlMode mode, WebElement container, String... values);
+    void selectItems(SelectComponentType componentType, WebElement container, String... values);
+
+    /**
+     * Selects one or more items in a select component based on the given values. Uses the default select component type.
+     *
+     * @param container The WebElement representing the container of the select component.
+     * @param value     The value of the item to be selected.
+     */
+    default void selectItem(WebElement container, String value) {
+        selectItem(DEFAULT_TYPE, container, value);
+    }
+
+    /**
+     * Selects one or more items in a select component based on the given values.
+     *
+     * @param componentType The type of select component.
+     * @param container     The WebElement representing the container of the select component.
+     * @param value         The value of the item to be selected.
+     */
+    void selectItem(SelectComponentType componentType, WebElement container, String value);
 
     /**
      * Selects one or more items in a select component based on the given values using the default select component type.
      * The select component is identified by the provided container locator.
      *
-     * @param mode             The mode of the dropdown list to interact with.
      * @param containerLocator The By locator that identifies the container of the select component.
      * @param values           The values of the items to be selected. Varargs argument to select multiple items.
      */
-    default void selectItems(DdlMode mode, By containerLocator, String... values) {
-        selectItems(DEFAULT_TYPE, mode, containerLocator, values);
+    default void selectItems(By containerLocator, String... values) {
+        selectItems(DEFAULT_TYPE, containerLocator, values);
     }
 
     /**
@@ -57,46 +72,63 @@ public interface SelectService extends Insertion {
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
-     * @param mode             The mode of dropdown list to interact with.
      * @param containerLocator The By locator that identifies the container of the select component.
      * @param values           The values of the items to be selected. Varargs argument to select multiple items.
      */
-    void selectItems(SelectComponentType componentType, DdlMode mode, By containerLocator, String... values);
+    void selectItems(SelectComponentType componentType, By containerLocator, String... values);
+
+    /**
+     * Selects one or more items in a select component based on the given values using the default select component type.
+     * The select component is identified by the provided container locator.
+     *
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param value            The value of the item to be selected.
+     */
+    default void selectItem(By containerLocator, String value) {
+        selectItem(DEFAULT_TYPE, containerLocator, value);
+    }
+
+    /**
+     * Selects one or more items in a select component based on the given values.
+     * The select component is identified by the provided container locator and the specified component type.
+     *
+     * @param componentType    The type of select component.
+     * @param containerLocator The By locator that identifies the container of the select component.
+     * @param value            The value of the item to be selected.
+     */
+    void selectItem(SelectComponentType componentType, By containerLocator, String value);
 
     /**
      * Selects items in a select component based on a specific strategy. Uses the default select component type.
      *
-     * @param mode      The mode of dropdown list to interact with.
      * @param container The WebElement representing the container of the select component.
      * @param strategy  The strategy to use for selecting items.
      * @return A List of Strings representing the values of the selected item(s).
      */
-    default List<String> selectItems(DdlMode mode, WebElement container, Strategy strategy) {
-        return selectItems(DEFAULT_TYPE, mode, container, strategy);
+    default List<String> selectItems(WebElement container, Strategy strategy) {
+        return selectItems(DEFAULT_TYPE, container, strategy);
     }
 
     /**
      * Selects items in a select component based on a specific strategy.
      *
      * @param componentType The type of select component.
-     * @param mode          The mode of dropdown list to interact with.
      * @param container     The WebElement representing the container of the select component.
      * @param strategy      The strategy to use for selecting items.
      * @return A List of Strings representing the values of the selected item(s).
      */
-    List<String> selectItems(SelectComponentType componentType, DdlMode mode, WebElement container, Strategy strategy);
+    List<String> selectItems(SelectComponentType componentType, WebElement container, Strategy strategy);
 
     /**
      * Selects items in a select component based on a specific strategy using the default select component type.
      * The select component is identified by the provided container locator.
      *
-     * @param mode             The mode of the dropdown list to interact with.
      * @param containerLocator The By locator that identifies the container of the select component.
      * @param strategy         The strategy to use for selecting items.
      * @return A List of Strings representing the values of the selected item(s).
      */
-    default List<String> selectItems(DdlMode mode, By containerLocator, Strategy strategy) {
-        return selectItems(DEFAULT_TYPE, mode, containerLocator, strategy);
+    default List<String> selectItems(By containerLocator, Strategy strategy) {
+        return selectItems(DEFAULT_TYPE, containerLocator, strategy);
     }
 
     /**
@@ -104,12 +136,11 @@ public interface SelectService extends Insertion {
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
-     * @param mode             The mode of dropdown list to interact with.
      * @param containerLocator The By locator that identifies the container of the select component.
      * @param strategy         The strategy to use for selecting items.
      * @return A List of Strings representing the values of the selected item(s).
      */
-    List<String> selectItems(SelectComponentType componentType, DdlMode mode, By containerLocator, Strategy strategy);
+    List<String> selectItems(SelectComponentType componentType, By containerLocator, Strategy strategy);
 
     /**
      * Retrieves a list of available items in a select component. Uses the default select component type.
@@ -150,50 +181,6 @@ public interface SelectService extends Insertion {
      * @return A List of Strings representing the available items.
      */
     List<String> getAvailableItems(SelectComponentType componentType, By containerLocator);
-
-    /**
-     * Retrieves a list of available items in a select component that match a given search term. Uses the default select component type.
-     *
-     * @param container The WebElement representing the container of the select component.
-     * @param search    The search term to filter the available items.
-     * @return A List of Strings representing the filtered available items.
-     */
-    default List<String> getAvailableItems(WebElement container, String search) {
-        return getAvailableItems(DEFAULT_TYPE, container, search);
-    }
-
-    /**
-     * Retrieves a list of available items in a select component that match a given search term.
-     *
-     * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
-     * @param search        The search term to filter the available items.
-     * @return A List of Strings representing the filtered available items.
-     */
-    List<String> getAvailableItems(SelectComponentType componentType, WebElement container, String search);
-
-    /**
-     * Retrieves a list of available items in a select component that match a given search term.
-     * The select component is identified by the provided container locator, using the default select component type.
-     *
-     * @param containerLocator The By locator that identifies the container of the select component.
-     * @param search           The search term to filter the available items.
-     * @return A List of Strings representing the filtered available items.
-     */
-    default List<String> getAvailableItems(By containerLocator, String search) {
-        return getAvailableItems(DEFAULT_TYPE, containerLocator, search);
-    }
-
-    /**
-     * Retrieves a list of available items in a select component that match a given search term.
-     * The select component is identified by the provided container locator and the specified component type.
-     *
-     * @param componentType    The type of select component.
-     * @param containerLocator The By locator that identifies the container of the select component.
-     * @param search           The search term to filter the available items.
-     * @return A List of Strings representing the filtered available items.
-     */
-    List<String> getAvailableItems(SelectComponentType componentType, By containerLocator, String search);
 
     /**
      * Retrieves a list of currently selected items in a select component. Uses the default select component type.
