@@ -1,20 +1,27 @@
 package com.example.project;
 
+import com.example.project.base.World;
 import com.example.project.data.cleaner.TestDataCleaner;
 import com.example.project.model.Student;
 import com.example.project.preconditions.QuestPreconditions;
 import com.example.project.rest.authentication.AdminAuth;
 import com.example.project.rest.authentication.PortalAuthentication;
 import com.theairebellion.zeus.api.annotations.API;
-import com.theairebellion.zeus.api.annotations.AuthenticateAs;
+import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.db.annotations.DB;
-import com.theairebellion.zeus.framework.annotation.*;
+import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.annotation.Journey;
+import com.theairebellion.zeus.framework.annotation.JourneyData;
+import com.theairebellion.zeus.framework.annotation.PreQuest;
+import com.theairebellion.zeus.framework.annotation.Ripper;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
 import org.junit.jupiter.api.Test;
 
 import static com.example.project.data.creator.TestDataCreator.Data;
+import static com.example.project.ui.elements.InputFields.USERNAME;
 
 // @UI
 @API
@@ -59,7 +66,7 @@ public class ExampleTest extends BaseTest {
 
 
     @Test
-    @AuthenticateAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
+    @AuthenticateViaApiAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
     @PreQuest({
         @Journey(value = QuestPreconditions.Data.STUDENT_PRECONDITION, journeyData = {@JourneyData(Data.VALID_STUDENT)})
     })
@@ -69,10 +76,11 @@ public class ExampleTest extends BaseTest {
         System.out.println("dsa");
     }
 
+
     @Test
-    @AuthenticateAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
+    @AuthenticateViaApiAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
     @PreQuest({
-            @Journey(value = QuestPreconditions.Data.STUDENT_PRECONDITION, journeyData = {@JourneyData(Data.VALID_STUDENT)})
+        @Journey(value = QuestPreconditions.Data.STUDENT_PRECONDITION, journeyData = {@JourneyData(Data.VALID_STUDENT)})
     })
     @Ripper(targets = {TestDataCleaner.Data.ALL_CREATED_STUDENTS})
     public void testExample2(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student1,
@@ -81,16 +89,49 @@ public class ExampleTest extends BaseTest {
     }
 
 
-//    @Override
-//    protected void beforeAll(final Services services) {
-//        RestService restService1 = services.service(OLYMPYS, RestService.class);
-//        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
-//    }
-//
-//
-//    @Override
-//    protected void afterAll(final Services services) {
-//        RestService restService1 = services.service(OLYMPYS, RestService.class);
-//    }
+    @Test
+    @PreQuest({
+        @Journey(value = QuestPreconditions.Data.LOGIN,
+            journeyData = {@JourneyData(Data.USERNAME_JOHN), @JourneyData(Data.PASSWORD_JOHN)})
+    })
+
+    public void testExample3(Quest quest) {
+        quest.enters(World.FORGE)
+            .login(testData().username(), "sfsdfsdfs")
+            .then()
+
+            .enters(World.EARTH)
+            .input().insert(USERNAME, "vdsfsd")
+
+
+            .input().getErrorMessage(USERNAME)
+            .validate(softAssertions ->
+                          softAssertions.assertThat(retrieve(StorageKeysUi.UI, USERNAME, String.class))
+                              .isEqualTo("Expected Message"))
+
+            .validate(softAssertions ->
+                          softAssertions.assertThat(DefaultStorage.retrieve(USERNAME, String.class))
+                              .isEqualTo("Expected Message"))
+
+
+
+            .input().validateErrorMessage(USERNAME, "Expected Message")
+
+
+            .complete();
+    }
+
+
+    //    @Override
+    //    protected void beforeAll(final Services services) {
+    //        RestService restService1 = services.service(OLYMPYS, RestService.class);
+    //        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
+    //    }
+    //
+    //
+    //    @Override
+    //    protected void afterAll(final Services services) {
+    //        RestService restService1 = services.service(OLYMPYS, RestService.class);
+    //    }
 
 }

@@ -8,6 +8,7 @@ import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.validator.core.Assertion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,7 +29,7 @@ public class ApiTestTry extends BaseTest {
     @Test
     public void testPet(Quest quest, @Craft(model = Data.DOG_PET) Pet pet) {
         quest.enters(World.OLYMPYS)
-                .requestAndValidate(CREATE_PET.withQueryParam("name", "john").withQueryParam("surname", "smith"), pet,
+                .requestAndValidate(CREATE_PET, pet,
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(200).build())
                 .complete();
     }
@@ -39,7 +40,6 @@ public class ApiTestTry extends BaseTest {
                 Arguments.of(DOG_PET.dataCreator(), VALID_STUDENT.dataCreator())
         );
     }
-
     @ParameterizedTest
     @MethodSource("petsProvider")
     public void testPetNew(Late<Pet> pet, Late<Student> student, Quest quest) {

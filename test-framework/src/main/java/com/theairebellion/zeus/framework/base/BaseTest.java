@@ -12,23 +12,28 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Properties;
 
 @Odyssey
 @SpringBootTest(
     classes = {TestConfig.class},
     webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
-
-@Component
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class BaseTest {
 
-    @Autowired
-    @Lazy
-    private Services services;
+    static {
+        synchronized (BaseTest.class){
+            addSystemProperties();
+        }
+    }
 
 
     protected <T> T retrieve(Enum<?> key, Class<T> clazz) {
@@ -53,23 +58,37 @@ public class BaseTest {
     }
 
 
-    @AfterAll
-    protected final void beforeAll() {
-        beforeAll(services);
+    private static void addSystemProperties() {
+        Resource resource = new ClassPathResource("system.properties");
+        if (resource.exists()) {
+            try {
+                Properties props = PropertiesLoaderUtils.loadProperties(resource);
+                for (String propName : props.stringPropertyNames()) {
+                    String propValue = props.getProperty(propName);
+                    if (System.getProperty(propName) == null) {
+                        System.setProperty(propName, propValue);
+                    }
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException("Failed to load system.properties", e);
+            }
+        }
     }
 
 
-    protected void beforeAll(Services services) {
-    }
+    public static final class DefaultStorage {
+
+        public static <T> T retrieve(Enum<?> key, Class<T> clazz) {
+            @Jailbreak Quest quest = QuestHolder.get();
+            return quest.getStorage().sub().get(key, clazz);
+        }
 
 
-    @AfterAll
-    protected final void afterAll() {
-        afterAll(services);
-    }
+        public static <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
+            @Jailbreak Quest quest = QuestHolder.get();
+            return quest.getStorage().sub().get(extractor, clazz);
+        }
 
-
-    protected void afterAll(Services services) {
     }
 
 

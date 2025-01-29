@@ -51,12 +51,17 @@ public class UIServiceFluent extends FluentService {
 
     @Override
     protected void postQuestSetupInitialization() {
-        inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(driver));
+        inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(driver), driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
-        insertionService = new InsertionServiceFluent(new InsertionServiceElementImpl(serviceRegistry), this,
-                quest.getStorage());
+        insertionService = new InsertionServiceFluent(new InsertionServiceElementImpl(serviceRegistry, driver), this,
+            quest.getStorage());
+    }
+
+
+    private SmartWebDriver getDriver() {
+        return driver;
     }
 
 }

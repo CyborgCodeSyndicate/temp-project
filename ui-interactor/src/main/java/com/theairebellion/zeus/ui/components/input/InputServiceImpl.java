@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.input;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.log.LogUI;
@@ -7,19 +8,23 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class InputServiceImpl implements InputService {
+public class InputServiceImpl extends AbstractComponentService<InputComponentType, Input> implements InputService {
 
-    protected SmartWebDriver smartWebDriver;
+    protected SmartWebDriver driver;
     private static Map<InputComponentType, Input> components;
 
 
     public InputServiceImpl(SmartWebDriver driver) {
-        this.smartWebDriver = driver;
-        components = new HashMap<>();
+        super(driver);
+    }
+
+
+    @Override
+    protected Input createComponent(InputComponentType componentType) {
+        return ComponentFactory.getInputComponent(componentType, driver);
     }
 
 
@@ -34,7 +39,7 @@ public class InputServiceImpl implements InputService {
     public void insert(final SmartWebElement container, final String inputFieldLabel, final String value,
                        final InputComponentType componentType) {
         LogUI.info("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         inputComponent(componentType).insert(container, inputFieldLabel, value);
     }
 
@@ -42,7 +47,7 @@ public class InputServiceImpl implements InputService {
     @Override
     public void insert(final String inputFieldLabel, final String value, final InputComponentType componentType) {
         LogUI.info("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         inputComponent(componentType).insert(inputFieldLabel, value);
     }
 
@@ -66,7 +71,7 @@ public class InputServiceImpl implements InputService {
     public void clear(final SmartWebElement container, final String inputFieldLabel,
                       final InputComponentType componentType) {
         LogUI.info("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         inputComponent(componentType).clear(container, inputFieldLabel);
     }
 
@@ -74,7 +79,7 @@ public class InputServiceImpl implements InputService {
     @Override
     public void clear(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         inputComponent(componentType).clear(inputFieldLabel);
     }
 
@@ -97,7 +102,7 @@ public class InputServiceImpl implements InputService {
     public String getValue(final SmartWebElement container, final String inputFieldLabel,
                            final InputComponentType componentType) {
         LogUI.info("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         return inputComponent(componentType).getValue(container);
     }
 
@@ -105,7 +110,7 @@ public class InputServiceImpl implements InputService {
     @Override
     public String getValue(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         return inputComponent(componentType).getValue(inputFieldLabel);
     }
 
@@ -128,7 +133,7 @@ public class InputServiceImpl implements InputService {
     public boolean isEnabled(final SmartWebElement container, final String inputFieldLabel,
                              final InputComponentType componentType) {
         LogUI.info("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         return inputComponent(componentType).isEnabled(container, inputFieldLabel);
     }
 
@@ -136,7 +141,7 @@ public class InputServiceImpl implements InputService {
     @Override
     public boolean isEnabled(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         return inputComponent(componentType).isEnabled(inputFieldLabel);
     }
 
@@ -159,7 +164,7 @@ public class InputServiceImpl implements InputService {
     public String getErrorMessage(final SmartWebElement container, final String inputFieldLabel,
                                   final InputComponentType componentType) {
         LogUI.info("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(container, inputFieldLabel);
     }
 
@@ -167,7 +172,7 @@ public class InputServiceImpl implements InputService {
     @Override
     public String getErrorMessage(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
-                componentType.getType().name());
+            componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(inputFieldLabel);
     }
 
@@ -184,9 +189,10 @@ public class InputServiceImpl implements InputService {
         insert(locator, (String) values[0], (InputComponentType) componentType);
     }
 
+
     private Input inputComponent(InputComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getInputComponent(componentType, smartWebDriver));
+            components.put(componentType, ComponentFactory.getInputComponent(componentType, driver));
         }
         return components.get(componentType);
     }

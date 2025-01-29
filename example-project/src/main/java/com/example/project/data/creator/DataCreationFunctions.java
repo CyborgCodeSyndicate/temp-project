@@ -36,4 +36,13 @@ public class DataCreationFunctions {
 
     }
 
+
+    public static String usernameJohn(){
+        return "John";
+    }
+
+    public static String passwordJohn(){
+        return "pass";
+    }
+
 }

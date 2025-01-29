@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.framework.adapters;
+package com.theairebellion.zeus.framework.spring;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

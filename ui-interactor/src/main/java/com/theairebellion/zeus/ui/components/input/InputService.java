@@ -1,18 +1,17 @@
 package com.theairebellion.zeus.ui.components.input;
 
-import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface defining operations for interacting with input elements within a web interface using Selenium.
  */
 public interface InputService extends Insertion {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     InputComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
@@ -426,8 +425,8 @@ public interface InputService extends Insertion {
 
     private static InputComponentType getDefaultType() {
         return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
-                uiConfig.inputDefaultType(),
-                uiConfig.projectPackage());
+            getUiConfig().inputDefaultType(),
+            getUiConfig().projectPackage());
     }
 
 

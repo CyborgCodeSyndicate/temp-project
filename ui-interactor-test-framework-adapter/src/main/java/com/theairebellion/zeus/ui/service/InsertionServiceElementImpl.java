@@ -5,6 +5,7 @@ import com.theairebellion.zeus.ui.insertion.BaseInsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 
@@ -16,8 +17,11 @@ import java.util.stream.Collectors;
 
 public class InsertionServiceElementImpl extends BaseInsertionService {
 
-    public InsertionServiceElementImpl(final InsertionServiceRegistry serviceRegistry) {
+    private final SmartWebDriver webDriver;
+
+    public InsertionServiceElementImpl(final InsertionServiceRegistry serviceRegistry, final SmartWebDriver webDriver) {
         super(serviceRegistry);
+        this.webDriver = webDriver;
     }
 
 
@@ -58,6 +62,24 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
                    .filter(field -> field.isAnnotationPresent(InsertionElement.class))
                    .sorted(Comparator.comparing(field -> field.getAnnotation(InsertionElement.class).order()))
                    .collect(Collectors.toList());
+    }
+
+
+    @Override
+    protected void beforeInsertion(Object annotation) {
+        InsertionElement insertionElement = (InsertionElement) annotation;
+        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
+            insertionElement.elementEnum());
+        uiElement.before().accept(webDriver);
+    }
+
+
+    @Override
+    protected void afterInsertion(Object annotation) {
+        InsertionElement insertionElement = (InsertionElement) annotation;
+        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
+            insertionElement.elementEnum());
+        uiElement.after().accept(webDriver);
     }
 
 }

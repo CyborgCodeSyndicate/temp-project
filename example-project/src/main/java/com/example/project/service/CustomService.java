@@ -13,14 +13,20 @@ import org.springframework.stereotype.Service;
 @WorldName("Custom")
 @Service
 @Scope("prototype")
+
 public class CustomService extends FluentService {
 
 
     public CustomService somethingCustom(Student student) {
         quest.getStorage().sub(StorageKeysTest.ARGUMENTS).getAllByClass(TestDataCreator.VALID_STUDENT, Student.class);
         SmartWebDriver artifact = quest.artifact(World.EARTH, SmartWebDriver.class);
+
         return this;
     }
 
+
+    public CustomService login(String username, String password) {
+        return this;
+    }
 
 }

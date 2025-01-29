@@ -11,6 +11,7 @@ import com.theairebellion.zeus.validator.core.AssertionResult;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class RestService {
     private BaseAuthenticationClient baseAuthenticationClient;
 
     private AuthenticationKey authenticationKey;
+    @Setter
+    private boolean cacheAuthentication;
 
 
     @Autowired
@@ -35,6 +38,14 @@ public class RestService {
         this.restClient = restClient;
         this.restResponseValidator = restResponseValidator;
     }
+
+    public RestService(RestClient restClient, final RestResponseValidator restResponseValidator, boolean cacheAuthentication) {
+        this.restClient = restClient;
+        this.restResponseValidator = restResponseValidator;
+        this.cacheAuthentication = cacheAuthentication;
+
+    }
+
 
 
     public Response request(Endpoint endpoint) {
@@ -76,7 +87,7 @@ public class RestService {
         Objects.requireNonNull(authenticationClientClass, "Authentication client class must not be null");
         try {
             baseAuthenticationClient = authenticationClientClass.getDeclaredConstructor().newInstance();
-            authenticationKey = baseAuthenticationClient.authenticate(this, username, password);
+            authenticationKey = baseAuthenticationClient.authenticate(this, username, password, cacheAuthentication);
 
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {

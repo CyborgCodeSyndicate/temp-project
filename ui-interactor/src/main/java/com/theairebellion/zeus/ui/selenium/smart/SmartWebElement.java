@@ -1,12 +1,10 @@
 package com.theairebellion.zeus.ui.selenium.smart;
 
 import com.theairebellion.zeus.ui.annotations.HandleUIException;
-import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.decorators.WebElementDecorator;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElement;
 import lombok.SneakyThrows;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -20,9 +18,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
+
 public class SmartWebElement extends WebElementDecorator {
 
-    public static final UIConfig UI_CONFIG = ConfigCache.getOrCreate(UIConfig.class);
 
     private final WebDriver driver;
     private final WebDriverWait wait;
@@ -31,12 +30,12 @@ public class SmartWebElement extends WebElementDecorator {
     public SmartWebElement(WebElement original, WebDriver driver) {
         super(original);
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(UI_CONFIG.waitDuration()));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(getUiConfig().waitDuration()));
     }
 
 
     public List<SmartWebElement> findSmartElements(By by) {
-        if (!UI_CONFIG.useWrappedSeleniumFunctions()) {
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
             return super.findElements(by).stream().map(
                     element -> new SmartWebElement(element, driver)).toList();
         }
@@ -52,7 +51,7 @@ public class SmartWebElement extends WebElementDecorator {
 
     @HandleUIException
     public SmartWebElement findSmartElement(By by) {
-        if (!UI_CONFIG.useWrappedSeleniumFunctions()) {
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
             return new SmartWebElement(super.findElement(by), driver);
         }
         try {
@@ -67,11 +66,11 @@ public class SmartWebElement extends WebElementDecorator {
     @Override
     @HandleUIException
     public void click() {
-        if (!UI_CONFIG.useWrappedSeleniumFunctions()) {
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
             super.click();
         }
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(this));
+            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
             super.click();
         } catch (Exception e) {
             handleException("click", e, new Object[0]);
@@ -80,11 +79,11 @@ public class SmartWebElement extends WebElementDecorator {
 
     @Override
     public void clear() {
-        if (!UI_CONFIG.useWrappedSeleniumFunctions()) {
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
             super.clear();
         }
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(this));
+            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
             super.clear();
         } catch (Exception e) {
             handleException("clear", e, new Object[0]);
@@ -93,11 +92,11 @@ public class SmartWebElement extends WebElementDecorator {
 
     @Override
     public void sendKeys(CharSequence... keysToSend) {
-        if (!UI_CONFIG.useWrappedSeleniumFunctions()) {
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
             super.sendKeys(keysToSend);
         }
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(this));
+            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
             super.sendKeys(keysToSend);
         } catch (Exception e) {
             handleException("clear", e, keysToSend);
@@ -146,4 +145,5 @@ public class SmartWebElement extends WebElementDecorator {
         } catch (Exception ignore) {
         }
     }
+
 }
