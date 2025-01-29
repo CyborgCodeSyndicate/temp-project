@@ -26,66 +26,66 @@ public class ToggleServiceImpl implements ToggleService {
     }
 
     @Override
-    public void activate(ToggleComponentType componentType, WebElement container, String toggleText) {
+    public void activate(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
         toggleComponent(componentType).activate(container, toggleText);
     }
 
     @Override
-    public void activate(ToggleComponentType componentType, String toggleText) {
+    public void activate(final ToggleComponentType componentType, final String toggleText) {
         toggleComponent(componentType).activate(toggleText);
     }
 
     @Override
-    public void activate(ToggleComponentType componentType, By toggleLocator) {
+    public void activate(final ToggleComponentType componentType, final By toggleLocator) {
         toggleComponent(componentType).activate(toggleLocator);
     }
 
     @Override
-    public void deactivate(ToggleComponentType componentType, WebElement container, String toggleText) {
+    public void deactivate(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
         toggleComponent(componentType).deactivate(container, toggleText);
     }
 
     @Override
-    public void deactivate(ToggleComponentType componentType, String toggleText) {
+    public void deactivate(final ToggleComponentType componentType, final String toggleText) {
         toggleComponent(componentType).deactivate(toggleText);
     }
 
     @Override
-    public void deactivate(ToggleComponentType componentType, By toggleLocator) {
+    public void deactivate(final ToggleComponentType componentType, final By toggleLocator) {
         toggleComponent(componentType).deactivate(toggleLocator);
     }
 
     @Override
-    public boolean isEnabled(ToggleComponentType componentType, WebElement container, String toggleText) {
+    public boolean isEnabled(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
         return toggleComponent(componentType).isEnabled(container, toggleText);
     }
 
     @Override
-    public boolean isEnabled(ToggleComponentType componentType, String toggleText) {
+    public boolean isEnabled(final ToggleComponentType componentType, final String toggleText) {
         return toggleComponent(componentType).isEnabled(toggleText);
     }
 
     @Override
-    public boolean isEnabled(ToggleComponentType componentType, By toggleLocator) {
+    public boolean isEnabled(final ToggleComponentType componentType, final By toggleLocator) {
         return toggleComponent(componentType).isEnabled(toggleLocator);
     }
 
     @Override
-    public boolean isActivated(ToggleComponentType componentType, WebElement container, String toggleText) {
+    public boolean isActivated(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
         return toggleComponent(componentType).isActivated(container, toggleText);
     }
 
     @Override
-    public boolean isActivated(ToggleComponentType componentType, String toggleText) {
+    public boolean isActivated(final ToggleComponentType componentType, final String toggleText) {
         return toggleComponent(componentType).isActivated(toggleText);
     }
 
     @Override
-    public boolean isActivated(ToggleComponentType componentType, By toggleLocator) {
+    public boolean isActivated(final ToggleComponentType componentType, final By toggleLocator) {
         return toggleComponent(componentType).isActivated(toggleLocator);
     }
 
-    private Toggle toggleComponent(ToggleComponentType componentType) {
+    private Toggle toggleComponent(final ToggleComponentType componentType) {
         if (Objects.isNull(components.get(componentType))) {
             components.put(componentType, ComponentFactory.getToggleComponent(componentType, smartSelenium));
         }

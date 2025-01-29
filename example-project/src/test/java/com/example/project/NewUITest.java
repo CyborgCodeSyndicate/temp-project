@@ -19,7 +19,7 @@ public class NewUITest extends BaseTest {
     public void scenario_some(Quest quest) {
         quest
             .enters(World.EARTH)
-                .navigate()
+                .navigate("http://zero.webappsecurity.com/")
             .input().insert(InputFields.PASSWORD_FIELD,
                 String.valueOf(
                     retrieve(DataExtractorsUi.responseBodyExtraction("api/create-campaign", "$.id"), Long.class)))

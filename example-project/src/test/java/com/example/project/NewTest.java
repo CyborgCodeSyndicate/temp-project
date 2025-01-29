@@ -61,8 +61,8 @@ public class NewTest extends BaseTest {
                     .build())
             .then()
             .enters(World.EARTH)
-            .input().insert(InputFields.USERNAME_FIELD, student1.join().getName())
-            .input().insert(InputFields.PASSWORD_FIELD, student.getName())
+            //.input().insert(InputFields.USERNAME_FIELD, student1.join().getName())
+            //.input().insert(InputFields.PASSWORD_FIELD, student.getName())
             .input().insert(InputFields.PASSWORD_FIELD,
                 String.valueOf(
                     retrieve(DataExtractorsUi.responseBodyExtraction("api/create-campaign", "$.id"), Long.class)))
