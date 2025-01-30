@@ -7,16 +7,12 @@ import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import manifold.ext.rt.api.Jailbreak;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.stereotype.Component;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -24,14 +20,16 @@ import java.util.Properties;
 
 @Odyssey
 @SpringBootTest(
-    classes = {TestConfig.class},
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
+        classes = {TestConfig.class},
+        webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 public class BaseTest {
 
     static {
-        synchronized (BaseTest.class){
+        synchronized (BaseTest.class) {
             addSystemProperties();
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            context.reconfigure();
         }
     }
 
@@ -53,7 +51,7 @@ public class BaseTest {
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         @Jailbreak Quest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-            clazz.getName());
+                clazz.getName());
         return quest.getStorage().get(extractor, clazz);
     }
 

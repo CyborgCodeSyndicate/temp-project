@@ -13,13 +13,14 @@ import java.util.function.Consumer;
 public enum InputFields implements UIElement {
 
     USERNAME(
-        By.cssSelector("locator_username"),
-        InputFieldTypes.MD_INPUT_TYPE,
-        SharedUI.WAIT_FOR_LOADING
+            By.cssSelector("locator_username"),
+            InputFieldTypes.MD_INPUT_TYPE,
+            SharedUI.WAIT_FOR_LOADING,
+            SharedUI.WAIT_FOR_LOADING
     ),
     PASSWORD(
-        By.cssSelector("locator_password"),
-        InputFieldTypes.MD_INPUT_TYPE
+            By.cssSelector("locator_password"),
+            InputFieldTypes.MD_INPUT_TYPE
     );
 
     public static final class Data {

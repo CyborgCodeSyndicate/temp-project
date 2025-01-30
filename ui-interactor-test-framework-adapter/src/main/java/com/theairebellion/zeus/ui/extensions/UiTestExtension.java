@@ -34,13 +34,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.PASSWORD;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.RESPONSES;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.USERNAME;
+import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
-                                            TestExecutionExceptionHandler {
+        TestExecutionExceptionHandler {
 
 
     private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
@@ -59,27 +56,27 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
     private void processInterceptRequestsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(InterceptRequests.class))
-            .ifPresent(intercept -> {
-                String[] urlsForIntercepting = intercept.requestUrlSubStrings();
-                Consumer<Quest> questConsumer = quest -> postQuestCreationIntercept(quest, urlsForIntercepting);
-                addQuestConsumer(context, questConsumer);
-            });
+                .ifPresent(intercept -> {
+                    String[] urlsForIntercepting = intercept.requestUrlSubStrings();
+                    Consumer<Quest> questConsumer = quest -> postQuestCreationIntercept(quest, urlsForIntercepting);
+                    addQuestConsumer(context, questConsumer);
+                });
     }
 
 
     private void processAuthenticateViaUiAsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(AuthenticateViaUiAs.class))
-            .ifPresent(login -> {
-                try {
-                    LoginCredentials credentials = login.credentials().getDeclaredConstructor().newInstance();
-                    Consumer<Quest> questConsumer = quest -> postQuestCreationLogin(quest, credentials.username(),
-                        credentials.password(), login.type(), login.cacheCredentials());
-                    addQuestConsumer(context, questConsumer);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException("Failed to instantiate login credentials", e);
-                }
-            });
+                .ifPresent(login -> {
+                    try {
+                        LoginCredentials credentials = login.credentials().getDeclaredConstructor().newInstance();
+                        Consumer<Quest> questConsumer = quest -> postQuestCreationLogin(quest, credentials.username(),
+                                credentials.password(), login.type(), login.cacheCredentials());
+                        addQuestConsumer(context, questConsumer);
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException("Failed to instantiate login credentials", e);
+                    }
+                });
     }
 
 
@@ -98,7 +95,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     @SuppressWarnings("unchecked")
     private List<Consumer<Quest>> getOrCreateQuestConsumers(ExtensionContext context) {
         return (List<Consumer<Quest>>) context.getStore(ExtensionContext.Namespace.GLOBAL)
-                                           .getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, key -> new ArrayList<>());
+                .getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, key -> new ArrayList<>());
     }
 
 
@@ -181,11 +178,11 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         quest.getSoftAssertions().registerObjectForPostErrorHandling(SmartWebDriver.class, smartWebDriver);
 
         CustomSoftAssertion.registerCustomAssertion(
-            SmartWebDriver.class,
-            (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
-                "soft_assert_failure_" + testName),
-            stackTrace -> Arrays.stream(stackTrace)
-                              .anyMatch(element -> element.getClassName().contains("org.openqa.selenium"))
+                SmartWebDriver.class,
+                (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
+                        "soft_assert_failure_" + testName),
+                stackTrace -> Arrays.stream(stackTrace)
+                        .anyMatch(element -> element.getClassName().contains("org.openqa.selenium"))
         );
     }
 
@@ -219,13 +216,6 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
 
-    private static boolean checkForUiError(StackTraceElement[] stackTraceElements) {
-        return Arrays.stream(stackTraceElements)
-                   .anyMatch(stackTraceElement -> {
-                       String packageName = stackTraceElement.getClassName();
-                       return packageName.contains(SELENIUM_PACKAGE) || packageName.contains(
-                           UI_MODULE_PACKAGE);
-                   });
-    }
+
 
 }
