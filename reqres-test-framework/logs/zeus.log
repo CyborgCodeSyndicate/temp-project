@@ -1,15 +1,17 @@
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:12,347 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 17320 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:12,690 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:13,464 INFO  [] - Started ReqresApiTest in 1.635 seconds (process running for 5.289)
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:14,720 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The : 'testGetUserFromListOfUsersByName(Quest)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:14,796 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - Quest crafted for scenario: 'testGetUserFromListOfUsersByName(Quest)'.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:14,816 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:15,925 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:17,118 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 1634ms.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:17,710 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/9.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:17,859 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/9 in 154ms.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:17,930 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has leaves the journey.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:17,959 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] VALIDATION [TEST] - Starting soft validation.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:18,952 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has leaves the journey.
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:18,960 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-01-30T17:05:18,972 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest of 'testGetUserFromListOfUsersByName(Quest)' has concluded with glory. Status: SUCCESS. Duration: 4 seconds.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:43,075 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 6372 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:43,491 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:44,306 INFO  [] - Started ReqresApiTest in 1.971 seconds (process running for 6.434)
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:45,605 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The : 'testCreateUserWithSuffix(Quest, Late)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:45,694 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - Quest crafted for scenario: 'testCreateUserWithSuffix(Quest, Late)'.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:45,845 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:46,820 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:47,923 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 1519ms.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:48,061 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:48,119 [scenario=ReqresApiTest.testCreateUserWithSuffix] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:48,846 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,164 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 415ms.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,210 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,229 [scenario=ReqresApiTest.testCreateUserWithSuffix] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,240 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest has leaves the journey.
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,261 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,283 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest of 'testCreateUserWithSuffix(Quest, Late)' has concluded with glory. Status: SUCCESS. Duration: 3 seconds.
