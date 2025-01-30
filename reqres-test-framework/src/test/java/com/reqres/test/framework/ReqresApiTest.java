@@ -3,6 +3,7 @@ package com.reqres.test.framework;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
+import com.reqres.test.framework.rest.dto.response.UserResponse;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.Craft;
@@ -83,6 +84,26 @@ public class ReqresApiTest extends BaseTest {
                         GET_ALL_USERS.withQueryParam("page", 2))
                 .requestAndValidate(
                         GET_USER.withPathParam("id", retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class).getData().get(0).getId()),
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
+                );
+    }
+
+    @Test
+    public void testGetUserFromListOfUsersByName(Quest quest) {
+        final String targetFirstName = "Tobias";
+        quest.enters(OLYMPYS)
+                .request(
+                        GET_ALL_USERS.withQueryParam("page", 2))
+                .requestAndValidate(
+                        GET_USER.withPathParam("id", retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class)
+                                .getBody()
+                                .as(GetUsersResponse.class)
+                                .getData()
+                                .stream()
+                                .filter(user -> targetFirstName.equals(user.getFirstName()))
+                                .map(UserResponse::getId)
+                                .findFirst()
+                                .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"))),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
                 );
     }
