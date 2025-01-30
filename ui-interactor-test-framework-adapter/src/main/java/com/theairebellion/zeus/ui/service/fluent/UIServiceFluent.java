@@ -5,8 +5,7 @@ import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
-import com.theairebellion.zeus.ui.selenium.UIDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +22,15 @@ import java.util.function.Consumer;
 public class UIServiceFluent extends FluentService {
 
     private InputServiceFluent inputField;
-    private SmartSelenium smartSelenium;
-    private UIDriver uiDriver;
+    private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
     private InsertionServiceFluent insertionService;
 
 
     @Autowired
-    public UIServiceFluent(UIDriver uiDriver) {
-        this.uiDriver = uiDriver;
-        smartSelenium = new SmartSelenium(uiDriver.getDriver());
+    public UIServiceFluent(SmartWebDriver driver) {
+        this.driver = driver;
     }
 
 
@@ -54,12 +51,17 @@ public class UIServiceFluent extends FluentService {
 
     @Override
     protected void postQuestSetupInitialization() {
-        inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(smartSelenium));
+        inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(driver), driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
-        insertionService = new InsertionServiceFluent(new InsertionServiceElementImpl(serviceRegistry), this,
+        insertionService = new InsertionServiceFluent(new InsertionServiceElementImpl(serviceRegistry, driver), this,
             quest.getStorage());
+    }
+
+
+    private SmartWebDriver getDriver() {
+        return driver;
     }
 
 }

@@ -10,11 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public interface Endpoint {
+import static com.theairebellion.zeus.api.config.ApiConfigHolder.getApiConfig;
 
-    default ApiConfig getApiConfig() {
-        return ConfigCache.getOrCreate(ApiConfig.class);
-    }
+public interface Endpoint {
 
     Method method();
 

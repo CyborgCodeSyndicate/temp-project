@@ -14,7 +14,7 @@ public class DbTestExtension implements AfterAllCallback {
 
 
     @Override
-    public void afterAll(ExtensionContext context) throws Exception {
+    public void afterAll(ExtensionContext context) {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         BaseDbConnectorService baseDbConnectorService = appCtx.getBean(BaseDbConnectorService.class);
         baseDbConnectorService.closeConnections();

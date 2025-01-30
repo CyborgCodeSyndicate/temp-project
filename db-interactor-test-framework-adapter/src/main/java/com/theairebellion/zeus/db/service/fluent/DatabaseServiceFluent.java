@@ -34,41 +34,52 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
     }
 
 
-    public <T> DatabaseServiceFluent query(DbQuery query) {
-        QueryResponse queryResponse = databaseService.query(query);
+    public <T> DatabaseServiceFluent query(final DbQuery query) {
+        final QueryResponse queryResponse = databaseService.query(query);
         quest.getStorage().sub(DB).put(query.enumImpl(), queryResponse);
         return this;
     }
 
-
-    public <T> DatabaseServiceFluent query(DbQuery query, String jsonPath, Class<T> resultType) {
-        T queryResult = databaseService.query(query, jsonPath, resultType);
+    public <T> DatabaseServiceFluent query(final DbQuery query,
+                                           final String jsonPath,
+                                           final Class<T> resultType) {
+        final T queryResult = databaseService.query(query, jsonPath, resultType);
         quest.getStorage().sub(DB).put(query.enumImpl(), queryResult);
         return this;
     }
 
 
-    public DatabaseServiceFluent validate(QueryResponse queryResponse, Assertion<?>... assertions) {
-        List<AssertionResult<Object>> assertionResults = databaseService.validate(queryResponse, assertions);
+    public DatabaseServiceFluent validate(final QueryResponse queryResponse,
+                                          final Assertion<?>... assertions) {
+        final List<AssertionResult<Object>> assertionResults =
+                databaseService.validate(queryResponse, assertions);
         validation(assertionResults);
         return this;
     }
 
 
-    public DatabaseServiceFluent queryAndValidate(DbQuery query, Assertion<?>... assertions) {
-        QueryResponse queryResponse = databaseService.query(query);
+    public DatabaseServiceFluent queryAndValidate(final DbQuery query,
+                                                  final Assertion<?>... assertions) {
+        final QueryResponse queryResponse = databaseService.query(query);
         quest.getStorage().sub(DB).put(query.enumImpl(), queryResponse);
         return validate(queryResponse, assertions);
     }
 
 
-    public DatabaseServiceFluent validate(Runnable assertion) {
+    @Override
+    public DatabaseServiceFluent validate(final Runnable assertion) {
         return (DatabaseServiceFluent) super.validate(assertion);
     }
 
 
-    public DatabaseServiceFluent validate(Consumer<SoftAssertions> assertion) {
+    @Override
+    public DatabaseServiceFluent validate(final Consumer<SoftAssertions> assertion) {
         return (DatabaseServiceFluent) super.validate(assertion);
+    }
+
+
+    private DatabaseService getDatabaseService() {
+        return databaseService;
     }
 
 
