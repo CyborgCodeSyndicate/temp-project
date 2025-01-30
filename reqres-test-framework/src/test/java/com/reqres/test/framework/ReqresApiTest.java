@@ -66,6 +66,26 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    public void testGetUser(Quest quest) {
+        quest.enters(OLYMPYS)
+                .requestAndValidate(
+                        GET_USER.withPathParam("id", 3),
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).soft(true).build(),
+                        Assertion.builder(String.class).target(BODY).key("data.email").type(IS).expected("emma.wong@reqres.in").soft(true).build(),
+                        Assertion.builder(String.class).target(BODY).key("support.url").type(IS).expected("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral").soft(true).build()
+                ).complete();
+    }
+
+    @Test
+    public void testUserNotFound(Quest quest) {
+        quest.enters(OLYMPYS)
+                .requestAndValidate(
+                        GET_USER.withPathParam("id", 23),
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).soft(true).build()
+                ).complete();
+    }
+
+    @Test
     public void testGetUsersJUnitAssertions(Quest quest) {
         quest.enters(OLYMPYS)
                 .request(
@@ -109,26 +129,6 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
-    public void testGetUser(Quest quest) {
-        quest.enters(OLYMPYS)
-                .requestAndValidate(
-                        GET_USER.withPathParam("id", 3),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).soft(true).build(),
-                        Assertion.builder(String.class).target(BODY).key("data.email").type(IS).expected("emma.wong@reqres.in").soft(true).build(),
-                        Assertion.builder(String.class).target(BODY).key("support.url").type(IS).expected("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral").soft(true).build()
-                ).complete();
-    }
-
-    @Test
-    public void testUserNotFound(Quest quest) {
-        quest.enters(OLYMPYS)
-                .requestAndValidate(
-                        GET_USER.withPathParam("id", 23),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).soft(true).build()
-                ).complete();
-    }
-
-    @Test
     public void testCreateUser(Quest quest, @Craft(model = USER_LEADER) User user) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -146,7 +146,5 @@ public class ReqresApiTest extends BaseTest {
                         LOGIN_USER,
                         loginUser
                 );
-
-
     }
 }
