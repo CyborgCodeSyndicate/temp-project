@@ -81,7 +81,7 @@ public class ReqresApiTest extends BaseTest {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         GET_USER.withPathParam("id", 23),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).soft(true).build()
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).build()
                 ).complete();
     }
 
@@ -114,7 +114,7 @@ public class ReqresApiTest extends BaseTest {
         quest.enters(OLYMPYS)
                 .request(
                         GET_ALL_USERS.withQueryParam("page", 2))
-                .requestAndValidate(
+                .request(
                         GET_USER.withPathParam("id", retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class)
                                 .getBody()
                                 .as(GetUsersResponse.class)
@@ -123,9 +123,21 @@ public class ReqresApiTest extends BaseTest {
                                 .filter(user -> targetFirstName.equals(user.getFirstName()))
                                 .map(UserResponse::getId)
                                 .findFirst()
-                                .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"))),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
-                );
+                                .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"))))
+                .validate(() -> {
+                    UserResponse userResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class)
+                            .getBody()
+                            .as(GetUsersResponse.class)
+                            .getData()
+                            .stream()
+                            .filter(user -> targetFirstName.equals(user.getFirstName()))
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"));
+                    assertEquals(9, userResponse.getId(), "User ID is incorrect.");
+                    assertEquals("tobias.funke@reqres.in", userResponse.getEmail(), "User email is incorrect.");
+                    assertEquals("Tobias", userResponse.getFirstName(), "User first name is incorrect.");
+                    assertEquals("Funke", userResponse.getLastName(), "User last name is incorrect.");
+                }).complete();
     }
 
     @Test
@@ -140,11 +152,17 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
-    public void testLoginUser(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
+    public void testLoginUserAndAddHeader(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
         quest.enters(OLYMPYS)
-                .request(
-                        LOGIN_USER,
-                        loginUser
-                );
+                .request(LOGIN_USER, loginUser)
+                .requestAndValidate(
+                        GET_USER
+                                .withPathParam("id", 3)
+                                .withHeader("Authorization", "Bearer " + retrieve(StorageKeysApi.API, LOGIN_USER, Response.class)
+                                        .getBody()
+                                        .jsonPath()
+                                        .getString("token")),
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
+                ).complete();
     }
 }

@@ -12,7 +12,7 @@ public class DataCreationFunctions {
                 .build();
     }
 
-    public static LoginUser createLoginUser() {
+    public static LoginUser createAdminLoginUser() {
         return LoginUser.builder()
                 .email("eve.holt@reqres.in")
                 .password("cityslicka")
