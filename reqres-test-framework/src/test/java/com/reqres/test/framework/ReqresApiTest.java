@@ -124,7 +124,7 @@ public class ReqresApiTest extends BaseTest {
                                 .map(UserResponse::getId)
                                 .findFirst()
                                 .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"))))
-                .validate(() -> {
+                .validate(softAssertions -> {
                     UserResponse userResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class)
                             .getBody()
                             .as(GetUsersResponse.class)
@@ -133,10 +133,10 @@ public class ReqresApiTest extends BaseTest {
                             .filter(user -> targetFirstName.equals(user.getFirstName()))
                             .findFirst()
                             .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"));
-                    assertEquals(9, userResponse.getId(), "User ID is incorrect.");
-                    assertEquals("tobias.funke@reqres.in", userResponse.getEmail(), "User email is incorrect.");
-                    assertEquals("Tobias", userResponse.getFirstName(), "User first name is incorrect.");
-                    assertEquals("Funke", userResponse.getLastName(), "User last name is incorrect.");
+                    softAssertions.assertThat(userResponse.getId()).isEqualTo(9);
+                    softAssertions.assertThat(userResponse.getEmail()).isEqualTo("tobias.funke@reqres.in");
+                    softAssertions.assertThat(userResponse.getFirstName()).isEqualTo("Tobias");
+                    softAssertions.assertThat(userResponse.getLastName()).isEqualTo("Funke");
                 }).complete();
     }
 
