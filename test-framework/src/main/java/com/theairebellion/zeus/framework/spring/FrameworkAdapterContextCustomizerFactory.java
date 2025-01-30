@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.framework.adapters;
+package com.theairebellion.zeus.framework.spring;
 
 import com.theairebellion.zeus.framework.annotation.FrameworkAdapter;
 import org.springframework.core.annotation.AnnotatedElementUtils;

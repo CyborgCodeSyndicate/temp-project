@@ -10,10 +10,13 @@ import org.openqa.selenium.remote.AbstractDriverOptions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WebDriverFactory {
 
-    private static final Map<String, DriverProvider<?>> DRIVER_PROVIDERS = new HashMap<>();
+    private static final Map<String, DriverProvider<?>> DRIVER_PROVIDERS = new ConcurrentHashMap<>();
+
 
     static {
         registerDriver("CHROME", new ChromeDriverProvider());
@@ -21,16 +24,18 @@ public class WebDriverFactory {
     }
 
     public static <T extends DriverProvider<?>> void registerDriver(String type, T provider) {
+        if (DRIVER_PROVIDERS.containsKey(type.toUpperCase())) {
+            throw new IllegalArgumentException("Driver type already registered: " + type);
+        }
         DRIVER_PROVIDERS.put(type.toUpperCase(), provider);
+        LogUI.info("Driver of type: {} has been registered", type);
     }
 
 
     public static WebDriver createDriver(String type, WebDriverConfig config) {
+        DriverProvider<?> provider = Optional.ofNullable(DRIVER_PROVIDERS.get(type.toUpperCase()))
+                                         .orElseThrow(() -> new IllegalArgumentException("No driver registered for type: " + type));
 
-        DriverProvider<?> provider = DRIVER_PROVIDERS.get(type.toUpperCase());
-        if (provider == null) {
-            throw new IllegalArgumentException("No driver registered for type: " + type);
-        }
         provider.setupDriver(config.getVersion());
 
         try {

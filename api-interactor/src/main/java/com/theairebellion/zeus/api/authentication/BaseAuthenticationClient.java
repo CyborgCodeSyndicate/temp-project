@@ -15,18 +15,21 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
 
 
     @Override
-    public AuthenticationKey authenticate(final RestService restService, final String username, final String password) {
+    public AuthenticationKey authenticate(final RestService restService, final String username, final String password,
+                                          boolean cache) {
         var authenticationKey = new AuthenticationKey(username, password, this.getClass());
-        if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
-            try {
-                userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
-                LogApi.info("Successfully authenticated user: {}", username);
-            } catch (Exception e) {
-                LogApi.error("Authentication failed for user: {}. Error: {}", username, e.getMessage(), e);
-                throw e;
-            }
+        if (!cache) {
+            userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
+            LogApi.info("Successfully authenticated user: {}", username);
         } else {
-            LogApi.debug("User already authenticated: {}", username);
+            synchronized (userAuthenticationHeaderMap) {
+                if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
+                    userAuthenticationHeaderMap.put(authenticationKey,
+                        authenticateImpl(restService, username, password));
+                } else {
+                    return authenticationKey;
+                }
+            }
         }
 
         return authenticationKey;

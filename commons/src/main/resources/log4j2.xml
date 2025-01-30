@@ -3,11 +3,9 @@
 
     <!-- 1) Basic Properties -->
     <Properties>
-        <!-- You can override this with -DlogFileName=logs/zeus.log -->
-        <Property name="logFileName">${sys:logFileName:-logs/zeus.log}</Property>
-        <!-- Default extended logging to false; override with -DextendedLogging=true if needed -->
-        <Property name="extendedLogging">${sys:extendedLogging:-false}</Property>
-
+        <Property name="LogFilePath">${sys:logFileName:-logs/zeus.log}</Property>
+        <Property name="log4j2.scriptEnableLanguages">${sys:log4j2.scriptEnableLanguages:-javascript}</Property>
+        <Property name="extendedLogging">${sys:extended.logging:-false}</Property>
     </Properties>
 
     <!-- 2) Custom Levels -->
@@ -21,7 +19,7 @@
     <Appenders>
 
         <!-- ========== FILE APPENDER (Pattern) ========== -->
-        <File name="FileAppender" fileName="${logFileName}" append="false">
+        <File name="FileAppender" fileName="${LogFilePath}" append="false">
 
             <!-- Filter out logs if extendedLogging == true (so they can go to JSON appender) -->
             <Filters>
@@ -63,7 +61,7 @@
         </File>
 
         <!-- ========== JSON APPENDER (Extended Logging) ========== -->
-        <File name="JsonFileAppender" fileName="${logFileName}" append="false">
+        <File name="JsonFileAppender" fileName="${LogFilePath}" append="false">
             <!-- Accept only if extendedLogging == "true" -->
             <Filters>
                 <ScriptFilter onMatch="ACCEPT" onMismatch="DENY">

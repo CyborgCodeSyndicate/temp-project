@@ -8,10 +8,11 @@ import org.openqa.selenium.support.FindBy;
 
 public class ExampleDTOUI {
 
-    @InsertionField(locator = @FindBy(css = "locator"), type = InputComponentType.class, componentType = "MD_INPUT_TYPE",
+    @InsertionField(locator = @FindBy(css = "locator"), type = InputComponentType.class,
+        componentType = "MD_INPUT_TYPE",
         order = 1)
     private String textName;
-    @InsertionElement(locatorClass = InputFields.class, elementEnum = InputFields.USERNAME, order = 1)
+    @InsertionElement(locatorClass = InputFields.class, elementEnum = InputFields.Data.USERNAME, order = 1)
     private String textNameOther;
 
 

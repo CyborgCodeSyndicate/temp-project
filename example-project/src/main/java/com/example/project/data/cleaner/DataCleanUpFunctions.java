@@ -8,15 +8,14 @@ import manifold.ext.rt.api.Jailbreak;
 
 import java.util.List;
 
-import static com.example.project.data.creator.TestDataCreator.VALID_STUDENT_FLOW;
+import static com.example.project.data.creator.TestDataCreator.VALID_STUDENT;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.ARGUMENTS;
-import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
 
 public class DataCleanUpFunctions {
 
     public static void cleanAllStudents(@Jailbreak Quest quest) {
         var storage = quest.getStorage().sub(ARGUMENTS);
-        List<Student> allStudents = storage.getAllByClass(VALID_STUDENT_FLOW, Student.class);
+        List<Student> allStudents = storage.getAllByClass(VALID_STUDENT, Student.class);
 
         DatabaseServiceFluent dbService = quest.enters(World.UNDERWORLD);
         allStudents.forEach(student -> {

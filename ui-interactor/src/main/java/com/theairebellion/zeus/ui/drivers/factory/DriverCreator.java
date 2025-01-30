@@ -11,28 +11,28 @@ import org.openqa.selenium.support.events.EventFiringDecorator;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 public class DriverCreator<T extends AbstractDriverOptions<?>> {
 
-    public WebDriver createDriver(WebDriverConfig config, DriverProvider<T> provider) throws MalformedURLException {
-
+    public WebDriver createDriver(WebDriverConfig<T> config, DriverProvider<T> provider) throws MalformedURLException {
         LogUI.info("Creating driver using provider [{}]. Headless: [{}], Remote: [{}], Remote URL: [{}]",
                 provider.getClass().getSimpleName(),
                 config.isHeadless(),
                 config.isRemote(),
                 config.getRemoteUrl());
 
-        T options = provider.createOptions();
 
+        T options = provider.createOptions();
         provider.applyDefaultArguments(options);
 
         if (config.isHeadless()) {
-            options.setCapability("headless", config.isHeadless());
+            options.setCapability("headless", true);
+            LogUI.info("Headless capability added to webdriver");
         }
 
-        if (config.getOptionsCustomizer() != null) {
-            config.getOptionsCustomizer().accept(options);
-        }
+        Optional.ofNullable(config.getOptionsCustomizer()).ifPresent(customizer -> customizer.accept(options));
+
         WebDriver driver;
         if (config.isRemote()) {
             driver = new RemoteWebDriver(new URL(config.getRemoteUrl()), options);
@@ -40,22 +40,10 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
             driver = provider.createDriver(options);
         }
 
-        if (config.getEventFiringDecorator() != null) {
-            return config.getEventFiringDecorator().decorate(driver);
-        }
+        return Optional.ofNullable(config.getEventFiringDecorator())
+                   .map(decorator -> decorator.decorate(driver))
+                   .orElse(driver);
 
-        return driver;
-    }
-
-
-    private WebDriver getRealDriverFromDecorator(EventFiringDecorator<WebDriver> decorator) {
-        try {
-            Field decoratedField = EventFiringDecorator.class.getDeclaredField("decorated");
-            decoratedField.setAccessible(true);
-            return (WebDriver) decoratedField.get(decorator);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve real WebDriver from EventFiringDecorator", e);
-        }
     }
 
 }

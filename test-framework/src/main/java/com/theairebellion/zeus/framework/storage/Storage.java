@@ -9,9 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
+
 public class Storage {
 
     private final Map<Enum<?>, List<Object>> data = new HashMap<>();
+    private static Enum<?> defaultStorageEnum;
 
 
     public <T> void put(Enum<?> key, T value) {
@@ -69,8 +72,15 @@ public class Storage {
 
 
     public Storage sub(Enum<?> subKey) {
+
         List<Object> values = data.get(subKey);
         if (values == null || values.isEmpty()) {
+            if (defaultStorageEnum == null) {
+                String defaultStorage = getFrameworkConfig().defaultStorage();
+                if (subKey.name().equals(defaultStorage)) {
+                    defaultStorageEnum = subKey;
+                }
+            }
             Storage newSub = new Storage();
             data.put(subKey, new ArrayList<>(Collections.singletonList(newSub)));
             return newSub;
@@ -83,6 +93,14 @@ public class Storage {
 
         throw new IllegalStateException(
             "Key " + subKey + " is already used for a non-storage value: " + existingLatest);
+    }
+
+
+    public Storage sub() {
+        if (defaultStorageEnum == null) {
+            throw new IllegalStateException("There is no default storage initialized");
+        }
+        return sub(defaultStorageEnum);
     }
 
 
@@ -166,5 +184,7 @@ public class Storage {
         }
         return result;
     }
+
+
 
 }

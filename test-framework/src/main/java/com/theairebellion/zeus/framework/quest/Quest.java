@@ -2,6 +2,7 @@ package com.theairebellion.zeus.framework.quest;
 
 
 import com.theairebellion.zeus.framework.annotation.WorldName;
+import com.theairebellion.zeus.framework.assertion.CustomSoftAssertion;
 import com.theairebellion.zeus.framework.chain.FluentChain;
 import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.framework.log.LogTest;
@@ -17,7 +18,7 @@ public class Quest {
 
     private final Map<Class<? extends FluentChain>, FluentChain> worlds = new HashMap<>();
     private final Storage storage;
-    private final SoftAssertions softAssertions = new SoftAssertions();
+    private final CustomSoftAssertion softAssertions = new CustomSoftAssertion();
 
 
     public Quest() {
@@ -73,7 +74,7 @@ public class Quest {
     }
 
 
-    private SoftAssertions getSoftAssertions() {
+    private CustomSoftAssertion getSoftAssertions() {
         return softAssertions;
     }
 

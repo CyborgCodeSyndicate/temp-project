@@ -10,10 +10,13 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface AuthenticateAs {
+public @interface AuthenticateViaApiAs {
 
     Class<? extends Credentials> credentials();
 
     Class<? extends BaseAuthenticationClient> type();
+
+    boolean cacheCredentials() default false;
+
 
 }

@@ -1,14 +1,14 @@
 package com.theairebellion.zeus.ui.components.base;
 
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 
 public class BaseComponent {
 
-    protected SmartSelenium smartSelenium;
+    protected SmartWebDriver driver;
 
 
-    public BaseComponent(final SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
+    public BaseComponent(final SmartWebDriver smartWebDriver) {
+        this.driver = smartWebDriver;
     }
 
 

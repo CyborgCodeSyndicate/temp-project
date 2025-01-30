@@ -13,6 +13,7 @@ import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
 @Order(Integer.MIN_VALUE)
 public class Prologue implements BeforeTestExecutionCallback {
 
+
     @Override
     public void beforeTestExecution(final ExtensionContext context) {
         String className = context.getTestClass()
@@ -28,5 +29,6 @@ public class Prologue implements BeforeTestExecutionCallback {
 
         LogTest.info("The quest: '{}' has begun.", context.getDisplayName());
     }
+
 
 }
