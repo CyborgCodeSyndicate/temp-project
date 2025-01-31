@@ -169,6 +169,12 @@ public class ReqresApiTest extends BaseTest {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         CREATE_USER,
+                        userLeader,
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
+                        Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build(),
+                        Assertion.builder(String.class).target(BODY).key("job").type(IS).expected("Leader").soft(true).build())
+                .requestAndValidate(
+                        CREATE_USER,
                         userPrefix.join(),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
