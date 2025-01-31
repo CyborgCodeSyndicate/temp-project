@@ -1,17 +1,15 @@
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:43,075 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 6372 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:43,491 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:44,306 INFO  [] - Started ReqresApiTest in 1.971 seconds (process running for 6.434)
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:45,605 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The : 'testCreateUserWithSuffix(Quest, Late)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:45,694 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - Quest crafted for scenario: 'testCreateUserWithSuffix(Quest, Late)'.
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:45,845 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:46,820 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:47,923 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 1519ms.
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:48,061 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [API] - Starting response validation with 1 assertion(s).
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:48,119 [scenario=ReqresApiTest.testCreateUserWithSuffix] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:48,846 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,164 [scenario=ReqresApiTest.testCreateUserWithSuffix] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 415ms.
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,210 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [API] - Starting response validation with 1 assertion(s).
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,229 [scenario=ReqresApiTest.testCreateUserWithSuffix] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,240 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest has leaves the journey.
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,261 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-01-30T17:43:49,283 [scenario=ReqresApiTest.testCreateUserWithSuffix] INFO  [TEST] - The quest of 'testCreateUserWithSuffix(Quest, Late)' has concluded with glory. Status: SUCCESS. Duration: 3 seconds.
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:30,924 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 7884 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:31,238 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:31,931 INFO  [] - Started ReqresApiTest in 1.52 seconds (process running for 4.922)
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:32,981 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The : 'testCreateTwoUsers(Quest, User, Late)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:33,038 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - Quest crafted for scenario: 'testCreateTwoUsers(Quest, User, Late)'.
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:33,206 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:34,650 [scenario=ReqresApiTest.testCreateTwoUsers] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:35,797 [scenario=ReqresApiTest.testCreateTwoUsers] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 1637ms.
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:35,855 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [API] - Starting response validation with 3 assertion(s).
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:36,969 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:37,112 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Mr. Morpheus, Actual: Mr. Morpheus)
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:37,504 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Senior Leader, Actual: Senior Leader)
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:37,512 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The quest has leaves the journey.
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:37,521 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-01-31T10:36:37,538 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The quest of 'testCreateTwoUsers(Quest, User, Late)' has concluded with glory. Status: SUCCESS. Duration: 4 seconds.

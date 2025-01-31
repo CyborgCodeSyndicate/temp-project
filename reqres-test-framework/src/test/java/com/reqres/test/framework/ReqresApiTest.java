@@ -14,7 +14,6 @@ import com.theairebellion.zeus.validator.core.Assertion;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
-import org.mockito.ScopedMock;
 
 import java.util.List;
 import java.util.Map;
@@ -162,6 +161,18 @@ public class ReqresApiTest extends BaseTest {
                         CREATE_USER,
                         user.join(),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
+                .complete();
+    }
+
+    @Test
+    public void testCreateTwoUsers(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_PREFIX) Late<User> userPrefix) {
+        quest.enters(OLYMPYS)
+                .requestAndValidate(
+                        CREATE_USER,
+                        userPrefix.join(),
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
+                        Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
+                        Assertion.builder(String.class).target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build())
                 .complete();
     }
 

@@ -7,11 +7,13 @@ import com.reqres.test.framework.rest.dto.response.UserResponse;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
+import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import io.restassured.response.Response;
 import manifold.ext.rt.api.Jailbreak;
 
 import java.util.Optional;
 
+import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER_FLOW;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
 
 public class DataCreationFunctions {
@@ -47,6 +49,18 @@ public class DataCreationFunctions {
         return User.builder()
                 .name(userResponse.getFirstName() + "suffix")
                 .job(userResponse.getLastName() + " worker")
+                .build();
+    }
+
+    public static User createPrefixUser() {
+        @Jailbreak Quest quest = QuestHolder.get();
+        User userLeader = quest.getStorage()
+                .sub(StorageKeysTest.ARGUMENTS)
+                .get(USER_LEADER_FLOW, User.class);
+
+        return User.builder()
+                .name("Mr. " + userLeader.getName())
+                .job("Senior " + userLeader.getJob())
                 .build();
     }
 }
