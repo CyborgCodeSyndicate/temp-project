@@ -1,6 +1,6 @@
 package com.example.project.ui.components.list;
 
-import com.example.project.ui.types.ItemListFieldTypes;
+import com.example.project.ui.types.ListFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.list.ItemList;
@@ -10,21 +10,18 @@ import com.theairebellion.zeus.ui.util.strategy.StrategyGenerator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@ImplementationOfType(ItemListFieldTypes.MD_LIST)
-public class ItemListMDImpl extends BaseComponent implements ItemList {
+@ImplementationOfType(ListFieldTypes.BOOTSTRAP_LIST)
+public class ListBootstrapImpl extends BaseComponent implements ItemList {
 
-    private static final By LIST_ITEM_ELEMENT_SELECTOR = By.tagName("mat-list-option");
-    private static final By ITEM_LABEL_LOCATOR = By.className("mat-list-text");
-    private static final String SELECTED_STATE = "aria-selected";
-    private static final String DISABLED_STATE = "mat-list-item-disabled";
+    private static final By LIST_ITEM_ELEMENT_SELECTOR = By.tagName("li");
+    private static final By ITEM_LABEL_LOCATOR = By.tagName("a");
+    private static final String SELECTED_STATE = "selected";
+    private static final String DISABLED_STATE = "disabled";
 
-    public ItemListMDImpl(SmartSelenium smartSelenium) {
+    public ListBootstrapImpl(SmartSelenium smartSelenium) {
         super(smartSelenium);
     }
 
@@ -229,7 +226,7 @@ public class ItemListMDImpl extends BaseComponent implements ItemList {
         List<WebElement> listItems = findListItems(container, null);
         Set<String> labelSet = Set.of(itemText);
         List<String> itemListAllLabels = listItems.stream().map(this::getLabel).toList();
-        return itemListAllLabels.containsAll(labelSet);
+        return new HashSet<>(itemListAllLabels).containsAll(labelSet);
     }
 
     private boolean checkListItemsVisibleStateByLocator(By[] itemLocator) {
@@ -237,7 +234,7 @@ public class ItemListMDImpl extends BaseComponent implements ItemList {
         Set<WebElement> labelSet = Arrays.stream(itemLocator)
                 .map(smartSelenium::waitAndFindElement)
                 .collect(Collectors.toSet());
-        return listItems.containsAll(labelSet);
+        return new HashSet<>(listItems).containsAll(labelSet);
     }
 
     private boolean checkListItemsEnabledState(WebElement container, String[] itemText) {
@@ -303,11 +300,7 @@ public class ItemListMDImpl extends BaseComponent implements ItemList {
 
     private void clickIfEnabled(WebElement listItem) {
         if (isEnabled(listItem)) {
-            String listItemClass = smartSelenium.smartGetAttribute(listItem, "class");
             smartSelenium.smartClick(listItem);
-            smartSelenium.waitUntilAttributeValueIsChanged(listItem, "class", listItemClass);
-            listItemClass = smartSelenium.smartGetAttribute(listItem, "class");
-            smartSelenium.waitUntilAttributeValueIsChanged(listItem, "class", listItemClass);
         }
     }
 
@@ -317,7 +310,7 @@ public class ItemListMDImpl extends BaseComponent implements ItemList {
     }
 
     private boolean isSelected(WebElement listItem) {
-        return smartSelenium.smartGetAttribute(listItem, SELECTED_STATE).equalsIgnoreCase("true");
+        return smartSelenium.smartGetAttribute(listItem, "class").contains(SELECTED_STATE);
     }
 
     private boolean isEnabled(WebElement listItem) {

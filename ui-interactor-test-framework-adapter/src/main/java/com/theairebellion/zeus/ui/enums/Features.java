@@ -12,6 +12,7 @@ public enum Features {
     LOADER_FIELDS("loaderField"),
     LINK_FIELDS("linkField"),
     ALERT_FIELDS("alertField"),
+    TAB_FIELDS("tabField"),
     REQUESTS_INTERCEPTOR("interceptor"),
     DATA_INSERTION("insertionService");
 

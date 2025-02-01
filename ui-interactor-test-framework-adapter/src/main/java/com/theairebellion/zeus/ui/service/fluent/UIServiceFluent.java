@@ -14,20 +14,17 @@ import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.radio.RadioServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
+import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import com.theairebellion.zeus.ui.selenium.UIDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.function.Consumer;
 
 @WorldName("UI")
@@ -44,6 +41,7 @@ public class UIServiceFluent extends FluentService {
     private LoaderServiceFluent loaderField;
     private LinkServiceFluent linkField;
     private AlertServiceFluent alertField;
+    private TabServiceFluent tabField;
     private SmartSelenium smartSelenium;
     private UIDriver uiDriver;
     private InterceptorServiceFluent interceptor;
@@ -86,6 +84,7 @@ public class UIServiceFluent extends FluentService {
         loaderField = new LoaderServiceFluent(this, quest.getStorage(), new LoaderServiceImpl(smartSelenium));
         linkField = new LinkServiceFluent(this, quest.getStorage(), new LinkServiceImpl(smartSelenium));
         alertField = new AlertServiceFluent(this, quest.getStorage(), new AlertServiceImpl(smartSelenium));
+        tabField = new TabServiceFluent(this, quest.getStorage(), new TabServiceImpl(smartSelenium));
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();

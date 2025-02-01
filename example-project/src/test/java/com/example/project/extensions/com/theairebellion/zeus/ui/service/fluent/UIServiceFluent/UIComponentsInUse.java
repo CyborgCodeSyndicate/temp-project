@@ -58,6 +58,12 @@ public class UIComponentsInUse {
     }
 
 
+    public static TabServiceFluent tab(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.TAB_FIELDS.getFieldName(), uiServiceFluent,
+                TabServiceFluent.class);
+    }
+
+
     public static InterceptorServiceFluent interceptor(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.REQUESTS_INTERCEPTOR.getFieldName(), uiServiceFluent,
                 InterceptorServiceFluent.class);

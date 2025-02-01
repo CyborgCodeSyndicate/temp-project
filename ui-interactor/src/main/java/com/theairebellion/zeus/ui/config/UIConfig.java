@@ -48,5 +48,7 @@ public interface UIConfig extends Config {
     @Key("alert.default.type")
     String alertDefaultType();
 
+    @Key("tab.default.type")
+    String tabDefaultType();
 
 }

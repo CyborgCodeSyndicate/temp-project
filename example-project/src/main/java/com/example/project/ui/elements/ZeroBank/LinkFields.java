@@ -1,4 +1,4 @@
-package com.example.project.ui.elements.bootstrap;
+package com.example.project.ui.elements.ZeroBank;
 
 import com.example.project.ui.types.LinkFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
@@ -8,9 +8,10 @@ import org.openqa.selenium.By;
 
 public enum LinkFields implements UIElement {
 
-    CHECKING_ACCOUNT_ACTIVITY(By.id("account_activity_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
-    TRANSFER_FUNDS(By.id("transfer_funds_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
-    MY_MONEY_MAP(By.id("money_map_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE);
+    TRANSFER_FUNDS_LINK(By.id("transfer_funds_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
+    ACCOUNT_ACTIVITY_LINK(By.id("account_activity_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
+    SP_PAYEE_DETAILS_LINK(By.id("sp_get_payee_details"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
+    ;
 
     private final By locator;
     private final LinkComponentType componentType;

@@ -1,0 +1,195 @@
+package com.example.project.ui.components.radio;
+
+import com.example.project.ui.types.RadioFieldTypes;
+import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
+import com.theairebellion.zeus.ui.components.base.BaseComponent;
+import com.theairebellion.zeus.ui.components.radio.Radio;
+import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.util.strategy.Strategy;
+import com.theairebellion.zeus.ui.util.strategy.StrategyGenerator;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@ImplementationOfType(RadioFieldTypes.BOOTSTRAP_RADIO)
+public class RadioBootstrapImpl extends BaseComponent implements Radio {
+
+    private static final By RADIO_ELEMENT_SELECTOR = By.cssSelector("input[type='radio']");
+    private static final By RADIO_ELEMENT_CONTENT_LOCATOR = By.xpath("../.");
+    public static final String CHECKED_CLASS_INDICATOR = "checked";
+    public static final String DISABLED_CLASS_INDICATOR = "disabled";
+    public static final String VISIBLE_CLASS_INDICATOR = "hidden";
+
+
+    public RadioBootstrapImpl(SmartSelenium smartSelenium) {
+        super(smartSelenium);
+    }
+
+    @Override
+    public void select(WebElement container, String radioButtonText) {
+        WebElement radioButton = findRadioButton(container, radioButtonText, null);
+        selectElement(radioButton);
+    }
+
+    @Override
+    public String select(WebElement container, Strategy strategy) {
+        WebElement radioButton = findRadioButton(container, null, strategy);
+        return selectElement(radioButton);
+    }
+
+    @Override
+    public void select(String radioButtonText) {
+        WebElement radioButton = findRadioButton(null, radioButtonText, null);
+        selectElement(radioButton);
+    }
+
+    @Override
+    public void select(By radioButtonLocator) {
+        WebElement radioButton = smartSelenium.waitAndFindElement(radioButtonLocator);
+        selectElement(radioButton);
+    }
+
+    @Override
+    public boolean isEnabled(WebElement container, String radioButtonText) {
+        WebElement radioButton = findRadioButton(container, radioButtonText, null);
+        return isElementEnabled(radioButton);
+    }
+
+    @Override
+    public boolean isEnabled(String radioButtonText) {
+        WebElement radioButton = findRadioButton(null, radioButtonText, null);
+        return isElementEnabled(radioButton);
+    }
+
+    @Override
+    public boolean isEnabled(By radioButtonLocator) {
+        WebElement radioButton = smartSelenium.waitAndFindElement(radioButtonLocator);
+        return isElementEnabled(radioButton);
+    }
+
+    @Override
+    public boolean isSelected(WebElement container, String radioButtonText) {
+        WebElement radioButton = findRadioButton(container, radioButtonText, null);
+        return isElementSelected(radioButton);
+    }
+
+    @Override
+    public boolean isSelected(String radioButtonText) {
+        WebElement radioButton = findRadioButton(null, radioButtonText, null);
+        return isElementSelected(radioButton);
+    }
+
+    @Override
+    public boolean isSelected(By radioButtonLocator) {
+        WebElement radioButton = smartSelenium.waitAndFindElement(radioButtonLocator);
+        return isElementEnabled(radioButton);
+    }
+
+    @Override
+    public boolean isVisible(WebElement container, String radioButtonText) {
+        WebElement radioButton = findRadioButton(container, radioButtonText, null);
+        return isElementVisible(radioButton);
+    }
+
+    @Override
+    public boolean isVisible(String radioButtonText) {
+        WebElement radioButton = findRadioButton(null, radioButtonText, null);
+        return isElementVisible(radioButton);
+    }
+
+    @Override
+    public boolean isVisible(By radioButtonLocator) {
+        WebElement radioButton = smartSelenium.waitAndFindElement(radioButtonLocator);
+        return isElementVisible(radioButton);
+    }
+
+    @Override
+    public String getSelected(WebElement container) {
+        WebElement selectedRadioElement = smartSelenium.waitAndFindElements(container, RADIO_ELEMENT_SELECTOR)
+                .stream().filter(this::isElementSelected)
+                .findFirst().orElseThrow(() -> new NoSuchElementException("There is not radio element in the container"));
+        return getElementText(selectedRadioElement);
+    }
+
+    @Override
+    public String getSelected(By containerLocator) {
+        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+        return getSelected(container);
+    }
+
+    @Override
+    public List<String> getAll(WebElement container) {
+        return smartSelenium.waitAndFindElements(container, RADIO_ELEMENT_SELECTOR)
+                .stream().map(this::getElementText)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAll(By containerLocator) {
+        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+        return getAll(container);
+    }
+
+
+    private WebElement findRadioButton(WebElement container, String value, Strategy strategy) {
+
+        List<WebElement> radioButtons = Objects.nonNull(container)
+                ? smartSelenium.waitAndFindElements(container, RADIO_ELEMENT_SELECTOR)
+                : smartSelenium.waitAndFindElements(RADIO_ELEMENT_SELECTOR);
+
+        WebElement targetedRadioButton = null;
+
+        if (Objects.nonNull(value)) {
+            targetedRadioButton = radioButtons.stream().filter(
+                            radio -> getElementText(radio)
+                                    .equalsIgnoreCase(value.trim())).findFirst()
+                    .orElseThrow(() -> new NotFoundException("Element with text: " + value + " can't be found"));
+        }
+        if (Objects.nonNull(strategy)) {
+
+            targetedRadioButton = switch (strategy) {
+                case RANDOM -> StrategyGenerator.getRandomElementFromElements(radioButtons);
+                case FIRST -> StrategyGenerator.getFirstElementFromElements(radioButtons);
+                case LAST -> StrategyGenerator.getLastElementFromElements(radioButtons);
+                case ALL -> throw new IllegalArgumentException("Only single radio button can be selected");
+            };
+        }
+
+        return targetedRadioButton;
+    }
+
+    private boolean isElementEnabled(WebElement radioButtonElement) {
+        return !smartSelenium.smartGetAttribute(radioButtonElement, "class").contains(DISABLED_CLASS_INDICATOR);
+    }
+
+
+    private boolean isElementSelected(WebElement radioButtonElement) {
+        return smartSelenium.smartGetAttribute(radioButtonElement, "class").contains(CHECKED_CLASS_INDICATOR);
+    }
+
+
+    private boolean isElementVisible(WebElement radioButtonElement) {
+        return !smartSelenium.smartGetAttribute(radioButtonElement, "class").contains(VISIBLE_CLASS_INDICATOR);
+    }
+
+
+    private String getElementText(WebElement radioButtonElement) {
+        return smartSelenium.smartGetText(
+                smartSelenium.smartFindElement(radioButtonElement, RADIO_ELEMENT_CONTENT_LOCATOR)).trim();
+    }
+
+    private String selectElement(WebElement radioButtonElement) {
+        String elementText = null;
+        if (isElementVisible(radioButtonElement) && isElementEnabled(radioButtonElement) &&
+                !isElementSelected(radioButtonElement)) {
+            smartSelenium.smartClick(radioButtonElement);
+            elementText = getElementText(radioButtonElement);
+        }
+        return elementText;
+    }
+}

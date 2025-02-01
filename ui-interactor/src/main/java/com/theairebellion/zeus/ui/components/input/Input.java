@@ -45,5 +45,4 @@ public interface Input {
 
     String getErrorMessage(By inputFieldContainerLocator);
 
-
 }

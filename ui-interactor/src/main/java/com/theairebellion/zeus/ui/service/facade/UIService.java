@@ -20,6 +20,8 @@ import com.theairebellion.zeus.ui.components.radio.RadioServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
+import com.theairebellion.zeus.ui.components.tab.TabService;
+import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
@@ -40,6 +42,7 @@ public class UIService {
     private LoaderService loaderField;
     private LinkService linkField;
     private AlertService alertField;
+    private TabService tabField;
     private final InsertionServiceRegistry serviceRegistry;
     private final InsertionService insertionService;
 
@@ -55,6 +58,7 @@ public class UIService {
         loaderField = new LoaderServiceImpl(smartSelenium);
         linkField = new LinkServiceImpl(smartSelenium);
         alertField = new AlertServiceImpl(smartSelenium);
+        tabField = new TabServiceImpl(smartSelenium);
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);

@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @ImplementationOfType(SelectFieldTypes.BOOTSTRAP_SELECT)
 public class SelectBootstrapImpl extends BaseComponent implements Select {
 
-    public static final By DDL_BUTTON_LOCATOR = By.tagName("select");
     public static final By OPTION_LOCATOR = By.tagName("option");
     public static final String DISABLED_CLASS_INDICATOR = "disabled";
     public static final String SELECTED_ATTRIBUTE_INDICATOR = "selected";
@@ -30,13 +29,13 @@ public class SelectBootstrapImpl extends BaseComponent implements Select {
 
     @Override
     public void selectItems(final WebElement container, final String... values) {
-        openDdl();
+        openDdl(container);
         List<WebElement> options = getAllOptionsElements(container);
         for (String value : values) {
             WebElement option = findOptionByText(options, value);
             smartSelenium.smartClick(option);
         }
-        closeDdl();
+        closeDdl(container);
     }
 
     @Override
@@ -58,12 +57,12 @@ public class SelectBootstrapImpl extends BaseComponent implements Select {
 
     @Override
     public List<String> getAvailableItems(WebElement container) {
-        openDdl();
+        openDdl(container);
         List<WebElement> options = getAllOptionsElements(container);
         List<String> availableOptions = options.stream()
                 .map(option -> smartSelenium.smartGetText(option).trim())
                 .collect(Collectors.toList());
-        closeDdl();
+        closeDdl(container);
         return availableOptions;
     }
 
@@ -75,12 +74,12 @@ public class SelectBootstrapImpl extends BaseComponent implements Select {
 
     @Override
     public List<String> getSelectedItems(WebElement container) {
-        openDdl();
+        openDdl(container);
         List<String> checkedOptions = getAllOptionsElements(container).stream()
                 .filter(this::checkIfOptionIsSelected)
                 .map(smartSelenium::smartGetText)
                 .collect(Collectors.toList());
-        closeDdl();
+        closeDdl(container);
         return checkedOptions;
     }
 
@@ -92,7 +91,7 @@ public class SelectBootstrapImpl extends BaseComponent implements Select {
 
     @Override
     public boolean isOptionVisible(WebElement container, String value) {
-        openDdl();
+        openDdl(container);
         List<WebElement> options = getAllOptionsElements(container);
         try {
             findOptionByText(options, value);
@@ -110,7 +109,7 @@ public class SelectBootstrapImpl extends BaseComponent implements Select {
 
     @Override
     public boolean isOptionEnabled(WebElement container, String value) {
-        openDdl();
+        openDdl(container);
         List<WebElement> options = getAllOptionsElements(container);
         WebElement option = findOptionByText(options, value);
         return isOptionEnabled(option);
@@ -123,10 +122,10 @@ public class SelectBootstrapImpl extends BaseComponent implements Select {
     }
 
     protected List<String> selectItemsWithStrategy(final WebElement container, final Strategy strategy) {
-        openDdl();
+        openDdl(container);
         List<WebElement> options = getAllOptionsElements(container);
         List<String> selectedOptionsText = selectOptionByStrategy(options, strategy);
-        closeDdl();
+        closeDdl(container);
         return selectedOptionsText;
     }
 
@@ -155,17 +154,12 @@ public class SelectBootstrapImpl extends BaseComponent implements Select {
                 .orElseThrow(() -> new NotFoundException("Option with text '" + text + "' not found"));
     }
 
-    protected void openDdl() {
-        WebElement ddlButton = smartSelenium.smartFindElement(DDL_BUTTON_LOCATOR);
-        smartSelenium.waitAndClickElement(ddlButton);
+    protected void openDdl(WebElement container) {
+        smartSelenium.waitAndClickElement(container);
     }
 
-    protected void closeDdl() {
-        openDdl();
-    }
-
-    protected WebElement findDdlButton(WebElement ddlRoot) {
-        return smartSelenium.smartFindElement(ddlRoot, DDL_BUTTON_LOCATOR);
+    protected void closeDdl(WebElement container) {
+        openDdl(container);
     }
 
     protected List<WebElement> getAllOptionsElements(WebElement container) {

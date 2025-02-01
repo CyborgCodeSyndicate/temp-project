@@ -18,6 +18,8 @@ import com.theairebellion.zeus.ui.components.radio.Radio;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.select.Select;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
+import com.theairebellion.zeus.ui.components.tab.Tab;
+import com.theairebellion.zeus.ui.components.tab.TabComponentType;
 import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -62,6 +64,10 @@ public class ComponentFactory {
 
     public static Alert getAlertComponent(AlertComponentType type, SmartSelenium smartSelenium) {
         return getComponent(Alert.class, type, uiConfig.projectPackage(), smartSelenium);
+    }
+
+    public static Tab getTabComponent(TabComponentType type, SmartSelenium smartSelenium) {
+        return getComponent(Tab.class, type, uiConfig.projectPackage(), smartSelenium);
     }
 
 
