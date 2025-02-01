@@ -2,11 +2,12 @@ package com.reqres.test.framework;
 
 import com.reqres.test.framework.rest.dto.request.LoginUser;
 import com.reqres.test.framework.rest.dto.request.User;
+import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
 import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
 import com.reqres.test.framework.rest.dto.response.UserResponse;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
-import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.annotation.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
@@ -15,15 +16,21 @@ import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
+import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.*;
+import static com.reqres.test.framework.preconditions.QuestPreconditions.CREATE_NEW_LEADER_USER;
 import static com.reqres.test.framework.rest.Endpoints.*;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @API
 public class ReqresApiTest extends BaseTest {
@@ -194,6 +201,23 @@ public class ReqresApiTest extends BaseTest {
                                         .jsonPath()
                                         .getString("token")),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
-                ).complete();
+                );
+    }
+
+    @Test
+    @PreQuest({
+            @Journey(value = CREATE_NEW_LEADER_USER, journeyData = {@JourneyData(USER_LEADER)})
+    })
+    @Ripper(targets = {DELETE_ADMIN_USER})
+    public void testPreconditionsExample(Quest quest) {
+        quest.enters(OLYMPYS)
+                .validate(() -> {
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class).getBody().as(CreatedUserResponse.class);
+                    assertEquals("Morpheus", createdUserResponse.getName(), "Name is incorrect!");
+                    assertEquals("Leader", createdUserResponse.getJob(), "Job is incorrect!");
+                    assertTrue(createdUserResponse
+                            .getCreatedAt()
+                            .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                });
     }
 }

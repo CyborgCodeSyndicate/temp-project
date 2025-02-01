@@ -2,7 +2,6 @@ package com.theairebellion.zeus.framework.quest;
 
 
 import com.theairebellion.zeus.framework.annotation.WorldName;
-import com.theairebellion.zeus.framework.chain.FluentChain;
 import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.storage.Storage;
@@ -15,7 +14,7 @@ import static com.theairebellion.zeus.util.reflections.ReflectionUtil.getFieldVa
 
 public class Quest {
 
-    private final Map<Class<? extends FluentChain>, FluentChain> worlds = new HashMap<>();
+    private final Map<Class<? extends FluentService>, FluentService> worlds = new HashMap<>();
     private Storage storage;
     private final SoftAssertions softAssertions = new SoftAssertions();
 
@@ -26,8 +25,8 @@ public class Quest {
 
 
     @SuppressWarnings("unchecked")
-    public <T extends FluentChain> T enters(Class<T> worldType) {
-        FluentChain world = worlds.get(worldType);
+    public <T extends FluentService> T enters(Class<T> worldType) {
+        FluentService world = worlds.get(worldType);
         if (world == null) {
             throw new IllegalArgumentException("World not initialized: " + worldType.getName());
         }
@@ -50,7 +49,7 @@ public class Quest {
     }
 
 
-    private <T extends FluentChain, K> K artifact(Class<T> worldType, Class<K> artifactType) {
+    private <T extends FluentService, K> K artifact(Class<T> worldType, Class<K> artifactType) {
         if (worldType == null || artifactType == null) {
             throw new IllegalArgumentException("Parameters worldType and artifactType must not be null.");
         }
