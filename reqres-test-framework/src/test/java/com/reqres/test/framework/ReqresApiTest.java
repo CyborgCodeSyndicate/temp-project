@@ -1,11 +1,14 @@
 package com.reqres.test.framework;
 
+import com.reqres.test.framework.rest.authentication.AdminAuth;
+import com.reqres.test.framework.rest.authentication.ReqResAuthentication;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
 import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
 import com.reqres.test.framework.rest.dto.response.UserResponse;
 import com.theairebellion.zeus.api.annotations.API;
+import com.theairebellion.zeus.api.annotations.AuthenticateAs;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
@@ -205,6 +208,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @AuthenticateAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
     @PreQuest({
             @Journey(value = CREATE_NEW_LEADER_USER, journeyData = {@JourneyData(USER_LEADER)})
     })

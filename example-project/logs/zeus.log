@@ -1,7 +1,6 @@
-⚡️ ZEUS ⚡️ 2025-01-24T15:29:16,461 INFO  [] - Starting ApiTestTry using Java 17.0.14 with PID 16496 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\example-project)
-⚡️ ZEUS ⚡️ 2025-01-24T15:29:16,787 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-01-24T15:29:17,766 INFO  [] - Started ApiTestTry in 1.969 seconds (process running for 5.923)
-⚡️ ZEUS ⚡️ 2025-01-24T15:29:18,937 [scenario=ApiTestTry.testPetNew] INFO  [TEST] - The : 'testPetNew(Quest, Student, Late)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-01-24T15:29:19,019 [scenario=ApiTestTry.testPetNew] INFO  [TEST] - Quest crafted for scenario: 'testPetNew(Quest, Student, Late)'.
-⚡️ ZEUS ⚡️ 2025-01-24T15:29:19,269 [scenario=ApiTestTry.testPetNew] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-01-24T15:29:19,300 [scenario=ApiTestTry.testPetNew] INFO  [TEST] - The quest of 'testPetNew(Quest, Student, Late)' has ended in defeat. Status: FAILED. Duration: 0 seconds.
+⚡️ ZEUS ⚡️ 2025-02-01T17:41:22,858 INFO  [] - Starting ExampleTest using Java 17.0.14 with PID 14868 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\example-project)
+⚡️ ZEUS ⚡️ 2025-02-01T17:41:23,254 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-02-01T17:41:24,552 INFO  [] - Started ExampleTest in 2.514 seconds (process running for 7.915)
+⚡️ ZEUS ⚡️ 2025-02-01T17:41:25,973 [scenario=ExampleTest.testExample1] INFO  [TEST] - The : 'testExample1(Quest, Student, Late)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-02-01T17:41:26,098 [scenario=ExampleTest.testExample1] INFO  [TEST] - Quest crafted for scenario: 'testExample1(Quest, Student, Late)'.
+⚡️ ZEUS ⚡️ 2025-02-01T17:41:26,127 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'API'
