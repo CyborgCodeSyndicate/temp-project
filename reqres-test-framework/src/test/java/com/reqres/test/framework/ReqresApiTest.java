@@ -101,7 +101,7 @@ public class ReqresApiTest extends BaseTest {
                         GET_ALL_USERS.withQueryParam("page", 2))
                 .validate(() -> {
                     GetUsersResponse usersResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);
-                    assertEquals(6, usersResponse.getData().size(), "User data size not correct");
+                    assertEquals(6, usersResponse.getData().size(), "User data size not correct!");
                     assertEquals(7, usersResponse.getData().get(0).getFirstName().length(), "Name length incorrect!");
                 });
     }
