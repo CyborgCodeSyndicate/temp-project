@@ -15,7 +15,6 @@ public enum Endpoints implements Endpoint {
     private final Method method;
     private final String url;
 
-
     Endpoints(final Method method, final String url) {
         this.method = method;
         this.url = url;
