@@ -4,7 +4,7 @@ import org.aeonbits.owner.Config;
 
 @Config.LoadPolicy(Config.LoadType.MERGE)
 @Config.Sources({"system:properties", "classpath:${ui.config.file}.properties"})
-public interface UIConfig extends Config {
+public interface UiConfig extends Config {
 
     @DefaultValue("CHROME")
     @Key("browser.type")
@@ -50,5 +50,9 @@ public interface UIConfig extends Config {
 
     @Key("tab.default.type")
     String tabDefaultType();
+
+    @DefaultValue("true")
+    @Key("use.wrap.selenium.function")
+    boolean useWrappedSeleniumFunctions();
 
 }

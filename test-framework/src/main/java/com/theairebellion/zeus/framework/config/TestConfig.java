@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootConfiguration
 @ComponentScan(basePackages = {
     "com.theairebellion.zeus.framework",
-    // "${project.package}"
+    "${project.package}"
 })
 public class TestConfig {
 

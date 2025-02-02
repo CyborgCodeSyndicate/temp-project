@@ -1,29 +1,29 @@
 package com.theairebellion.zeus.ui.components.button;
 
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 public interface Button {
 
-    void click(WebElement container, String buttonText);
+    void click(SmartWebElement container, String buttonText);
 
-    void click(WebElement container);
+    void click(SmartWebElement container);
 
     void click(String buttonText);
 
     void click(By buttonLocator);
 
-    boolean isEnabled(WebElement container, String buttonText);
+    boolean isEnabled(SmartWebElement container, String buttonText);
 
-    boolean isEnabled(WebElement container);
+    boolean isEnabled(SmartWebElement container);
 
     boolean isEnabled(String buttonText);
 
     boolean isEnabled(By buttonLocator);
 
-    boolean isVisible(WebElement container, String buttonText);
+    boolean isVisible(SmartWebElement container, String buttonText);
 
-    boolean isVisible(WebElement container);
+    boolean isVisible(SmartWebElement container);
 
     boolean isVisible(String buttonText);
 

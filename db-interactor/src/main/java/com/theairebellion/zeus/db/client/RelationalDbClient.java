@@ -2,107 +2,91 @@ package com.theairebellion.zeus.db.client;
 
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.connector.BaseDbConnectorService;
-import com.theairebellion.zeus.db.log.LogDB;
+import com.theairebellion.zeus.db.exceptions.DatabaseOperationException;
+import com.theairebellion.zeus.db.log.LogDb;
 import com.theairebellion.zeus.db.query.QueryResponse;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 
 public class RelationalDbClient implements DbClient {
 
     private final BaseDbConnectorService connector;
     private final DatabaseConfiguration dbConfig;
 
-
     public RelationalDbClient(BaseDbConnectorService connector, DatabaseConfiguration dbConfig) {
         this.connector = connector;
         this.dbConfig = dbConfig;
     }
 
-
     @Override
     public QueryResponse executeQuery(String query) {
-        Connection connection = connector.getConnection(dbConfig);
-        return executeQueryAndReturn(connection, query);
+        try (Connection connection = connector.getConnection(dbConfig)) {
+            return executeAndProcessQuery(connection, query);
+        } catch (SQLException e) {
+            LogDb.error("Failed to execute query: {}", query, e);
+            throw new DatabaseOperationException("Error executing query: " + query, e);
+        }
     }
 
-
-    protected void printQuery(String query) {
-        LogDB.step("Executing database query: {}", query);
-    }
-
-
-    protected void printResponse(String query, QueryResponse response, long duration) {
-        List<Map<String, Object>> rows = response.getRows();
-        LogDB.step("Query '{}' executed in {}ms, row count: {}", query, duration, rows.size());
-        LogDB.extended("Query response data: {}", rows);
-    }
-
-
-    private QueryResponse executeQueryAndReturn(Connection connection, String sqlQuery) {
-        printQuery(sqlQuery);
-        List<Map<String, Object>> resultList = new ArrayList<>();
-        PreparedStatement preparedStatement = null;
-        Statement statement = null;
-        ResultSet resultSet = null;
+    private QueryResponse executeAndProcessQuery(Connection connection, String query) throws SQLException {
+        printQuery(query);
         long startTime = System.currentTimeMillis();
 
-        try {
-            if (sqlQuery.trim().toLowerCase().startsWith("select")) {
-                preparedStatement = connection.prepareStatement(sqlQuery);
-                resultSet = preparedStatement.executeQuery();
+        if (query.trim().toLowerCase().startsWith("select")) {
+            return executeSelectQuery(connection, query, startTime);
+        } else {
+            return executeUpdateQuery(connection, query, startTime);
+        }
+    }
 
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                int columnCount = metaData.getColumnCount();
+    private QueryResponse executeSelectQuery(Connection connection, String query, long startTime) throws SQLException {
+        List<Map<String, Object>> resultList = new ArrayList<>();
 
-                while (resultSet.next()) {
-                    Map<String, Object> row = new HashMap<>();
-                    for (int i = 1; i <= columnCount; i++) {
-                        String columnName = metaData.getColumnName(i);
-                        Object columnValue = resultSet.getObject(i);
-                        row.put(columnName, columnValue);
-                    }
-                    resultList.add(row);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnName(i), resultSet.getObject(i));
                 }
-            } else {
-                statement = connection.createStatement();
-                int updatedCount = statement.executeUpdate(sqlQuery);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error executing query: " + sqlQuery, e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException ignore) {
-            }
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException ignore) {
-            }
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException ignore) {
+                resultList.add(row);
             }
         }
 
         long duration = System.currentTimeMillis() - startTime;
-        QueryResponse queryResponse = new QueryResponse(resultList);
-        printResponse(sqlQuery, queryResponse, duration);
-        return queryResponse;
+        QueryResponse response = new QueryResponse(resultList);
+        printResponse(query, response, duration);
+        return response;
     }
 
+    private QueryResponse executeUpdateQuery(Connection connection, String query, long startTime) throws SQLException {
+        List<Map<String, Object>> resultList = Collections.singletonList(
+                Collections.singletonMap("updatedRows", executeUpdate(connection, query))
+        );
+
+        long duration = System.currentTimeMillis() - startTime;
+        QueryResponse response = new QueryResponse(resultList);
+        LogDb.step("Update query '{}' executed in {}ms, updated rows count: {}", query, duration, resultList.get(0).get("updatedRows"));
+        return response;
+    }
+
+    private int executeUpdate(Connection connection, String query) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            return statement.executeUpdate(query);
+        }
+    }
+
+    protected void printQuery(String query) {
+        LogDb.step("Executing database query: {}", query);
+    }
+
+    protected void printResponse(String query, QueryResponse response, long duration) {
+        LogDb.step("Query '{}' executed in {}ms, result count: {}", query, duration, response.getRows().size());
+        LogDb.extended("Query response data: {}", response.getRows());
+    }
 }

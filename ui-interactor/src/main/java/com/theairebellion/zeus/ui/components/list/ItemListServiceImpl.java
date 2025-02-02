@@ -1,32 +1,32 @@
 package com.theairebellion.zeus.ui.components.list;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.*;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-public class ItemListServiceImpl implements ItemListService {
+public class ItemListServiceImpl extends AbstractComponentService<ItemListComponentType, ItemList>
+        implements ItemListService {
 
-    protected SmartSelenium smartSelenium;
-    private static Map<ItemListComponentType, ItemList> components;
-
-    public ItemListServiceImpl(WebDriver driver) {
-        smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public ItemListServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public ItemListServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public void select(final ItemListComponentType componentType, final WebElement container,
+    protected ItemList createComponent(final ItemListComponentType componentType) {
+        return ComponentFactory.getListComponent(componentType, driver);
+    }
+
+    @Override
+    public void select(final ItemListComponentType componentType, final SmartWebElement container,
                        final String... itemText) {
         ItemListComponent(componentType).select(container, itemText);
     }
@@ -37,7 +37,7 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public String select(final ItemListComponentType componentType, final WebElement container,
+    public String select(final ItemListComponentType componentType, final SmartWebElement container,
                          final Strategy strategy) {
         return ItemListComponent(componentType).select(container, strategy);
     }
@@ -59,7 +59,7 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public void deSelect(final ItemListComponentType componentType, final WebElement container,
+    public void deSelect(final ItemListComponentType componentType, final SmartWebElement container,
                          final String... itemText) {
         ItemListComponent(componentType).deSelect(container, itemText);
     }
@@ -71,7 +71,7 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public String deSelect(final ItemListComponentType componentType, final WebElement container,
+    public String deSelect(final ItemListComponentType componentType, final SmartWebElement container,
                            final Strategy strategy) {
         return ItemListComponent(componentType).deSelect(container, strategy);
     }
@@ -93,9 +93,14 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public boolean areSelected(final ItemListComponentType componentType, final WebElement container,
+    public boolean areSelected(final ItemListComponentType componentType, final SmartWebElement container,
                                final String... itemText) {
         return ItemListComponent(componentType).areSelected(container, itemText);
+    }
+
+    @Override
+    public boolean isSelected(ItemListComponentType componentType, SmartWebElement container, String itemText) {
+        return areSelected(componentType, container, itemText);
     }
 
     @Override
@@ -105,8 +110,18 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
+    public boolean isSelected(ItemListComponentType componentType, By containerLocator, String itemText) {
+        return areSelected(componentType, containerLocator, itemText);
+    }
+
+    @Override
     public boolean areSelected(final ItemListComponentType componentType, final String... itemText) {
         return ItemListComponent(componentType).areSelected(itemText);
+    }
+
+    @Override
+    public boolean isSelected(ItemListComponentType componentType, String itemText) {
+        return areSelected(componentType, itemText);
     }
 
     @Override
@@ -115,9 +130,19 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public boolean areEnabled(final ItemListComponentType componentType, final WebElement container,
+    public boolean isSelected(ItemListComponentType componentType, By itemListLocator) {
+        return areSelected(componentType, Collections.singletonList(itemListLocator).toArray(new By[0]));
+    }
+
+    @Override
+    public boolean areEnabled(final ItemListComponentType componentType, final SmartWebElement container,
                               final String... itemText) {
         return ItemListComponent(componentType).areEnabled(container, itemText);
+    }
+
+    @Override
+    public boolean isEnabled(ItemListComponentType componentType, SmartWebElement container, String itemText) {
+        return areEnabled(componentType, container, itemText);
     }
 
     @Override
@@ -127,8 +152,18 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
+    public boolean isEnabled(ItemListComponentType componentType, By containerLocator, String itemText) {
+        return areEnabled(componentType, containerLocator, itemText);
+    }
+
+    @Override
     public boolean areEnabled(final ItemListComponentType componentType, final String... itemText) {
         return ItemListComponent(componentType).areEnabled(itemText);
+    }
+
+    @Override
+    public boolean isEnabled(ItemListComponentType componentType, String itemText) {
+        return areEnabled(componentType, itemText);
     }
 
     @Override
@@ -137,9 +172,19 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public boolean areVisible(final ItemListComponentType componentType, final WebElement container,
+    public boolean isEnabled(ItemListComponentType componentType, By itemLocator) {
+        return areEnabled(componentType, Collections.singletonList(itemLocator).toArray(new By[0]));
+    }
+
+    @Override
+    public boolean areVisible(final ItemListComponentType componentType, final SmartWebElement container,
                               final String... itemText) {
         return ItemListComponent(componentType).areVisible(container, itemText);
+    }
+
+    @Override
+    public boolean isVisible(ItemListComponentType componentType, SmartWebElement container, String itemText) {
+        return areVisible(componentType, container, itemText);
     }
 
     @Override
@@ -149,8 +194,18 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
+    public boolean isVisible(ItemListComponentType componentType, By containerLocator, String itemText) {
+        return areVisible(componentType, containerLocator, itemText);
+    }
+
+    @Override
     public boolean areVisible(final ItemListComponentType componentType, final String... itemText) {
         return ItemListComponent(componentType).areVisible(itemText);
+    }
+
+    @Override
+    public boolean isVisible(ItemListComponentType componentType, String itemText) {
+        return areVisible(componentType, itemText);
     }
 
     @Override
@@ -159,7 +214,12 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public List<String> getSelected(final ItemListComponentType componentType, final WebElement container) {
+    public boolean isVisible(ItemListComponentType componentType, By itemLocator) {
+        return areVisible(componentType, Collections.singletonList(itemLocator).toArray(new By[0]));
+    }
+
+    @Override
+    public List<String> getSelected(final ItemListComponentType componentType, final SmartWebElement container) {
         return ItemListComponent(componentType).getSelected(container);
     }
 
@@ -169,7 +229,7 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Override
-    public List<String> getAll(final ItemListComponentType componentType, final WebElement container) {
+    public List<String> getAll(final ItemListComponentType componentType, final SmartWebElement container) {
         return ItemListComponent(componentType).getAll(container);
     }
 
@@ -187,9 +247,6 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     private ItemList ItemListComponent(final ItemListComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getListComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

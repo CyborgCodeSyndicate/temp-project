@@ -4,9 +4,9 @@ import com.example.project.ui.types.AlertFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.alert.Alert;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 
 @ImplementationOfType(AlertFieldTypes.BOOTSTRAP_ALERT)
@@ -15,28 +15,31 @@ public class AlertBootstrapImpl extends BaseComponent implements Alert {
     private static final By ALERT_CONTAINER_LOCATOR = By.className("alert");
 
 
-    public AlertBootstrapImpl(SmartSelenium smartSelenium) {
-        super(smartSelenium);
+    public AlertBootstrapImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
 
     @Override
-    public String getValue(WebElement container) {
-        return smartSelenium.waitAndFindElement(container, ALERT_CONTAINER_LOCATOR).getText();
+    public String getValue(final SmartWebElement container) {
+        return container.findSmartElement(ALERT_CONTAINER_LOCATOR).getText();
     }
 
-    @Override
-    public String getValue(By containerLocator) {
-        return smartSelenium.waitAndFindElement(containerLocator).getText();
-    }
 
     @Override
-    public boolean isVisible(WebElement container) {
-        return smartSelenium.checkNoException(() -> smartSelenium.waitAndFindElement(container, ALERT_CONTAINER_LOCATOR));
+    public String getValue(final By containerLocator) {
+        return driver.findSmartElement(containerLocator).getText();
     }
 
+
     @Override
-    public boolean isVisible(By containerLocator) {
-        return smartSelenium.checkNoException(() -> smartSelenium.waitAndFindElement(containerLocator));
+    public boolean isVisible(final SmartWebElement container) {
+        return driver.checkNoException(() -> container.findSmartElement(ALERT_CONTAINER_LOCATOR));
+    }
+
+
+    @Override
+    public boolean isVisible(final By containerLocator) {
+        return driver.checkNoException(() -> driver.findSmartElement(containerLocator));
     }
 }

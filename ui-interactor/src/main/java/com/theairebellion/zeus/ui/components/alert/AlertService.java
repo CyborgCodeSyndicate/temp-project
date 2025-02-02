@@ -1,26 +1,25 @@
 package com.theairebellion.zeus.ui.components.alert;
 
-import com.theairebellion.zeus.ui.config.UIConfig;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface defining operations for interacting with alert components in a web interface.
  */
 public interface AlertService {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     AlertComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
      * Retrieves the value of an alert within the specified container, using the default alert component type.
      *
-     * @param container The WebElement container that contains the alert.
+     * @param container The SmartWebElement container that contains the alert.
      * @return The value of the alert as a String.
      */
-    default String getValue(WebElement container) {
+    default String getValue(SmartWebElement container) {
         return getValue(DEFAULT_TYPE, container);
     }
 
@@ -28,10 +27,10 @@ public interface AlertService {
      * Retrieves the value of an alert within the specified container, using the given alert component type.
      *
      * @param componentType The specific alert component type.
-     * @param container     The WebElement container that contains the alert.
+     * @param container     The SmartWebElement container that contains the alert.
      * @return The value of the alert as a String.
      */
-    String getValue(AlertComponentType componentType, WebElement container);
+    String getValue(AlertComponentType componentType, SmartWebElement container);
 
     /**
      * Retrieves the value of an alert located by the specified locator, using the default alert component type.
@@ -55,10 +54,10 @@ public interface AlertService {
     /**
      * Checks if an alert within the specified container is visible, using the default alert component type.
      *
-     * @param container The WebElement container that contains the alert.
+     * @param container The SmartWebElement container that contains the alert.
      * @return true if the alert is visible, false otherwise.
      */
-    default boolean isVisible(WebElement container) {
+    default boolean isVisible(SmartWebElement container) {
         return isVisible(DEFAULT_TYPE, container);
     }
 
@@ -66,10 +65,10 @@ public interface AlertService {
      * Checks if an alert within the specified container is visible, using the given alert component type.
      *
      * @param componentType The specific alert component type.
-     * @param container     The WebElement container that contains the alert.
+     * @param container     The SmartWebElement container that contains the alert.
      * @return true if the alert is visible, false otherwise.
      */
-    boolean isVisible(AlertComponentType componentType, WebElement container);
+    boolean isVisible(AlertComponentType componentType, SmartWebElement container);
 
     /**
      * Checks if an alert located by the specified locator is visible, using the default alert component type.
@@ -98,8 +97,8 @@ public interface AlertService {
     private static AlertComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(AlertComponentType.class,
-                    uiConfig.alertDefaultType(),
-                    uiConfig.projectPackage());
+                    getUiConfig().alertDefaultType(),
+                    getUiConfig().projectPackage());
         } catch (Exception ignored) {
             return null;
         }

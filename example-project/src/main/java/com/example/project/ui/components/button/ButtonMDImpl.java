@@ -4,10 +4,12 @@ import com.example.project.ui.types.ButtonFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.button.Button;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
+
+import java.util.Objects;
 
 
 @ImplementationOfType(ButtonFieldTypes.MD_BUTTON)
@@ -15,121 +17,120 @@ public class ButtonMDImpl extends BaseComponent implements Button {
 
     private static final By BUTTON_CLASS_NAME_SELECTOR = By.className("mat-button-base");
     private static final String DISABLED_STATE_INDICATOR = "mat-button-disabled";
-    public static final String NOT_VISIBLE_STATE_INDICATOR = "hidden";
+    private static final String NOT_VISIBLE_STATE_INDICATOR = "hidden";
 
 
-    public ButtonMDImpl(SmartSelenium smartSelenium) {
-        super(smartSelenium);
+    public ButtonMDImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
 
     @Override
-    public void click(WebElement container, String buttonText) {
-        WebElement button = findButtonInContainer(container, buttonText);
-        smartSelenium.smartClick(button);
+    public void click(final SmartWebElement container, final String buttonText) {
+        SmartWebElement button = findButtonInContainer(container, buttonText);
+        button.click();
     }
 
 
     @Override
-    public void click(WebElement container) {
-        WebElement button = findButtonInContainer(container, null);
-        smartSelenium.smartClick(button);
+    public void click(final SmartWebElement container) {
+        SmartWebElement button = findButtonInContainer(container, null);
+        button.click();
     }
 
 
     @Override
-    public void click(String buttonText) {
-        WebElement button = findButtonByText(buttonText);
-        smartSelenium.smartClick(button);
+    public void click(final String buttonText) {
+        SmartWebElement button = findButtonByText(buttonText);
+        button.click();
     }
 
 
     @Override
-    public void click(By buttonLocator) {
-        WebElement button = smartSelenium.waitAndFindElement(buttonLocator);
-        smartSelenium.smartClick(button);
+    public void click(final By buttonLocator) {
+        SmartWebElement button = driver.findSmartElement(buttonLocator);
+        button.click();
     }
 
 
     @Override
-    public boolean isEnabled(WebElement container, String buttonText) {
-        WebElement button = findButtonInContainer(container, buttonText);
+    public boolean isEnabled(final SmartWebElement container, final String buttonText) {
+        SmartWebElement button = findButtonInContainer(container, buttonText);
         return isButtonEnabled(button);
     }
 
 
     @Override
-    public boolean isEnabled(WebElement container) {
-        WebElement button = findButtonInContainer(container, null);
+    public boolean isEnabled(final SmartWebElement container) {
+        SmartWebElement button = findButtonInContainer(container, null);
         return isButtonEnabled(button);
     }
 
 
     @Override
-    public boolean isEnabled(String buttonText) {
-        WebElement button = findButtonByText(buttonText);
+    public boolean isEnabled(final String buttonText) {
+        SmartWebElement button = findButtonByText(buttonText);
         return isButtonEnabled(button);
     }
 
 
     @Override
-    public boolean isEnabled(By buttonLocator) {
-        WebElement button = smartSelenium.waitAndFindElement(buttonLocator);
+    public boolean isEnabled(final By buttonLocator) {
+        SmartWebElement button = driver.findSmartElement(buttonLocator);
         return isButtonEnabled(button);
     }
 
 
     @Override
-    public boolean isVisible(WebElement container, String buttonText) {
-        WebElement button = findButtonInContainer(container, buttonText);
+    public boolean isVisible(final SmartWebElement container, final String buttonText) {
+        SmartWebElement button = findButtonInContainer(container, buttonText);
         return isButtonVisible(button);
     }
 
 
     @Override
-    public boolean isVisible(WebElement container) {
-        WebElement button = findButtonInContainer(container, null);
+    public boolean isVisible(final SmartWebElement container) {
+        SmartWebElement button = findButtonInContainer(container, null);
         return isButtonVisible(button);
     }
 
 
     @Override
-    public boolean isVisible(String buttonText) {
-        WebElement button = findButtonByText(buttonText);
+    public boolean isVisible(final String buttonText) {
+        SmartWebElement button = findButtonByText(buttonText);
         return isButtonVisible(button);
     }
 
 
     @Override
-    public boolean isVisible(By buttonLocator) {
-        WebElement button = smartSelenium.waitAndFindElement(buttonLocator);
+    public boolean isVisible(final By buttonLocator) {
+        SmartWebElement button = driver.findSmartElement(buttonLocator);
         return isButtonVisible(button);
     }
 
 
-    private WebElement findButtonInContainer(WebElement container, String buttonText) {
-        return smartSelenium.waitAndFindElements(container, BUTTON_CLASS_NAME_SELECTOR).stream()
-                .filter(element -> buttonText == null || smartSelenium.smartGetText(element).contains(buttonText))
+    private SmartWebElement findButtonInContainer(SmartWebElement container, String buttonText) {
+        return container.findSmartElements(BUTTON_CLASS_NAME_SELECTOR).stream()
+                .filter(element -> buttonText == null || element.getText().contains(buttonText))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(String.format("Button with text %s not found", buttonText)));
     }
 
 
-    private WebElement findButtonByText(String buttonText) {
-        return smartSelenium.waitAndFindElements(BUTTON_CLASS_NAME_SELECTOR).stream()
-                .filter(element -> smartSelenium.smartGetText(element).contains(buttonText))
+    private SmartWebElement findButtonByText(String buttonText) {
+        return driver.findSmartElements(BUTTON_CLASS_NAME_SELECTOR).stream()
+                .filter(element -> element.getText().contains(buttonText))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(String.format("Button with text %s not found", buttonText)));
     }
 
 
-    private boolean isButtonEnabled(WebElement button) {
-        return !smartSelenium.smartGetAttribute(button, "class").contains(DISABLED_STATE_INDICATOR);
+    private boolean isButtonEnabled(SmartWebElement button) {
+        return !Objects.requireNonNull(button.getAttribute("class")).contains(DISABLED_STATE_INDICATOR);
     }
 
 
-    private boolean isButtonVisible(WebElement button) {
-        return !smartSelenium.smartGetAttribute(button, "class").contains(NOT_VISIBLE_STATE_INDICATOR);
+    private boolean isButtonVisible(SmartWebElement button) {
+        return !Objects.requireNonNull(button.getAttribute("class")).contains(NOT_VISIBLE_STATE_INDICATOR);
     }
-
 }

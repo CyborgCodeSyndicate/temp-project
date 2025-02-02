@@ -1,26 +1,25 @@
 package com.theairebellion.zeus.ui.components.button;
 
-import com.theairebellion.zeus.ui.config.UIConfig;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface defining operations for interacting with button elements within a web interface.
  */
 public interface ButtonService {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     ButtonComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
      * Clicks a button with the specified text inside a container, using the default button component type.
      *
-     * @param container  The WebElement container that contains the button.
+     * @param container  The SmartWebElement container that contains the button.
      * @param buttonText The text of the button to click.
      */
-    default void click(WebElement container, String buttonText) {
+    default void click(SmartWebElement container, String buttonText) {
         click(DEFAULT_TYPE, container, buttonText);
     }
 
@@ -28,17 +27,17 @@ public interface ButtonService {
      * Clicks a button with the specified text inside a container, using the given button component type.
      *
      * @param componentType The specific button component type.
-     * @param container     The WebElement container that contains the button.
+     * @param container     The SmartWebElement container that contains the button.
      * @param buttonText    The text of the button to click.
      */
-    <T extends ButtonComponentType> void click(T componentType, WebElement container, String buttonText);
+    <T extends ButtonComponentType> void click(T componentType, SmartWebElement container, String buttonText);
 
     /**
      * Clicks a button inside a container, using the default button component type.
      *
-     * @param container The WebElement container that contains the button.
+     * @param container The SmartWebElement container that contains the button.
      */
-    default void click(WebElement container) {
+    default void click(SmartWebElement container) {
         click(DEFAULT_TYPE, container);
     }
 
@@ -46,9 +45,9 @@ public interface ButtonService {
      * Clicks a button inside a container, using the given button component type.
      *
      * @param componentType The specific button component type.
-     * @param container     The WebElement container that contains the button.
+     * @param container     The SmartWebElement container that contains the button.
      */
-    <T extends ButtonComponentType> void click(T componentType, WebElement container);
+    <T extends ButtonComponentType> void click(T componentType, SmartWebElement container);
 
     /**
      * Clicks a button with the specified text, using the default button component type.
@@ -87,11 +86,11 @@ public interface ButtonService {
     /**
      * Checks if a button with the specified text inside a container is enabled, using the default button component type.
      *
-     * @param container  The WebElement container that contains the button.
+     * @param container  The SmartWebElement container that contains the button.
      * @param buttonText The text of the button to check.
      * @return true if the button is enabled, false otherwise.
      */
-    default boolean isEnabled(WebElement container, String buttonText) {
+    default boolean isEnabled(SmartWebElement container, String buttonText) {
         return isEnabled(DEFAULT_TYPE, container, buttonText);
     }
 
@@ -99,19 +98,19 @@ public interface ButtonService {
      * Checks if a button with the specified text inside a container is enabled, using the given button component type.
      *
      * @param componentType The specific button component type.
-     * @param container     The WebElement container that contains the button.
+     * @param container     The SmartWebElement container that contains the button.
      * @param buttonText    The text of the button to check.
      * @return true if the button is enabled, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isEnabled(T componentType, WebElement container, String buttonText);
+    <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement container, String buttonText);
 
     /**
      * Checks if a button inside a container is enabled, using the default button component type.
      *
-     * @param container The WebElement container that contains the button.
+     * @param container The SmartWebElement container that contains the button.
      * @return true if the button is enabled, false otherwise.
      */
-    default boolean isEnabled(WebElement container) {
+    default boolean isEnabled(SmartWebElement container) {
         return isEnabled(DEFAULT_TYPE, container);
     }
 
@@ -119,10 +118,10 @@ public interface ButtonService {
      * Checks if a button inside a container is enabled, using the given button component type.
      *
      * @param componentType The specific button component type.
-     * @param container     The WebElement container that contains the button.
+     * @param container     The SmartWebElement container that contains the button.
      * @return true if the button is enabled, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isEnabled(T componentType, WebElement container);
+    <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement container);
 
     /**
      * Checks if a button with the specified text is enabled, using the default button component type.
@@ -165,11 +164,11 @@ public interface ButtonService {
     /**
      * Checks if a button with the specified text inside a container is visible, using the default button component type.
      *
-     * @param container  The WebElement container that contains the button.
+     * @param container  The SmartWebElement container that contains the button.
      * @param buttonText The text of the button to check.
      * @return true if the button is visible, false otherwise.
      */
-    default boolean isVisible(WebElement container, String buttonText) {
+    default boolean isVisible(SmartWebElement container, String buttonText) {
         return isVisible(DEFAULT_TYPE, container, buttonText);
     }
 
@@ -177,19 +176,19 @@ public interface ButtonService {
      * Checks if a button with the specified text inside a container is visible, using the given button component type.
      *
      * @param componentType The specific button component type.
-     * @param container     The WebElement container that contains the button.
+     * @param container     The SmartWebElement container that contains the button.
      * @param buttonText    The text of the button to check.
      * @return true if the button is visible, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isVisible(T componentType, WebElement container, String buttonText);
+    <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement container, String buttonText);
 
     /**
      * Checks if a button inside a container is visible, using the default button component type.
      *
-     * @param container The WebElement container that contains the button.
+     * @param container The SmartWebElement container that contains the button.
      * @return true if the button is visible, false otherwise.
      */
-    default boolean isVisible(WebElement container) {
+    default boolean isVisible(SmartWebElement container) {
         return isVisible(DEFAULT_TYPE, container);
     }
 
@@ -197,10 +196,10 @@ public interface ButtonService {
      * Checks if a button inside a container is visible, using the given button component type.
      *
      * @param componentType The specific button component type.
-     * @param container     The WebElement container that contains the button.
+     * @param container     The SmartWebElement container that contains the button.
      * @return true if the button is visible, false otherwise.
      */
-    <T extends ButtonComponentType> boolean isVisible(T componentType, WebElement container);
+    <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement container);
 
     /**
      * Checks if a button with the specified text is visible, using the default button component type.
@@ -248,8 +247,8 @@ public interface ButtonService {
     private static ButtonComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(ButtonComponentType.class,
-                    uiConfig.buttonDefaultType(),
-                    uiConfig.projectPackage());
+                    getUiConfig().buttonDefaultType(),
+                    getUiConfig().projectPackage());
         } catch (Exception ignored) {
             return null;
         }

@@ -1,15 +1,15 @@
 package com.theairebellion.zeus.ui.components.alert;
 
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 public interface Alert {
 
-    String getValue(WebElement container);
+    String getValue(SmartWebElement container);
 
     String getValue(By containerLocator);
 
-    boolean isVisible(WebElement container);
+    boolean isVisible(SmartWebElement container);
 
     boolean isVisible(By containerLocator);
 }

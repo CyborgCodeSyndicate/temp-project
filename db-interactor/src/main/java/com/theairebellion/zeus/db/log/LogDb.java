@@ -2,58 +2,65 @@ package com.theairebellion.zeus.db.log;
 
 import com.theairebellion.zeus.logging.LogCore;
 
-public final class LogDB extends LogCore {
+public final class LogDb extends LogCore {
 
-    private static LogDB INSTANCE = new LogDB();
+    private static LogDb INSTANCE;
 
 
-    private LogDB() {
+    private LogDb() {
         super("Zeus.DB", "DB");
     }
 
 
     public static void info(String message, Object... args) {
-        INSTANCE.infoLog(message, args);
+        getInstance().infoLog(message, args);
     }
 
 
     public static void warn(String message, Object... args) {
-        INSTANCE.warnLog(message, args);
+        getInstance().warnLog(message, args);
     }
 
 
     public static void error(String message, Object... args) {
-        INSTANCE.errorLog(message, args);
+        getInstance().errorLog(message, args);
     }
 
 
     public static void debug(String message, Object... args) {
-        INSTANCE.debugLog(message, args);
+        getInstance().debugLog(message, args);
     }
 
 
     public static void trace(String message, Object... args) {
-        INSTANCE.traceLog(message, args);
+        getInstance().traceLog(message, args);
     }
 
 
     public static void step(String message, Object... args) {
-        INSTANCE.stepLog(message, args);
+        getInstance().stepLog(message, args);
     }
 
 
     public static void validation(String message, Object... args) {
-        INSTANCE.validationLog(message, args);
+        getInstance().validationLog(message, args);
     }
 
 
     public static void extended(String message, Object... args) {
-        INSTANCE.extendedLog(message, args);
+        getInstance().extendedLog(message, args);
     }
 
 
     public static <T extends LogCore> void extend(final T INSTANCE) {
-        LogDB.INSTANCE = (LogDB) INSTANCE;
+        LogDb.INSTANCE = (LogDb) INSTANCE;
+    }
+
+    private static LogDb getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new LogDb();
+        }
+        return INSTANCE;
     }
 
 }

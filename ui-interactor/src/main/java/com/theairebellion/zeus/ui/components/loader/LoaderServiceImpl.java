@@ -1,32 +1,24 @@
 package com.theairebellion.zeus.ui.components.loader;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentType, Loader> implements LoaderService {
 
-public class LoaderServiceImpl implements LoaderService {
-
-    protected SmartSelenium smartSelenium;
-    private static Map<LoaderComponentType, Loader> components;
-
-    public LoaderServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public LoaderServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public LoaderServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public boolean isVisible(final LoaderComponentType componentType, final WebElement container) {
+    protected Loader createComponent(final LoaderComponentType componentType) {
+        return ComponentFactory.getLoaderComponent(componentType, driver);
+    }
+
+    @Override
+    public boolean isVisible(final LoaderComponentType componentType, final SmartWebElement container) {
         return loaderComponent(componentType).isVisible(container);
     }
 
@@ -36,7 +28,7 @@ public class LoaderServiceImpl implements LoaderService {
     }
 
     @Override
-    public void waitToBeShown(final LoaderComponentType componentType, final WebElement container,
+    public void waitToBeShown(final LoaderComponentType componentType, final SmartWebElement container,
                               final int secondsShown) {
         loaderComponent(componentType).waitToBeShown(container, secondsShown);
     }
@@ -52,7 +44,7 @@ public class LoaderServiceImpl implements LoaderService {
     }
 
     @Override
-    public void waitToBeRemoved(final LoaderComponentType componentType, final WebElement container,
+    public void waitToBeRemoved(final LoaderComponentType componentType, final SmartWebElement container,
                                 final int secondsRemoved) {
         loaderComponent(componentType).waitToBeRemoved(container, secondsRemoved);
     }
@@ -69,9 +61,6 @@ public class LoaderServiceImpl implements LoaderService {
     }
 
     private Loader loaderComponent(final LoaderComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getLoaderComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

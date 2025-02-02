@@ -1,37 +1,29 @@
 package com.theairebellion.zeus.ui.components.button;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentType, Button> implements ButtonService {
 
-public class ButtonServiceImpl implements ButtonService {
-
-    protected SmartSelenium smartSelenium;
-    private static Map<ButtonComponentType, Button> components;
-
-    public ButtonServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public ButtonServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public ButtonServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public void click(final ButtonComponentType componentType, final WebElement container, final String buttonText) {
+    protected Button createComponent(final ButtonComponentType componentType) {
+        return ComponentFactory.getButtonComponent(componentType, driver);
+    }
+
+    @Override
+    public void click(final ButtonComponentType componentType, final SmartWebElement container, final String buttonText) {
         buttonComponent(componentType).click(container, buttonText);
     }
 
     @Override
-    public void click(final ButtonComponentType componentType, final WebElement container) {
+    public void click(final ButtonComponentType componentType, final SmartWebElement container) {
         buttonComponent(componentType).click(container);
     }
 
@@ -46,13 +38,13 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public boolean isEnabled(final ButtonComponentType componentType, final WebElement container,
+    public boolean isEnabled(final ButtonComponentType componentType, final SmartWebElement container,
                              final String buttonText) {
         return buttonComponent(componentType).isEnabled(container, buttonText);
     }
 
     @Override
-    public boolean isEnabled(final ButtonComponentType componentType, final WebElement container) {
+    public boolean isEnabled(final ButtonComponentType componentType, final SmartWebElement container) {
         return buttonComponent(componentType).isEnabled(container);
     }
 
@@ -67,13 +59,13 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     @Override
-    public boolean isVisible(final ButtonComponentType componentType, final WebElement container,
+    public boolean isVisible(final ButtonComponentType componentType, final SmartWebElement container,
                              final String buttonText) {
         return buttonComponent(componentType).isVisible(container, buttonText);
     }
 
     @Override
-    public boolean isVisible(final ButtonComponentType componentType, final WebElement container) {
+    public boolean isVisible(final ButtonComponentType componentType, final SmartWebElement container) {
         return buttonComponent(componentType).isVisible(container);
     }
 
@@ -88,9 +80,6 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     private Button buttonComponent(final ButtonComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getButtonComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

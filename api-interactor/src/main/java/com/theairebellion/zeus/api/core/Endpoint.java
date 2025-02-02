@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public interface Endpoint {
+import static com.theairebellion.zeus.api.config.ApiConfigHolder.getApiConfig;
 
-    ApiConfig apiConfig = ConfigCache.getOrCreate(ApiConfig.class);
+public interface Endpoint {
 
     Method method();
 
@@ -21,7 +21,7 @@ public interface Endpoint {
     Enum<?> enumImpl();
 
     default String baseUrl() {
-        return apiConfig.baseUrl();
+        return getApiConfig().baseUrl();
     }
 
     default Map<String, List<String>> headers() {
@@ -32,8 +32,8 @@ public interface Endpoint {
         RequestSpecification spec = RestAssured.given()
                                         .baseUri(baseUrl())
                                         .headers(headers());
-        if (apiConfig.restAssuredLoggingEnabled()) {
-            switch (apiConfig.restAssuredLoggingLevel()) {
+        if (getApiConfig().restAssuredLoggingEnabled()) {
+            switch (getApiConfig().restAssuredLoggingLevel()) {
                 case "BASIC" -> spec.log().ifValidationFails();
                 case "ALL" -> spec.log().all();
                 case "NONE" -> { /* No logging */ }

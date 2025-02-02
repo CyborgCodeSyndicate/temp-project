@@ -1,39 +1,31 @@
 package com.theairebellion.zeus.ui.components.tab;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+public class TabServiceImpl extends AbstractComponentService<TabComponentType, Tab> implements TabService {
 
-public class TabServiceImpl implements TabService {
-
-    protected SmartSelenium smartSelenium;
-    private static Map<TabComponentType, Tab> components;
-
-    public TabServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public TabServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public TabServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public <T extends ButtonComponentType> void click(final T componentType, final WebElement container,
+    protected Tab createComponent(final TabComponentType componentType) {
+        return ComponentFactory.getTabComponent(componentType, driver);
+    }
+
+    @Override
+    public <T extends ButtonComponentType> void click(final T componentType, final SmartWebElement container,
                                                       final String tabText) {
         tabComponent((TabComponentType) componentType).click(container, tabText);
     }
 
     @Override
-    public <T extends ButtonComponentType> void click(final T componentType, final WebElement container) {
+    public <T extends ButtonComponentType> void click(final T componentType, final SmartWebElement container) {
         tabComponent((TabComponentType) componentType).click(container);
     }
 
@@ -48,13 +40,13 @@ public class TabServiceImpl implements TabService {
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final WebElement container,
+    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container,
                                                              final String tabText) {
         return tabComponent((TabComponentType) componentType).isEnabled(container, tabText);
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final WebElement container) {
+    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container) {
         return tabComponent((TabComponentType) componentType).isEnabled(container);
     }
 
@@ -69,13 +61,13 @@ public class TabServiceImpl implements TabService {
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final WebElement container,
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container,
                                                              final String tabText) {
         return tabComponent((TabComponentType) componentType).isVisible(container, tabText);
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final WebElement container) {
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container) {
         return tabComponent((TabComponentType) componentType).isVisible(container);
     }
 
@@ -90,12 +82,12 @@ public class TabServiceImpl implements TabService {
     }
 
     @Override
-    public boolean isSelected(final TabComponentType componentType, final WebElement container, final String tabText) {
+    public boolean isSelected(final TabComponentType componentType, final SmartWebElement container, final String tabText) {
         return tabComponent(componentType).isSelected(container, tabText);
     }
 
     @Override
-    public boolean isSelected(final TabComponentType componentType, final WebElement container) {
+    public boolean isSelected(final TabComponentType componentType, final SmartWebElement container) {
         return tabComponent(componentType).isSelected(container);
     }
 
@@ -110,9 +102,6 @@ public class TabServiceImpl implements TabService {
     }
 
     private Tab tabComponent(final TabComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getTabComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

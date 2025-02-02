@@ -16,7 +16,7 @@ public class Services {
 
     private final ApplicationContext applicationContext;
 
-    private final Map<Class<?>, Object> serviceMap = new HashMap<>();
+    private final Map<Class<?>, Object> serviceCache = new HashMap<>();
 
 
     @Autowired
@@ -27,9 +27,7 @@ public class Services {
 
     public <T extends ClassLevelHook, K> K service(Class<T> fluentServiceClass, Class<K> serviceClass) {
 
-        Object service = serviceMap.get(serviceClass);
-
-        if (service == null) {
+        return serviceClass.cast(serviceCache.computeIfAbsent(serviceClass, key -> {
             ClassLevelHook fluentService = applicationContext.getBeansOfType(ClassLevelHook.class)
                                                .values().stream()
                                                .filter(fluent -> fluent.getClass().equals(fluentServiceClass))
@@ -37,11 +35,8 @@ public class Services {
                                                .orElseThrow(() -> new IllegalStateException(
                                                    "No bean found for the specified fluentServiceClass: " + fluentServiceClass.getName()));
 
-            service = getFieldValue(fluentService, serviceClass);
-            serviceMap.put(serviceClass, service);
-        }
-
-        return serviceClass.cast(service);
+            return getFieldValue(fluentService, serviceClass);
+        }));
     }
 
 }

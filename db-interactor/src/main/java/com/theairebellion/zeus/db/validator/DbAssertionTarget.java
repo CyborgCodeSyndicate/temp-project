@@ -6,9 +6,7 @@ public enum DbAssertionTarget implements AssertionTarget {
 
     QUERY_RESULT,
     NUMBER_ROWS,
-    COLUMNS
-
-    ;
+    COLUMNS;
 
 
     @Override

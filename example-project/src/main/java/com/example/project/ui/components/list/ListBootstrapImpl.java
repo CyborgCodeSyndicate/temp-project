@@ -4,11 +4,11 @@ import com.example.project.ui.types.ListFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.list.ItemList;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import com.theairebellion.zeus.ui.util.strategy.StrategyGenerator;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,166 +21,195 @@ public class ListBootstrapImpl extends BaseComponent implements ItemList {
     private static final String SELECTED_STATE = "selected";
     private static final String DISABLED_STATE = "disabled";
 
-    public ListBootstrapImpl(SmartSelenium smartSelenium) {
-        super(smartSelenium);
+
+    public ListBootstrapImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
+
     @Override
-    public void select(WebElement container, String... itemText) {
+    public void select(final SmartWebElement container, final String... itemText) {
         performActionOnListItems(container, itemText, true);
     }
 
+
     @Override
-    public void select(By containerLocator, String... itemText) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public void select(final By containerLocator, final String... itemText) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         select(container, itemText);
     }
 
+
     @Override
-    public String select(WebElement container, Strategy strategy) {
+    public String select(final SmartWebElement container, final Strategy strategy) {
         return performActionOnListItemsWithStrategy(container, strategy, true);
     }
 
+
     @Override
-    public String select(By containerLocator, Strategy strategy) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public String select(final By containerLocator, final Strategy strategy) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return select(container, strategy);
     }
 
+
     @Override
-    public void select(String... itemText) {
+    public void select(final String... itemText) {
         performActionOnListItems(null, itemText, true);
     }
 
+
     @Override
-    public void select(By... itemListLocator) {
+    public void select(final By... itemListLocator) {
         performActionOnListItemsByLocator(itemListLocator, true);
     }
 
+
     @Override
-    public void deSelect(WebElement container, String... itemText) {
+    public void deSelect(final SmartWebElement container, final String... itemText) {
         performActionOnListItems(container, itemText, false);
     }
 
+
     @Override
-    public void deSelect(By containerLocator, String... itemText) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public void deSelect(final By containerLocator, final String... itemText) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         deSelect(container, itemText);
     }
 
+
     @Override
-    public String deSelect(WebElement container, Strategy strategy) {
+    public String deSelect(final SmartWebElement container, final Strategy strategy) {
         return performActionOnListItemsWithStrategy(container, strategy, false);
     }
 
+
     @Override
-    public String deSelect(By containerLocator, Strategy strategy) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public String deSelect(final By containerLocator, final Strategy strategy) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return deSelect(container, strategy);
     }
 
+
     @Override
-    public void deSelect(String... itemText) {
+    public void deSelect(final String... itemText) {
         performActionOnListItems(null, itemText, false);
     }
 
+
     @Override
-    public void deSelect(By... itemListLocator) {
+    public void deSelect(final By... itemListLocator) {
         performActionOnListItemsByLocator(itemListLocator, false);
     }
 
+
     @Override
-    public boolean areSelected(WebElement container, String... itemText) {
+    public boolean areSelected(final SmartWebElement container, final String... itemText) {
         return checkListItemState(container, itemText);
     }
 
+
     @Override
-    public boolean areSelected(By containerLocator, String... itemText) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public boolean areSelected(final By containerLocator, final String... itemText) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return areSelected(container, itemText);
     }
 
+
     @Override
-    public boolean areSelected(String... itemText) {
+    public boolean areSelected(final String... itemText) {
         return checkListItemState(null, itemText);
     }
 
+
     @Override
-    public boolean areSelected(By... itemListLocator) {
+    public boolean areSelected(final By... itemListLocator) {
         return checkListItemStateByLocator(itemListLocator);
     }
 
+
     @Override
-    public boolean areEnabled(WebElement container, String... itemText) {
+    public boolean areEnabled(final SmartWebElement container, final String... itemText) {
         return checkListItemsEnabledState(container, itemText);
     }
 
+
     @Override
-    public boolean areEnabled(By containerLocator, String... itemText) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public boolean areEnabled(final By containerLocator, final String... itemText) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return areEnabled(container, itemText);
     }
 
+
     @Override
-    public boolean areEnabled(String... itemText) {
+    public boolean areEnabled(final String... itemText) {
         return checkListItemsEnabledState(null, itemText);
     }
 
+
     @Override
-    public boolean areEnabled(By... itemLocator) {
+    public boolean areEnabled(final By... itemLocator) {
         return checkListItemEnabledStateByLocator(itemLocator);
     }
 
+
     @Override
-    public boolean areVisible(WebElement container, String... itemText) {
+    public boolean areVisible(final SmartWebElement container, final String... itemText) {
         return checkListItemsVisibleState(container, itemText);
     }
 
+
     @Override
-    public boolean areVisible(By containerLocator, String... itemText) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public boolean areVisible(final By containerLocator, final String... itemText) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return areVisible(container, itemText);
     }
 
+
     @Override
-    public boolean areVisible(String... itemText) {
+    public boolean areVisible(final String... itemText) {
         return checkListItemsVisibleState(null, itemText);
     }
 
+
     @Override
-    public boolean areVisible(By... itemLocator) {
+    public boolean areVisible(final By... itemLocator) {
         return checkListItemsVisibleStateByLocator(itemLocator);
     }
 
+
     @Override
-    public List<String> getSelected(WebElement container) {
-        List<WebElement> listItems = findListItems(container, true);
+    public List<String> getSelected(final SmartWebElement container) {
+        List<SmartWebElement> listItems = findListItems(container, true);
         return listItems.stream().map(this::getLabel).collect(Collectors.toList());
     }
 
+
     @Override
-    public List<String> getSelected(By containerLocator) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public List<String> getSelected(final By containerLocator) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return getSelected(container);
     }
 
+
     @Override
-    public List<String> getAll(WebElement container) {
-        List<WebElement> listItems = findListItems(container, null);
+    public List<String> getAll(final SmartWebElement container) {
+        List<SmartWebElement> listItems = findListItems(container, null);
         return listItems.stream().map(this::getLabel).collect(Collectors.toList());
     }
 
+
     @Override
-    public List<String> getAll(By containerLocator) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public List<String> getAll(final By containerLocator) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return getAll(container);
     }
 
 
-    private List<WebElement> findListItems(WebElement container, Boolean onlySelected) {
-        List<WebElement> listItems = container != null
-                ? smartSelenium.waitAndFindElements(container, LIST_ITEM_ELEMENT_SELECTOR)
-                : smartSelenium.smartFindElements(LIST_ITEM_ELEMENT_SELECTOR);
+    private List<SmartWebElement> findListItems(SmartWebElement container, Boolean onlySelected) {
+        List<SmartWebElement> listItems = container != null
+                ? container.findSmartElements(LIST_ITEM_ELEMENT_SELECTOR)
+                : driver.findSmartElements(LIST_ITEM_ELEMENT_SELECTOR);
         if (Objects.isNull(onlySelected)) {
             return listItems;
         }
@@ -188,57 +217,65 @@ public class ListBootstrapImpl extends BaseComponent implements ItemList {
                 listItems.stream().filter(listItem -> !isSelected(listItem)).toList();
     }
 
-    private void performActionOnListItems(WebElement container, String[] itemText, boolean select) {
-        List<WebElement> listItems = findListItems(container, !select);
+
+    private void performActionOnListItems(SmartWebElement container, String[] itemText, boolean select) {
+        List<SmartWebElement> listItems = findListItems(container, !select);
         listItems = filterListItemsByLabel(listItems, itemText);
         listItems.forEach(this::clickIfEnabled);
     }
 
-    private String performActionOnListItemsWithStrategy(WebElement container, Strategy strategy, boolean select) {
-        List<WebElement> listItems = findListItems(container, !select);
+
+    private String performActionOnListItemsWithStrategy(SmartWebElement container, Strategy strategy, boolean select) {
+        List<SmartWebElement> listItems = findListItems(container, !select);
         return applyStrategyAndClick(listItems, strategy);
     }
 
+
     private void performActionOnListItemsByLocator(By[] itemLocator, boolean select) {
-        List<WebElement> listItems = Arrays.stream(itemLocator)
-                .map(smartSelenium::waitAndFindElement)
+        List<SmartWebElement> listItems = Arrays.stream(itemLocator)
+                .map(driver::findSmartElement)
                 .collect(Collectors.toList());
         listItems = listItems.stream().filter(listItem -> select != isSelected(listItem)).toList();
         listItems.forEach(this::clickIfEnabled);
     }
 
-    private boolean checkListItemState(WebElement container, String[] itemText) {
-        List<WebElement> listItems = findListItems(container, true);
+
+    private boolean checkListItemState(SmartWebElement container, String[] itemText) {
+        List<SmartWebElement> listItems = findListItems(container, true);
         Set<String> labelSet = Set.of(itemText);
-        List<WebElement> matchingListItems = listItems.stream()
+        List<SmartWebElement> matchingListItems = listItems.stream()
                 .filter(listItem -> labelSet.contains(getLabel(listItem)))
                 .toList();
         return matchingListItems.size() == itemText.length;
     }
 
+
     private boolean checkListItemStateByLocator(By[] itemLocator) {
         return Arrays.stream(itemLocator)
-                .map(smartSelenium::waitAndFindElement)
+                .map(driver::findSmartElement)
                 .allMatch(this::isSelected);
     }
 
-    private boolean checkListItemsVisibleState(WebElement container, String[] itemText) {
-        List<WebElement> listItems = findListItems(container, null);
+
+    private boolean checkListItemsVisibleState(SmartWebElement container, String[] itemText) {
+        List<SmartWebElement> listItems = findListItems(container, null);
         Set<String> labelSet = Set.of(itemText);
         List<String> itemListAllLabels = listItems.stream().map(this::getLabel).toList();
         return new HashSet<>(itemListAllLabels).containsAll(labelSet);
     }
 
+
     private boolean checkListItemsVisibleStateByLocator(By[] itemLocator) {
-        List<WebElement> listItems = findListItems(null, null);
-        Set<WebElement> labelSet = Arrays.stream(itemLocator)
-                .map(smartSelenium::waitAndFindElement)
+        List<SmartWebElement> listItems = findListItems(null, null);
+        Set<SmartWebElement> labelSet = Arrays.stream(itemLocator)
+                .map(driver::findSmartElement)
                 .collect(Collectors.toSet());
         return new HashSet<>(listItems).containsAll(labelSet);
     }
 
-    private boolean checkListItemsEnabledState(WebElement container, String[] itemText) {
-        List<WebElement> listItems = findListItems(container, null);
+
+    private boolean checkListItemsEnabledState(SmartWebElement container, String[] itemText) {
+        List<SmartWebElement> listItems = findListItems(container, null);
         Set<String> labelSet = Set.of(itemText);
         return listItems.stream()
                 .filter(listItem -> labelSet.contains(getLabel(listItem)))
@@ -247,18 +284,20 @@ public class ListBootstrapImpl extends BaseComponent implements ItemList {
 
     private boolean checkListItemEnabledStateByLocator(By[] itemLocator) {
         return Arrays.stream(itemLocator)
-                .map(smartSelenium::waitAndFindElement)
+                .map(driver::findSmartElement)
                 .allMatch(this::isEnabled);
     }
 
-    private List<WebElement> filterListItemsByLabel(List<WebElement> listItems, String[] labels) {
+
+    private List<SmartWebElement> filterListItemsByLabel(List<SmartWebElement> listItems, String[] labels) {
         Set<String> labelSet = Set.of(labels);
         return listItems.stream()
                 .filter(listItem -> labelSet.contains(getLabel(listItem)))
                 .collect(Collectors.toList());
     }
 
-    private String applyStrategyAndClick(List<WebElement> listItems, Strategy strategy) {
+
+    private String applyStrategyAndClick(List<SmartWebElement> listItems, Strategy strategy) {
         if (listItems.isEmpty()) {
             return "No action required";
         }
@@ -266,19 +305,19 @@ public class ListBootstrapImpl extends BaseComponent implements ItemList {
             String selectedListItemLabel;
             switch (strategy) {
                 case RANDOM -> {
-                    WebElement randomListItem = StrategyGenerator.getRandomElementFromElements(listItems);
+                    SmartWebElement randomListItem = StrategyGenerator.getRandomElementFromElements(listItems);
                     clickIfEnabled(randomListItem);
                     selectedListItemLabel = getLabel(randomListItem);
                     return selectedListItemLabel;
                 }
                 case FIRST -> {
-                    WebElement firstListItem = StrategyGenerator.getFirstElementFromElements(listItems);
+                    SmartWebElement firstListItem = StrategyGenerator.getFirstElementFromElements(listItems);
                     clickIfEnabled(firstListItem);
                     selectedListItemLabel = getLabel(firstListItem);
                     return selectedListItemLabel;
                 }
                 case LAST -> {
-                    WebElement lastListItems = StrategyGenerator.getLastElementFromElements(listItems);
+                    SmartWebElement lastListItems = StrategyGenerator.getLastElementFromElements(listItems);
                     clickIfEnabled(lastListItems);
                     selectedListItemLabel = getLabel(lastListItems);
                     return selectedListItemLabel;
@@ -298,22 +337,26 @@ public class ListBootstrapImpl extends BaseComponent implements ItemList {
         return null;
     }
 
-    private void clickIfEnabled(WebElement listItem) {
+
+    private void clickIfEnabled(SmartWebElement listItem) {
         if (isEnabled(listItem)) {
-            smartSelenium.smartClick(listItem);
+            listItem.click();
         }
     }
 
-    private String getLabel(WebElement listItem) {
-        WebElement label = smartSelenium.smartFindElement(listItem, ITEM_LABEL_LOCATOR);
-        return smartSelenium.smartGetText(label).trim();
+
+    private String getLabel(SmartWebElement listItem) {
+        SmartWebElement label = listItem.findSmartElement(ITEM_LABEL_LOCATOR);
+        return label.getText().trim();
     }
 
-    private boolean isSelected(WebElement listItem) {
-        return smartSelenium.smartGetAttribute(listItem, "class").contains(SELECTED_STATE);
+
+    private boolean isSelected(SmartWebElement listItem) {
+        return Objects.requireNonNull(listItem.getAttribute("class")).contains(SELECTED_STATE);
     }
 
-    private boolean isEnabled(WebElement listItem) {
-        return !smartSelenium.smartGetAttribute(listItem, "class").contains(DISABLED_STATE);
+
+    private boolean isEnabled(SmartWebElement listItem) {
+        return !Objects.requireNonNull(listItem.getAttribute("class")).contains(DISABLED_STATE);
     }
 }

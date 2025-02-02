@@ -1,235 +1,234 @@
 package com.theairebellion.zeus.ui.components.select;
 
-import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.insertion.Insertion;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.List;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface defining operations for interacting with select components within a web interface using Selenium.
  */
 public interface SelectService extends Insertion {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     SelectComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
-     * Selects one or more items in a select component based on the given values. Uses the default select component type.
+     * Selects one or more options in a select component based on the given values. Uses the default select component type.
      *
-     * @param container The WebElement representing the container of the select component.
-     * @param values    The values of the items to be selected. Varargs argument to select multiple items.
+     * @param container The SmartWebElement representing the container of the select component.
+     * @param values    The values of the options to be selected. Varargs argument to select multiple options.
      */
-    default void selectItems(WebElement container, String... values) {
-        selectItems(DEFAULT_TYPE, container, values);
+    default void selectOptions(SmartWebElement container, String... values) {
+        selectOptions(DEFAULT_TYPE, container, values);
     }
 
     /**
-     * Selects one or more items in a select component based on the given values.
+     * Selects one or more options in a select component based on the given values.
      *
      * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
-     * @param values        The values of the items to be selected. Varargs argument to select multiple items.
+     * @param container     The SmartWebElement representing the container of the select component.
+     * @param values        The values of the options to be selected. Varargs argument to select multiple options.
      */
-    void selectItems(SelectComponentType componentType, WebElement container, String... values);
+    void selectOptions(SelectComponentType componentType, SmartWebElement container, String... values);
 
     /**
-     * Selects one or more items in a select component based on the given values. Uses the default select component type.
+     * Selects one or more options in a select component based on the given values. Uses the default select component type.
      *
-     * @param container The WebElement representing the container of the select component.
-     * @param value     The value of the item to be selected.
+     * @param container The SmartWebElement representing the container of the select component.
+     * @param value     The value of the option to be selected.
      */
-    default void selectItem(WebElement container, String value) {
-        selectItem(DEFAULT_TYPE, container, value);
+    default void selectOption(SmartWebElement container, String value) {
+        selectOption(DEFAULT_TYPE, container, value);
     }
 
     /**
-     * Selects one or more items in a select component based on the given values.
+     * Selects one or more options in a select component based on the given values.
      *
      * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
-     * @param value         The value of the item to be selected.
+     * @param container     The SmartWebElement representing the container of the select component.
+     * @param value         The value of the option to be selected.
      */
-    void selectItem(SelectComponentType componentType, WebElement container, String value);
+    void selectOption(SelectComponentType componentType, SmartWebElement container, String value);
 
     /**
-     * Selects one or more items in a select component based on the given values using the default select component type.
+     * Selects one or more options in a select component based on the given values using the default select component type.
      * The select component is identified by the provided container locator.
      *
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @param values           The values of the items to be selected. Varargs argument to select multiple items.
+     * @param values           The values of the options to be selected. Varargs argument to select multiple options.
      */
-    default void selectItems(By containerLocator, String... values) {
-        selectItems(DEFAULT_TYPE, containerLocator, values);
+    default void selectOptions(By containerLocator, String... values) {
+        selectOptions(DEFAULT_TYPE, containerLocator, values);
     }
 
     /**
-     * Selects one or more items in a select component based on the given values.
+     * Selects one or more options in a select component based on the given values.
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @param values           The values of the items to be selected. Varargs argument to select multiple items.
+     * @param values           The values of the options to be selected. Varargs argument to select multiple options.
      */
-    void selectItems(SelectComponentType componentType, By containerLocator, String... values);
+    void selectOptions(SelectComponentType componentType, By containerLocator, String... values);
 
     /**
-     * Selects one or more items in a select component based on the given values using the default select component type.
+     * Selects one or more options in a select component based on the given values using the default select component type.
      * The select component is identified by the provided container locator.
      *
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @param value            The value of the item to be selected.
+     * @param value            The value of the option to be selected.
      */
-    default void selectItem(By containerLocator, String value) {
-        selectItem(DEFAULT_TYPE, containerLocator, value);
+    default void selectOption(By containerLocator, String value) {
+        selectOption(DEFAULT_TYPE, containerLocator, value);
     }
 
     /**
-     * Selects one or more items in a select component based on the given values.
+     * Selects one or more options in a select component based on the given values.
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @param value            The value of the item to be selected.
+     * @param value            The value of the option to be selected.
      */
-    void selectItem(SelectComponentType componentType, By containerLocator, String value);
+    void selectOption(SelectComponentType componentType, By containerLocator, String value);
 
     /**
-     * Selects items in a select component based on a specific strategy. Uses the default select component type.
+     * Selects options in a select component based on a specific strategy. Uses the default select component type.
      *
-     * @param container The WebElement representing the container of the select component.
-     * @param strategy  The strategy to use for selecting items.
-     * @return A List of Strings representing the values of the selected item(s).
+     * @param container The SmartWebElement representing the container of the select component.
+     * @param strategy  The strategy to use for selecting options.
+     * @return A List of Strings representing the values of the selected option(s).
      */
-    default List<String> selectItems(WebElement container, Strategy strategy) {
-        return selectItems(DEFAULT_TYPE, container, strategy);
+    default List<String> selectOptions(SmartWebElement container, Strategy strategy) {
+        return selectOptions(DEFAULT_TYPE, container, strategy);
     }
 
     /**
-     * Selects items in a select component based on a specific strategy.
+     * Selects options in a select component based on a specific strategy.
      *
      * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
-     * @param strategy      The strategy to use for selecting items.
-     * @return A List of Strings representing the values of the selected item(s).
+     * @param container     The SmartWebElement representing the container of the select component.
+     * @param strategy      The strategy to use for selecting options.
+     * @return A List of Strings representing the values of the selected option(s).
      */
-    List<String> selectItems(SelectComponentType componentType, WebElement container, Strategy strategy);
+    List<String> selectOptions(SelectComponentType componentType, SmartWebElement container, Strategy strategy);
 
     /**
-     * Selects items in a select component based on a specific strategy using the default select component type.
+     * Selects options in a select component based on a specific strategy using the default select component type.
      * The select component is identified by the provided container locator.
      *
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @param strategy         The strategy to use for selecting items.
-     * @return A List of Strings representing the values of the selected item(s).
+     * @param strategy         The strategy to use for selecting options.
+     * @return A List of Strings representing the values of the selected option(s).
      */
-    default List<String> selectItems(By containerLocator, Strategy strategy) {
-        return selectItems(DEFAULT_TYPE, containerLocator, strategy);
+    default List<String> selectOptions(By containerLocator, Strategy strategy) {
+        return selectOptions(DEFAULT_TYPE, containerLocator, strategy);
     }
 
     /**
-     * Selects items in a select component based on a specific strategy.
+     * Selects options in a select component based on a specific strategy.
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @param strategy         The strategy to use for selecting items.
-     * @return A List of Strings representing the values of the selected item(s).
+     * @param strategy         The strategy to use for selecting options.
+     * @return A List of Strings representing the values of the selected option(s).
      */
-    List<String> selectItems(SelectComponentType componentType, By containerLocator, Strategy strategy);
+    List<String> selectOptions(SelectComponentType componentType, By containerLocator, Strategy strategy);
 
     /**
-     * Retrieves a list of available items in a select component. Uses the default select component type.
+     * Retrieves a list of available options in a select component. Uses the default select component type.
      *
-     * @param container The WebElement representing the container of the select component.
-     * @return A List of Strings representing the available items.
+     * @param container The SmartWebElement representing the container of the select component.
+     * @return A List of Strings representing the available options.
      */
-    default List<String> getAvailableItems(WebElement container) {
-        return getAvailableItems(DEFAULT_TYPE, container);
+    default List<String> getAvailableOptions(SmartWebElement container) {
+        return getAvailableOptions(DEFAULT_TYPE, container);
     }
 
     /**
-     * Retrieves a list of available items in a select component.
+     * Retrieves a list of available options in a select component.
      *
      * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
-     * @return A List of Strings representing the available items.
+     * @param container     The SmartWebElement representing the container of the select component.
+     * @return A List of Strings representing the available options.
      */
-    List<String> getAvailableItems(SelectComponentType componentType, WebElement container);
+    List<String> getAvailableOptions(SelectComponentType componentType, SmartWebElement container);
 
     /**
-     * Retrieves a list of available items in a select component using the default select component type.
+     * Retrieves a list of available options in a select component using the default select component type.
      * The select component is identified by the provided container locator.
      *
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @return A List of Strings representing the available items.
+     * @return A List of Strings representing the available options.
      */
-    default List<String> getAvailableItems(By containerLocator) {
-        return getAvailableItems(DEFAULT_TYPE, containerLocator);
+    default List<String> getAvailableOptions(By containerLocator) {
+        return getAvailableOptions(DEFAULT_TYPE, containerLocator);
     }
 
     /**
-     * Retrieves a list of available items in a select component.
+     * Retrieves a list of available options in a select component.
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @return A List of Strings representing the available items.
+     * @return A List of Strings representing the available options.
      */
-    List<String> getAvailableItems(SelectComponentType componentType, By containerLocator);
+    List<String> getAvailableOptions(SelectComponentType componentType, By containerLocator);
 
     /**
-     * Retrieves a list of currently selected items in a select component. Uses the default select component type.
+     * Retrieves a list of currently selected options in a select component. Uses the default select component type.
      *
-     * @param container The WebElement representing the container of the select component.
-     * @return A List of Strings representing the selected items.
+     * @param container The SmartWebElement representing the container of the select component.
+     * @return A List of Strings representing the selected options.
      */
-    default List<String> getSelectedItems(WebElement container) {
-        return getSelectedItems(DEFAULT_TYPE, container);
+    default List<String> getSelectedOptions(SmartWebElement container) {
+        return getSelectedOptions(DEFAULT_TYPE, container);
     }
 
     /**
-     * Retrieves a list of currently selected items in a select component.
+     * Retrieves a list of currently selected options in a select component.
      *
      * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
-     * @return A List of Strings representing the selected items.
+     * @param container     The SmartWebElement representing the container of the select component.
+     * @return A List of Strings representing the selected options.
      */
-    List<String> getSelectedItems(SelectComponentType componentType, WebElement container);
+    List<String> getSelectedOptions(SelectComponentType componentType, SmartWebElement container);
 
     /**
-     * Retrieves a list of currently selected items in a select component.
+     * Retrieves a list of currently selected options in a select component.
      * The select component is identified by the provided container locator, using the default select component type.
      *
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @return A List of Strings representing the selected items.
+     * @return A List of Strings representing the selected options.
      */
-    default List<String> getSelectedItems(By containerLocator) {
-        return getSelectedItems(DEFAULT_TYPE, containerLocator);
+    default List<String> getSelectedOptions(By containerLocator) {
+        return getSelectedOptions(DEFAULT_TYPE, containerLocator);
     }
 
     /**
-     * Retrieves a list of currently selected items in a select component.
+     * Retrieves a list of currently selected options in a select component.
      * The select component is identified by the provided container locator and the specified component type.
      *
      * @param componentType    The type of select component.
      * @param containerLocator The By locator that identifies the container of the select component.
-     * @return A List of Strings representing the selected items.
+     * @return A List of Strings representing the selected options.
      */
-    List<String> getSelectedItems(SelectComponentType componentType, By containerLocator);
+    List<String> getSelectedOptions(SelectComponentType componentType, By containerLocator);
 
     /**
      * Checks if a specific option is visible in a select component. Uses the default select component type.
      *
-     * @param container The WebElement representing the container of the select component.
+     * @param container The SmartWebElement representing the container of the select component.
      * @param value     The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    default boolean isOptionVisible(WebElement container, String value) {
+    default boolean isOptionVisible(SmartWebElement container, String value) {
         return isOptionVisible(DEFAULT_TYPE, container, value);
     }
 
@@ -237,11 +236,11 @@ public interface SelectService extends Insertion {
      * Checks if a specific option is visible in a select component.
      *
      * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
+     * @param container     The SmartWebElement representing the container of the select component.
      * @param value         The value of the option to check.
      * @return true if the option is present, false otherwise.
      */
-    boolean isOptionVisible(SelectComponentType componentType, WebElement container, String value);
+    boolean isOptionVisible(SelectComponentType componentType, SmartWebElement container, String value);
 
     /**
      * Checks if a specific option is visible in a select component.
@@ -269,11 +268,11 @@ public interface SelectService extends Insertion {
     /**
      * Checks if a specific option is enabled in a select component. Uses the default select component type.
      *
-     * @param container The WebElement representing the container of the select component.
+     * @param container The SmartWebElement representing the container of the select component.
      * @param value     The value of the option to check.
      * @return true if the option is enabled, false otherwise.
      */
-    default boolean isOptionEnabled(WebElement container, String value) {
+    default boolean isOptionEnabled(SmartWebElement container, String value) {
         return isOptionEnabled(DEFAULT_TYPE, container, value);
     }
 
@@ -281,11 +280,11 @@ public interface SelectService extends Insertion {
      * Checks if a specific option is enabled in a select component.
      *
      * @param componentType The type of select component.
-     * @param container     The WebElement representing the container of the select component.
+     * @param container     The SmartWebElement representing the container of the select component.
      * @param value         The value of the option to check.
      * @return true if the option is enabled, false otherwise.
      */
-    boolean isOptionEnabled(SelectComponentType componentType, WebElement container, String value);
+    boolean isOptionEnabled(SelectComponentType componentType, SmartWebElement container, String value);
 
     /**
      * Checks if a specific option is enabled in a select component.
@@ -319,8 +318,8 @@ public interface SelectService extends Insertion {
     private static SelectComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(SelectComponentType.class,
-                    uiConfig.selectDefaultType(),
-                    uiConfig.projectPackage());
+                    getUiConfig().selectDefaultType(),
+                    getUiConfig().projectPackage());
         } catch (Exception ignored) {
             return null;
         }

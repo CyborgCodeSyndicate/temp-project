@@ -6,11 +6,7 @@ import com.theairebellion.zeus.framework.quest.QuestFactory;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import manifold.ext.rt.api.Jailbreak;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -48,7 +44,7 @@ public class Oracle implements ParameterResolver {
         if (Objects.nonNull(consumers)) {
             consumers.forEach(questConsumer -> questConsumer.accept(quest));
         }
-        store.put(QUEST.getKey(), quest);
+        store.put(QUEST, quest);
         return quest;
     }
 
