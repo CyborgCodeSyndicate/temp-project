@@ -126,7 +126,7 @@ public class SmartWebElement extends WebElementDecorator {
             return (T) exceptionHandlingOptional.get()
                     .getExceptionHandlingMap()
                     .get(cause.getClass())
-                    .apply(driver, this, params);
+                    .apply(driver, this, exception, params);
         } else {
             LogUI.error("No exception handling for this specific exception.");
             throw exception;
