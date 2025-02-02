@@ -108,6 +108,19 @@ public class SmartWebElement extends WebElementDecorator {
         sendKeys(keysToSend);
     }
 
+    @Override
+    public void submit() {
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
+            super.submit();
+        }
+        try {
+            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
+            super.submit();
+        } catch (Exception e) {
+            handleException("submit", e, new Object[0]);
+        }
+    }
+
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
