@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
-import static com.reqres.test.framework.base.World.RIVENDELL;
 import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.*;
 import static com.reqres.test.framework.preconditions.QuestPreconditions.CREATE_NEW_LEADER_USER;
@@ -52,12 +51,11 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder(String.class).target(BODY).key("support.url").type(CONTAINS).expected("reqres").build(),
                         Assertion.builder(String.class).target(BODY).key("support.text").type(STARTS_WITH).expected("Tired of writing").build(),
                         Assertion.builder(String.class).target(BODY).key("data[0].avatar").type(ENDS_WITH).expected(".jpg").build(),
-                        Assertion.builder(Integer.class).target(BODY).key("data[0].id").type(NOT_NULL).build(),
+                        Assertion.builder(Object.class).target(BODY).key("data[0].id").type(NOT_NULL).build(),
                         Assertion.builder(List.class).target(BODY).key("data").type(ALL_NOT_NULL).build(),
                         Assertion.builder(List.class).target(BODY).key("data").type(NOT_EMPTY).build(),
-                        // todo: check how the length works
-                        // Assertion.builder(Integer.class).target(BODY).key("data[0].first_name").type(LENGTH).expected(7).build(),
-                        // Assertion.builder(Integer.class).target(BODY).key("data").type(LENGTH).expected(6).build(),
+                        Assertion.builder(Integer.class).target(BODY).key("data[0].first_name").type(LENGTH).expected(7).build(),
+                        Assertion.builder(Integer.class).target(BODY).key("data").type(LENGTH).expected(6).build(),
                         Assertion.builder(String.class).target(BODY).key("support.url").type(MATCHES_REGEX).expected("https:\\/\\/contentcaddy\\.io\\?utm_source=reqres&utm_medium=json&utm_campaign=referral").build(),
                         Assertion.builder(String.class).target(BODY).key("data[0].first_name").type(EQUALS_IGNORE_CASE).expected("michael").build(),
                         Assertion.builder(List.class).target(BODY).key("total").type(BETWEEN).expected(List.of(5, 15)).build(),
@@ -73,7 +71,7 @@ public class ReqresApiTest extends BaseTest {
                                 Map.of("id", 7, "email", "michael.lawson@reqres.in", "first_name", "Michael", "last_name", "Lawson", "avatar", "https://reqres.in/img/faces/7-image.jpg"),
                                 Map.of("id", 22, "email", "invalid.user", "first_name", "Invalid", "last_name", "User", "avatar", "invalidUrls")
                         )).build()
-                ).complete();
+                );
     }
 
     @Test
@@ -84,7 +82,7 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).soft(true).build(),
                         Assertion.builder(String.class).target(BODY).key("data.email").type(IS).expected("emma.wong@reqres.in").soft(true).build(),
                         Assertion.builder(String.class).target(BODY).key("support.url").type(IS).expected("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral").soft(true).build()
-                ).complete();
+                );
     }
 
     @Test
@@ -93,7 +91,7 @@ public class ReqresApiTest extends BaseTest {
                 .requestAndValidate(
                         GET_USER.withPathParam("id", 23),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).build()
-                ).complete();
+                );
     }
 
     @Test
@@ -158,8 +156,8 @@ public class ReqresApiTest extends BaseTest {
                         CREATE_USER,
                         user,
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
-                        Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build())
-                .complete();
+                        Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build()
+                );
     }
 
     @Test
@@ -171,8 +169,8 @@ public class ReqresApiTest extends BaseTest {
                 .requestAndValidate(
                         CREATE_USER,
                         user.join(),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
-                .complete();
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build()
+                );
     }
 
     @Test
@@ -189,8 +187,8 @@ public class ReqresApiTest extends BaseTest {
                         userPrefix.join(),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
-                        Assertion.builder(String.class).target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build())
-                .complete();
+                        Assertion.builder(String.class).target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build()
+                );
     }
 
     @Test
