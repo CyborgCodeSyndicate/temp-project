@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
+import static com.reqres.test.framework.base.World.RIVENDELL;
 import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.*;
 import static com.reqres.test.framework.preconditions.QuestPreconditions.CREATE_NEW_LEADER_USER;
