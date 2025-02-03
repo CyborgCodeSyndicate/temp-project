@@ -25,10 +25,13 @@ public enum ExceptionLogging {
     FIND_ELEMENTS_FROM_ELEMENT(WebElement.class, "findElements",
             Map.of(NoSuchElementException.class, LoggingFunctions::findElementFromElementNoSuchElementExceptionLogging)),
     CLICK(WebElement.class, "click",
-            Map.of(ElementNotInteractableException.class, LoggingFunctions::clickElementNotInteractableExceptionLogging,
+            Map.of(ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
                     InvalidSelectorException.class, LoggingFunctions::clickInvalidSelectorExceptionLogging,
-                    ElementClickInterceptedException.class, LoggingFunctions::clickElementClickIterceptedExceptionLogging,
-                    TimeoutException.class, LoggingFunctions::clickTimeoutExceptionLogging));
+                    ElementClickInterceptedException.class, LoggingFunctions::elementClickInterceptedExceptionLogging,
+                    TimeoutException.class, LoggingFunctions::clickTimeoutExceptionLogging)),
+    SEND_KEYS(WebElement.class, "sendKeys",
+            Map.of(ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
+                    ElementClickInterceptedException.class, LoggingFunctions::elementClickInterceptedExceptionLogging));
 
 
     private final Class<?> objectClass;

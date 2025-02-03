@@ -48,20 +48,60 @@ public class LoggingFunctions {
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
 
-    public static void clickElementNotInteractableExceptionLogging(final Object target, final String method, final Object[] args,
-                                                                   final InvocationTargetException e) {
+    public static void noSuchElementExceptionLogging(final Object target, final String method, final Object[] args,
+                                                                    final InvocationTargetException e) {
+        Throwable cause = e.getCause();
+        WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
+        By locator = (args != null && args.length > 0 && args[0] instanceof By) ? (By) args[0] : null;
+
+        if (element == null) {
+            logException(cause.getClass(), target, method, args, "Element is null, cannot log additional info.");
+            return;
+        }
+
+        String elementInnerHtml = truncateString(element.getAttribute("innerHTML"), 1000);
+
+        String actionMessage = switch (method) {
+            case "findElement", "findElements" -> locator != null
+                    ? String.format("Element was not found from another element: [%s] by using locator: [%s].", element, locator)
+                    : "Element was not found, but locator is missing in arguments.";
+            case "click" -> String.format("Failed to click on element: [%s].", element);
+            case "sendKeys" -> String.format("Failed to send keys to element: [%s].", element);
+            default -> "Unexpected interaction issue with the element.";
+        };
+
+        String additionalInfo = String.format(
+                "%s Here is the whole inner HTML: \n[%s]",
+                actionMessage, elementInnerHtml);
+
+        logException(cause.getClass(), target, method, args, additionalInfo);
+    }
+
+
+    public static void elementNotInteractableExceptionLogging(final Object target, final String method, final Object[] args,
+                                                              final InvocationTargetException e) {
         Throwable cause = e.getCause();
         WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
 
-        assert element != null;
+        if (element == null) {
+            logException(cause.getClass(), target, method, args, "Element is null, cannot log additional info.");
+            return;
+        }
+
         String elementTagName = element.getTagName();
         String elementText = element.getText();
         String elementAttributes = truncateString(element.getAttribute("outerHTML"), 1000);
 
+        String action = switch (method) {
+            case "click" -> "click";
+            case "sendKeys" -> "send keys";
+            default -> "interact";
+        };
+
         String additionalInfo = String.format(
-                "Element [%s] with text [%s] is not interactable when performing click(). " +
+                "Element [%s] with text [%s] is not interactable when performing %s(). " +
                         "Here is the outer HTML of the element: \n[%s]",
-                elementTagName, elementText, elementAttributes);
+                elementTagName, elementText, action, elementAttributes);
 
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
@@ -77,18 +117,29 @@ public class LoggingFunctions {
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
 
-    public static void clickElementClickIterceptedExceptionLogging(final Object target, final String method, final Object[] args,
-                                                                   final InvocationTargetException e) {
+    public static void elementClickInterceptedExceptionLogging(final Object target, final String method, final Object[] args,
+                                                               final InvocationTargetException e) {
         Throwable cause = e.getCause();
         WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
-        assert element != null;
+
+        if (element == null) {
+            logException(cause.getClass(), target, method, args, "Element is null, cannot log additional info.");
+            return;
+        }
+
         String elementInnerHtml = truncateString(element.getAttribute("innerHTML"), 1000);
         String blockingElementLocator = extractLocatorFromMessage(cause.getMessage());
 
+        String action = switch (method) {
+            case "click" -> "click";
+            case "sendKeys" -> "send keys";
+            default -> "interact";
+        };
+
         String additionalInfo = String.format(
-                "Failed to click on element: [%s]. Element's inner HTML: \n[%s]. " +
+                "Failed to %s on element: [%s]. Element's inner HTML: \n[%s]. " +
                         "Locator of the blocking element: [%s]",
-                element, elementInnerHtml, blockingElementLocator);
+                action, element, elementInnerHtml, blockingElementLocator);
 
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
