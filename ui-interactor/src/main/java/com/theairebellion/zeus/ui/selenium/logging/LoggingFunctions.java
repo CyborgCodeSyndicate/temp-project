@@ -7,24 +7,29 @@ import org.openqa.selenium.WebElement;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LoggingFunctions {
+
+    private static final String LOCATOR_NOT_FOUND_MESSAGE = "Locator not found";
+    private static final String PAGE_SOURCE_UNAVAILABLE = "Page source unavailable.";
+    private static final String ELEMENT_HTML_NOT_FOUND = "Element HTML not found in page source.";
+    private static final String NO_MESSAGE_AVAILABLE = "No message available";
 
 
     public static void findElementFromRootNoSuchElementExceptionLogging(final Object target, final String method, final Object[] args,
                                                                         final InvocationTargetException e) {
         By locator = (args != null && args.length > 0 && args[0] instanceof By) ? (By) args[0] : null;
         Throwable cause = e.getCause();
-        WebDriver driver = (WebDriver) target;
-
-        String pageSource = driver.getPageSource();
-        if (pageSource != null && pageSource.length() > 1000) {
-            pageSource = pageSource.substring(0, 1000) + "...";
-        }
+        WebDriver driver = (target instanceof WebDriver) ? (WebDriver) target : null;
+        assert driver != null;
+        String pageSource = truncateString(driver.getPageSource(), 1000);
+        assert locator != null;
         String additionalInfo = String.format(
                 "Element was not found from root by using locator: [%s]. Here is the whole page source: \n[%s]",
-                locator.toString(), pageSource);
+                locator, pageSource);
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
 
@@ -32,30 +37,26 @@ public class LoggingFunctions {
                                                                            final InvocationTargetException e) {
         By locator = (args != null && args.length > 0 && args[0] instanceof By) ? (By) args[0] : null;
         Throwable cause = e.getCause();
-        WebElement element = (WebElement) target;
+        WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
 
-        String elementInnerHtml = element.getAttribute("innerHTML");
-        if (elementInnerHtml != null && elementInnerHtml.length() > 1000) {
-            elementInnerHtml = elementInnerHtml.substring(0, 1000) + "...";
-        }
+        assert element != null;
+        String elementInnerHtml = truncateString(element.getAttribute("innerHTML"), 1000);
+        assert locator != null;
         String additionalInfo = String.format(
                 "Element was not found from another element: [%s] by using locator: [%s]. Here is the whole inner html: \n[%s]",
-                element, locator.toString(), elementInnerHtml);
+                element, locator, elementInnerHtml);
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
 
     public static void clickElementNotInteractableExceptionLogging(final Object target, final String method, final Object[] args,
                                                                    final InvocationTargetException e) {
         Throwable cause = e.getCause();
-        WebElement element = (WebElement) target;
+        WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
 
+        assert element != null;
         String elementTagName = element.getTagName();
         String elementText = element.getText();
-        String elementAttributes = element.getAttribute("outerHTML");
-
-        if (elementAttributes != null && elementAttributes.length() > 1000) {
-            elementAttributes = elementAttributes.substring(0, 1000) + "...";
-        }
+        String elementAttributes = truncateString(element.getAttribute("outerHTML"), 1000);
 
         String additionalInfo = String.format(
                 "Element [%s] with text [%s] is not interactable when performing click(). " +
@@ -79,11 +80,9 @@ public class LoggingFunctions {
     public static void clickElementClickIterceptedExceptionLogging(final Object target, final String method, final Object[] args,
                                                                    final InvocationTargetException e) {
         Throwable cause = e.getCause();
-        WebElement element = (WebElement) target;
-        String elementInnerHtml = element.getAttribute("innerHTML");
-        if (elementInnerHtml != null && elementInnerHtml.length() > 1000) {
-            elementInnerHtml = elementInnerHtml.substring(0, 1000) + "...";
-        }
+        WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
+        assert element != null;
+        String elementInnerHtml = truncateString(element.getAttribute("innerHTML"), 1000);
         String blockingElementLocator = extractLocatorFromMessage(cause.getMessage());
 
         String additionalInfo = String.format(
@@ -129,11 +128,11 @@ public class LoggingFunctions {
 
     private static String extractRelevantHtml(String pageSource, String elementHtml, int charLimit) {
         if (pageSource == null || elementHtml == null || pageSource.isEmpty() || elementHtml.isEmpty()) {
-            return "Page source unavailable.";
+            return PAGE_SOURCE_UNAVAILABLE;
         }
         int index = pageSource.indexOf(elementHtml);
         if (index == -1) {
-            return "Element HTML not found in page source.";
+            return ELEMENT_HTML_NOT_FOUND;
         }
         int start = Math.max(0, index - charLimit / 2);
         int end = Math.min(pageSource.length(), index + charLimit / 2);
@@ -141,13 +140,16 @@ public class LoggingFunctions {
     }
 
     private static String extractLocatorFromMessage(String message) {
-        if (message != null && message.contains("element must be clickable")) {
-            String locatorPattern = "By\\.[a-zA-Z]+\\((.*?)\\)";
-            if (message.matches(".*" + locatorPattern + ".*")) {
-                return message.replaceAll(".*" + locatorPattern + ".*", "$1");
-            }
-        }
-        return "Locator not found in exception message";
+        if (message == null) return NO_MESSAGE_AVAILABLE;
+        String locatorPattern = "By\\.(\\w+)\\((.*?)\\)";
+        Pattern pattern = Pattern.compile(locatorPattern);
+        Matcher matcher = pattern.matcher(message);
+        return matcher.find() ? matcher.group() : LOCATOR_NOT_FOUND_MESSAGE;
+    }
+
+    private static String truncateString(String input, int length) {
+        if (input == null) return PAGE_SOURCE_UNAVAILABLE;
+        return input.length() > length ? input.substring(0, length) + "..." : input;
     }
 
 }
