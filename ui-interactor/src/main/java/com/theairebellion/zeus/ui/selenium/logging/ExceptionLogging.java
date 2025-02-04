@@ -21,17 +21,22 @@ public enum ExceptionLogging {
     FIND_ELEMENTS_FROM_ROOT(WebDriver.class, "findElements",
             Map.of(NoSuchElementException.class, LoggingFunctions::findElementFromRootNoSuchElementExceptionLogging)),
     FIND_ELEMENT_FROM_ELEMENT(WebElement.class, "findElement",
-            Map.of(NoSuchElementException.class, LoggingFunctions::findElementFromElementNoSuchElementExceptionLogging)),
+            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging)),
     FIND_ELEMENTS_FROM_ELEMENT(WebElement.class, "findElements",
-            Map.of(NoSuchElementException.class, LoggingFunctions::findElementFromElementNoSuchElementExceptionLogging)),
+            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging)),
     CLICK(WebElement.class, "click",
-            Map.of(ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
+            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging,
+                    ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
                     InvalidSelectorException.class, LoggingFunctions::clickInvalidSelectorExceptionLogging,
                     ElementClickInterceptedException.class, LoggingFunctions::elementClickInterceptedExceptionLogging,
                     TimeoutException.class, LoggingFunctions::clickTimeoutExceptionLogging)),
     SEND_KEYS(WebElement.class, "sendKeys",
-            Map.of(ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
-                    ElementClickInterceptedException.class, LoggingFunctions::elementClickInterceptedExceptionLogging));
+            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging,
+                    ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
+                    ElementClickInterceptedException.class, LoggingFunctions::elementClickInterceptedExceptionLogging)),
+    SUBMIT(WebElement.class, "submit",
+            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging,
+                    ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging));
 
 
     private final Class<?> objectClass;

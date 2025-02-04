@@ -24,59 +24,68 @@ public class LoggingFunctions {
         By locator = (args != null && args.length > 0 && args[0] instanceof By) ? (By) args[0] : null;
         Throwable cause = e.getCause();
         WebDriver driver = (target instanceof WebDriver) ? (WebDriver) target : null;
+
         assert driver != null;
         String pageSource = truncateString(driver.getPageSource(), 1000);
+
         assert locator != null;
         String additionalInfo = String.format(
-                "Element was not found from root by using locator: [%s]. Here is the whole page source: \n[%s]",
-                locator, pageSource);
-        logException(cause.getClass(), target, method, args, additionalInfo);
-    }
+                "Exception [%s]: Failed to locate element using locator [%s] at the root level.\n" +
+                        "Possible reasons: incorrect locator, element not present in the DOM, or slow page loading.\n\n" +
+                        "Current Page Source (truncated):\n%s",
+                cause.getClass().getSimpleName(), locator, pageSource);
 
-    public static void findElementFromElementNoSuchElementExceptionLogging(final Object target, final String method, final Object[] args,
-                                                                           final InvocationTargetException e) {
-        By locator = (args != null && args.length > 0 && args[0] instanceof By) ? (By) args[0] : null;
-        Throwable cause = e.getCause();
-        WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
-
-        assert element != null;
-        String elementInnerHtml = truncateString(element.getAttribute("innerHTML"), 1000);
-        assert locator != null;
-        String additionalInfo = String.format(
-                "Element was not found from another element: [%s] by using locator: [%s]. Here is the whole inner html: \n[%s]",
-                element, locator, elementInnerHtml);
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
 
     public static void noSuchElementExceptionLogging(final Object target, final String method, final Object[] args,
-                                                                    final InvocationTargetException e) {
+                                                                           final InvocationTargetException e) {
         Throwable cause = e.getCause();
         WebElement element = (target instanceof WebElement) ? (WebElement) target : null;
         By locator = (args != null && args.length > 0 && args[0] instanceof By) ? (By) args[0] : null;
 
         if (element == null) {
-            logException(cause.getClass(), target, method, args, "Element is null, cannot log additional info.");
+            logException(cause.getClass(), target, method, args,
+                    String.format("Exception [%s]: Unable to process the element. It is null, possibly due to stale reference or incorrect locator.",
+                            cause.getClass().getSimpleName()));
             return;
         }
 
+        String elementTagName = element.getTagName();
+        String elementText = element.getText();
+        String elementAttributes = truncateString(element.getAttribute("outerHTML"), 1000);
         String elementInnerHtml = truncateString(element.getAttribute("innerHTML"), 1000);
 
         String actionMessage = switch (method) {
             case "findElement", "findElements" -> locator != null
-                    ? String.format("Element was not found from another element: [%s] by using locator: [%s].", element, locator)
-                    : "Element was not found, but locator is missing in arguments.";
-            case "click" -> String.format("Failed to click on element: [%s].", element);
-            case "sendKeys" -> String.format("Failed to send keys to element: [%s].", element);
-            default -> "Unexpected interaction issue with the element.";
+                    ? String.format("Exception [%s]: Unable to locate element [%s] using locator [%s]. " +
+                            "Possible reasons: incorrect locator, slow loading elements, or missing elements in DOM.",
+                    cause.getClass().getSimpleName(), elementTagName, locator)
+                    : String.format("Exception [%s]: Unable to locate element [%s], but no locator was provided.",
+                    cause.getClass().getSimpleName(), elementTagName);
+
+            case "click" -> String.format("Exception [%s]: Click action failed on element [%s] with text [%s]. " +
+                            "Possible reasons: element is covered by another element, disabled, or outside the viewport.",
+                    cause.getClass().getSimpleName(), elementTagName, elementText);
+
+            case "sendKeys" -> String.format("Exception [%s]: Unable to send keys to element [%s] with text [%s]. " +
+                            "Possible reasons: element is not interactable, readonly, or detached from the DOM.",
+                    cause.getClass().getSimpleName(), elementTagName, elementText);
+
+            case "submit" -> String.format("Exception [%s]: Unable to submit form using element [%s]. " +
+                            "Possible reasons: element is not a valid form element, not interactable, or detached from the DOM.",
+                    cause.getClass().getSimpleName(), elementTagName);
+
+            default -> String.format("Exception [%s]: Unexpected issue occurred while interacting with element [%s].",
+                    cause.getClass().getSimpleName(), elementTagName);
         };
 
         String additionalInfo = String.format(
-                "%s Here is the whole inner HTML: \n[%s]",
-                actionMessage, elementInnerHtml);
+                "%s\nElement Attributes:\n[%s]\nElement Inner HTML (truncated):\n[%s]",
+                actionMessage, elementAttributes, elementInnerHtml);
 
         logException(cause.getClass(), target, method, args, additionalInfo);
     }
-
 
     public static void elementNotInteractableExceptionLogging(final Object target, final String method, final Object[] args,
                                                               final InvocationTargetException e) {
@@ -95,13 +104,15 @@ public class LoggingFunctions {
         String action = switch (method) {
             case "click" -> "click";
             case "sendKeys" -> "send keys";
+            case "submit" -> "submit";
             default -> "interact";
         };
 
         String additionalInfo = String.format(
-                "Element [%s] with text [%s] is not interactable when performing %s(). " +
-                        "Here is the outer HTML of the element: \n[%s]",
-                elementTagName, elementText, action, elementAttributes);
+                "Exception [%s]: Element [%s] with text [%s] is not interactable when attempting to perform %s().\n" +
+                        "Possible reasons: the element is hidden, disabled, covered by another element, or detached from the DOM.\n\n" +
+                        "Element Outer HTML (truncated):\n%s",
+                cause.getClass().getSimpleName(), elementTagName, elementText, action, elementAttributes);
 
         logException(cause.getClass(), target, method, args, additionalInfo);
     }

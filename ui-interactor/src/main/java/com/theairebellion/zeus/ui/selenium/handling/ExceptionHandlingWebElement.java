@@ -23,7 +23,7 @@ public enum ExceptionHandlingWebElement {
             )),
 
 
-    CLICK_ELEMENT("click",
+    CLICK("click",
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.clickStaleElementExceptionHandling(driver, smartWebElement),
                     ElementClickInterceptedException.class, (driver, smartWebElement, exception, objects) ->
