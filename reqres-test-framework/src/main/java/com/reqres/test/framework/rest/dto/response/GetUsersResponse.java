@@ -19,6 +19,6 @@ public class GetUsersResponse {
     private int total;
     @JsonProperty("total_pages")
     private int totalPages;
-    private List<UserResponse> data;
+    private List<DataResponse> data;
     private SupportResponse support;
 }

@@ -6,13 +6,13 @@ import com.theairebellion.zeus.framework.parameters.Late;
 public enum TestDataCreator implements DataForge {
     USER_LEADER_FLOW(DataCreationFunctions::createLeaderUser),
     LOGIN_ADMIN_USER_FLOW(DataCreationFunctions::createAdminLoginUser),
-    USER_SUFFIX_FLOW(DataCreationFunctions::createSuffixUser),
-    USER_PREFIX_FLOW(DataCreationFunctions::createPrefixUser);
+    USER_JUNIOR_FLOW(DataCreationFunctions::createJuniorUser),
+    USER_SENIOR_FLOW(DataCreationFunctions::createSeniorUser);
 
     public static final String USER_LEADER = "USER_LEADER_FLOW";
     public static final String LOGIN_ADMIN_USER = "LOGIN_ADMIN_USER_FLOW";
-    public static final String USER_SUFFIX = "USER_SUFFIX_FLOW";
-    public static final String USER_PREFIX = "USER_PREFIX_FLOW";
+    public static final String USER_JUNIOR = "USER_JUNIOR_FLOW";
+    public static final String USER_SENIOR = "USER_SENIOR_FLOW";
 
     private final Late<Object> createDataFunction;
 

@@ -1,10 +1,12 @@
 package com.reqres.test.framework;
 
+import com.reqres.test.framework.rest.ApiResponseField;
 import com.reqres.test.framework.rest.authentication.AdminAuth;
 import com.reqres.test.framework.rest.authentication.ReqResAuthentication;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
+import com.reqres.test.framework.rest.dto.response.DataResponse;
 import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
 import com.reqres.test.framework.rest.dto.response.UserResponse;
 import com.theairebellion.zeus.api.annotations.API;
@@ -15,7 +17,9 @@ import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.validator.core.Assertion;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
@@ -44,22 +48,22 @@ public class ReqresApiTest extends BaseTest {
                 .requestAndValidate(
                         GET_ALL_USERS.withQueryParam("page", 2),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),
-                        Assertion.builder(String.class).target(HEADER).key("Content-Type").type(CONTAINS).expected("application/json").build(),
-                        Assertion.builder(Integer.class).target(BODY).key("total").type(NOT).expected(1).build(),
-                        Assertion.builder(Integer.class).target(BODY).key("total_pages").type(GREATER_THAN).expected(1).build(),
-                        Assertion.builder(Integer.class).target(BODY).key("per_page").type(LESS_THAN).expected(10).build(),
-                        Assertion.builder(String.class).target(BODY).key("support.url").type(CONTAINS).expected("reqres").build(),
-                        Assertion.builder(String.class).target(BODY).key("support.text").type(STARTS_WITH).expected("Tired of writing").build(),
-                        Assertion.builder(String.class).target(BODY).key("data[0].avatar").type(ENDS_WITH).expected(".jpg").build(),
-                        Assertion.builder(Object.class).target(BODY).key("data[0].id").type(NOT_NULL).build(),
-                        Assertion.builder(List.class).target(BODY).key("data").type(ALL_NOT_NULL).build(),
-                        Assertion.builder(List.class).target(BODY).key("data").type(NOT_EMPTY).build(),
-                        Assertion.builder(Integer.class).target(BODY).key("data[0].first_name").type(LENGTH).expected(7).build(),
-                        Assertion.builder(Integer.class).target(BODY).key("data").type(LENGTH).expected(6).build(),
-                        Assertion.builder(String.class).target(BODY).key("support.url").type(MATCHES_REGEX).expected("https:\\/\\/contentcaddy\\.io\\?utm_source=reqres&utm_medium=json&utm_campaign=referral").build(),
-                        Assertion.builder(String.class).target(BODY).key("data[0].first_name").type(EQUALS_IGNORE_CASE).expected("michael").build(),
-                        Assertion.builder(List.class).target(BODY).key("total").type(BETWEEN).expected(List.of(5, 15)).build(),
-                        Assertion.builder(List.class).target(BODY).key("data").type(CONTAINS_ALL).expected(List.of(
+                        Assertion.builder(String.class).target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build(),
+                        Assertion.builder(Integer.class).target(BODY).key(ApiResponseField.TOTAL.getJsonPath()).type(NOT).expected(1).build(),
+                        Assertion.builder(Integer.class).target(BODY).key(ApiResponseField.TOTAL_PAGES.getJsonPath()).type(GREATER_THAN).expected(1).build(),
+                        Assertion.builder(Integer.class).target(BODY).key(ApiResponseField.PER_PAGE.getJsonPath()).type(LESS_THAN).expected(10).build(),
+                        Assertion.builder(String.class).target(BODY).key(ApiResponseField.SUPPORT_URL.getJsonPath()).type(CONTAINS).expected("reqres").build(),
+                        Assertion.builder(String.class).target(BODY).key(ApiResponseField.SUPPORT_TEXT.getJsonPath()).type(STARTS_WITH).expected("Tired of writing").build(),
+                        Assertion.builder(String.class).target(BODY).key(ApiResponseField.USER_AVATAR.getJsonPath(0)).type(ENDS_WITH).expected(".jpg").build(),
+                        Assertion.builder(Object.class).target(BODY).key(ApiResponseField.USER_ID.getJsonPath(0)).type(NOT_NULL).build(),
+                        Assertion.builder(List.class).target(BODY).key(ApiResponseField.DATA.getJsonPath()).type(ALL_NOT_NULL).build(),
+                        Assertion.builder(List.class).target(BODY).key(ApiResponseField.DATA.getJsonPath()).type(NOT_EMPTY).build(),
+                        Assertion.builder(Integer.class).target(BODY).key(ApiResponseField.USER_FIRST_NAME.getJsonPath(0)).type(LENGTH).expected(7).build(),
+                        Assertion.builder(Integer.class).target(BODY).key(ApiResponseField.DATA.getJsonPath()).type(LENGTH).expected(6).build(),
+                        Assertion.builder(String.class).target(BODY).key(ApiResponseField.SUPPORT_URL.getJsonPath()).type(MATCHES_REGEX).expected("https:\\/\\/contentcaddy\\.io\\?utm_source=reqres&utm_medium=json&utm_campaign=referral").build(),
+                        Assertion.builder(String.class).target(BODY).key(ApiResponseField.USER_FIRST_NAME.getJsonPath(0)).type(EQUALS_IGNORE_CASE).expected("michael").build(),
+                        Assertion.builder(List.class).target(BODY).key(ApiResponseField.TOTAL.getJsonPath()).type(BETWEEN).expected(List.of(5, 15)).build(),
+                        Assertion.builder(List.class).target(BODY).key(ApiResponseField.DATA.getJsonPath()).type(CONTAINS_ALL).expected(List.of(
                                 Map.of("id", 7, "email", "michael.lawson@reqres.in", "first_name", "Michael", "last_name", "Lawson", "avatar", "https://reqres.in/img/faces/7-image.jpg"),
                                 Map.of("id", 8, "email", "lindsay.ferguson@reqres.in", "first_name", "Lindsay", "last_name", "Ferguson", "avatar", "https://reqres.in/img/faces/8-image.jpg"),
                                 Map.of("id", 9, "email", "tobias.funke@reqres.in", "first_name", "Tobias", "last_name", "Funke", "avatar", "https://reqres.in/img/faces/9-image.jpg"),
@@ -67,12 +71,13 @@ public class ReqresApiTest extends BaseTest {
                                 Map.of("id", 11, "email", "george.edwards@reqres.in", "first_name", "George", "last_name", "Edwards", "avatar", "https://reqres.in/img/faces/11-image.jpg"),
                                 Map.of("id", 12, "email", "rachel.howell@reqres.in", "first_name", "Rachel", "last_name", "Howell", "avatar", "https://reqres.in/img/faces/12-image.jpg")
                         )).build(),
-                        Assertion.builder(List.class).target(BODY).key("data").type(CONTAINS_ANY).expected(List.of(
+                        Assertion.builder(List.class).target(BODY).key(ApiResponseField.DATA.getJsonPath()).type(CONTAINS_ANY).expected(List.of(
                                 Map.of("id", 7, "email", "michael.lawson@reqres.in", "first_name", "Michael", "last_name", "Lawson", "avatar", "https://reqres.in/img/faces/7-image.jpg"),
                                 Map.of("id", 22, "email", "invalid.user", "first_name", "Invalid", "last_name", "User", "avatar", "invalidUrls")
                         )).build()
                 );
     }
+
 
     @Test
     public void testGetUser(Quest quest) {
@@ -130,22 +135,17 @@ public class ReqresApiTest extends BaseTest {
                                 .getData()
                                 .stream()
                                 .filter(user -> targetFirstName.equals(user.getFirstName()))
-                                .map(UserResponse::getId)
+                                .map(DataResponse::getId)
                                 .findFirst()
                                 .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"))))
                 .validate(softAssertions -> {
-                    UserResponse userResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class)
+                    UserResponse userResponse = retrieve(StorageKeysApi.API, GET_USER, Response.class)
                             .getBody()
-                            .as(GetUsersResponse.class)
-                            .getData()
-                            .stream()
-                            .filter(user -> targetFirstName.equals(user.getFirstName()))
-                            .findFirst()
-                            .orElseThrow(() -> new RuntimeException("User with first name " + targetFirstName + " not found"));
-                    softAssertions.assertThat(userResponse.getId()).isEqualTo(9);
-                    softAssertions.assertThat(userResponse.getEmail()).isEqualTo("tobias.funke@reqres.in");
-                    softAssertions.assertThat(userResponse.getFirstName()).isEqualTo("Tobias");
-                    softAssertions.assertThat(userResponse.getLastName()).isEqualTo("Funke");
+                            .as(UserResponse.class);
+                    softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(9);
+                    softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo("tobias.funke@reqres.in");
+                    softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo("Tobias");
+                    softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo("Funke");
                 }).complete();
     }
 
@@ -161,7 +161,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
-    public void testCreateUserWithSuffix(Quest quest, @Craft(model = USER_SUFFIX) Late<User> user) {
+    public void testCreateJuniorUser(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         GET_ALL_USERS.withQueryParam("page", 2),
@@ -174,7 +174,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
-    public void testCreateTwoUsers(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_PREFIX) Late<User> userPrefix) {
+    public void testCreateTwoUsers(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         CREATE_USER,
@@ -184,7 +184,7 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder(String.class).target(BODY).key("job").type(IS).expected("Leader").soft(true).build())
                 .requestAndValidate(
                         CREATE_USER,
-                        userPrefix.join(),
+                        userSenior.join(),
                         Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
                         Assertion.builder(String.class).target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build()
