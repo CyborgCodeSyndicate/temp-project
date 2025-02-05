@@ -1,20 +1,28 @@
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:45,001 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 8980 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:45,400 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:46,381 INFO  [] - Started ReqresApiTest in 2.132 seconds (process running for 6.297)
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:47,673 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The : 'testCustomService(Quest, LoginUser)' quest has begun.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:47,758 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - Quest crafted for scenario: 'testCustomService(Quest, LoginUser)'.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:47,953 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has undertaken a journey through: 'Rivendell'
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:47,973 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:49,745 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/login.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:51,133 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2018ms.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,101 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/3.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,261 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/3 in 166ms.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,285 [scenario=ReqresApiTest.testCustomService] INFO  [API] - Starting response validation with 1 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,331 [scenario=ReqresApiTest.testCustomService] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,461 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has leaves the journey.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,471 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,481 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,569 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 84ms.
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,600 [scenario=ReqresApiTest.testCustomService] INFO  [API] - Starting response validation with 1 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,616 [scenario=ReqresApiTest.testCustomService] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
-⚡️ ZEUS ⚡️ 2025-02-05T16:16:52,631 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest of 'testCustomService(Quest, LoginUser)' has concluded with glory. Status: SUCCESS. Duration: 4 seconds.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:26,524 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 17272 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:26,918 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:27,808 INFO  [] - Started ReqresApiTest in 1.981 seconds (process running for 5.766)
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:29,042 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The : 'testPreconditionsExample(Quest)' quest has begun.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:29,137 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - Quest crafted for scenario: 'testPreconditionsExample(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:29,155 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:30,865 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/login.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:32,318 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2041ms.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:33,477 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:33,524 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:33,746 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 227ms.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:33,776 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:33,798 [scenario=ReqresApiTest.testPreconditionsExample] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,010 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,038 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,267 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 233ms.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,297 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,312 [scenario=ReqresApiTest.testPreconditionsExample] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,322 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,328 [scenario=ReqresApiTest.testPreconditionsExample] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,417 [scenario=ReqresApiTest.testPreconditionsExample] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,434 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The ripper has arrived
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,484 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,527 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Sending request to endpoint DELETE-https://reqres.in/api/users/2.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,767 [scenario=ReqresApiTest.testPreconditionsExample] STEP  [API] - Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/2 in 256ms.
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,793 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,801 [scenario=ReqresApiTest.testPreconditionsExample] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 204, Actual: 204)
+⚡️ ZEUS ⚡️ 2025-02-05T16:58:34,808 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest of 'testPreconditionsExample(Quest)' has concluded with glory. Status: SUCCESS. Duration: 5 seconds.

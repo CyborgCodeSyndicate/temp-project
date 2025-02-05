@@ -8,9 +8,9 @@ import java.util.function.BiConsumer;
 
 public enum QuestPreconditions implements PreQuestJourney {
 
-    CREATE_NEW_LEADER_USER_FLOW(QuestPreconditionFunctions::createNewLeaderUser);
+    CREATE_NEW_USER_FLOW(QuestPreconditionFunctions::createNewUser);
 
-    public static final String CREATE_NEW_LEADER_USER = "CREATE_NEW_LEADER_USER_FLOW";
+    public static final String CREATE_NEW_USER = "CREATE_NEW_USER_FLOW";
 
     private final BiConsumer<@Jailbreak Quest, Object[]> function;
 

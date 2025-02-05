@@ -34,7 +34,7 @@ import static com.reqres.test.framework.base.World.OLYMPYS;
 import static com.reqres.test.framework.base.World.RIVENDELL;
 import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.*;
-import static com.reqres.test.framework.preconditions.QuestPreconditions.CREATE_NEW_LEADER_USER;
+import static com.reqres.test.framework.preconditions.QuestPreconditions.CREATE_NEW_USER;
 import static com.reqres.test.framework.rest.Endpoints.*;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.*;
@@ -212,15 +212,16 @@ public class ReqresApiTest extends BaseTest {
     @Test
     @AuthenticateAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
     @PreQuest({
-            @Journey(value = CREATE_NEW_LEADER_USER, journeyData = {@JourneyData(USER_LEADER)})
+            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
+            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
     public void testPreconditionsExample(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class).getBody().as(CreatedUserResponse.class);
-                    assertEquals("Morpheus", createdUserResponse.getName(), "Name is incorrect!");
-                    assertEquals("Leader", createdUserResponse.getJob(), "Job is incorrect!");
+                    assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
+                    assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
                     assertTrue(createdUserResponse
                             .getCreatedAt()
                             .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");

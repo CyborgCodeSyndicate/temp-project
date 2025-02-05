@@ -14,11 +14,11 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 
 public class QuestPreconditionFunctions {
 
-    public static void createNewLeaderUser(@Jailbreak Quest quest, Object... objects) {
-        createNewLeaderUser(quest, (User) objects[0]);
+    public static void createNewUser(@Jailbreak Quest quest, Object... objects) {
+        createNewUser(quest, (User) objects[0]);
     }
 
-    public static void createNewLeaderUser(@Jailbreak Quest quest, User userObject) {
+    public static void createNewUser(@Jailbreak Quest quest, User userObject) {
         // todo: revisit code
         RestServiceFluent enters = quest.enters(OLYMPYS);
         enters

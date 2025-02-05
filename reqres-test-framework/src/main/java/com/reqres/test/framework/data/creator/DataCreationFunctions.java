@@ -1,5 +1,6 @@
 package com.reqres.test.framework.data.creator;
 
+
 import com.reqres.test.framework.rest.dto.request.LoginUser;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.DataResponse;
@@ -13,7 +14,6 @@ import manifold.ext.rt.api.Jailbreak;
 
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER_FLOW;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
-
 public class DataCreationFunctions {
 
     public static User createLeaderUser() {
@@ -55,6 +55,18 @@ public class DataCreationFunctions {
         return User.builder()
                 .name("Mr. " + userLeader.getName())
                 .job("Senior " + userLeader.getJob())
+                .build();
+    }
+
+    public static User createIntermediateUser() {
+        @Jailbreak Quest quest = QuestHolder.get();
+        User userLeader = quest.getStorage()
+                .sub(StorageKeysTest.PRE_ARGUMENTS)
+                .get(USER_LEADER_FLOW, User.class);
+
+        return User.builder()
+                .name("Mr. " + userLeader.getName())
+                .job("Intermediate " + userLeader.getJob())
                 .build();
     }
 }
