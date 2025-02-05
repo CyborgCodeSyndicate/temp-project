@@ -1,5 +1,6 @@
 package com.reqres.test.framework;
 
+import com.reqres.test.framework.annotations.Rivendell;
 import com.reqres.test.framework.rest.ApiResponseField;
 import com.reqres.test.framework.rest.authentication.AdminAuth;
 import com.reqres.test.framework.rest.authentication.ReqResAuthentication;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
+import static com.reqres.test.framework.base.World.RIVENDELL;
 import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.*;
 import static com.reqres.test.framework.preconditions.QuestPreconditions.CREATE_NEW_LEADER_USER;
@@ -40,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @API
+@Rivendell
 public class ReqresApiTest extends BaseTest {
 
     @Test
@@ -198,7 +201,7 @@ public class ReqresApiTest extends BaseTest {
                 .requestAndValidate(
                         GET_USER
                                 .withPathParam("id", 3)
-                                .withHeader("Authorization", "Bearer " + retrieve(StorageKeysApi.API, LOGIN_USER, Response.class)
+                                .withHeader("SpecificHeader", retrieve(StorageKeysApi.API, LOGIN_USER, Response.class)
                                         .getBody()
                                         .jsonPath()
                                         .getString("token")),
@@ -222,5 +225,17 @@ public class ReqresApiTest extends BaseTest {
                             .getCreatedAt()
                             .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
                 });
+    }
+
+    @Test
+    public void testCustomService(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
+        quest.enters(RIVENDELL)
+                .loginUserAndAddSpecificHeader(loginUser)
+                .then()
+                .enters(OLYMPYS)
+                .requestAndValidate(
+                        GET_ALL_USERS.withQueryParam("page", 2),
+                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
+                );
     }
 }
