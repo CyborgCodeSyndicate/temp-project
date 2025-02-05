@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -19,29 +20,31 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.CLICK;
-import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.SEND_KEYS;
-import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.SUBMIT;
-import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.performAction;
+import static com.theairebellion.zeus.ui.selenium.enums.WebElementAction.CLICK;
+import static com.theairebellion.zeus.ui.selenium.enums.WebElementAction.SEND_KEYS;
+import static com.theairebellion.zeus.ui.selenium.enums.WebElementAction.SUBMIT;
 
 
 public class ExceptionHandlingWebElementFunctions {
+
+    private static final String UNSUPPORTED_OPERATION = "Unsupported operation.";
 
     public static Object handleStaleElement(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
         element = updateWebElement(driver, element);
 
         return switch (webElementAction) {
             case FIND_ELEMENT -> new SmartWebElement(element.getOriginal().findElement((By) args[0]), driver);
+            case FIND_ELEMENTS -> null;
             case CLICK -> {
-                performAction(driver, element.getOriginal(), CLICK);
+                CLICK.performAction(driver, element.getOriginal(), CLICK);
                 yield null;
             }
             case SEND_KEYS -> {
-                performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
+                SEND_KEYS.performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
                 yield null;
             }
             case SUBMIT -> {
-                performAction(driver, element.getOriginal(), SUBMIT);
+                SUBMIT.performAction(driver, element.getOriginal(), SUBMIT);
                 yield null;
             }
         };
@@ -50,7 +53,7 @@ public class ExceptionHandlingWebElementFunctions {
     public static Object handleNoSuchElement(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
         WebElement foundElement = findElementInFrames(driver, element);
         if (foundElement != null) {
-            return performAction(driver, foundElement, webElementAction, args);
+            return webElementAction.performAction(driver, foundElement, webElementAction, args);
         }
         LogUI.error("Element not found in the main DOM or any iframe.");
         throw new NoSuchElementException("Element not found in any iframe.");
@@ -64,14 +67,14 @@ public class ExceptionHandlingWebElementFunctions {
 
         return switch (webElementAction) {
             case CLICK -> {
-                performAction(driver, element.getOriginal(), CLICK);
+                CLICK.performAction(driver, element.getOriginal(), CLICK);
                 yield null;
             }
             case SEND_KEYS -> {
-                performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
+                SEND_KEYS.performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
                 yield null;
             }
-            default -> throw new IllegalArgumentException("Unsupported operation.");
+            default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);
         };
     }
 
@@ -84,18 +87,18 @@ public class ExceptionHandlingWebElementFunctions {
 
         return switch (webElementAction) {
             case CLICK -> {
-                performAction(driver, clickableElement, CLICK);
+                CLICK.performAction(driver, clickableElement, CLICK);
                 yield null;
             }
             case SEND_KEYS -> {
-                performAction(driver, clickableElement, SEND_KEYS, args[0]);
+                SEND_KEYS.performAction(driver, clickableElement, SEND_KEYS, args[0]);
                 yield null;
             }
             case SUBMIT -> {
-                performAction(driver, clickableElement, SUBMIT);
+                SUBMIT.performAction(driver, clickableElement, SUBMIT);
                 yield null;
             }
-            default -> throw new IllegalArgumentException("Unsupported operation.");
+            default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);
         };
     }
 

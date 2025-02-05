@@ -1,9 +1,9 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
+import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.FourFunction;
 import lombok.Getter;
-import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.NoSuchElementException;

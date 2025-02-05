@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.selenium.logging;
 
+import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.util.FourConsumer;
 import lombok.Getter;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -16,39 +17,39 @@ import java.util.Map;
 
 @Getter
 public enum ExceptionLogging {
-    FIND_ELEMENT_FROM_ROOT(WebDriver.class, "findElement",
-            Map.of(NoSuchElementException.class, LoggingFunctions::findElementFromRootNoSuchElementExceptionLogging)),
-    FIND_ELEMENTS_FROM_ROOT(WebDriver.class, "findElements",
-            Map.of(NoSuchElementException.class, LoggingFunctions::findElementFromRootNoSuchElementExceptionLogging)),
-    FIND_ELEMENT_FROM_ELEMENT(WebElement.class, "findElement",
-            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging)),
-    FIND_ELEMENTS_FROM_ELEMENT(WebElement.class, "findElements",
-            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging)),
-    CLICK(WebElement.class, "click",
-            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging,
-                    ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
-                    InvalidSelectorException.class, LoggingFunctions::clickInvalidSelectorExceptionLogging,
-                    ElementClickInterceptedException.class, LoggingFunctions::elementClickInterceptedExceptionLogging,
-                    TimeoutException.class, LoggingFunctions::clickTimeoutExceptionLogging)),
-    SEND_KEYS(WebElement.class, "sendKeys",
-            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging,
-                    ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging,
-                    ElementClickInterceptedException.class, LoggingFunctions::elementClickInterceptedExceptionLogging)),
-    SUBMIT(WebElement.class, "submit",
-            Map.of(NoSuchElementException.class, LoggingFunctions::noSuchElementExceptionLogging,
-                    ElementNotInteractableException.class, LoggingFunctions::elementNotInteractableExceptionLogging));
+    FIND_ELEMENT_FROM_ROOT(WebDriver.class, WebElementAction.FIND_ELEMENT,
+            Map.of(NoSuchElementException.class, LoggingFunctions::logFindElementFromRootNoSuchElementException)),
+    FIND_ELEMENTS_FROM_ROOT(WebDriver.class, WebElementAction.FIND_ELEMENTS,
+            Map.of(NoSuchElementException.class, LoggingFunctions::logFindElementFromRootNoSuchElementException)),
+    FIND_ELEMENT_FROM_ELEMENT(WebElement.class, WebElementAction.FIND_ELEMENT,
+            Map.of(NoSuchElementException.class, LoggingFunctions::logNoSuchElementException)),
+    FIND_ELEMENTS_FROM_ELEMENT(WebElement.class, WebElementAction.FIND_ELEMENTS,
+            Map.of(NoSuchElementException.class, LoggingFunctions::logNoSuchElementException)),
+    CLICK(WebElement.class, WebElementAction.CLICK,
+            Map.of(NoSuchElementException.class, LoggingFunctions::logNoSuchElementException,
+                    ElementNotInteractableException.class, LoggingFunctions::logElementNotInteractableException,
+                    InvalidSelectorException.class, LoggingFunctions::logClickInvalidSelectorException,
+                    ElementClickInterceptedException.class, LoggingFunctions::logElementClickInterceptedException,
+                    TimeoutException.class, LoggingFunctions::logClickTimeoutException)),
+    SEND_KEYS(WebElement.class, WebElementAction.SEND_KEYS,
+            Map.of(NoSuchElementException.class, LoggingFunctions::logNoSuchElementException,
+                    ElementNotInteractableException.class, LoggingFunctions::logElementNotInteractableException,
+                    ElementClickInterceptedException.class, LoggingFunctions::logElementClickInterceptedException)),
+    SUBMIT(WebElement.class, WebElementAction.SUBMIT,
+            Map.of(NoSuchElementException.class, LoggingFunctions::logNoSuchElementException,
+                    ElementNotInteractableException.class, LoggingFunctions::logElementNotInteractableException));
 
 
     private final Class<?> objectClass;
-    private final String methodName;
-    private final Map<Class<? extends Throwable>, FourConsumer<Object, String, Object[], InvocationTargetException>>
+    private final WebElementAction webElementAction;
+    private final Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[], InvocationTargetException>>
             exceptionLoggingMap;
 
 
-    ExceptionLogging(final Class<?> objectClass, final String methodName,
-                     Map<Class<? extends Throwable>, FourConsumer<Object, String, Object[], InvocationTargetException>> exceptionLoggingMap) {
+    ExceptionLogging(final Class<?> objectClass, final WebElementAction webElementAction,
+                     Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[], InvocationTargetException>> exceptionLoggingMap) {
         this.objectClass = objectClass;
-        this.methodName = methodName;
+        this.webElementAction = webElementAction;
         this.exceptionLoggingMap = exceptionLoggingMap;
     }
 }
