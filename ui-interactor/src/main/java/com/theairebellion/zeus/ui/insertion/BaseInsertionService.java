@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class BaseInsertionService implements InsertionService {
 
@@ -22,8 +23,8 @@ public abstract class BaseInsertionService implements InsertionService {
         List<Field> targetedFields = filterAndSortFields(fields);
 
         for (Field field : targetedFields) {
-            Object annotation = getFieldAnnotation(field);
-            if (annotation == null) {
+            Optional<?> annotation = Optional.ofNullable(getFieldAnnotation(field));
+            if (annotation.isEmpty()) {
                 continue;
             }
             field.setAccessible(true);
@@ -42,11 +43,13 @@ public abstract class BaseInsertionService implements InsertionService {
                 Object valueForField = field.get(data);
 
                 if (valueForField != null) {
+                    beforeInsertion(annotation);
                     service.insertion((ComponentType) enumValue, locator, valueForField);
+                    afterInsertion(annotation);
                 }
 
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Failed to access field: " + field.getName(), e);
             }
         }
     }
@@ -61,5 +64,16 @@ public abstract class BaseInsertionService implements InsertionService {
     protected abstract Enum<?> getEnumValue(Object annotation);
 
     protected abstract List<Field> filterAndSortFields(Field[] fields);
+
+
+    protected void beforeInsertion(Object annotation) {
+
+    }
+
+
+    protected void afterInsertion(Object annotation) {
+
+    }
+
 
 }

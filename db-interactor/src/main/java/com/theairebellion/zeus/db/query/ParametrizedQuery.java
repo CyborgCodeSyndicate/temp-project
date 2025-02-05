@@ -10,33 +10,29 @@ public class ParametrizedQuery implements DbQuery {
     private final DbQuery original;
     private final Map<String, Object> params = new HashMap<>();
 
-
-    ParametrizedQuery(DbQuery original) {
+    public ParametrizedQuery(DbQuery original) {
         this.original = original;
     }
-
 
     @Override
     public String query() {
         String q = original.query();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            q = q.replace("{" + entry.getKey() + "}", entry.getValue().toString());
+            String placeholder = "{" + entry.getKey() + "}";
+            q = q.replace(placeholder, entry.getValue() != null ? entry.getValue().toString() : "null");
         }
         return q;
     }
-
 
     @Override
     public DatabaseConfiguration config() {
         return original.config();
     }
 
-
     @Override
     public Enum<?> enumImpl() {
         return original.enumImpl();
     }
-
 
     @Override
     public DbQuery withParam(String name, Object value) {

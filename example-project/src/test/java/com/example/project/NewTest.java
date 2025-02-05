@@ -6,26 +6,27 @@ import com.example.project.db.Queries;
 import com.example.project.model.Student;
 import com.example.project.rest.authentication.AdminAuth;
 import com.example.project.rest.authentication.PortalAuthentication;
+import com.example.project.ui.authentication.AdminUI;
+import com.example.project.ui.authentication.FacebookUILogging;
 import com.example.project.ui.elements.InputFields;
 import com.theairebellion.zeus.api.annotations.API;
-import com.theairebellion.zeus.api.annotations.AuthenticateAs;
-import com.theairebellion.zeus.api.storage.DataExtractorsApi;
-import com.theairebellion.zeus.api.storage.StorageKeysApi;
+import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
-import static com.example.project.data.creator.TestDataCreator.VALID_STUDENT;
+import static com.example.project.data.creator.TestDataCreator.Data;
 import static com.example.project.rest.Endpoints.ENDPOINT_EXAMPLE;
-import static com.theairebellion.zeus.api.storage.DataExtractorsApi.*;
+import static com.theairebellion.zeus.api.storage.DataExtractorsApi.responseBodyExtraction;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.BODY;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
 import static com.theairebellion.zeus.db.validator.DbAssertionTarget.NUMBER_ROWS;
@@ -40,10 +41,11 @@ public class NewTest extends BaseTest {
 
 
     @Test
-    @AuthenticateAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
+    @AuthenticateViaApiAs(credentials = AdminAuth.class, type = PortalAuthentication.class, cacheCredentials = true)
     @InterceptRequests(requestUrlSubStrings = {"api/create-campaign", "upload"})
-    public void scenario_some(Quest quest, @Craft(model = VALID_STUDENT) Student student,
-                              @Craft(model = VALID_STUDENT) Late<Student> student1) {
+    @AuthenticateViaUiAs(credentials = AdminUI.class, type = FacebookUILogging.class, cacheCredentials = true)
+    public void scenario_some(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student,
+                              @Craft(model = Data.VALID_STUDENT) Late<Student> student1) {
         quest
             .enters(World.OLYMPYS)
             .request(ENDPOINT_EXAMPLE.withPathParam("campaignId", 17).withQueryParam("page", 1), student)
@@ -61,9 +63,9 @@ public class NewTest extends BaseTest {
                     .build())
             .then()
             .enters(World.EARTH)
-            //.input().insert(InputFields.USERNAME_FIELD, student1.join().getName())
-            //.input().insert(InputFields.PASSWORD_FIELD, student.getName())
-            .input().insert(InputFields.PASSWORD_FIELD,
+            .input().insert(InputFields.USERNAME, student1.join().getName())
+            .input().insert(InputFields.PASSWORD, student.getName())
+            .input().insert(InputFields.PASSWORD,
                 String.valueOf(
                     retrieve(DataExtractorsUi.responseBodyExtraction("api/create-campaign", "$.id"), Long.class)))
             .then()

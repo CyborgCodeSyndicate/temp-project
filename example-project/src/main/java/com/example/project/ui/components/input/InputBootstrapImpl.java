@@ -4,10 +4,10 @@ import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.input.Input;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.WebElement;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,155 +23,155 @@ public class InputBootstrapImpl extends BaseComponent implements Input {
     public static final String FIELD_DISABLE_CLASS_INDICATOR = "disabled";
 
 
-    public InputBootstrapImpl(SmartSelenium smartSelenium) {
-        super(smartSelenium);
+    public InputBootstrapImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
 
     @Override
-    public void insert(final WebElement container, final String value) {
-        WebElement inputFieldContainer = findInputField(container, null);
+    public void insert(final SmartWebElement container, final String value) {
+        SmartWebElement inputFieldContainer = findInputField(container, null);
         insertIntoInputField(inputFieldContainer, value);
     }
 
 
     @Override
-    public void insert(final WebElement container, final String inputFieldLabel, final String value) {
-        WebElement inputFieldContainer = findInputField(container, inputFieldLabel);
+    public void insert(final SmartWebElement container, final String inputFieldLabel, final String value) {
+        SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         insertIntoInputField(inputFieldContainer, value);
     }
 
 
     @Override
     public void insert(final String inputFieldLabel, final String value) {
-        WebElement inputFieldContainer = findInputField(null, inputFieldLabel);
+        SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         insertIntoInputField(inputFieldContainer, value);
     }
 
 
     @Override
     public void insert(final By inputFieldContainerLocator, final String value) {
-        WebElement inputFieldContainer = smartSelenium.waitAndFindElement(inputFieldContainerLocator);
+        SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         insertIntoInputField(inputFieldContainer, value);
     }
 
 
     @Override
-    public void clear(final WebElement container) {
-        WebElement inputFieldContainer = findInputField(container, null);
+    public void clear(final SmartWebElement container) {
+        SmartWebElement inputFieldContainer = findInputField(container, null);
         clearInputField(inputFieldContainer);
     }
 
 
     @Override
-    public void clear(final WebElement container, final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(container, inputFieldLabel);
+    public void clear(final SmartWebElement container, final String inputFieldLabel) {
+        SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         clearInputField(inputFieldContainer);
     }
 
 
     @Override
     public void clear(final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(null, inputFieldLabel);
+        SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         clearInputField(inputFieldContainer);
     }
 
 
     @Override
     public void clear(final By inputFieldContainerLocator) {
-        WebElement inputFieldContainer = smartSelenium.waitAndFindElement(inputFieldContainerLocator);
+        SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         clearInputField(inputFieldContainer);
     }
 
 
     @Override
-    public String getValue(final WebElement container) {
-        WebElement inputFieldContainer = findInputField(container, null);
+    public String getValue(final SmartWebElement container) {
+        SmartWebElement inputFieldContainer = findInputField(container, null);
         return getInputFieldValue(inputFieldContainer);
     }
 
 
     @Override
-    public String getValue(final WebElement container, final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(container, inputFieldLabel);
+    public String getValue(final SmartWebElement container, final String inputFieldLabel) {
+        SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         return getInputFieldValue(inputFieldContainer);
     }
 
 
     @Override
     public String getValue(final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(null, inputFieldLabel);
+        SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         return getInputFieldValue(inputFieldContainer);
     }
 
 
     @Override
     public String getValue(final By inputFieldContainerLocator) {
-        WebElement inputFieldContainer = smartSelenium.waitAndFindElement(inputFieldContainerLocator);
+        SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         return getInputFieldValue(inputFieldContainer);
     }
 
 
     @Override
-    public boolean isEnabled(final WebElement container) {
-        WebElement inputFieldContainer = findInputField(container, null);
+    public boolean isEnabled(final SmartWebElement container) {
+        SmartWebElement inputFieldContainer = findInputField(container, null);
         return isInputFieldEnabled(inputFieldContainer);
     }
 
 
     @Override
-    public boolean isEnabled(final WebElement container, final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(container, inputFieldLabel);
+    public boolean isEnabled(final SmartWebElement container, final String inputFieldLabel) {
+        SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         return isInputFieldEnabled(inputFieldContainer);
     }
 
 
     @Override
     public boolean isEnabled(final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(null, inputFieldLabel);
+        SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         return isInputFieldEnabled(inputFieldContainer);
     }
 
 
     @Override
     public boolean isEnabled(final By inputFieldContainerLocator) {
-        WebElement inputFieldContainer = smartSelenium.waitAndFindElement(inputFieldContainerLocator);
+        SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         return isInputFieldEnabled(inputFieldContainer);
     }
 
 
     @Override
-    public String getErrorMessage(final WebElement container) {
-        WebElement inputFieldContainer = findInputField(container, null);
+    public String getErrorMessage(final SmartWebElement container) {
+        SmartWebElement inputFieldContainer = findInputField(container, null);
         return getInputFieldErrorMessage(inputFieldContainer);
     }
 
 
     @Override
-    public String getErrorMessage(final WebElement container, final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(container, inputFieldLabel);
+    public String getErrorMessage(final SmartWebElement container, final String inputFieldLabel) {
+        SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         return getInputFieldErrorMessage(inputFieldContainer);
     }
 
 
     @Override
     public String getErrorMessage(final String inputFieldLabel) {
-        WebElement inputFieldContainer = findInputField(null, inputFieldLabel);
+        SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         return getInputFieldErrorMessage(inputFieldContainer);
     }
 
 
     @Override
     public String getErrorMessage(final By inputFieldContainerLocator) {
-        WebElement inputFieldContainer = smartSelenium.waitAndFindElement(inputFieldContainerLocator);
+        SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         return getInputFieldErrorMessage(inputFieldContainer);
     }
 
 
-    private WebElement findInputField(WebElement container, String label) {
-        List<WebElement> fieldElements = Objects.nonNull(container)
-                ? smartSelenium.waitAndFindElements(container, INPUT_FIELD_CONTAINER)
-                : smartSelenium.waitAndFindElements(INPUT_FIELD_CONTAINER);
+    private SmartWebElement findInputField(SmartWebElement container, String label) {
+        List<SmartWebElement> fieldElements = Objects.nonNull(container)
+                ? container.findSmartElements(INPUT_FIELD_CONTAINER)
+                : driver.findSmartElements(INPUT_FIELD_CONTAINER);
 
         if (fieldElements.isEmpty()) {
             throw new NotFoundException("There is no input element");
@@ -186,41 +186,39 @@ public class InputBootstrapImpl extends BaseComponent implements Input {
     }
 
 
-    private void insertIntoInputField(WebElement inputField, String value) {
+    private void insertIntoInputField(SmartWebElement inputField, String value) {
         if (isInputFieldEnabled(inputField)) {
-            smartSelenium.clearAndSendKeys(inputField, value);
+            inputField.clearAndSendKeys(value);
         }
     }
 
 
-    private void clearInputField(WebElement inputField) {
+    private void clearInputField(SmartWebElement inputField) {
         if (isInputFieldEnabled(inputField)) {
-            smartSelenium.smartClear(inputField);
+            inputField.clear();
         }
     }
 
 
-    private String getInputFieldValue(WebElement inputField) {
-        return smartSelenium.smartGetAttribute(inputField, ELEMENT_VALUE_ATTRIBUTE);
+    private String getInputFieldValue(SmartWebElement inputField) {
+        return inputField.getAttribute(ELEMENT_VALUE_ATTRIBUTE);
     }
 
 
-    private String getInputFieldLabel(WebElement fieldElement) {
-        WebElement labelElement = smartSelenium.waitAndFindElement(fieldElement, INPUT_FIELD_LABEL_LOCATOR);
-        return smartSelenium.smartGetText(labelElement).trim();
+    private String getInputFieldLabel(SmartWebElement fieldElement) {
+        SmartWebElement labelElement = fieldElement.findSmartElement(INPUT_FIELD_LABEL_LOCATOR);
+        return labelElement.getText().trim();
     }
 
 
-    private String getInputFieldErrorMessage(WebElement fieldElement) {
-        WebElement errorMessageElement = smartSelenium.waitAndFindElement(fieldElement,
-                INPUT_FIELD_ERROR_MESSAGE_LOCATOR);
-        return smartSelenium.smartGetText(errorMessageElement).trim();
+    private String getInputFieldErrorMessage(SmartWebElement fieldElement) {
+        SmartWebElement errorMessageElement = fieldElement.findSmartElement(INPUT_FIELD_ERROR_MESSAGE_LOCATOR);
+        return errorMessageElement.getText().trim();
     }
 
 
-    private boolean isInputFieldEnabled(WebElement fieldElement) {
-        String classAttribute = smartSelenium.smartGetAttribute(fieldElement, FIELD_DISABLE_CLASS_INDICATOR);
+    private boolean isInputFieldEnabled(SmartWebElement fieldElement) {
+        String classAttribute = fieldElement.getAttribute(FIELD_DISABLE_CLASS_INDICATOR);
         return classAttribute == null;
     }
-
 }

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import com.theairebellion.zeus.db.exceptions.JsonPathExtractionException;
 
 public class JsonPathExtractor {
-
     private final ObjectMapper objectMapper;
     private final Configuration jsonPathConfig;
 
@@ -18,8 +18,8 @@ public class JsonPathExtractor {
     public JsonPathExtractor(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.jsonPathConfig = Configuration.builder()
-            .options(Option.ALWAYS_RETURN_LIST, Option.SUPPRESS_EXCEPTIONS)
-            .build();
+                .options(Option.ALWAYS_RETURN_LIST, Option.SUPPRESS_EXCEPTIONS)
+                .build();
     }
 
     public <T> T extract(Object data, String jsonPath, Class<T> resultType) {
@@ -37,23 +37,26 @@ public class JsonPathExtractor {
         try {
             return objectMapper.writeValueAsString(data);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert object to JSON", e);
+            throw new JsonPathExtractionException("Failed to convert object to JSON", e);
         }
     }
 
     private Object applyJsonPath(String json, String jsonPath) {
-        return JsonPath.using(jsonPathConfig)
-            .parse(json)
-            .read(jsonPath);
+        try {
+            return JsonPath.using(jsonPathConfig)
+                    .parse(json)
+                    .read(jsonPath);
+        } catch (Exception e) {
+            throw new JsonPathExtractionException("Failed to apply JsonPath: " + jsonPath, e);
+        }
     }
 
     private <T> T convertValue(Object extracted, Class<T> resultType) {
         try {
             return objectMapper.convertValue(extracted, resultType);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert extracted JSON to " + resultType.getSimpleName(), e);
+            throw new JsonPathExtractionException("Failed to convert extracted JSON to " + resultType.getSimpleName(), e);
         }
     }
-
 
 }

@@ -1,18 +1,18 @@
 package com.theairebellion.zeus.ui.components.list;
 
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
 public interface ItemList {
 
-    void select(WebElement container, String... itemText);
+    void select(SmartWebElement container, String... itemText);
 
     void select(By containerLocator, String... itemText);
 
-    String select(WebElement container, Strategy strategy);
+    String select(SmartWebElement container, Strategy strategy);
 
     String select(By containerLocator, Strategy strategy);
 
@@ -20,11 +20,11 @@ public interface ItemList {
 
     void select(By... itemListLocator);
 
-    void deSelect(WebElement container, String... itemText);
+    void deSelect(SmartWebElement container, String... itemText);
 
     void deSelect(By containerLocator, String... itemText);
 
-    String deSelect(WebElement container, Strategy strategy);
+    String deSelect(SmartWebElement container, Strategy strategy);
 
     String deSelect(By containerLocator, Strategy strategy);
 
@@ -32,7 +32,7 @@ public interface ItemList {
 
     void deSelect(By... itemListLocator);
 
-    boolean areSelected(WebElement container, String... itemText);
+    boolean areSelected(SmartWebElement container, String... itemText);
 
     boolean areSelected(By containerLocator, String... itemText);
 
@@ -40,7 +40,7 @@ public interface ItemList {
 
     boolean areSelected(By... itemListLocator);
 
-    boolean areEnabled(WebElement container, String... itemText);
+    boolean areEnabled(SmartWebElement container, String... itemText);
 
     boolean areEnabled(By containerLocator, String... itemText);
 
@@ -48,7 +48,7 @@ public interface ItemList {
 
     boolean areEnabled(By... itemLocator);
 
-    boolean areVisible(WebElement container, String... itemText);
+    boolean areVisible(SmartWebElement container, String... itemText);
 
     boolean areVisible(By containerLocator, String... itemText);
 
@@ -56,11 +56,11 @@ public interface ItemList {
 
     boolean areVisible(By... itemLocator);
 
-    List<String> getSelected(WebElement container);
+    List<String> getSelected(SmartWebElement container);
 
     List<String> getSelected(By containerLocator);
 
-    List<String> getAll(WebElement container);
+    List<String> getAll(SmartWebElement container);
 
     List<String> getAll(By containerLocator);
 }

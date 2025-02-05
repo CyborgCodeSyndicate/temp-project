@@ -2,9 +2,7 @@ package com.theairebellion.zeus.ui.insertion;
 
 import com.theairebellion.zeus.ui.annotations.InsertionField;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 
@@ -14,9 +12,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class InsertionServiceFieldImpl extends BaseInsertionService {
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
+public class InsertionServiceFieldImpl extends BaseInsertionService {
 
 
     public InsertionServiceFieldImpl(final InsertionServiceRegistry serviceRegistry) {
@@ -49,7 +47,7 @@ public class InsertionServiceFieldImpl extends BaseInsertionService {
     protected Enum<?> getEnumValue(Object annotation) {
         InsertionField insertionField = (InsertionField) annotation;
         Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
-            insertionField.type(), uiConfig.projectPackage()
+            insertionField.type(), getUiConfig().projectPackage()
         );
         return Enum.valueOf(enumClass, insertionField.componentType());
     }

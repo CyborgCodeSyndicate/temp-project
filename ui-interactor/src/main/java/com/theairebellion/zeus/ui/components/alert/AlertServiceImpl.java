@@ -1,32 +1,28 @@
 package com.theairebellion.zeus.ui.components.alert;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class AlertServiceImpl implements AlertService {
+public class AlertServiceImpl extends AbstractComponentService<AlertComponentType, Alert> implements AlertService {
 
-    protected SmartSelenium smartSelenium;
-    private static Map<AlertComponentType, Alert> components;
-
-    public AlertServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public AlertServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public AlertServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public String getValue(AlertComponentType componentType, WebElement container) {
+    protected Alert createComponent(final AlertComponentType componentType) {
+        return ComponentFactory.getAlertComponent(componentType, driver);
+    }
+
+    @Override
+    public String getValue(AlertComponentType componentType, SmartWebElement container) {
         return alertComponent(componentType).getValue(container);
     }
 
@@ -36,7 +32,7 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public boolean isVisible(AlertComponentType componentType, WebElement container) {
+    public boolean isVisible(AlertComponentType componentType, SmartWebElement container) {
         return alertComponent(componentType).isVisible(container);
     }
 
@@ -46,9 +42,6 @@ public class AlertServiceImpl implements AlertService {
     }
 
     private Alert alertComponent(final AlertComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getAlertComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

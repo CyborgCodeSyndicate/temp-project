@@ -2,7 +2,7 @@ package com.theairebellion.zeus.logging;
 
 public final class LogCommon extends LogCore {
 
-    private static LogCommon INSTANCE = new LogCommon();
+    private static LogCommon INSTANCE;
 
 
     private LogCommon() {
@@ -11,42 +11,50 @@ public final class LogCommon extends LogCore {
 
 
     public static void info(String message, Object... args) {
-        INSTANCE.infoLog(message, args);
+        getInstance().infoLog(message, args);
     }
 
 
     public static void warn(String message, Object... args) {
-        INSTANCE.warnLog(message, args);
+        getInstance().warnLog(message, args);
     }
 
 
     public static void error(String message, Object... args) {
-        INSTANCE.errorLog(message, args);
+        getInstance().errorLog(message, args);
     }
 
 
     public static void debug(String message, Object... args) {
-        INSTANCE.debugLog(message, args);
+        getInstance().debugLog(message, args);
     }
 
 
     public static void trace(String message, Object... args) {
-        INSTANCE.traceLog(message, args);
+        getInstance().traceLog(message, args);
     }
 
 
     public static void step(String message, Object... args) {
-        INSTANCE.stepLog(message, args);
+        getInstance().stepLog(message, args);
     }
 
 
     public static void extended(String message, Object... args) {
-        INSTANCE.extendedLog(message, args);
+        getInstance().extendedLog(message, args);
     }
 
 
     public static <T extends LogCore> void extend(final T INSTANCE) {
         LogCommon.INSTANCE = (LogCommon) INSTANCE;
+    }
+
+
+    private static LogCommon getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new LogCommon();
+        }
+        return INSTANCE;
     }
 
 }

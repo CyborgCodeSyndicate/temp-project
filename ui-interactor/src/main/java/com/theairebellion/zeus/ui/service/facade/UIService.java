@@ -25,18 +25,19 @@ import com.theairebellion.zeus.ui.components.toggle.ToggleServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
+import com.theairebellion.zeus.ui.components.tab.TabService;
+import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import lombok.Getter;
-import org.openqa.selenium.WebDriver;
 
 @Getter
 public class UIService {
 
 
-    private final WebDriver driver;
+    private final SmartWebDriver driver;
     private InputService inputField;
     private ButtonService buttonField;
     private RadioService radioField;
@@ -47,23 +48,24 @@ public class UIService {
     private LoaderService loaderField;
     private LinkService linkField;
     private AlertService alertField;
+    private TabService tabField;
     private final InsertionServiceRegistry serviceRegistry;
     private final InsertionService insertionService;
 
 
-    public UIService(WebDriver driver) {
-        SmartSelenium smartSelenium = new SmartSelenium(driver);
+    public UIService(SmartWebDriver driver) {
         this.driver = driver;
-        inputField = new InputServiceImpl(smartSelenium);
-        buttonField = new ButtonServiceImpl(smartSelenium);
-        radioField = new RadioServiceImpl(smartSelenium);
-        checkboxField = new CheckboxServiceImpl(smartSelenium);
-        toggleField = new ToggleServiceImpl(smartSelenium);
-        selectField = new SelectServiceImpl(smartSelenium);
-        listField = new ItemListServiceImpl(smartSelenium);
-        loaderField = new LoaderServiceImpl(smartSelenium);
-        linkField = new LinkServiceImpl(smartSelenium);
-        alertField = new AlertServiceImpl(smartSelenium);
+        inputField = new InputServiceImpl(driver);
+        buttonField = new ButtonServiceImpl(driver);
+        radioField = new RadioServiceImpl(driver);
+        selectField = new SelectServiceImpl(driver);
+        listField = new ItemListServiceImpl(driver);
+        loaderField = new LoaderServiceImpl(driver);
+        linkField = new LinkServiceImpl(driver);
+        alertField = new AlertServiceImpl(driver);
+        tabField = new TabServiceImpl(driver);
+        checkboxField = new CheckboxServiceImpl(driver);
+        toggleField = new ToggleServiceImpl(driver);
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);

@@ -9,21 +9,16 @@ public abstract class BaseDriverProvider<T extends AbstractDriverOptions<?>> imp
     private static final ConcurrentHashMap<String, Boolean> DRIVER_DOWNLOAD_STATUS = new ConcurrentHashMap<>();
 
 
-    protected abstract String getDriverType(); // Return unique identifier for the driver (e.g., "CHROME", "EDGE")
+    protected abstract String getDriverType();
 
 
     @Override
     public void setupDriver(final String version) {
         String driverType = getDriverType();
-        DRIVER_DOWNLOAD_STATUS.computeIfAbsent(driverType, key -> {
-            synchronized (DRIVER_DOWNLOAD_STATUS) {
-                if (!DRIVER_DOWNLOAD_STATUS.containsKey(driverType)) {
-                    downloadDriver(version);
-                    return true;
-                }
-                return DRIVER_DOWNLOAD_STATUS.get(driverType);
-            }
-        });
+            DRIVER_DOWNLOAD_STATUS.computeIfAbsent(driverType, key -> {
+                downloadDriver(version);
+                return true;
+            });
     }
 
 }

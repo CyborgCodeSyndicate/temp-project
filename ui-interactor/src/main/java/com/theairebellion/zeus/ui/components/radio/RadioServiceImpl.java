@@ -1,41 +1,34 @@
 package com.theairebellion.zeus.ui.components.radio;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
-public class RadioServiceImpl implements RadioService {
+public class RadioServiceImpl extends AbstractComponentService<RadioComponentType, Radio> implements RadioService {
 
-    protected SmartSelenium smartSelenium;
-    private static Map<RadioComponentType, Radio> components;
-
-    public RadioServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public RadioServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public RadioServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public void select(final RadioComponentType componentType, final WebElement container,
+    protected Radio createComponent(final RadioComponentType componentType) {
+        return ComponentFactory.getRadioComponent(componentType, driver);
+    }
+
+    @Override
+    public void select(final RadioComponentType componentType, final SmartWebElement container,
                        final String radioButtonText) {
         radioComponent(componentType).select(container, radioButtonText);
     }
 
     @Override
-    public String select(final RadioComponentType componentType, final WebElement container, final Strategy strategy) {
+    public String select(final RadioComponentType componentType, final SmartWebElement container, final Strategy strategy) {
         return radioComponent(componentType).select(container, strategy);
     }
 
@@ -50,7 +43,7 @@ public class RadioServiceImpl implements RadioService {
     }
 
     @Override
-    public boolean isEnabled(final RadioComponentType componentType, final WebElement container,
+    public boolean isEnabled(final RadioComponentType componentType, final SmartWebElement container,
                              final String radioButtonText) {
         return radioComponent(componentType).isEnabled(container, radioButtonText);
     }
@@ -66,7 +59,7 @@ public class RadioServiceImpl implements RadioService {
     }
 
     @Override
-    public boolean isSelected(final RadioComponentType componentType, final WebElement container,
+    public boolean isSelected(final RadioComponentType componentType, final SmartWebElement container,
                               final String radioButtonText) {
         return radioComponent(componentType).isSelected(container, radioButtonText);
     }
@@ -82,7 +75,7 @@ public class RadioServiceImpl implements RadioService {
     }
 
     @Override
-    public boolean isVisible(final RadioComponentType componentType, final WebElement container,
+    public boolean isVisible(final RadioComponentType componentType, final SmartWebElement container,
                              final String radioButtonText) {
         return radioComponent(componentType).isVisible(container, radioButtonText);
     }
@@ -98,7 +91,7 @@ public class RadioServiceImpl implements RadioService {
     }
 
     @Override
-    public String getSelected(final RadioComponentType componentType, final WebElement container) {
+    public String getSelected(final RadioComponentType componentType, final SmartWebElement container) {
         return radioComponent(componentType).getSelected(container);
     }
 
@@ -108,7 +101,7 @@ public class RadioServiceImpl implements RadioService {
     }
 
     @Override
-    public List<String> getAll(final RadioComponentType componentType, final WebElement container) {
+    public List<String> getAll(final RadioComponentType componentType, final SmartWebElement container) {
         return radioComponent(componentType).getAll(container);
     }
 
@@ -123,9 +116,6 @@ public class RadioServiceImpl implements RadioService {
     }
 
     private Radio radioComponent(final RadioComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getRadioComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

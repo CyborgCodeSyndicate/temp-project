@@ -14,10 +14,20 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
 
 
     @Override
-    public AuthenticationKey authenticate(final RestService restService, final String username, final String password) {
+    public AuthenticationKey authenticate(final RestService restService, final String username, final String password,
+                                          boolean cache) {
         var authenticationKey = new AuthenticationKey(username, password, this.getClass());
-        if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
+        if (!cache) {
             userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
+        } else {
+            synchronized (userAuthenticationHeaderMap) {
+                if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
+                    userAuthenticationHeaderMap.put(authenticationKey,
+                        authenticateImpl(restService, username, password));
+                } else {
+                    return authenticationKey;
+                }
+            }
         }
         return authenticationKey;
     }

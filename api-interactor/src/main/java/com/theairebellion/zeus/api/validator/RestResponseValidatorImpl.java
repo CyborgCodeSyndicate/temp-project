@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.api.validator;
 
-import com.theairebellion.zeus.api.log.LogAPI;
+import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import com.theairebellion.zeus.validator.util.AssertionUtil;
@@ -19,7 +19,7 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
     @Override
     @SuppressWarnings("unchecked")
     public <T> List<AssertionResult<T>> validateResponse(final Response response, Assertion<?>... assertions) {
-        LogAPI.info("Starting response validation with {} assertion(s).", assertions.length);
+        LogApi.info("Starting response validation with {} assertion(s).", assertions.length);
 
         Map<String, T> data = new HashMap<>();
 
@@ -66,7 +66,7 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
 
 
     protected void printAssertionTarget(Map<String, Object> data) {
-        LogAPI.extended("Validation target: [{}]", data.toString());
+        LogApi.extended("Validation target: [{}]", data.toString());
     }
 
 }

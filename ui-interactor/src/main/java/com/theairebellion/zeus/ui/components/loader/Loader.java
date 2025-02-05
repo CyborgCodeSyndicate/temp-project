@@ -1,21 +1,21 @@
 package com.theairebellion.zeus.ui.components.loader;
 
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 public interface Loader {
 
-    boolean isVisible(WebElement container);
+    boolean isVisible(SmartWebElement container);
 
     boolean isVisible(By loaderLocator);
 
-    void waitToBeShown(WebElement container, int secondsShown);
+    void waitToBeShown(SmartWebElement container, int secondsShown);
 
     void waitToBeShown(int secondsShown);
 
     void waitToBeShown(By loaderLocator, int secondsShown);
 
-    void waitToBeRemoved(WebElement container, int secondsRemoved);
+    void waitToBeRemoved(SmartWebElement container, int secondsRemoved);
 
     void waitToBeRemoved(int secondsRemoved);
 

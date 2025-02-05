@@ -2,16 +2,15 @@ package com.theairebellion.zeus.db.query;
 
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.config.DbConfig;
-import org.aeonbits.owner.ConfigCache;
+
+import static com.theairebellion.zeus.db.config.DbConfigHolder.getDbConfig;
 
 public interface DbQuery {
-
-    DbConfig dbConfig = ConfigCache.getOrCreate(DbConfig.class);
-
 
     String query();
 
     default DatabaseConfiguration config() {
+        DbConfig dbConfig = getDbConfig();
         return DatabaseConfiguration.builder()
                    .dbType(dbConfig.type())
                    .host(dbConfig.host())
@@ -23,7 +22,6 @@ public interface DbQuery {
     }
 
     Enum<?> enumImpl();
-
 
     default DbQuery withParam(String name, Object value) {
         return new ParametrizedQuery(this).withParam(name, value);

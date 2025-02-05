@@ -1,38 +1,30 @@
 package com.theairebellion.zeus.ui.components.link;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+public class LinkServiceImpl extends AbstractComponentService<LinkComponentType, Link> implements LinkService {
 
-public class LinkServiceImpl implements LinkService {
-
-    protected SmartSelenium smartSelenium;
-    private static Map<LinkComponentType, Link> components;
-
-    public LinkServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public LinkServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public LinkServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public <T extends ButtonComponentType> void click(final T componentType, WebElement container, String buttonText) {
+    protected Link createComponent(final LinkComponentType componentType) {
+        return ComponentFactory.getLinkComponent(componentType, driver);
+    }
+
+    @Override
+    public <T extends ButtonComponentType> void click(final T componentType, SmartWebElement container, String buttonText) {
         linkComponent((LinkComponentType) componentType).click(container, buttonText);
     }
 
     @Override
-    public <T extends ButtonComponentType> void click(final T componentType, final WebElement container) {
+    public <T extends ButtonComponentType> void click(final T componentType, final SmartWebElement container) {
         linkComponent((LinkComponentType) componentType).click(container);
     }
 
@@ -47,13 +39,13 @@ public class LinkServiceImpl implements LinkService {
     }
 
     @Override
-    public void doubleClick(final LinkComponentType componentType, final WebElement container,
+    public void doubleClick(final LinkComponentType componentType, final SmartWebElement container,
                             final String buttonText) {
         linkComponent(componentType).doubleClick(container, buttonText);
     }
 
     @Override
-    public void doubleClick(final LinkComponentType componentType, final WebElement container) {
+    public void doubleClick(final LinkComponentType componentType, final SmartWebElement container) {
         linkComponent(componentType).doubleClick(container);
     }
 
@@ -68,13 +60,13 @@ public class LinkServiceImpl implements LinkService {
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final WebElement container,
+    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container,
                                                              final String buttonText) {
         return linkComponent((LinkComponentType) componentType).isEnabled(container, buttonText);
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final WebElement container) {
+    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container) {
         return linkComponent((LinkComponentType) componentType).isEnabled(container);
     }
 
@@ -89,13 +81,13 @@ public class LinkServiceImpl implements LinkService {
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final WebElement container,
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container,
                                                              final String buttonText) {
         return linkComponent((LinkComponentType) componentType).isVisible(container, buttonText);
     }
 
     @Override
-    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final WebElement container) {
+    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container) {
         return linkComponent((LinkComponentType) componentType).isVisible(container);
     }
 
@@ -110,9 +102,6 @@ public class LinkServiceImpl implements LinkService {
     }
 
     private Link linkComponent(final LinkComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getLinkComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

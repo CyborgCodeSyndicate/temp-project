@@ -1,95 +1,84 @@
 package com.theairebellion.zeus.ui.components.select;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-public class SelectServiceImpl implements SelectService {
+public class SelectServiceImpl extends AbstractComponentService<SelectComponentType, Select> implements SelectService {
 
-    protected SmartSelenium smartSelenium;
-    private static Map<SelectComponentType, Select> components;
-
-    public SelectServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public SelectServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public SelectServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public void selectItems(final SelectComponentType componentType, final WebElement container,
-                            final String... values) {
-        selectComponent(componentType).selectItems(container, values);
+    protected Select createComponent(final SelectComponentType componentType) {
+        return ComponentFactory.getSelectComponent(componentType, driver);
     }
 
     @Override
-    public void selectItem(SelectComponentType componentType, WebElement container, String value) {
-        selectItems(componentType, container, value);
+    public void selectOptions(final SelectComponentType componentType, final SmartWebElement container,
+                              final String... values) {
+        selectComponent(componentType).selectOptions(container, values);
     }
 
     @Override
-    public void selectItems(final SelectComponentType componentType, final By containerLocator,
-                            final String... values) {
-        selectComponent(componentType).selectItems(containerLocator, values);
+    public void selectOption(SelectComponentType componentType, SmartWebElement container, String value) {
+        selectOptions(componentType, container, value);
     }
 
     @Override
-    public void selectItem(final SelectComponentType componentType, final By containerLocator,
-                           final String value) {
-        selectItems(componentType, containerLocator, value);
+    public void selectOptions(final SelectComponentType componentType, final By containerLocator,
+                              final String... values) {
+        selectComponent(componentType).selectOptions(containerLocator, values);
     }
 
     @Override
-    public List<String> selectItems(final SelectComponentType componentType, final WebElement container,
-                                    final Strategy strategy) {
-        return selectComponent(componentType).selectItems(container, strategy);
+    public void selectOption(final SelectComponentType componentType, final By containerLocator,
+                             final String value) {
+        selectOptions(componentType, containerLocator, value);
     }
 
     @Override
-    public List<String> selectItems(final SelectComponentType componentType, final By containerLocator,
-                                    final Strategy strategy) {
-        return selectComponent(componentType).selectItems(containerLocator, strategy);
+    public List<String> selectOptions(final SelectComponentType componentType, final SmartWebElement container,
+                                      final Strategy strategy) {
+        return selectComponent(componentType).selectOptions(container, strategy);
     }
 
     @Override
-    public List<String> getAvailableItems(final SelectComponentType componentType, final WebElement container) {
-        return selectComponent(componentType).getAvailableItems(container);
+    public List<String> selectOptions(final SelectComponentType componentType, final By containerLocator,
+                                      final Strategy strategy) {
+        return selectComponent(componentType).selectOptions(containerLocator, strategy);
     }
 
     @Override
-    public List<String> getAvailableItems(final SelectComponentType componentType, final By containerLocator) {
-        return selectComponent(componentType).getAvailableItems(containerLocator);
+    public List<String> getAvailableOptions(final SelectComponentType componentType, final SmartWebElement container) {
+        return selectComponent(componentType).getAvailableOptions(container);
     }
 
     @Override
-    public List<String> getSelectedItems(final SelectComponentType componentType, final WebElement container) {
-        return selectComponent(componentType).getSelectedItems(container);
-    }
-
-    public String getSelectedItem(final SelectComponentType componentType, final WebElement container) {
-        return selectComponent(componentType).getSelectedItems(container).get(0);
+    public List<String> getAvailableOptions(final SelectComponentType componentType, final By containerLocator) {
+        return selectComponent(componentType).getAvailableOptions(containerLocator);
     }
 
     @Override
-    public List<String> getSelectedItems(final SelectComponentType componentType, final By containerLocator) {
-        return selectComponent(componentType).getSelectedItems(containerLocator);
-    }
-
-    public String getSelectedItem(final SelectComponentType componentType, final By containerLocator) {
-        return selectComponent(componentType).getSelectedItems(containerLocator).get(0);
+    public List<String> getSelectedOptions(final SelectComponentType componentType, final SmartWebElement container) {
+        return selectComponent(componentType).getSelectedOptions(container);
     }
 
     @Override
-    public boolean isOptionVisible(final SelectComponentType componentType, final WebElement container,
+    public List<String> getSelectedOptions(final SelectComponentType componentType, final By containerLocator) {
+        return selectComponent(componentType).getSelectedOptions(containerLocator);
+    }
+
+    @Override
+    public boolean isOptionVisible(final SelectComponentType componentType, final SmartWebElement container,
                                    final String value) {
         return selectComponent(componentType).isOptionVisible(container, value);
     }
@@ -101,7 +90,7 @@ public class SelectServiceImpl implements SelectService {
     }
 
     @Override
-    public boolean isOptionEnabled(final SelectComponentType componentType, final WebElement container,
+    public boolean isOptionEnabled(final SelectComponentType componentType, final SmartWebElement container,
                                    final String value) {
         return selectComponent(componentType).isOptionEnabled(container, value);
     }
@@ -117,13 +106,10 @@ public class SelectServiceImpl implements SelectService {
         String[] stringValues = Arrays.stream(values)
                 .map(String::valueOf)
                 .toArray(String[]::new);
-        selectItems((SelectComponentType) componentType, locator, stringValues);
+        selectOptions((SelectComponentType) componentType, locator, stringValues);
     }
 
     private Select selectComponent(final SelectComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getSelectComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

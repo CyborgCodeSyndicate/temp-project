@@ -2,21 +2,25 @@ package com.theairebellion.zeus.framework.quest;
 
 public class QuestHolder {
 
-    private static final ThreadLocal<Quest> threadLocalQuest = new ThreadLocal<>();
+    private static final ThreadLocal<Quest> THREAD_LOCAL_QUEST = new ThreadLocal<>();
+
+
+    private QuestHolder() {
+    }
 
 
     public static void set(Quest quest) {
-        threadLocalQuest.set(quest);
+        THREAD_LOCAL_QUEST.set(quest);
     }
 
 
     public static Quest get() {
-        return threadLocalQuest.get();
+        return THREAD_LOCAL_QUEST.get();
     }
 
 
     public static void clear() {
-        threadLocalQuest.remove();
+        THREAD_LOCAL_QUEST.remove();
     }
 
 }

@@ -4,15 +4,16 @@ import com.example.project.ui.types.SelectFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.select.Select;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import com.theairebellion.zeus.ui.util.strategy.StrategyGenerator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ImplementationOfType(SelectFieldTypes.MD_SELECT)
@@ -25,121 +26,87 @@ public class SelectMDImpl extends BaseComponent implements Select {
     public static final By OPTION_LOCATOR = By.tagName("mat-tree-node");
     public static final String DISABLED_CLASS_INDICATOR = "mat-radio-disabled";
 
-    public SelectMDImpl(SmartSelenium smartSelenium) {
-        super(smartSelenium);
+
+    public SelectMDImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
+
     @Override
-    public void selectItems(final WebElement container, final String... values) {
+    public void selectOptions(final SmartWebElement container, final String... values) {
         openDdl(container);
-        List<WebElement> options = getAllOptionsElements();
+        List<SmartWebElement> options = getAllOptionsElements();
         for (String value : values) {
-            WebElement option = findOptionByText(options, value);
+            SmartWebElement option = findOptionByText(options, value);
             selectIfNotChecked(option);
         }
         closeDdl(container);
         waitForDropDownToBeClosed();
     }
 
-    @Override
-    public void selectItems(final By containerLocator, final String... values) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
-        selectItems(container, values);
-    }
 
     @Override
-    public List<String> selectItems(WebElement container, Strategy strategy) {
-        return selectItemsWithStrategy(container, strategy);
+    public void selectOptions(final By containerLocator, final String... values) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
+        selectOptions(container, values);
     }
 
-    @Override
-    public List<String> selectItems(final By containerLocator, Strategy strategy) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
-        return selectItems(container, strategy);
-    }
 
     @Override
-    public List<String> getAvailableItems(WebElement container) {
+    public List<String> selectOptions(final SmartWebElement container, final Strategy strategy) {
+        return selectOptionsWithStrategy(container, strategy);
+    }
+
+
+    @Override
+    public List<String> selectOptions(final By containerLocator, final Strategy strategy) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
+        return selectOptions(container, strategy);
+    }
+
+
+    @Override
+    public List<String> getAvailableOptions(final SmartWebElement container) {
         openDdl(container);
-        List<WebElement> options = getAllOptionsElements();
+        List<SmartWebElement> options = getAllOptionsElements();
         List<String> availableOptions = options.stream()
-                .map(option -> smartSelenium.smartGetText(
-                        smartSelenium.smartFindElement(option, OPTION_TEXT_LOCATOR)).trim())
+                .map(option -> option.findSmartElement(OPTION_TEXT_LOCATOR).getText().trim())
                 .collect(Collectors.toList());
         closeDdl(container);
         return availableOptions;
     }
 
-    @Override
-    public List<String> getAvailableItems(By containerLocator) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
-        return getAvailableItems(container);
-    }
-
-    protected void openDdl(WebElement container) {
-        WebElement ddlButton = findDdlButton(container);
-        if (!smartSelenium.smartGetAttribute(ddlButton, "class").contains("opened")) {
-            smartSelenium.waitAndClickElement(ddlButton);
-        }
-    }
-
-    protected void closeDdl(WebElement container) {
-        WebElement ddlButton = findDdlButton(container);
-        if (smartSelenium.smartGetAttribute(ddlButton, "class").contains("opened")) {
-            smartSelenium.waitAndClickElement(ddlButton);
-        }
-    }
-
-    protected WebElement findDdlButton(WebElement ddlRoot) {
-        return smartSelenium.smartFindElement(ddlRoot, OPEN_DDL_BUTTON_LOCATOR);
-    }
-
-    protected List<WebElement> getAllOptionsElements() {
-        WebElement optionsContainer = smartSelenium.smartFindElement(OPTIONS_ROOT_LOCATOR);
-        List<WebElement> options = smartSelenium.smartFindElements(optionsContainer,
-                OPTION_LOCATOR);
-        return options.stream()
-                .filter(element -> !smartSelenium.smartGetAttribute(element, "class").contains("hide"))
-                .collect(Collectors.toList());
-    }
-
-    protected WebElement findOptionByText(List<WebElement> options, String text) {
-        return findOptionByText(options, text, OPTION_TEXT_LOCATOR);
-    }
-
-    protected boolean checkIfOptionIsSelected(WebElement option) {
-        return smartSelenium.smartGetAttribute(option, "class").contains("node-checked");
-    }
-
-    protected void waitForDropDownToBeClosed() {
-        smartSelenium.waitUntilElementIsRemoved(OPTIONS_CONTAINER_LOCATOR, 3);
-    }
-
-    protected boolean isOptionEnabled(WebElement option) {
-        return !smartSelenium.smartGetAttribute(option, "class").contains(DISABLED_CLASS_INDICATOR);
-    }
 
     @Override
-    public List<String> getSelectedItems(WebElement container) {
+    public List<String> getAvailableOptions(final By containerLocator) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
+        return getAvailableOptions(container);
+    }
+
+
+    @Override
+    public List<String> getSelectedOptions(final SmartWebElement container) {
         openDdl(container);
         List<String> checkedOptions = getAllOptionsElements().stream()
                 .filter(this::checkIfOptionIsSelected)
-                .map(smartSelenium::smartGetText)
+                .map(SmartWebElement::getText)
                 .collect(Collectors.toList());
         closeDdl(container);
         return checkedOptions;
     }
 
-    @Override
-    public List<String> getSelectedItems(By containerLocator) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
-        return getSelectedItems(container);
-    }
 
     @Override
-    public boolean isOptionVisible(WebElement container, String value) {
+    public List<String> getSelectedOptions(final By containerLocator) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
+        return getSelectedOptions(container);
+    }
+
+
+    @Override
+    public boolean isOptionVisible(final SmartWebElement container, final String value) {
         openDdl(container);
-        List<WebElement> options = getAllOptionsElements();
+        List<SmartWebElement> options = getAllOptionsElements();
         try {
             findOptionByText(options, value);
             return true;
@@ -148,43 +115,94 @@ public class SelectMDImpl extends BaseComponent implements Select {
         }
     }
 
+
     @Override
-    public boolean isOptionVisible(By containerLocator, String value) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public boolean isOptionVisible(final By containerLocator, final String value) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return isOptionVisible(container, value);
     }
 
+
     @Override
-    public boolean isOptionEnabled(WebElement container, String value) {
+    public boolean isOptionEnabled(final SmartWebElement container, final String value) {
         openDdl(container);
-        List<WebElement> options = getAllOptionsElements();
-        WebElement option = findOptionByText(options, value);
+        List<SmartWebElement> options = getAllOptionsElements();
+        SmartWebElement option = findOptionByText(options, value);
         return isOptionEnabled(option);
     }
 
+
     @Override
-    public boolean isOptionEnabled(By containerLocator, String value) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+    public boolean isOptionEnabled(final By containerLocator, final String value) {
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return isOptionEnabled(container, value);
     }
 
-    protected List<String> selectItemsWithStrategy(final WebElement container, final Strategy strategy) {
+
+    protected void openDdl(SmartWebElement container) {
+        SmartWebElement ddlButton = findDdlButton(container);
+        if (!Objects.requireNonNull(ddlButton.getAttribute("class")).contains("opened")) {
+            ddlButton.click();
+        }
+    }
+
+
+    protected void closeDdl(SmartWebElement container) {
+        SmartWebElement ddlButton = findDdlButton(container);
+        if (Objects.requireNonNull(ddlButton.getAttribute("class")).contains("opened")) {
+            ddlButton.click();
+        }
+    }
+
+
+    protected SmartWebElement findDdlButton(SmartWebElement ddlRoot) {
+        return ddlRoot.findSmartElement(OPEN_DDL_BUTTON_LOCATOR);
+    }
+
+
+    protected List<SmartWebElement> getAllOptionsElements() {
+        SmartWebElement optionsContainer = driver.findSmartElement(OPTIONS_ROOT_LOCATOR);
+        List<SmartWebElement> options = optionsContainer.findSmartElements(OPTION_LOCATOR);
+        return options.stream()
+                .filter(element -> !Objects.requireNonNull(element.getAttribute("class")).contains("hide"))
+                .collect(Collectors.toList());
+    }
+
+
+    protected boolean checkIfOptionIsSelected(SmartWebElement option) {
+        return Objects.requireNonNull(option.getAttribute("class")).contains("node-checked");
+    }
+
+
+    protected void waitForDropDownToBeClosed() {
+        driver.waitUntilElementIsRemoved(OPTIONS_CONTAINER_LOCATOR, 3);
+    }
+
+
+    protected boolean isOptionEnabled(SmartWebElement option) {
+        return !Objects.requireNonNull(option.getAttribute("class")).contains(DISABLED_CLASS_INDICATOR);
+    }
+
+
+    protected List<String> selectOptionsWithStrategy(final SmartWebElement container, final Strategy strategy) {
         openDdl(container);
-        List<WebElement> options = getAllOptionsElements();
+        List<SmartWebElement> options = getAllOptionsElements();
         List<String> selectedOptionsText = selectOptionByStrategy(options, strategy);
         closeDdl(container);
         return selectedOptionsText;
     }
 
-    protected List<String> selectOptionByStrategy(List<WebElement> options, Strategy strategy) {
-        List<WebElement> optionElements = getOptionsByStrategy(options, strategy);
+
+    protected List<String> selectOptionByStrategy(List<SmartWebElement> options, Strategy strategy) {
+        List<SmartWebElement> optionElements = getOptionsByStrategy(options, strategy);
         return optionElements.stream()
                 .peek(this::selectIfNotChecked)
-                .map(smartSelenium::smartGetText)
+                .map(SmartWebElement::getText)
                 .collect(Collectors.toList());
     }
 
-    protected List<WebElement> getOptionsByStrategy(List<WebElement> options, Strategy strategy) {
+
+    protected List<SmartWebElement> getOptionsByStrategy(List<SmartWebElement> options, Strategy strategy) {
         return switch (strategy) {
             case FIRST -> List.of(StrategyGenerator.getFirstElementFromElements(options));
             case LAST -> List.of(StrategyGenerator.getLastElementFromElements(options));
@@ -193,17 +211,18 @@ public class SelectMDImpl extends BaseComponent implements Select {
         };
     }
 
-    protected WebElement findOptionByText(List<WebElement> options, String text, By locator) {
+
+    protected SmartWebElement findOptionByText(List<SmartWebElement> options, String text) {
         return options.stream()
-                .filter(option -> smartSelenium.smartGetText(smartSelenium.smartFindElement(option, locator)).trim()
-                        .equals(text))
+                .filter(option -> option.findSmartElement(OPTION_TEXT_LOCATOR).getText().trim().equals(text))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Option with text '" + text + "' not found"));
     }
 
-    protected void selectIfNotChecked(WebElement option) {
+
+    protected void selectIfNotChecked(SmartWebElement option) {
         if (!checkIfOptionIsSelected(option)) {
-            smartSelenium.waitAndClickElement(option);
+            option.click();
         }
     }
 }

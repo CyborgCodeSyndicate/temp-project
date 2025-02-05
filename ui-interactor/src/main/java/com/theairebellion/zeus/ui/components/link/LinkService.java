@@ -1,27 +1,26 @@
 package com.theairebellion.zeus.ui.components.link;
 
 import com.theairebellion.zeus.ui.components.button.ButtonService;
-import com.theairebellion.zeus.ui.config.UIConfig;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface defining operations for interacting with link elements within a web interface.
  */
 public interface LinkService extends ButtonService {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     LinkComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
      * Double-clicks a link with the specified text inside a container, using the default link component type.
      *
-     * @param container The WebElement container that contains the link.
+     * @param container The SmartWebElement container that contains the link.
      * @param linkText  The text of the link to click.
      */
-    default void doubleClick(WebElement container, String linkText) {
+    default void doubleClick(SmartWebElement container, String linkText) {
         doubleClick(DEFAULT_TYPE, container, linkText);
     }
 
@@ -29,17 +28,17 @@ public interface LinkService extends ButtonService {
      * Double-clicks a link with the specified text inside a container, using the given link component type.
      *
      * @param componentType The specific link component type.
-     * @param container     The WebElement container that contains the link.
+     * @param container     The SmartWebElement container that contains the link.
      * @param linkText      The text of the link to click.
      */
-    void doubleClick(LinkComponentType componentType, WebElement container, String linkText);
+    void doubleClick(LinkComponentType componentType, SmartWebElement container, String linkText);
 
     /**
      * Double-clicks a link inside a container, using the default link component type.
      *
-     * @param container The WebElement container that contains the link.
+     * @param container The SmartWebElement container that contains the link.
      */
-    default void doubleClick(WebElement container) {
+    default void doubleClick(SmartWebElement container) {
         doubleClick(DEFAULT_TYPE, container);
     }
 
@@ -47,9 +46,9 @@ public interface LinkService extends ButtonService {
      * Double-clicks a link inside a container, using the given link component type.
      *
      * @param componentType The specific link component type.
-     * @param container     The WebElement container that contains the link.
+     * @param container     The SmartWebElement container that contains the link.
      */
-    void doubleClick(LinkComponentType componentType, WebElement container);
+    void doubleClick(LinkComponentType componentType, SmartWebElement container);
 
     /**
      * Double-clicks a link with the specified text, using the default link component type.
@@ -94,8 +93,8 @@ public interface LinkService extends ButtonService {
     private static LinkComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(LinkComponentType.class,
-                    uiConfig.linkDefaultType(),
-                    uiConfig.projectPackage());
+                    getUiConfig().linkDefaultType(),
+                    getUiConfig().projectPackage());
         } catch (Exception ignored) {
             return null;
         }

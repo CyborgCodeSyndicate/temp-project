@@ -1,27 +1,26 @@
 package com.theairebellion.zeus.ui.components.input;
 
-import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.insertion.Insertion;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface defining operations for interacting with input elements within a web interface using Selenium.
  */
 public interface InputService extends Insertion {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     InputComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
      * Inserts a given value into a specified container element using the default input component type.
      *
-     * @param container The WebElement container where the value will be inserted.
+     * @param container The SmartWebElement container where the value will be inserted.
      * @param value     The value to be inserted.
      */
-    default void insert(WebElement container, String value) {
+    default void insert(SmartWebElement container, String value) {
         insert(DEFAULT_TYPE, container, value);
     }
 
@@ -29,20 +28,20 @@ public interface InputService extends Insertion {
      * Inserts a given value into a specified container element, considering a specific input component type.
      *
      * @param componentType The type of the input component.
-     * @param container     The WebElement container where the value will be inserted.
+     * @param container     The SmartWebElement container where the value will be inserted.
      * @param value         The value to be inserted.
      */
-    void insert(InputComponentType componentType, WebElement container, String value);
+    void insert(InputComponentType componentType, SmartWebElement container, String value);
 
     /**
      * Inserts a given value into a specified container element identified by a label
      * using the default input component type.
      *
-     * @param container       The WebElement container where the value will be inserted.
+     * @param container       The SmartWebElement container where the value will be inserted.
      * @param inputFieldLabel The label of the input field.
      * @param value           The value to be inserted.
      */
-    default void insert(WebElement container, String inputFieldLabel, String value) {
+    default void insert(SmartWebElement container, String inputFieldLabel, String value) {
         insert(DEFAULT_TYPE, container, inputFieldLabel, value);
     }
 
@@ -50,11 +49,11 @@ public interface InputService extends Insertion {
      * Inserts a given value into a specified container element identified by a label, considering a specific input component type.
      *
      * @param componentType   The type of the input component.
-     * @param container       The WebElement container where the value will be inserted.
+     * @param container       The SmartWebElement container where the value will be inserted.
      * @param inputFieldLabel The label of the input field.
      * @param value           The value to be inserted.
      */
-    void insert(InputComponentType componentType, WebElement container, String inputFieldLabel, String value);
+    void insert(InputComponentType componentType, SmartWebElement container, String inputFieldLabel, String value);
 
     /**
      * Inserts a given value into an input field identified by a label
@@ -99,9 +98,9 @@ public interface InputService extends Insertion {
     /**
      * Clears the value from a specified container element using the default input component type.
      *
-     * @param container The WebElement container to be cleared.
+     * @param container The SmartWebElement container to be cleared.
      */
-    default void clear(WebElement container) {
+    default void clear(SmartWebElement container) {
         clear(DEFAULT_TYPE, container);
     }
 
@@ -109,18 +108,18 @@ public interface InputService extends Insertion {
      * Clears the value from a specified container element, considering a specific input component type.
      *
      * @param componentType The type of the input component.
-     * @param container     The WebElement container to be cleared.
+     * @param container     The SmartWebElement container to be cleared.
      */
-    void clear(InputComponentType componentType, WebElement container);
+    void clear(InputComponentType componentType, SmartWebElement container);
 
     /**
      * Clears the value from a specified container element identified by a label
      * using the default input component type.
      *
-     * @param container       The WebElement container to be cleared.
+     * @param container       The SmartWebElement container to be cleared.
      * @param inputFieldLabel The label of the input field.
      */
-    default void clear(WebElement container, String inputFieldLabel) {
+    default void clear(SmartWebElement container, String inputFieldLabel) {
         clear(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
@@ -129,10 +128,10 @@ public interface InputService extends Insertion {
      * considering a specific input component type.
      *
      * @param componentType   The type of the input component.
-     * @param container       The WebElement container to be cleared.
+     * @param container       The SmartWebElement container to be cleared.
      * @param inputFieldLabel The label of the input field.
      */
-    void clear(InputComponentType componentType, WebElement container, String inputFieldLabel);
+    void clear(InputComponentType componentType, SmartWebElement container, String inputFieldLabel);
 
     /**
      * Clears the value from an input field identified by a label using the default input component type.
@@ -174,10 +173,10 @@ public interface InputService extends Insertion {
      * Retrieves the value from a specified container element
      * using the default input component type.
      *
-     * @param container The WebElement container from which the value will be retrieved.
+     * @param container The SmartWebElement container from which the value will be retrieved.
      * @return The value from the specified container.
      */
-    default String getValue(WebElement container) {
+    default String getValue(SmartWebElement container) {
         return getValue(DEFAULT_TYPE, container);
     }
 
@@ -185,20 +184,20 @@ public interface InputService extends Insertion {
      * Retrieves the value from a specified container element, considering a specific input component type.
      *
      * @param componentType The type of the input component.
-     * @param container     The WebElement container from which the value will be retrieved.
+     * @param container     The SmartWebElement container from which the value will be retrieved.
      * @return The value from the specified container.
      */
-    String getValue(InputComponentType componentType, WebElement container);
+    String getValue(InputComponentType componentType, SmartWebElement container);
 
     /**
      * Retrieves the value from a specified container element identified by a label
      * using the default input component type.
      *
-     * @param container       The WebElement container from which the value will be retrieved.
+     * @param container       The SmartWebElement container from which the value will be retrieved.
      * @param inputFieldLabel The label of the input field.
      * @return The value from the specified container.
      */
-    default String getValue(WebElement container, String inputFieldLabel) {
+    default String getValue(SmartWebElement container, String inputFieldLabel) {
         return getValue(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
@@ -207,11 +206,11 @@ public interface InputService extends Insertion {
      * considering a specific input component type.
      *
      * @param componentType   The type of the input component.
-     * @param container       The WebElement container from which the value will be retrieved.
+     * @param container       The SmartWebElement container from which the value will be retrieved.
      * @param inputFieldLabel The label of the input field.
      * @return The value from the specified container.
      */
-    String getValue(InputComponentType componentType, WebElement container, String inputFieldLabel);
+    String getValue(InputComponentType componentType, SmartWebElement container, String inputFieldLabel);
 
     /**
      * Retrieves the value from an input field identified by a label
@@ -258,10 +257,10 @@ public interface InputService extends Insertion {
     /**
      * Checks if the specified container element is enabled using the default input component type.
      *
-     * @param container The WebElement container to be checked.
+     * @param container The SmartWebElement container to be checked.
      * @return true if the container is enabled, false otherwise.
      */
-    default boolean isEnabled(WebElement container) {
+    default boolean isEnabled(SmartWebElement container) {
         return isEnabled(DEFAULT_TYPE, container);
     }
 
@@ -269,20 +268,20 @@ public interface InputService extends Insertion {
      * Checks if the specified container element is enabled, considering a specific input component type.
      *
      * @param componentType The type of the input component.
-     * @param container     The WebElement container to be checked.
+     * @param container     The SmartWebElement container to be checked.
      * @return true if the container is enabled, false otherwise.
      */
-    boolean isEnabled(InputComponentType componentType, WebElement container);
+    boolean isEnabled(InputComponentType componentType, SmartWebElement container);
 
     /**
      * Checks if the specified container element identified by a label is enabled
      * using the default input component type.
      *
-     * @param container       The WebElement container to be checked.
+     * @param container       The SmartWebElement container to be checked.
      * @param inputFieldLabel The label of the input field.
      * @return true if the container is enabled, false otherwise.
      */
-    default boolean isEnabled(WebElement container, String inputFieldLabel) {
+    default boolean isEnabled(SmartWebElement container, String inputFieldLabel) {
         return isEnabled(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
@@ -291,11 +290,11 @@ public interface InputService extends Insertion {
      * considering a specific input component type.
      *
      * @param componentType   The type of the input component.
-     * @param container       The WebElement container to be checked.
+     * @param container       The SmartWebElement container to be checked.
      * @param inputFieldLabel The label of the input field.
      * @return true if the container is enabled, false otherwise.
      */
-    boolean isEnabled(InputComponentType componentType, WebElement container, String inputFieldLabel);
+    boolean isEnabled(InputComponentType componentType, SmartWebElement container, String inputFieldLabel);
 
     /**
      * Checks if an input field identified by a label is enabled using the default input component type.
@@ -341,10 +340,10 @@ public interface InputService extends Insertion {
      * Retrieves the error message from a specified container element
      * using the default input component type.
      *
-     * @param container The WebElement container from which the error message will be retrieved.
+     * @param container The SmartWebElement container from which the error message will be retrieved.
      * @return The error message from the specified container.
      */
-    default String getErrorMessage(WebElement container) {
+    default String getErrorMessage(SmartWebElement container) {
         return getErrorMessage(DEFAULT_TYPE, container);
     }
 
@@ -353,20 +352,20 @@ public interface InputService extends Insertion {
      * considering a specific input component type.
      *
      * @param componentType The type of the input component.
-     * @param container     The WebElement container from which the error message will be retrieved.
+     * @param container     The SmartWebElement container from which the error message will be retrieved.
      * @return The error message from the specified container.
      */
-    String getErrorMessage(InputComponentType componentType, WebElement container);
+    String getErrorMessage(InputComponentType componentType, SmartWebElement container);
 
     /**
      * Retrieves the error message from a specified container element identified by a label
      * using the default input component type.
      *
-     * @param container       The WebElement container from which the error message will be retrieved.
+     * @param container       The SmartWebElement container from which the error message will be retrieved.
      * @param inputFieldLabel The label of the input field.
      * @return The error message from the specified container.
      */
-    default String getErrorMessage(WebElement container, String inputFieldLabel) {
+    default String getErrorMessage(SmartWebElement container, String inputFieldLabel) {
         return getErrorMessage(DEFAULT_TYPE, container, inputFieldLabel);
     }
 
@@ -375,11 +374,11 @@ public interface InputService extends Insertion {
      * considering a specific input component type.
      *
      * @param componentType   The type of the input component.
-     * @param container       The WebElement container from which the error message will be retrieved.
+     * @param container       The SmartWebElement container from which the error message will be retrieved.
      * @param inputFieldLabel The label of the input field.
      * @return The error message from the specified container.
      */
-    String getErrorMessage(InputComponentType componentType, WebElement container, String inputFieldLabel);
+    String getErrorMessage(InputComponentType componentType, SmartWebElement container, String inputFieldLabel);
 
     /**
      * Retrieves the error message from an input field identified by a label
@@ -426,13 +425,13 @@ public interface InputService extends Insertion {
     /**
      * Retrieves the default input component type from the configuration.
      *
-     * @return The default RadioComponentType.
+     * @return The default InputComponentType.
      */
     private static InputComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
-                    uiConfig.inputDefaultType(),
-                    uiConfig.projectPackage());
+                    getUiConfig().inputDefaultType(),
+                    getUiConfig().projectPackage());
         } catch (Exception ignored) {
             return null;
         }

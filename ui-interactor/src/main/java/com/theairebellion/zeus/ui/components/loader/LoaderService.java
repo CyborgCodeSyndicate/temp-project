@@ -1,27 +1,25 @@
 package com.theairebellion.zeus.ui.components.loader;
 
-import com.theairebellion.zeus.ui.components.select.SelectComponentType;
-import com.theairebellion.zeus.ui.config.UIConfig;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface defining operations for interacting with loader elements within a web interface using Selenium.
  */
 public interface LoaderService {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     LoaderComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
      * Checks if a loader is visible within the specified container using the default loader component type.
      *
-     * @param container The WebElement container to check for the presence of the loader.
+     * @param container The SmartWebElement container to check for the presence of the loader.
      * @return true if the loader is visible, false otherwise.
      */
-    default boolean isVisible(WebElement container) {
+    default boolean isVisible(SmartWebElement container) {
         return isVisible(DEFAULT_TYPE, container);
     }
 
@@ -29,10 +27,10 @@ public interface LoaderService {
      * Checks if a loader is visible within the specified container using the given loader component type.
      *
      * @param componentType The specific loader component type.
-     * @param container     The WebElement container to check for the presence of the loader.
+     * @param container     The SmartWebElement container to check for the presence of the loader.
      * @return true if the loader is visible, false otherwise.
      */
-    boolean isVisible(LoaderComponentType componentType, WebElement container);
+    boolean isVisible(LoaderComponentType componentType, SmartWebElement container);
 
     /**
      * Checks if a loader is visible using the specified locator and the default loader component type.
@@ -56,10 +54,10 @@ public interface LoaderService {
     /**
      * Waits for the loader to be shown within the specified container for the given duration, using the default loader component type.
      *
-     * @param container    The WebElement container where the loader is expected to appear.
+     * @param container    The SmartWebElement container where the loader is expected to appear.
      * @param secondsShown The maximum time to wait for the loader to be shown, in seconds.
      */
-    default void waitToBeShown(WebElement container, int secondsShown) {
+    default void waitToBeShown(SmartWebElement container, int secondsShown) {
         waitToBeShown(DEFAULT_TYPE, container, secondsShown);
     }
 
@@ -67,10 +65,10 @@ public interface LoaderService {
      * Waits for the loader to be shown within the specified container for the given duration, using the given loader component type.
      *
      * @param componentType The specific loader component type.
-     * @param container     The WebElement container where the loader is expected to appear.
+     * @param container     The SmartWebElement container where the loader is expected to appear.
      * @param secondsShown  The maximum time to wait for the loader to be shown, in seconds.
      */
-    void waitToBeShown(LoaderComponentType componentType, WebElement container, int secondsShown);
+    void waitToBeShown(LoaderComponentType componentType, SmartWebElement container, int secondsShown);
 
     /**
      * Waits for the loader to be shown for the given duration, using the default loader component type.
@@ -111,10 +109,10 @@ public interface LoaderService {
     /**
      * Waits for the loader to be removed from the specified container within the given duration, using the default loader component type.
      *
-     * @param container      The WebElement container where the loader is expected to be removed.
+     * @param container      The SmartWebElement container where the loader is expected to be removed.
      * @param secondsRemoved The maximum time to wait for the loader to be removed, in seconds.
      */
-    default void waitToBeRemoved(WebElement container, int secondsRemoved) {
+    default void waitToBeRemoved(SmartWebElement container, int secondsRemoved) {
         waitToBeRemoved(DEFAULT_TYPE, container, secondsRemoved);
     }
 
@@ -122,10 +120,10 @@ public interface LoaderService {
      * Waits for the loader to be removed from the specified container within the given duration, using the given loader component type.
      *
      * @param componentType  The specific loader component type.
-     * @param container      The WebElement container where the loader is expected to be removed.
+     * @param container      The SmartWebElement container where the loader is expected to be removed.
      * @param secondsRemoved The maximum time to wait for the loader to be removed, in seconds.
      */
-    void waitToBeRemoved(LoaderComponentType componentType, WebElement container, int secondsRemoved);
+    void waitToBeRemoved(LoaderComponentType componentType, SmartWebElement container, int secondsRemoved);
 
     /**
      * Waits for the loader to be removed within the given duration, using the default loader component type.
@@ -167,11 +165,11 @@ public interface LoaderService {
      * Waits for the loader to be shown and then removed from the specified container within the given durations.
      *
      * @param componentType  The specific loader component type.
-     * @param container      The WebElement container.
+     * @param container      The SmartWebElement container.
      * @param secondsShown   The maximum time to wait for the loader to be shown, in seconds.
      * @param secondsRemoved The maximum time to wait for the loader to be removed, in seconds.
      */
-    default void waitToBeShownAndRemoved(LoaderComponentType componentType, WebElement container, int secondsShown, int secondsRemoved) {
+    default void waitToBeShownAndRemoved(LoaderComponentType componentType, SmartWebElement container, int secondsShown, int secondsRemoved) {
         waitToBeShown(componentType, container, secondsShown);
         waitToBeRemoved(componentType, container, secondsRemoved);
     }
@@ -209,8 +207,8 @@ public interface LoaderService {
     private static LoaderComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(LoaderComponentType.class,
-                    uiConfig.loaderDefaultType(),
-                    uiConfig.projectPackage());
+                    getUiConfig().loaderDefaultType(),
+                    getUiConfig().projectPackage());
         } catch (Exception ignored) {
             return null;
         }

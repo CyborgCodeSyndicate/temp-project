@@ -16,20 +16,16 @@ import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
 import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
+import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
-import com.theairebellion.zeus.ui.selenium.UIDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.function.Consumer;
 
 @WorldName("UI")
@@ -47,17 +43,16 @@ public class UIServiceFluent extends FluentService {
     private LoaderServiceFluent loaderField;
     private LinkServiceFluent linkField;
     private AlertServiceFluent alertField;
-    private SmartSelenium smartSelenium;
-    private UIDriver uiDriver;
+    private TabServiceFluent tabField;
+    private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
     private InsertionServiceFluent insertionService;
 
 
     @Autowired
-    public UIServiceFluent(UIDriver uiDriver) {
-        this.uiDriver = uiDriver;
-        smartSelenium = new SmartSelenium(uiDriver.getDriver());
+    public UIServiceFluent(SmartWebDriver driver) {
+        this.driver = driver;
     }
 
 
@@ -82,30 +77,36 @@ public class UIServiceFluent extends FluentService {
 
     @Override
     protected void postQuestSetupInitialization() {
-        inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(smartSelenium));
-        buttonField = new ButtonServiceFluent(this, quest.getStorage(), new ButtonServiceImpl(smartSelenium));
-        radioField = new RadioServiceFluent(this, quest.getStorage(), new RadioServiceImpl(smartSelenium));
-        checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(smartSelenium));
-        selectField = new SelectServiceFluent(this, quest.getStorage(), new SelectServiceImpl(smartSelenium));
-        listField = new ItemListServiceFluent(this, quest.getStorage(), new ItemListServiceImpl(smartSelenium));
-        loaderField = new LoaderServiceFluent(this, quest.getStorage(), new LoaderServiceImpl(smartSelenium));
-        linkField = new LinkServiceFluent(this, quest.getStorage(), new LinkServiceImpl(smartSelenium));
-        alertField = new AlertServiceFluent(this, quest.getStorage(), new AlertServiceImpl(smartSelenium));
+        inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(driver), driver);
+        buttonField = new ButtonServiceFluent(this, quest.getStorage(), new ButtonServiceImpl(driver), driver);
+        radioField = new RadioServiceFluent(this, quest.getStorage(), new RadioServiceImpl(driver), driver);
+        checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(driver));
+        selectField = new SelectServiceFluent(this, quest.getStorage(), new SelectServiceImpl(driver), driver);
+        listField = new ItemListServiceFluent(this, quest.getStorage(), new ItemListServiceImpl(driver), driver);
+        loaderField = new LoaderServiceFluent(this, quest.getStorage(), new LoaderServiceImpl(driver), driver);
+        linkField = new LinkServiceFluent(this, quest.getStorage(), new LinkServiceImpl(driver), driver);
+        alertField = new AlertServiceFluent(this, quest.getStorage(), new AlertServiceImpl(driver), driver);
+        tabField = new TabServiceFluent(this, quest.getStorage(), new TabServiceImpl(driver), driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
-        insertionService = new InsertionServiceFluent(new InsertionServiceElementImpl(serviceRegistry), this,
-                quest.getStorage());
+        insertionService = new InsertionServiceFluent(new InsertionServiceElementImpl(serviceRegistry, driver), this,
+            quest.getStorage());
+    }
+
+
+    private SmartWebDriver getDriver() {
+        return driver;
     }
 
     public UIServiceFluent navigate(String url) {
-        uiDriver.getDriver().manage().window().maximize();
-        uiDriver.getDriver().get(url);
+        getDriver().manage().window().maximize();
+        getDriver().get(url);
         return this;
     }
 
     public UIServiceFluent back() {
-        uiDriver.getDriver().navigate().back();
+        getDriver().navigate().back();
         return this;
     }
 }

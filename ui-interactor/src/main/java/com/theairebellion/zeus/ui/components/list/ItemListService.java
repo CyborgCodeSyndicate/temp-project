@@ -1,31 +1,30 @@
 package com.theairebellion.zeus.ui.components.list;
 
-import com.theairebellion.zeus.ui.config.UIConfig;
 import com.theairebellion.zeus.ui.insertion.Insertion;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.List;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
  * Interface for interacting with item lists in a web context.
  */
 public interface ItemListService extends Insertion {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     ItemListComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
      * Selects items with the specified text within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
+     * @param container The SmartWebElement representing the container.
      * @param itemText  The text of the items to be selected.
      */
-    default void select(WebElement container, String... itemText) {
+    default void select(SmartWebElement container, String... itemText) {
         select(DEFAULT_TYPE, container, itemText);
     }
 
@@ -33,10 +32,10 @@ public interface ItemListService extends Insertion {
      * Selects items with the specified text and component type within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
+     * @param container     The SmartWebElement representing the container.
      * @param itemText      The text of the items to be selected.
      */
-    void select(ItemListComponentType componentType, WebElement container, String... itemText);
+    void select(ItemListComponentType componentType, SmartWebElement container, String... itemText);
 
     /**
      * Selects items with the specified text within the container located
@@ -63,11 +62,11 @@ public interface ItemListService extends Insertion {
      * Selects items using the specified strategy within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
+     * @param container The SmartWebElement representing the container.
      * @param strategy  The strategy to be used for selecting items.
      * @return The selected item.
      */
-    default String select(WebElement container, Strategy strategy) {
+    default String select(SmartWebElement container, Strategy strategy) {
         return select(DEFAULT_TYPE, container, strategy);
     }
 
@@ -75,11 +74,11 @@ public interface ItemListService extends Insertion {
      * Selects items using the specified strategy and component type within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
+     * @param container     The SmartWebElement representing the container.
      * @param strategy      The strategy to be used for selecting items.
      * @return The selected item.
      */
-    String select(ItemListComponentType componentType, WebElement container, Strategy strategy);
+    String select(ItemListComponentType componentType, SmartWebElement container, Strategy strategy);
 
     /**
      * Selects items using the specified strategy within the container located
@@ -142,10 +141,10 @@ public interface ItemListService extends Insertion {
      * Deselects items with the specified text within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
+     * @param container The SmartWebElement representing the container.
      * @param itemText  The text of the items to be deselected.
      */
-    default void deSelect(WebElement container, String... itemText) {
+    default void deSelect(SmartWebElement container, String... itemText) {
         deSelect(DEFAULT_TYPE, container, itemText);
     }
 
@@ -153,10 +152,10 @@ public interface ItemListService extends Insertion {
      * Deselects items with the specified text and component type within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
+     * @param container     The SmartWebElement representing the container.
      * @param itemText      The text of the items to be deselected.
      */
-    void deSelect(ItemListComponentType componentType, WebElement container, String... itemText);
+    void deSelect(ItemListComponentType componentType, SmartWebElement container, String... itemText);
 
     /**
      * Deselects items with the specified text within the container located
@@ -183,11 +182,11 @@ public interface ItemListService extends Insertion {
      * Deselects items using the specified strategy within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
+     * @param container The SmartWebElement representing the container.
      * @param strategy  The strategy to be used for deselecting items.
      * @return The deselected item.
      */
-    default String deSelect(WebElement container, Strategy strategy) {
+    default String deSelect(SmartWebElement container, Strategy strategy) {
         return deSelect(DEFAULT_TYPE, container, strategy);
     }
 
@@ -195,11 +194,11 @@ public interface ItemListService extends Insertion {
      * Deselects items using the specified strategy and component type within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
+     * @param container     The SmartWebElement representing the container.
      * @param strategy      The strategy to be used for deselecting items.
      * @return The deselected item.
      */
-    String deSelect(ItemListComponentType componentType, WebElement container, Strategy strategy);
+    String deSelect(ItemListComponentType componentType, SmartWebElement container, Strategy strategy);
 
     /**
      * Deselects items using the specified strategy within the container located
@@ -262,11 +261,11 @@ public interface ItemListService extends Insertion {
      * Checks if items with the specified text are selected within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
-     * @param itemText  The text of the items to be checked.
+     * @param container The SmartWebElement representing the container.
+     * @param itemText  The text of the items to be selected.
      * @return true if all items are selected, {@code false} otherwise.
      */
-    default boolean areSelected(WebElement container, String... itemText) {
+    default boolean areSelected(SmartWebElement container, String... itemText) {
         return areSelected(DEFAULT_TYPE, container, itemText);
     }
 
@@ -274,18 +273,40 @@ public interface ItemListService extends Insertion {
      * Checks if items with the specified text and component type are selected within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
-     * @param itemText      The text of the items to be checked.
+     * @param container     The SmartWebElement representing the container.
+     * @param itemText      The text of the items to be selected.
      * @return true if all items are selected, {@code false} otherwise.
      */
-    boolean areSelected(ItemListComponentType componentType, WebElement container, String... itemText);
+    boolean areSelected(ItemListComponentType componentType, SmartWebElement container, String... itemText);
+
+    /**
+     * Checks if items with the specified text are selected within the given container
+     * using the default item list component type.
+     *
+     * @param container The SmartWebElement representing the container.
+     * @param itemText  The text of the item to be selected.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    default boolean isSelected(SmartWebElement container, String itemText) {
+        return isSelected(DEFAULT_TYPE, container, itemText);
+    }
+
+    /**
+     * Checks if items with the specified text and component type are selected within the given container.
+     *
+     * @param componentType The type of the item list component.
+     * @param container     The SmartWebElement representing the container.
+     * @param itemText      The text of the item to be selected.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    boolean isSelected(ItemListComponentType componentType, SmartWebElement container, String itemText);
 
     /**
      * Checks if items with the specified text are selected within the container
      * located by the given locator using the default item list component type.
      *
      * @param containerLocator The {@link By} locator representing the container.
-     * @param itemText         The text of the items to be checked.
+     * @param itemText         The text of the items to be selected.
      * @return true if all items are selected, {@code false} otherwise.
      */
     default boolean areSelected(By containerLocator, String... itemText) {
@@ -298,15 +319,38 @@ public interface ItemListService extends Insertion {
      *
      * @param componentType    The type of the item list component.
      * @param containerLocator The {@link By} locator representing the container.
-     * @param itemText         The text of the items to be checked.
+     * @param itemText         The text of the items to be selected.
      * @return true if all items are selected, {@code false} otherwise.
      */
     boolean areSelected(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
+     * Checks if items with the specified text are selected within the container
+     * located by the given locator using the default item list component type.
+     *
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the item to be selected.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    default boolean isSelected(By containerLocator, String itemText) {
+        return isSelected(DEFAULT_TYPE, containerLocator, itemText);
+    }
+
+    /**
+     * Checks if items with the specified text and component type are selected within the container
+     * located by the given locator.
+     *
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the item to be selected.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    boolean isSelected(ItemListComponentType componentType, By containerLocator, String itemText);
+
+    /**
      * Checks if items with the specified text are selected using the default item list component type.
      *
-     * @param itemText The text of the items to be checked.
+     * @param itemText The text of the items to be selected.
      * @return true if all items are selected, {@code false} otherwise.
      */
     default boolean areSelected(String... itemText) {
@@ -317,10 +361,29 @@ public interface ItemListService extends Insertion {
      * Checks if items with the specified text and component type are selected.
      *
      * @param componentType The type of the item list component.
-     * @param itemText      The text of the items to be checked.
+     * @param itemText      The text of the items to be selected.
      * @return true if all items are selected, {@code false} otherwise.
      */
     boolean areSelected(ItemListComponentType componentType, String... itemText);
+
+    /**
+     * Checks if items with the specified text are selected using the default item list component type.
+     *
+     * @param itemText The text of the item to be selected.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    default boolean isSelected(String itemText) {
+        return isSelected(DEFAULT_TYPE, itemText);
+    }
+
+    /**
+     * Checks if items with the specified text and component type are selected.
+     *
+     * @param componentType The type of the item list component.
+     * @param itemText      The text of the item to be selected.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    boolean isSelected(ItemListComponentType componentType, String itemText);
 
     /**
      * Checks if items using the specified locator are selected using the default item list component type.
@@ -342,14 +405,33 @@ public interface ItemListService extends Insertion {
     boolean areSelected(ItemListComponentType componentType, By... itemListLocator);
 
     /**
+     * Checks if items using the specified locator are selected using the default item list component type.
+     *
+     * @param itemListLocator The locator for the item list.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    default boolean isSelected(By itemListLocator) {
+        return isSelected(DEFAULT_TYPE, itemListLocator);
+    }
+
+    /**
+     * Checks if items using the specified component type and locator are selected.
+     *
+     * @param componentType   The type of the item list component.
+     * @param itemListLocator The locator for the item list.
+     * @return true if item is selected, {@code false} otherwise.
+     */
+    boolean isSelected(ItemListComponentType componentType, By itemListLocator);
+
+    /**
      * Checks if items with the specified text are enabled within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
-     * @param itemText  The text of the items to be checked.
+     * @param container The SmartWebElement representing the container.
+     * @param itemText  The text of the items to be selected.
      * @return true if all items are enabled, {@code false} otherwise.
      */
-    default boolean areEnabled(WebElement container, String... itemText) {
+    default boolean areEnabled(SmartWebElement container, String... itemText) {
         return areEnabled(DEFAULT_TYPE, container, itemText);
     }
 
@@ -357,18 +439,40 @@ public interface ItemListService extends Insertion {
      * Checks if items with the specified text and component type are enabled within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
-     * @param itemText      The text of the items to be checked.
+     * @param container     The SmartWebElement representing the container.
+     * @param itemText      The text of the items to be selected.
      * @return true if all items are enabled, {@code false} otherwise.
      */
-    boolean areEnabled(ItemListComponentType componentType, WebElement container, String... itemText);
+    boolean areEnabled(ItemListComponentType componentType, SmartWebElement container, String... itemText);
+
+    /**
+     * Checks if items with the specified text are enabled within the given container
+     * using the default item list component type.
+     *
+     * @param container The SmartWebElement representing the container.
+     * @param itemText  The text of the item to be selected.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    default boolean isEnabled(SmartWebElement container, String itemText) {
+        return isEnabled(DEFAULT_TYPE, container, itemText);
+    }
+
+    /**
+     * Checks if items with the specified text and component type are enabled within the given container.
+     *
+     * @param componentType The type of the item list component.
+     * @param container     The SmartWebElement representing the container.
+     * @param itemText      The text of the item to be selected.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    boolean isEnabled(ItemListComponentType componentType, SmartWebElement container, String itemText);
 
     /**
      * Checks if items with the specified text are enabled within the container
      * located by the given locator using the default item list component type.
      *
      * @param containerLocator The {@link By} locator representing the container.
-     * @param itemText         The text of the items to be checked.
+     * @param itemText         The text of the items to be selected.
      * @return true if all items are enabled, {@code false} otherwise.
      */
     default boolean areEnabled(By containerLocator, String... itemText) {
@@ -381,15 +485,38 @@ public interface ItemListService extends Insertion {
      *
      * @param componentType    The type of the item list component.
      * @param containerLocator The {@link By} locator representing the container.
-     * @param itemText         The text of the items to be checked.
+     * @param itemText         The text of the items to be selected.
      * @return true if all items are enabled, {@code false} otherwise.
      */
     boolean areEnabled(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
+     * Checks if items with the specified text are enabled within the container
+     * located by the given locator using the default item list component type.
+     *
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the item to be selected.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    default boolean isEnabled(By containerLocator, String itemText) {
+        return isEnabled(DEFAULT_TYPE, containerLocator, itemText);
+    }
+
+    /**
+     * Checks if items with the specified text and component type are enabled within the container
+     * located by the given locator.
+     *
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the item to be selected.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    boolean isEnabled(ItemListComponentType componentType, By containerLocator, String itemText);
+
+    /**
      * Checks if items with the specified text are enabled using the default item list component type.
      *
-     * @param itemText The text of the items to be checked.
+     * @param itemText The text of the items to be selected.
      * @return true if all items are enabled, {@code false} otherwise.
      */
     default boolean areEnabled(String... itemText) {
@@ -400,10 +527,29 @@ public interface ItemListService extends Insertion {
      * Checks if items with the specified text and component type are enabled.
      *
      * @param componentType The type of the item list component.
-     * @param itemText      The text of the items to be checked.
+     * @param itemText      The text of the items to be selected.
      * @return true if all items are enabled, {@code false} otherwise.
      */
     boolean areEnabled(ItemListComponentType componentType, String... itemText);
+
+    /**
+     * Checks if items with the specified text are enabled using the default item list component type.
+     *
+     * @param itemText The text of the item to be selected.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    default boolean isEnabled(String itemText) {
+        return isEnabled(DEFAULT_TYPE, itemText);
+    }
+
+    /**
+     * Checks if items with the specified text and component type are enabled.
+     *
+     * @param componentType The type of the item list component.
+     * @param itemText      The text of the item to be selected.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    boolean isEnabled(ItemListComponentType componentType, String itemText);
 
     /**
      * Checks if items using the specified locator are enabled using the default item list component type.
@@ -425,14 +571,33 @@ public interface ItemListService extends Insertion {
     boolean areEnabled(ItemListComponentType componentType, By... itemLocator);
 
     /**
+     * Checks if items using the specified locator are enabled using the default item list component type.
+     *
+     * @param itemLocator The locator for the item.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    default boolean isEnabled(By itemLocator) {
+        return isEnabled(DEFAULT_TYPE, itemLocator);
+    }
+
+    /**
+     * Checks if items using the specified component type and locator are enabled.
+     *
+     * @param componentType The type of the item list component.
+     * @param itemLocator   The locator for the item.
+     * @return true if item is enabled, {@code false} otherwise.
+     */
+    boolean isEnabled(ItemListComponentType componentType, By itemLocator);
+
+    /**
      * Checks if list items with the specified text are visible within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
-     * @param itemText  The text of the items to be checked.
+     * @param container The SmartWebElement representing the container.
+     * @param itemText  The text of the items to be selected.
      * @return true if list items are visible, {@code false} otherwise.
      */
-    default boolean areVisible(WebElement container, String... itemText) {
+    default boolean areVisible(SmartWebElement container, String... itemText) {
         return areVisible(DEFAULT_TYPE, container, itemText);
     }
 
@@ -440,18 +605,40 @@ public interface ItemListService extends Insertion {
      * Checks if list items with the specified text and component type are visible within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
-     * @param itemText      The text of the items to be checked.
+     * @param container     The SmartWebElement representing the container.
+     * @param itemText      The text of the items to be selected.
      * @return true if list items are visible, {@code false} otherwise.
      */
-    boolean areVisible(ItemListComponentType componentType, WebElement container, String... itemText);
+    boolean areVisible(ItemListComponentType componentType, SmartWebElement container, String... itemText);
+
+    /**
+     * Checks if list items with the specified text are visible within the given container
+     * using the default item list component type.
+     *
+     * @param container The SmartWebElement representing the container.
+     * @param itemText  The text of the item to be selected.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    default boolean isVisible(SmartWebElement container, String itemText) {
+        return isVisible(DEFAULT_TYPE, container, itemText);
+    }
+
+    /**
+     * Checks if list items with the specified text and component type are visible within the given container.
+     *
+     * @param componentType The type of the item list component.
+     * @param container     The SmartWebElement representing the container.
+     * @param itemText      The text of the item to be selected.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    boolean isVisible(ItemListComponentType componentType, SmartWebElement container, String itemText);
 
     /**
      * Checks if list items with the specified text are visible within the container
      * located by the given locator using the default item list component type.
      *
      * @param containerLocator The {@link By} locator representing the container.
-     * @param itemText         The text of the items to be checked.
+     * @param itemText         The text of the items to be selected.
      * @return true if list items are visible, {@code false} otherwise.
      */
     default boolean areVisible(By containerLocator, String... itemText) {
@@ -464,16 +651,39 @@ public interface ItemListService extends Insertion {
      *
      * @param componentType    The type of the item list component.
      * @param containerLocator The {@link By} locator representing the container.
-     * @param itemText         The text of the items to be checked.
+     * @param itemText         The text of the items to be selected.
      * @return true if list items are visible, {@code false} otherwise.
      */
     boolean areVisible(ItemListComponentType componentType, By containerLocator, String... itemText);
 
     /**
+     * Checks if list items with the specified text are visible within the container
+     * located by the given locator using the default item list component type.
+     *
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the item to be selected.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    default boolean isVisible(By containerLocator, String itemText) {
+        return isVisible(DEFAULT_TYPE, containerLocator, itemText);
+    }
+
+    /**
+     * Checks if list items with the specified text and component type are visible within the container
+     * located by the given locator.
+     *
+     * @param componentType    The type of the item list component.
+     * @param containerLocator The {@link By} locator representing the container.
+     * @param itemText         The text of the item to be selected.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    boolean isVisible(ItemListComponentType componentType, By containerLocator, String itemText);
+
+    /**
      * Checks if list items with the specified text are visible
      * using the default item list component type.
      *
-     * @param itemText The text of the items to be checked.
+     * @param itemText The text of the items to be selected.
      * @return true if avatars are visible, {@code false} otherwise.
      */
     default boolean areVisible(String... itemText) {
@@ -484,10 +694,30 @@ public interface ItemListService extends Insertion {
      * Checks if list items with the specified text and component type are visible.
      *
      * @param componentType The type of the item list component.
-     * @param itemText      The text of the items to be checked.
+     * @param itemText      The text of the items to be selected.
      * @return true if list items are visible, {@code false} otherwise.
      */
     boolean areVisible(ItemListComponentType componentType, String... itemText);
+
+    /**
+     * Checks if list items with the specified text are visible
+     * using the default item list component type.
+     *
+     * @param itemText The text of the item to be selected.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    default boolean isVisible(String itemText) {
+        return isVisible(DEFAULT_TYPE, itemText);
+    }
+
+    /**
+     * Checks if list items with the specified text and component type are visible.
+     *
+     * @param componentType The type of the item list component.
+     * @param itemText      The text of the item to be selected.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    boolean isVisible(ItemListComponentType componentType, String itemText);
 
     /**
      * Checks if list items using the specified locator are visible
@@ -510,13 +740,33 @@ public interface ItemListService extends Insertion {
     boolean areVisible(ItemListComponentType componentType, By... itemLocator);
 
     /**
+     * Checks if list items using the specified locator are visible
+     * using the default item list component type.
+     *
+     * @param itemLocator The locator for the item.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    default boolean isVisible(By itemLocator) {
+        return isVisible(DEFAULT_TYPE, itemLocator);
+    }
+
+    /**
+     * Checks if list items using the specified component type and locator are visible.
+     *
+     * @param componentType The type of the item list component.
+     * @param itemLocator   The locator for the item.
+     * @return true if list item is visible, {@code false} otherwise.
+     */
+    boolean isVisible(ItemListComponentType componentType, By itemLocator);
+
+    /**
      * Retrieves the text of selected items within the given container
      * using the default item list component type.
      *
-     * @param container The WebElement representing the container.
+     * @param container The SmartWebElement representing the container.
      * @return A list of text of selected items.
      */
-    default List<String> getSelected(WebElement container) {
+    default List<String> getSelected(SmartWebElement container) {
         return getSelected(DEFAULT_TYPE, container);
     }
 
@@ -524,10 +774,10 @@ public interface ItemListService extends Insertion {
      * Retrieves the text of selected items with the specified component type within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
+     * @param container     The SmartWebElement representing the container.
      * @return A list of text of selected items.
      */
-    List<String> getSelected(ItemListComponentType componentType, WebElement container);
+    List<String> getSelected(ItemListComponentType componentType, SmartWebElement container);
 
     /**
      * Retrieves the text of selected items within the container located by the given locator
@@ -553,10 +803,10 @@ public interface ItemListService extends Insertion {
     /**
      * Retrieves the text of all items within the given container using the default item list component type.
      *
-     * @param container The WebElement representing the container.
+     * @param container The SmartWebElement representing the container.
      * @return A list of text of all items.
      */
-    default List<String> getAll(WebElement container) {
+    default List<String> getAll(SmartWebElement container) {
         return getAll(DEFAULT_TYPE, container);
     }
 
@@ -564,10 +814,10 @@ public interface ItemListService extends Insertion {
      * Retrieves the text of all items with the specified component type within the given container.
      *
      * @param componentType The type of the item list component.
-     * @param container     The WebElement representing the container.
+     * @param container     The SmartWebElement representing the container.
      * @return A list of text of all items.
      */
-    List<String> getAll(ItemListComponentType componentType, WebElement container);
+    List<String> getAll(ItemListComponentType componentType, SmartWebElement container);
 
     /**
      * Retrieves the text of all items within the container located by the given locator
@@ -598,8 +848,8 @@ public interface ItemListService extends Insertion {
     private static ItemListComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(ItemListComponentType.class,
-                    uiConfig.listDefaultType(),
-                    uiConfig.projectPackage());
+                    getUiConfig().listDefaultType(),
+                    getUiConfig().projectPackage());
         } catch (Exception ignored) {
             return null;
         }
