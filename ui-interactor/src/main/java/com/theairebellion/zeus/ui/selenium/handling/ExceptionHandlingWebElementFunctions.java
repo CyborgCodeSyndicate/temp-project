@@ -19,125 +19,84 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.CLICK;
+import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.SEND_KEYS;
+import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.SUBMIT;
+import static com.theairebellion.zeus.ui.selenium.handling.WebElementAction.performAction;
+
+
 public class ExceptionHandlingWebElementFunctions {
 
-    public static SmartWebElement findElementStaleElementExceptionHandling(WebDriver driver, SmartWebElement element, By by) {
+    public static Object handleStaleElement(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
         element = updateWebElement(driver, element);
-        WebElement updatedElement = element.getOriginal().findElement(by);
-        return new SmartWebElement(updatedElement, driver);
+
+        return switch (webElementAction) {
+            case FIND_ELEMENT -> new SmartWebElement(element.getOriginal().findElement((By) args[0]), driver);
+            case CLICK -> {
+                performAction(driver, element.getOriginal(), CLICK);
+                yield null;
+            }
+            case SEND_KEYS -> {
+                performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
+                yield null;
+            }
+            case SUBMIT -> {
+                performAction(driver, element.getOriginal(), SUBMIT);
+                yield null;
+            }
+        };
     }
 
-    public static SmartWebElement findElementNoSuchElementExceptionHandling(WebDriver driver, SmartWebElement element) {
-        List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
-        for (WebElement iframe : iframes) {
-            driver.switchTo().frame(iframe);
-            if (element.isDisplayed()) {
-                return new SmartWebElement(element, driver);
-            }
-            driver.switchTo().defaultContent();
+    public static Object handleNoSuchElement(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
+        WebElement foundElement = findElementInFrames(driver, element);
+        if (foundElement != null) {
+            return performAction(driver, foundElement, webElementAction, args);
         }
         LogUI.error("Element not found in the main DOM or any iframe.");
         throw new NoSuchElementException("Element not found in any iframe.");
     }
 
-    public static Void clickStaleElementExceptionHandling(WebDriver driver, SmartWebElement element) {
-        element = updateWebElement(driver, element);
-        element.getOriginal().click();
-        return null;
-    }
 
-    public static Void clickElementClickInterceptedExceptionHandling(WebDriver driver, SmartWebElement element, Exception exception) {
+    public static Void handleElementClickIntercepted(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Exception exception, Object... args) {
         By blocker = By.xpath(extractBlockingElementLocator(exception.getMessage()));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
-        element.getOriginal().click();
-        return null;
-    }
 
-    public static Void clickElementNotInteractableExceptionHandling(WebDriver driver, SmartWebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        Actions actions = new Actions(driver);
-        actions.moveToElement(element.getOriginal());
-        wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal())).click();
-        return null;
-    }
-
-    public static Void clickNoSuchElementExceptionHandling(WebDriver driver, SmartWebElement element) {
-        List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
-        for (WebElement iframe : iframes) {
-            driver.switchTo().frame(iframe);
-            if (element.isDisplayed()) {
-                element.getOriginal().click();
-                return null;
+        return switch (webElementAction) {
+            case CLICK -> {
+                performAction(driver, element.getOriginal(), CLICK);
+                yield null;
             }
-            driver.switchTo().defaultContent();
-        }
-        LogUI.error("Element not found in the main DOM or any iframe.");
-        throw new NoSuchElementException("Element not found in any iframe.");
+            case SEND_KEYS -> {
+                performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
+                yield null;
+            }
+            default -> throw new IllegalArgumentException("Unsupported operation.");
+        };
     }
 
-    public static Void sendKeysStaleElementExceptionHandling(WebDriver driver, String keysToSend, SmartWebElement element) {
+    public static Void handleElementNotInteractable(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
         element = updateWebElement(driver, element);
-        element.getOriginal().sendKeys(keysToSend);
-        return null;
-    }
-
-    public static Void sendKeysElementClickInterceptedExceptionHandling(WebDriver driver, String keysToSend, SmartWebElement element, Exception exception) {
-        By blocker = By.xpath(extractBlockingElementLocator(exception.getMessage()));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
-        element.getOriginal().sendKeys(keysToSend);
-        return null;
-    }
-
-    public static Void sendKeysElementNotInteractableExceptionHandling(WebDriver driver, String keysToSend, SmartWebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         Actions actions = new Actions(driver);
         actions.moveToElement(element.getOriginal());
-        wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal())).sendKeys(keysToSend);
-        return null;
-    }
+        WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));
 
-    public static Void sendKeysNoSuchElementExceptionHandling(WebDriver driver, String keysToSend, SmartWebElement element) {
-        List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
-        for (WebElement iframe : iframes) {
-            driver.switchTo().frame(iframe);
-            if (element.isDisplayed()) {
-                element.getOriginal().sendKeys(keysToSend);
-                return null;
+        return switch (webElementAction) {
+            case CLICK -> {
+                performAction(driver, clickableElement, CLICK);
+                yield null;
             }
-            driver.switchTo().defaultContent();
-        }
-        LogUI.error("Element not found in the main DOM or any iframe.");
-        throw new NoSuchElementException("Element not found in any iframe.");
-    }
-
-    public static Void submitStaleElementExceptionHandling(WebDriver driver, SmartWebElement element) {
-        element = updateWebElement(driver, element);
-        element.getOriginal().submit();
-        return null;
-    }
-
-    public static Void submitElementNotInteractableExceptionHandling(WebDriver driver, SmartWebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        Actions actions = new Actions(driver);
-        actions.moveToElement(element.getOriginal());
-        wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal())).submit();
-        return null;
-    }
-
-    public static Void submitNoSuchElementExceptionHandling(WebDriver driver, SmartWebElement element) {
-        List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
-        for (WebElement iframe : iframes) {
-            driver.switchTo().frame(iframe);
-            if (element.isDisplayed()) {
-                element.getOriginal().submit();
-                return null;
+            case SEND_KEYS -> {
+                performAction(driver, clickableElement, SEND_KEYS, args[0]);
+                yield null;
             }
-            driver.switchTo().defaultContent();
-        }
-        LogUI.error("Element not found in the main DOM or any iframe.");
-        throw new NoSuchElementException("Element not found in any iframe.");
+            case SUBMIT -> {
+                performAction(driver, clickableElement, SUBMIT);
+                yield null;
+            }
+            default -> throw new IllegalArgumentException("Unsupported operation.");
+        };
     }
 
     private static SmartWebElement updateWebElement(WebDriver driver, SmartWebElement element) {
@@ -209,5 +168,18 @@ public class ExceptionHandlingWebElementFunctions {
         return null;
     }
 
-
+    private static WebElement findElementInFrames(WebDriver driver, SmartWebElement element) {
+        if (element.isDisplayed()) {
+            return element.getOriginal();
+        }
+        List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
+        for (WebElement iframe : iframes) {
+            driver.switchTo().frame(iframe);
+            if (element.isDisplayed()) {
+                return element.getOriginal();
+            }
+            driver.switchTo().defaultContent();
+        }
+        return null;
+    }
 }

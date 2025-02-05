@@ -99,7 +99,7 @@ public class SmartWebElement extends WebElementDecorator {
             waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
             super.sendKeys(keysToSend);
         } catch (Exception e) {
-            handleException("clear", e, keysToSend);
+            handleException("sendKeys", e, keysToSend);
         }
     }
 
