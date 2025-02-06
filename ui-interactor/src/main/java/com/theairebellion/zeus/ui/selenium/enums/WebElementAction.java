@@ -14,6 +14,9 @@ public enum WebElementAction {
     FIND_ELEMENT("findElement") {
         @Override
         public Object performAction(WebDriver driver, WebElement element, Object... args) {
+            if (args.length == 0 || !(args[0] instanceof By)) {
+                throw new IllegalArgumentException("FIND_ELEMENT requires a By locator.");
+            }
             return new SmartWebElement(element.findElement((By) args[0]), driver);
         }
     },

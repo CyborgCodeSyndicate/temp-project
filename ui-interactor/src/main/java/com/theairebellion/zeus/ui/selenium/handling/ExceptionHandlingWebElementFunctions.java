@@ -5,6 +5,7 @@ import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -51,10 +52,16 @@ public class ExceptionHandlingWebElementFunctions {
     }
 
     public static Object handleNoSuchElement(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
+        if (args.length == 0 || !(args[0] instanceof By)) {
+            LogUI.error("Invalid or missing locator argument for FIND_ELEMENT.");
+            throw new IllegalArgumentException("FIND_ELEMENT action requires a By locator.");
+        }
+
         WebElement foundElement = findElementInFrames(driver, element);
         if (foundElement != null) {
-            return webElementAction.performAction(driver, foundElement, webElementAction, args);
+            return webElementAction.performAction(driver, foundElement, args);
         }
+
         LogUI.error("Element not found in the main DOM or any iframe.");
         throw new NoSuchElementException("Element not found in any iframe.");
     }
@@ -63,7 +70,11 @@ public class ExceptionHandlingWebElementFunctions {
     public static Void handleElementClickIntercepted(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Exception exception, Object... args) {
         By blocker = By.xpath(extractBlockingElementLocator(exception.getMessage()));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
+        try {
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
+        } catch (TimeoutException e) {
+            LogUI.warn("Blocking element did not disappear after waiting, attempting action anyway.");
+        }
 
         return switch (webElementAction) {
             case CLICK -> {
