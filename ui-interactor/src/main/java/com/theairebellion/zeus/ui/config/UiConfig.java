@@ -57,6 +57,12 @@ public interface UiConfig extends Config {
     @Key("tab.default.type")
     String tabDefaultType();
 
+    @Key("modal.default.type")
+    String modalDefaultType();
+
+    @Key("accordion.default.type")
+    String accordionDefaultType();
+
     @DefaultValue("true")
     @Key("use.wrap.selenium.function")
     boolean useWrappedSeleniumFunctions();

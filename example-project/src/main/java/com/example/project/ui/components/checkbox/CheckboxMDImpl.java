@@ -4,10 +4,10 @@ import com.example.project.ui.types.CheckboxFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.checkbox.Checkbox;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.theairebellion.zeus.ui.util.strategy.StrategyGenerator.*;
-
 
 @ImplementationOfType(CheckboxFieldTypes.MD_CHECKBOX)
 public class CheckboxMDImpl extends BaseComponent implements Checkbox {
@@ -27,17 +26,17 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
     public static final By CHECKBOX_LABEL_LOCATOR = By.className("mat-checkbox-label");
 
 
-    public CheckboxMDImpl(SmartSelenium smartSelenium) {
-        super(smartSelenium);
+    public CheckboxMDImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public void select(WebElement container, String... checkBoxText) {
+    public void select(SmartWebElement container, String... checkBoxText) {
         performActionOnCheckboxes(container, checkBoxText, true);
     }
 
     @Override
-    public String select(WebElement container, Strategy strategy) {
+    public String select(SmartWebElement container, Strategy strategy) {
         return performActionOnCheckboxesWithStrategy(container, strategy, true);
     }
 
@@ -52,12 +51,12 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
     }
 
     @Override
-    public void deSelect(WebElement container, String... checkBoxText) {
+    public void deSelect(SmartWebElement container, String... checkBoxText) {
         performActionOnCheckboxes(container, checkBoxText, false);
     }
 
     @Override
-    public String deSelect(WebElement container, Strategy strategy) {
+    public String deSelect(SmartWebElement container, Strategy strategy) {
         return performActionOnCheckboxesWithStrategy(container, strategy, false);
     }
 
@@ -72,7 +71,7 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
     }
 
     @Override
-    public boolean areSelected(WebElement container, String... checkBoxText) {
+    public boolean areSelected(SmartWebElement container, String... checkBoxText) {
         return checkCheckboxState(container, checkBoxText);
     }
 
@@ -87,7 +86,7 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
     }
 
     @Override
-    public boolean areEnabled(WebElement container, String... checkBoxText) {
+    public boolean areEnabled(SmartWebElement container, String... checkBoxText) {
         return checkCheckboxEnabledState(container, checkBoxText);
     }
 
@@ -102,33 +101,33 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
     }
 
     @Override
-    public List<String> getSelected(WebElement container) {
-        List<WebElement> checkBoxes = findCheckboxes(container, true);
+    public List<String> getSelected(SmartWebElement container) {
+        List<SmartWebElement> checkBoxes = findCheckboxes(container, true);
         return checkBoxes.stream().map(this::getLabel).collect(Collectors.toList());
     }
 
     @Override
     public List<String> getSelected(By containerLocator) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return getSelected(container);
     }
 
     @Override
-    public List<String> getAll(WebElement container) {
-        List<WebElement> checkBoxes = findCheckboxes(container, null);
+    public List<String> getAll(SmartWebElement container) {
+        List<SmartWebElement> checkBoxes = findCheckboxes(container, null);
         return checkBoxes.stream().map(this::getLabel).collect(Collectors.toList());
     }
 
     @Override
     public List<String> getAll(By containerLocator) {
-        WebElement container = smartSelenium.waitAndFindElement(containerLocator);
+        SmartWebElement container = driver.findSmartElement(containerLocator);
         return getAll(container);
     }
 
-    private List<WebElement> findCheckboxes(WebElement container, Boolean onlySelected) {
-        List<WebElement> checkBoxes = container != null
-                ? smartSelenium.waitAndFindElements(container, CHECKBOX_ELEMENT_SELECTOR)
-                : smartSelenium.smartFindElements(CHECKBOX_ELEMENT_SELECTOR);
+    private List<SmartWebElement> findCheckboxes(SmartWebElement container, Boolean onlySelected) {
+        List<SmartWebElement> checkBoxes = container != null
+                ? container.findSmartElements(CHECKBOX_ELEMENT_SELECTOR)
+                : driver.findSmartElements(CHECKBOX_ELEMENT_SELECTOR);
         if (Objects.isNull(onlySelected)) {
             return checkBoxes;
         }
@@ -136,29 +135,29 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
                 checkBoxes.stream().filter(checkBox -> !isChecked(checkBox)).collect(Collectors.toList());
     }
 
-    private void performActionOnCheckboxes(WebElement container, String[] checkBoxText, boolean select) {
-        List<WebElement> checkBoxes = findCheckboxes(container, !select);
+    private void performActionOnCheckboxes(SmartWebElement container, String[] checkBoxText, boolean select) {
+        List<SmartWebElement> checkBoxes = findCheckboxes(container, !select);
         checkBoxes = filterCheckboxesByLabel(checkBoxes, checkBoxText);
         checkBoxes.forEach(this::clickIfEnabled);
     }
 
-    private String performActionOnCheckboxesWithStrategy(WebElement container, Strategy strategy, boolean select) {
-        List<WebElement> checkBoxes = findCheckboxes(container, !select);
+    private String performActionOnCheckboxesWithStrategy(SmartWebElement container, Strategy strategy, boolean select) {
+        List<SmartWebElement> checkBoxes = findCheckboxes(container, !select);
         return applyStrategyAndClick(checkBoxes, strategy);
     }
 
     private void performActionOnCheckboxesByLocator(By[] checkBoxLocator, boolean select) {
-        List<WebElement> checkBoxes = Arrays.stream(checkBoxLocator)
-                .map(smartSelenium::waitAndFindElement)
+        List<SmartWebElement> checkBoxes = Arrays.stream(checkBoxLocator)
+                .map(driver::findSmartElement)
                 .collect(Collectors.toList());
         checkBoxes = checkBoxes.stream().filter(checkBox -> select != isChecked(checkBox)).toList();
         checkBoxes.forEach(this::clickIfEnabled);
     }
 
-    private boolean checkCheckboxState(WebElement container, String[] checkBoxText) {
-        List<WebElement> checkBoxes = findCheckboxes(container, true);
+    private boolean checkCheckboxState(SmartWebElement container, String[] checkBoxText) {
+        List<SmartWebElement> checkBoxes = findCheckboxes(container, true);
         Set<String> labelSet = Set.of(checkBoxText);
-        List<WebElement> matchingCheckBoxes = checkBoxes.stream()
+        List<SmartWebElement> matchingCheckBoxes = checkBoxes.stream()
                 .filter(checkBox -> labelSet.contains(getLabel(checkBox)))
                 .toList();
         return matchingCheckBoxes.size() == checkBoxText.length;
@@ -166,12 +165,12 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
 
     private boolean checkCheckboxStateByLocator(By[] checkBoxLocator) {
         return Arrays.stream(checkBoxLocator)
-                .map(smartSelenium::waitAndFindElement)
+                .map(driver::findSmartElement)
                 .allMatch(this::isChecked);
     }
 
-    private boolean checkCheckboxEnabledState(WebElement container, String[] checkBoxText) {
-        List<WebElement> checkBoxes = findCheckboxes(container, null);
+    private boolean checkCheckboxEnabledState(SmartWebElement container, String[] checkBoxText) {
+        List<SmartWebElement> checkBoxes = findCheckboxes(container, null);
         Set<String> labelSet = Set.of(checkBoxText);
         return checkBoxes.stream()
                 .filter(checkBox -> labelSet.contains(getLabel(checkBox)))
@@ -180,17 +179,17 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
 
     private boolean checkCheckboxEnabledStateByLocator(By[] checkBoxLocator) {
         return Arrays.stream(checkBoxLocator)
-                .map(smartSelenium::waitAndFindElement)
+                .map(driver::findSmartElement)
                 .allMatch(this::isEnabled);
     }
 
-    private List<WebElement> filterCheckboxesByLabel(List<WebElement> checkBoxes, String[] labels) {
+    private List<SmartWebElement> filterCheckboxesByLabel(List<SmartWebElement> checkBoxes, String[] labels) {
         Set<String> labelSet = Set.of(labels);
         return checkBoxes.stream().filter(checkBox -> labelSet.contains(getLabel(checkBox)))
                 .collect(Collectors.toList());
     }
 
-    private String applyStrategyAndClick(List<WebElement> checkBoxes, Strategy strategy) {
+    private String applyStrategyAndClick(List<SmartWebElement> checkBoxes, Strategy strategy) {
         if (checkBoxes.isEmpty()) {
             return "No action required";
         }
@@ -198,19 +197,19 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
             String selectedCheckBoxLabel;
             switch (strategy) {
                 case RANDOM:
-                    WebElement randomCheckBox = getRandomElementFromElements(checkBoxes);
+                    SmartWebElement randomCheckBox = getRandomElementFromElements(checkBoxes);
                     clickIfEnabled(randomCheckBox);
                     selectedCheckBoxLabel = getLabel(randomCheckBox);
                     //info("Select or Deselect checkbox with text: " + selectedCheckBoxLabel);
                     return selectedCheckBoxLabel;
                 case FIRST:
-                    WebElement firstCheckBox = getFirstElementFromElements(checkBoxes);
+                    SmartWebElement firstCheckBox = getFirstElementFromElements(checkBoxes);
                     clickIfEnabled(firstCheckBox);
                     selectedCheckBoxLabel = getLabel(firstCheckBox);
                     //info("Select or Deselect checkbox with text: " + selectedCheckBoxLabel);
                     return selectedCheckBoxLabel;
                 case LAST:
-                    WebElement lastCheckBox = getLastElementFromElements(checkBoxes);
+                    SmartWebElement lastCheckBox = getLastElementFromElements(checkBoxes);
                     clickIfEnabled(lastCheckBox);
                     selectedCheckBoxLabel = getLabel(lastCheckBox);
                     //info("Select or Deselect checkbox with text: " + selectedCheckBoxLabel);
@@ -228,26 +227,26 @@ public class CheckboxMDImpl extends BaseComponent implements Checkbox {
         return null;
     }
 
-    private void clickIfEnabled(WebElement checkBox) {
+    private void clickIfEnabled(SmartWebElement checkBox) {
         if (isEnabled(checkBox)) {
-            String checkBoxClass = smartSelenium.smartGetAttribute(checkBox, "class");
-            smartSelenium.smartClick(checkBox);
-            smartSelenium.waitUntilAttributeValueIsChanged(checkBox, "class", checkBoxClass);
-            checkBoxClass = smartSelenium.smartGetAttribute(checkBox, "class");
-            smartSelenium.waitUntilAttributeValueIsChanged(checkBox, "class", checkBoxClass);
+            String checkBoxClass = checkBox.getAttribute("class");
+            checkBox.click();
+            checkBox.waitUntilAttributeValueIsChanged("class", checkBoxClass);
+            checkBoxClass = checkBox.getAttribute("class");
+            checkBox.waitUntilAttributeValueIsChanged("class", checkBoxClass);
         }
     }
 
-    private boolean isChecked(WebElement checkBox) {
-        return smartSelenium.smartGetAttribute(checkBox, "class").contains(CHECKED_CLASS_INDICATOR);
+    private boolean isChecked(SmartWebElement checkBox) {
+        return Objects.requireNonNull(checkBox.getAttribute("class")).contains(CHECKED_CLASS_INDICATOR);
     }
 
-    private boolean isEnabled(WebElement checkBox) {
-        return !smartSelenium.smartGetAttribute(checkBox, "class").contains(DISABLED_STATE);
+    private boolean isEnabled(SmartWebElement checkBox) {
+        return !Objects.requireNonNull(checkBox.getAttribute("class")).contains(DISABLED_STATE);
     }
 
-    private String getLabel(WebElement checkBox) {
-        WebElement label = smartSelenium.smartFindElement(checkBox, CHECKBOX_LABEL_LOCATOR);
-        return smartSelenium.smartGetText(label).trim();
+    private String getLabel(SmartWebElement checkBox) {
+        SmartWebElement label = checkBox.findSmartElement(CHECKBOX_LABEL_LOCATOR);
+        return label.getText().trim();
     }
 }

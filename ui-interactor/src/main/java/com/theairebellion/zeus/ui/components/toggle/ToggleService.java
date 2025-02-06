@@ -1,23 +1,22 @@
 package com.theairebellion.zeus.ui.components.toggle;
 
-import com.theairebellion.zeus.ui.config.UIConfig;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.aeonbits.owner.ConfigCache;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+
+import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 public interface ToggleService {
 
-    UIConfig uiConfig = ConfigCache.getOrCreate(UIConfig.class);
     ToggleComponentType DEFAULT_TYPE = getDefaultType();
 
     /**
      * Activates the toggle with the specified text inside a container, using the default toggle component type.
      *
-     * @param container  The WebElement container that contains the toggle.
+     * @param container  The SmartWebElement container that contains the toggle.
      * @param toggleText The text of the toggle to activate.
      */
-    default void activate(WebElement container, String toggleText) {
+    default void activate(SmartWebElement container, String toggleText) {
         activate(DEFAULT_TYPE, container, toggleText);
     }
 
@@ -25,10 +24,10 @@ public interface ToggleService {
      * Activates the toggle with the specified text inside a container, using the given toggle component type.
      *
      * @param componentType The specific toggle component type.
-     * @param container     The WebElement container that contains the toggle.
+     * @param container     The SmartWebElement container that contains the toggle.
      * @param toggleText    The text of the toggle to activate.
      */
-    void activate(ToggleComponentType componentType, WebElement container, String toggleText);
+    void activate(ToggleComponentType componentType, SmartWebElement container, String toggleText);
 
     /**
      * Activates the toggle with the specified text, using the default toggle component type.
@@ -67,10 +66,10 @@ public interface ToggleService {
     /**
      * Deactivates the toggle with the specified text inside a container, using the default toggle component type.
      *
-     * @param container  The WebElement container that contains the toggle.
+     * @param container  The SmartWebElement container that contains the toggle.
      * @param toggleText The text of the toggle to deactivate.
      */
-    default void deactivate(WebElement container, String toggleText) {
+    default void deactivate(SmartWebElement container, String toggleText) {
         deactivate(DEFAULT_TYPE, container, toggleText);
     }
 
@@ -78,10 +77,10 @@ public interface ToggleService {
      * Deactivates the toggle with the specified text inside a container, using the given toggle component type.
      *
      * @param componentType The specific toggle component type.
-     * @param container     The WebElement container that contains the toggle.
+     * @param container     The SmartWebElement container that contains the toggle.
      * @param toggleText    The text of the toggle to deactivate.
      */
-    void deactivate(ToggleComponentType componentType, WebElement container, String toggleText);
+    void deactivate(ToggleComponentType componentType, SmartWebElement container, String toggleText);
 
     /**
      * Deactivates the toggle with the specified text, using the default toggle component type.
@@ -120,11 +119,11 @@ public interface ToggleService {
     /**
      * Checks if the toggle with the specified text inside a container is enabled, using the default toggle component type.
      *
-     * @param container  The WebElement container that contains the toggle.
+     * @param container  The SmartWebElement container that contains the toggle.
      * @param toggleText The text of the toggle to check.
      * @return true if the toggle is enabled, false otherwise.
      */
-    default boolean isEnabled(WebElement container, String toggleText) {
+    default boolean isEnabled(SmartWebElement container, String toggleText) {
         return isEnabled(DEFAULT_TYPE, container, toggleText);
     }
 
@@ -132,11 +131,11 @@ public interface ToggleService {
      * Checks if the toggle with the specified text inside a container is enabled, using the given toggle component type.
      *
      * @param componentType The specific toggle component type.
-     * @param container     The WebElement container that contains the toggle.
+     * @param container     The SmartWebElement container that contains the toggle.
      * @param toggleText    The text of the toggle to check.
      * @return true if the toggle is enabled, false otherwise.
      */
-    boolean isEnabled(ToggleComponentType componentType, WebElement container, String toggleText);
+    boolean isEnabled(ToggleComponentType componentType, SmartWebElement container, String toggleText);
 
     /**
      * Checks if the toggle with the specified text is enabled, using the default toggle component type.
@@ -179,11 +178,11 @@ public interface ToggleService {
     /**
      * Checks if the toggle with the specified text inside a container is activated, using the default toggle component type.
      *
-     * @param container  The WebElement container that contains the toggle.
+     * @param container  The SmartWebElement container that contains the toggle.
      * @param toggleText The text of the toggle to check.
      * @return true if the toggle is activated, false otherwise.
      */
-    default boolean isActivated(WebElement container, String toggleText) {
+    default boolean isActivated(SmartWebElement container, String toggleText) {
         return isActivated(DEFAULT_TYPE, container, toggleText);
     }
 
@@ -191,11 +190,11 @@ public interface ToggleService {
      * Checks if the toggle with the specified text inside a container is activated, using the given toggle component type.
      *
      * @param componentType The specific toggle component type.
-     * @param container     The WebElement container that contains the toggle.
+     * @param container     The SmartWebElement container that contains the toggle.
      * @param toggleText    The text of the toggle to check.
      * @return true if the toggle is activated, false otherwise.
      */
-    boolean isActivated(ToggleComponentType componentType, WebElement container, String toggleText);
+    boolean isActivated(ToggleComponentType componentType, SmartWebElement container, String toggleText);
 
     /**
      * Checks if the toggle with the specified text is activated, using the default toggle component type.
@@ -242,8 +241,8 @@ public interface ToggleService {
      */
     private static ToggleComponentType getDefaultType() {
         return ReflectionUtil.findEnumImplementationsOfInterface(ToggleComponentType.class,
-                uiConfig.toggleDefaultType(),
-                uiConfig.projectPackage());
+                getUiConfig().toggleDefaultType(),
+                getUiConfig().projectPackage());
     }
 
 }

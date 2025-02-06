@@ -1,6 +1,8 @@
 package com.theairebellion.zeus.ui.components.factory;
 
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
+import com.theairebellion.zeus.ui.components.accordion.Accordion;
+import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
 import com.theairebellion.zeus.ui.components.alert.Alert;
 import com.theairebellion.zeus.ui.components.alert.AlertComponentType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
@@ -16,6 +18,8 @@ import com.theairebellion.zeus.ui.components.list.ItemList;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
 import com.theairebellion.zeus.ui.components.loader.Loader;
 import com.theairebellion.zeus.ui.components.loader.LoaderComponentType;
+import com.theairebellion.zeus.ui.components.modal.Modal;
+import com.theairebellion.zeus.ui.components.modal.ModalComponentType;
 import com.theairebellion.zeus.ui.components.radio.Radio;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.select.Select;
@@ -25,7 +29,6 @@ import com.theairebellion.zeus.ui.components.tab.TabComponentType;
 import com.theairebellion.zeus.ui.components.toggle.Toggle;
 import com.theairebellion.zeus.ui.components.toggle.ToggleComponentType;
 import com.theairebellion.zeus.ui.log.LogUI;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 
@@ -77,12 +80,20 @@ public class ComponentFactory {
         return getComponent(Tab.class, type, getUiConfig().projectPackage(), smartWebDriver);
     }
 
-    public static Checkbox getCheckBoxComponent(CheckboxComponentType type, SmartSelenium smartSelenium) {
-        return getComponent(Checkbox.class, type, uiConfig.projectPackage(), smartSelenium);
+    public static Checkbox getCheckBoxComponent(CheckboxComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Checkbox.class, type, getUiConfig().projectPackage(), smartWebDriver);
     }
 
-    public static Toggle getToggleComponent(ToggleComponentType type, SmartSelenium smartSelenium) {
-        return getComponent(Toggle.class, type, uiConfig.projectPackage(), smartSelenium);
+    public static Toggle getToggleComponent(ToggleComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Toggle.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Modal getModalComponent(ModalComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Modal.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Accordion getAccordionComponent(AccordionComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Accordion.class, type, getUiConfig().projectPackage(), smartWebDriver);
     }
 
     private static <T> T getComponent(Class<T> interfaceType, ComponentType componentType, String projectPackage,

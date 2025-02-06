@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.annotation.WorldName;
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.ui.components.accordion.AccordionServiceImpl;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
@@ -10,6 +11,7 @@ import com.theairebellion.zeus.ui.components.link.LinkServiceImpl;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemListServiceImpl;
 import com.theairebellion.zeus.ui.components.loader.LoaderServiceImpl;
+import com.theairebellion.zeus.ui.components.modal.ModalServiceImpl;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.radio.RadioServiceImpl;
 import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
@@ -44,6 +46,8 @@ public class UIServiceFluent extends FluentService {
     private LinkServiceFluent linkField;
     private AlertServiceFluent alertField;
     private TabServiceFluent tabField;
+    private ModalServiceFluent modalField;
+    private AccordionServiceFluent accordionField;
     private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
@@ -87,6 +91,8 @@ public class UIServiceFluent extends FluentService {
         linkField = new LinkServiceFluent(this, quest.getStorage(), new LinkServiceImpl(driver), driver);
         alertField = new AlertServiceFluent(this, quest.getStorage(), new AlertServiceImpl(driver), driver);
         tabField = new TabServiceFluent(this, quest.getStorage(), new TabServiceImpl(driver), driver);
+        modalField = new ModalServiceFluent(this, quest.getStorage(), new ModalServiceImpl(driver), driver);
+        accordionField = new AccordionServiceFluent(this, quest.getStorage(), new AccordionServiceImpl(driver), driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();

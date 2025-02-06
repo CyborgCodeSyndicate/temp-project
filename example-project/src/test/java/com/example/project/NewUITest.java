@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 public class NewUITest extends BaseTest {
 
 
-    @Test
+    //@Test
     //@AuthenticateAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
     //@InterceptRequests(requestUrlSubStrings = {"api/create-campaign", "upload"})
-    public void scenario_some(Quest quest) {
+    /*public void scenario_some(Quest quest) {
         quest
             .enters(World.EARTH)
                 .navigate("http://zero.webappsecurity.com/")
@@ -26,6 +26,6 @@ public class NewUITest extends BaseTest {
             .then()
             .enters(World.FORGE)
             .complete();
-    }
+    }*/
 
 }

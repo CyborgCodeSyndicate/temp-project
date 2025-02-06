@@ -1,32 +1,28 @@
 package com.theairebellion.zeus.ui.components.toggle;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public class ToggleServiceImpl implements ToggleService {
+public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentType, Toggle> implements ToggleService {
 
-    protected SmartSelenium smartSelenium;
     private static Map<ToggleComponentType, Toggle> components;
 
-    public ToggleServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public ToggleServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public ToggleServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public void activate(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
+    protected Toggle createComponent(ToggleComponentType componentType) {
+        return ComponentFactory.getToggleComponent(componentType, driver);
+    }
+
+    @Override
+    public void activate(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
         toggleComponent(componentType).activate(container, toggleText);
     }
 
@@ -41,7 +37,7 @@ public class ToggleServiceImpl implements ToggleService {
     }
 
     @Override
-    public void deactivate(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
+    public void deactivate(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
         toggleComponent(componentType).deactivate(container, toggleText);
     }
 
@@ -56,7 +52,7 @@ public class ToggleServiceImpl implements ToggleService {
     }
 
     @Override
-    public boolean isEnabled(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
+    public boolean isEnabled(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
         return toggleComponent(componentType).isEnabled(container, toggleText);
     }
 
@@ -71,7 +67,7 @@ public class ToggleServiceImpl implements ToggleService {
     }
 
     @Override
-    public boolean isActivated(final ToggleComponentType componentType, final WebElement container, final String toggleText) {
+    public boolean isActivated(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
         return toggleComponent(componentType).isActivated(container, toggleText);
     }
 
@@ -86,9 +82,6 @@ public class ToggleServiceImpl implements ToggleService {
     }
 
     private Toggle toggleComponent(final ToggleComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getToggleComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

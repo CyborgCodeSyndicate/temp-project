@@ -1,40 +1,36 @@
 package com.theairebellion.zeus.ui.components.checkbox;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class CheckboxServiceImpl implements CheckboxService {
+public class CheckboxServiceImpl extends AbstractComponentService<CheckboxComponentType, Checkbox> implements CheckboxService {
 
-    protected SmartSelenium smartSelenium;
-    private static Map<CheckboxComponentType, Checkbox> components;
-
-    public CheckboxServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-    public CheckboxServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public CheckboxServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
     @Override
-    public void select(final CheckboxComponentType componentType, final WebElement container, final String... checkBoxText) {
+    protected Checkbox createComponent(CheckboxComponentType componentType) {
+        return ComponentFactory.getCheckBoxComponent(componentType, driver);
+    }
+
+    @Override
+    public void select(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
         checkboxComponent(componentType).select(container, checkBoxText);
     }
 
     @Override
-    public String select(final CheckboxComponentType componentType, final WebElement container, final Strategy strategy) {
+    public String select(final CheckboxComponentType componentType, final SmartWebElement container, final Strategy strategy) {
         return checkboxComponent(componentType).select(container, strategy);
     }
 
@@ -49,12 +45,12 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public void deSelect(final CheckboxComponentType componentType, final WebElement container, final String... checkBoxText) {
+    public void deSelect(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
         checkboxComponent(componentType).deSelect(container, checkBoxText);
     }
 
     @Override
-    public String deSelect(final CheckboxComponentType componentType, final WebElement container, final Strategy strategy) {
+    public String deSelect(final CheckboxComponentType componentType, final SmartWebElement container, final Strategy strategy) {
         return checkboxComponent(componentType).deSelect(container, strategy);
     }
 
@@ -69,7 +65,7 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public boolean areSelected(final CheckboxComponentType componentType, final WebElement container, final String... checkBoxText) {
+    public boolean areSelected(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
         return checkboxComponent(componentType).areSelected(container, checkBoxText);
     }
 
@@ -84,7 +80,7 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public boolean isSelected(final CheckboxComponentType componentType, final WebElement container, final String checkBoxText) {
+    public boolean isSelected(final CheckboxComponentType componentType, final SmartWebElement container, final String checkBoxText) {
         return checkboxComponent(componentType).areSelected(container, checkBoxText);
     }
 
@@ -99,7 +95,7 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public boolean areEnabled(final CheckboxComponentType componentType, final WebElement container, final String... checkBoxText) {
+    public boolean areEnabled(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
         return checkboxComponent(componentType).areEnabled(container, checkBoxText);
     }
 
@@ -114,7 +110,7 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public boolean isEnabled(final CheckboxComponentType componentType, final WebElement container, final String checkBoxText) {
+    public boolean isEnabled(final CheckboxComponentType componentType, final SmartWebElement container, final String checkBoxText) {
         return checkboxComponent(componentType).areEnabled(container, checkBoxText);
     }
 
@@ -129,7 +125,7 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public List<String> getSelected(final CheckboxComponentType componentType, final WebElement container) {
+    public List<String> getSelected(final CheckboxComponentType componentType, final SmartWebElement container) {
         return checkboxComponent(componentType).getSelected(container);
     }
 
@@ -139,7 +135,7 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     @Override
-    public List<String> getAll(final CheckboxComponentType componentType, final WebElement container) {
+    public List<String> getAll(final CheckboxComponentType componentType, final SmartWebElement container) {
         return checkboxComponent(componentType).getAll(container);
     }
 
@@ -154,9 +150,6 @@ public class CheckboxServiceImpl implements CheckboxService {
     }
 
     private Checkbox checkboxComponent(CheckboxComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getCheckBoxComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+        return getOrCreateComponent(componentType);
     }
 }

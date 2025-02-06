@@ -1,0 +1,110 @@
+package com.theairebellion.zeus.ui.service.fluent;
+
+
+import com.theairebellion.zeus.framework.storage.Storage;
+import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
+import com.theairebellion.zeus.ui.components.accordion.AccordionService;
+import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
+
+import java.util.List;
+
+import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+
+public class AccordionServiceFluent {
+
+    private final AccordionService accordionService;
+    private final UIServiceFluent uiServiceFluent;
+    private final Storage storage;
+    private final SmartWebDriver driver;
+
+
+    public AccordionServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, AccordionService accordionService,
+                                  SmartWebDriver webDriver) {
+        this.accordionService = accordionService;
+        this.uiServiceFluent = uiServiceFluent;
+        this.storage = storage;
+        driver = webDriver;
+    }
+
+
+    public UIServiceFluent expand(final UIElement element) {
+        Allure.step(String.format("Expanding panel with locator: '%s' from accordion component of type: '%s'.",
+                element.locator().toString(),
+                element.componentType().toString()));
+        element.before().accept(driver);
+        accordionService.expand((AccordionComponentType) element.componentType(), element.locator());
+        element.after().accept(driver);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent collapse(final UIElement element) {
+        Allure.step(String.format("Collapsing panel with locator: '%s' from accordion component of type: '%s'.",
+                element.locator().toString(),
+                element.componentType().toString()));
+        element.before().accept(driver);
+        accordionService.collapse((AccordionComponentType) element.componentType(), element.locator());
+        element.after().accept(driver);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent areEnabled(final UIElement element) {
+        element.before().accept(driver);
+        boolean enabled = accordionService.areEnabled((AccordionComponentType) element.componentType(), element.locator());
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), enabled);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent getExpanded(final UIElement element) {
+        element.before().accept(driver);
+        List<String> expanded = accordionService.getExpanded(element.componentType()); //todo
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), expanded);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent getCollapsed(final UIElement element) {
+        element.before().accept(driver);
+        List<String> collapsed = accordionService.getCollapsed(element.componentType()); //todo
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), collapsed);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent getAll(final UIElement element) {
+        element.before().accept(driver);
+        List<String> all = accordionService.getAll(element.componentType()); //todo
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), all);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent getTitle(final UIElement element) {
+        element.before().accept(driver);
+        String title = accordionService.getTitle(element.componentType(), element.locator());
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), title);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent getText(final UIElement element) {
+        element.before().accept(driver);
+        String text = accordionService.getText(element.componentType(), element.locator());
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), text);
+        return uiServiceFluent;
+    }
+
+
+//todo: Implement validation functions
+
+}
