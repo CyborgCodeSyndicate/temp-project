@@ -37,15 +37,15 @@ public class ExceptionHandlingWebElementFunctions {
             case FIND_ELEMENT -> new SmartWebElement(element.getOriginal().findElement((By) args[0]), driver);
             case FIND_ELEMENTS -> null;
             case CLICK -> {
-                CLICK.performAction(driver, element.getOriginal(), CLICK);
+                CLICK.performAction(driver, element.getOriginal());
                 yield null;
             }
             case SEND_KEYS -> {
-                SEND_KEYS.performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
+                SEND_KEYS.performAction(driver, element.getOriginal(), args[0]);
                 yield null;
             }
             case SUBMIT -> {
-                SUBMIT.performAction(driver, element.getOriginal(), SUBMIT);
+                SUBMIT.performAction(driver, element.getOriginal());
                 yield null;
             }
         };
@@ -78,11 +78,11 @@ public class ExceptionHandlingWebElementFunctions {
 
         return switch (webElementAction) {
             case CLICK -> {
-                CLICK.performAction(driver, element.getOriginal(), CLICK);
+                CLICK.performAction(driver, element.getOriginal());
                 yield null;
             }
             case SEND_KEYS -> {
-                SEND_KEYS.performAction(driver, element.getOriginal(), SEND_KEYS, args[0]);
+                SEND_KEYS.performAction(driver, element.getOriginal(), args[0]);
                 yield null;
             }
             default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);
@@ -98,15 +98,15 @@ public class ExceptionHandlingWebElementFunctions {
 
         return switch (webElementAction) {
             case CLICK -> {
-                CLICK.performAction(driver, clickableElement, CLICK);
+                CLICK.performAction(driver, clickableElement);
                 yield null;
             }
             case SEND_KEYS -> {
-                SEND_KEYS.performAction(driver, clickableElement, SEND_KEYS, args[0]);
+                SEND_KEYS.performAction(driver, clickableElement, args[0]);
                 yield null;
             }
             case SUBMIT -> {
-                SUBMIT.performAction(driver, clickableElement, SUBMIT);
+                SUBMIT.performAction(driver, clickableElement);
                 yield null;
             }
             default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);
