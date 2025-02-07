@@ -73,6 +73,12 @@ public class UIComponentsInUse {
     }
 
 
+    public static TableServiceFluent table(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.TABLE.getFieldName(), uiServiceFluent,
+                TableServiceFluent.class);
+    }
+
+
     public static InterceptorServiceFluent interceptor(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.REQUESTS_INTERCEPTOR.getFieldName(), uiServiceFluent,
                 InterceptorServiceFluent.class);

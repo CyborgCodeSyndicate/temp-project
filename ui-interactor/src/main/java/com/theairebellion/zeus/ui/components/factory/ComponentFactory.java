@@ -28,6 +28,8 @@ import com.theairebellion.zeus.ui.components.tab.Tab;
 import com.theairebellion.zeus.ui.components.tab.TabComponentType;
 import com.theairebellion.zeus.ui.components.toggle.Toggle;
 import com.theairebellion.zeus.ui.components.toggle.ToggleComponentType;
+import com.theairebellion.zeus.ui.components.table.service.Table;
+import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -39,6 +41,10 @@ import java.util.Optional;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 public class ComponentFactory {
+
+    //todo rename in future
+    private static final String FRAMEWORK_PACKAGE = "com.theairebellion.zeus";
+
 
     private ComponentFactory() {
     }
@@ -96,10 +102,18 @@ public class ComponentFactory {
         return getComponent(Accordion.class, type, getUiConfig().projectPackage(), smartWebDriver);
     }
 
+    public static Table getTableComponent(TableComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Table.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+
     private static <T> T getComponent(Class<T> interfaceType, ComponentType componentType, String projectPackage,
                                       SmartWebDriver smartWebDriver) {
         List<Class<? extends T>> implementations = ReflectionUtil.findImplementationsOfInterface(interfaceType,
             projectPackage);
+        implementations.addAll(ReflectionUtil.findImplementationsOfInterface(interfaceType,
+            FRAMEWORK_PACKAGE));
+
 
         Optional<Class<? extends T>> implementation = implementations.stream()
                                                           .filter(

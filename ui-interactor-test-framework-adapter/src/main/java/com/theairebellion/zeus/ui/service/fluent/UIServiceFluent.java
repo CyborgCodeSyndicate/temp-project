@@ -6,6 +6,7 @@ import com.theairebellion.zeus.ui.components.accordion.AccordionServiceImpl;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
+import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
 import com.theairebellion.zeus.ui.components.link.LinkServiceImpl;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
@@ -19,9 +20,14 @@ import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
 import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
+import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
+import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
+import com.theairebellion.zeus.ui.components.table.service.TableServiceImpl;
+import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
+import com.theairebellion.zeus.ui.service.tables.TableServiceFluent;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -48,9 +54,11 @@ public class UIServiceFluent extends FluentService {
     private TabServiceFluent tabField;
     private ModalServiceFluent modalField;
     private AccordionServiceFluent accordionField;
+    private TableServiceFluent table;
     private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
+    private TableServiceRegistry tableServiceRegistry;
     private InsertionServiceFluent insertionService;
 
 
@@ -59,14 +67,6 @@ public class UIServiceFluent extends FluentService {
         this.driver = driver;
     }
 
-
-    private void registerInsertionServices() {
-        serviceRegistry.registerService(InputComponentType.class, inputField);
-        serviceRegistry.registerService(RadioComponentType.class, radioField);
-        serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
-        serviceRegistry.registerService(SelectComponentType.class, selectField);
-        serviceRegistry.registerService(ItemListComponentType.class, listField);
-    }
 
 
     public UIServiceFluent validate(Runnable assertion) {
@@ -81,7 +81,6 @@ public class UIServiceFluent extends FluentService {
 
     @Override
     protected void postQuestSetupInitialization() {
-        inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(driver), driver);
         buttonField = new ButtonServiceFluent(this, quest.getStorage(), new ButtonServiceImpl(driver), driver);
         radioField = new RadioServiceFluent(this, quest.getStorage(), new RadioServiceImpl(driver), driver);
         checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(driver));
@@ -93,16 +92,40 @@ public class UIServiceFluent extends FluentService {
         tabField = new TabServiceFluent(this, quest.getStorage(), new TabServiceImpl(driver), driver);
         modalField = new ModalServiceFluent(this, quest.getStorage(), new ModalServiceImpl(driver), driver);
         accordionField = new AccordionServiceFluent(this, quest.getStorage(), new AccordionServiceImpl(driver), driver);
+        InputService inputService = new InputServiceImpl(driver);
+        inputField = new InputServiceFluent(this, quest.getStorage(), inputService, driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
-        registerInsertionServices();
-        insertionService = new InsertionServiceFluent(new InsertionServiceElementImpl(serviceRegistry, driver), this,
+        registerInsertionServices(inputService);
+        tableServiceRegistry = new TableServiceRegistry();
+        registerTableServices(inputService);
+        table = new TableServiceFluent(this, quest.getStorage(), new TableServiceImpl(driver, tableServiceRegistry),
+            driver);
+        insertionService = new InsertionServiceFluent(
+            new InsertionServiceElementImpl(serviceRegistry, driver), this,
             quest.getStorage());
     }
 
 
     private SmartWebDriver getDriver() {
         return driver;
+    }
+
+
+    private void registerInsertionServices(InputService inputService) {
+        serviceRegistry.registerService(InputComponentType.class, inputField);
+        serviceRegistry.registerService(RadioComponentType.class, radioField);
+        serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
+        serviceRegistry.registerService(SelectComponentType.class, selectField);
+        serviceRegistry.registerService(ItemListComponentType.class, listField);
+        serviceRegistry.registerService(InputComponentType.class, inputService);
+    }
+
+
+    private void registerTableServices(InputService inputService) {
+        tableServiceRegistry.registerService(InputComponentType.class, (TableFilter) inputService);
+        tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputService);
+
     }
 
     public UIServiceFluent navigate(String url) {
@@ -115,4 +138,5 @@ public class UIServiceFluent extends FluentService {
         getDriver().navigate().back();
         return this;
     }
+
 }

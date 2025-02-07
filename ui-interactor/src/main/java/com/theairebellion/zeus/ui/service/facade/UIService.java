@@ -27,6 +27,11 @@ import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
 import com.theairebellion.zeus.ui.components.tab.TabService;
 import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
+import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
+import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
+import com.theairebellion.zeus.ui.components.table.service.TableService;
+import com.theairebellion.zeus.ui.components.table.service.TableServiceImpl;
+import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
@@ -52,6 +57,9 @@ public class UIService {
     private final InsertionServiceRegistry serviceRegistry;
     private final InsertionService insertionService;
 
+    private final TableServiceRegistry tableServiceRegistry;
+    private final TableService tableService;
+
 
     public UIService(SmartWebDriver driver) {
         this.driver = driver;
@@ -67,8 +75,10 @@ public class UIService {
         checkboxField = new CheckboxServiceImpl(driver);
         toggleField = new ToggleServiceImpl(driver);
         serviceRegistry = new InsertionServiceRegistry();
+        tableServiceRegistry = new TableServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);
+        tableService = new TableServiceImpl(driver, tableServiceRegistry);
     }
 
 
@@ -78,6 +88,8 @@ public class UIService {
         serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
         serviceRegistry.registerService(SelectComponentType.class, selectField);
         serviceRegistry.registerService(ItemListComponentType.class, listField);
+        tableServiceRegistry.registerService(InputComponentType.class, (TableFilter) inputField);
+        tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputField);
     }
 
 }

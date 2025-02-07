@@ -1,8 +1,11 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ByChained;
@@ -16,9 +19,14 @@ public class ExceptionHandlingWebElementFunctions {
 
     public static SmartWebElement findElementHandling(WebDriver driver, SmartWebElement element, By by) {
         element = updateWebElement(driver, element);
-        WebElement updatedElement = element.getOriginal().findElement(by);
+        WebElement updatedElement = element.findSmartElement(by);
         return new SmartWebElement(updatedElement, driver);
     }
+
+    public static SmartWebElement handleNoSuchElement(WebDriver driver, SmartWebElement element, By by) {
+        return tryToFindElementInIFrame(driver, by);
+    }
+
 
     public static Void clickElementHandling(WebDriver driver, SmartWebElement element) {
         element = updateWebElement(driver, element);
@@ -32,8 +40,8 @@ public class ExceptionHandlingWebElementFunctions {
 
         final List<String> locators = Arrays.asList(element.toString().split("->"));
         final List<String> trimmedLocators = locators.stream()
-                .map(String::trim)
-                .toList();
+                                                 .map(String::trim)
+                                                 .toList();
 
         List<By> locatorsList = new ArrayList<>();
 
@@ -48,9 +56,8 @@ public class ExceptionHandlingWebElementFunctions {
             createLocator(locatorsList, trimmedLocators.get(i), "partial link text", By::partialLinkText);
         }
 
-        WebElement updatedElement = driver.findElement(new ByChained(locatorsList.toArray(new By[0])));
-
-        return new SmartWebElement(updatedElement, driver);
+        return new SmartWebDriver(driver).findSmartElement(
+            new ByChained(locatorsList.toArray(new By[0])), 10);
     }
 
 
@@ -62,10 +69,45 @@ public class ExceptionHandlingWebElementFunctions {
         }
     }
 
+
     private static String findLocator(String locator) {
         String loc = locator.split(":")[1];
         String trimLocked = loc.trim();
         return trimLocked.substring(0, trimLocked.length() - 2);
+    }
+
+
+    private static SmartWebElement tryToFindElementInIFrame(WebDriver driver, By by) {
+        driver.switchTo().defaultContent();
+        return findElementRecursively(driver, by);
+
+    }
+
+
+    private static SmartWebElement findElementRecursively(WebDriver driver, By by) {
+        try {
+            SmartWebElement element = new SmartWebDriver(driver).findSmartElement(by,10);
+            return element;
+        } catch (NoSuchElementException e) {
+        }
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        List<WebElement> frames = (List<WebElement>) js.executeScript(
+            "return Array.from(document.getElementsByTagName('iframe'));"
+        );
+
+        for (WebElement frame : frames) {
+            driver.switchTo().frame(frame);
+
+            WebElement elementInChild = findElementRecursively(driver, by);
+            if (elementInChild != null) {
+                return new SmartWebElement(elementInChild, driver);
+            }
+
+            driver.switchTo().parentFrame();
+        }
+
+        return null;
     }
 
 }
