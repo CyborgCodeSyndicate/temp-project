@@ -4,9 +4,6 @@ import com.theairebellion.zeus.ui.annotations.HandleUIException;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.decorators.WebElementDecorator;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElement;
-import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -25,9 +22,8 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 public class SmartWebElement extends WebElementDecorator {
 
-    @Getter
-    @Setter
-    private WebDriver driver;
+
+    private final WebDriver driver;
     private final WebDriverWait wait;
 
 
@@ -38,18 +34,15 @@ public class SmartWebElement extends WebElementDecorator {
     }
 
 
-    @HandleUIException
     public List<SmartWebElement> findSmartElements(By by) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
-            return SmartFinder.findElementsNoWrap(this, by);
+            return super.findElements(by).stream().map(
+                    element -> new SmartWebElement(element, driver)).toList();
         }
-
         try {
-            if (getUiConfig().useShadowRoot()) {
-                return SmartFinder.findElementsWithShadowRootElement(this, by, this::waitWithoutFailure);
-            } else {
-                return SmartFinder.findElementsNormally(this, by, this::waitWithoutFailure);
-            }
+            wait.until(ExpectedConditions.presenceOfElementLocated(by));
+            return super.findElements(by).stream().map(
+                    element -> new SmartWebElement(element, driver)).toList();
         } catch (Exception e) {
             return handleException("findElements", e, new Object[]{by});
         }
@@ -59,19 +52,16 @@ public class SmartWebElement extends WebElementDecorator {
     @HandleUIException
     public SmartWebElement findSmartElement(By by) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
-            return SmartFinder.findElementNoWrap(this, by);
+            return new SmartWebElement(super.findElement(by), driver);
         }
         try {
-            if (getUiConfig().useShadowRoot()) {
-                return SmartFinder.findElementWithShadowRootElement(this, by, this::waitWithoutFailure);
-            } else {
-                return SmartFinder.findElementNormally(this, by, this::waitWithoutFailure);
-            }
+            waitWithoutFailure(ExpectedConditions.presenceOfElementLocated(by));
+            WebElement element = super.findElement(by);
+            return new SmartWebElement(element, driver);
         } catch (Exception e) {
             return handleException("findElement", e, new Object[]{by});
         }
     }
-
 
     @Override
     @HandleUIException
@@ -87,7 +77,6 @@ public class SmartWebElement extends WebElementDecorator {
         }
     }
 
-
     @Override
     public void clear() {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
@@ -101,7 +90,6 @@ public class SmartWebElement extends WebElementDecorator {
         }
     }
 
-
     @Override
     public void sendKeys(CharSequence... keysToSend) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
@@ -114,7 +102,6 @@ public class SmartWebElement extends WebElementDecorator {
             handleException("sendKeys", e, keysToSend);
         }
     }
-
 
     public void clearAndSendKeys(CharSequence... keysToSend) {
         clear();
@@ -141,12 +128,12 @@ public class SmartWebElement extends WebElementDecorator {
         Throwable cause = exception.getCause() != null ? exception.getCause() : exception;
 
         Optional<ExceptionHandlingWebElement> exceptionHandlingOptional =
-            Arrays.stream(ExceptionHandlingWebElement.values())
-                .filter(enumVal ->
-                            enumVal.getMethodName().equals(methodName)
-                                && Objects.nonNull(enumVal.getExceptionHandlingMap().get(cause.getClass()))
-                )
-                .findFirst();
+                Arrays.stream(ExceptionHandlingWebElement.values())
+                        .filter(enumVal ->
+                                enumVal.getMethodName().equals(methodName)
+                                        && Objects.nonNull(enumVal.getExceptionHandlingMap().get(cause.getClass()))
+                        )
+                        .findFirst();
 
         if (exceptionHandlingOptional.isPresent()) {
             return (T) exceptionHandlingOptional.get()
@@ -158,7 +145,6 @@ public class SmartWebElement extends WebElementDecorator {
             throw exception;
         }
     }
-
 
     @Override
     public String toString() {
@@ -172,6 +158,5 @@ public class SmartWebElement extends WebElementDecorator {
         } catch (Exception ignore) {
         }
     }
-
 
 }

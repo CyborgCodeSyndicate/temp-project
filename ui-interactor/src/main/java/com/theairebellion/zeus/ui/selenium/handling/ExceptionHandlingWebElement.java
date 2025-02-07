@@ -4,8 +4,6 @@ import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.FourFunction;
 import lombok.Getter;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.NoSuchElementException;
@@ -18,14 +16,6 @@ import java.util.Map;
 public enum ExceptionHandlingWebElement {
 
     FIND_ELEMENT("findElement",
-        Map.of(StaleElementReferenceException.class, (driver, smartWebElement, objects) ->
-                                                         ExceptionHandlingWebElementFunctions.findElementHandling(
-                                                             driver, smartWebElement, (By) objects[0]),
-            NoSuchElementException.class, (driver, smartWebElement, objects) ->
-                                              ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver,
-                                                  smartWebElement, (By) objects[0])
-        )
-    ),
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.FIND_ELEMENT, objects[0]),
                     NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
@@ -44,11 +34,6 @@ public enum ExceptionHandlingWebElement {
                             ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, smartWebElement, WebElementAction.CLICK)
             )),
 
-    CLICK_ELEMENT("click", Map.of(
-        StaleElementReferenceException.class, (driver, smartWebElement, objects) ->
-                                                  ExceptionHandlingWebElementFunctions.clickElementHandling(driver,
-                                                      smartWebElement))
-    );
     SEND_KEYS("sendKeys",
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.SEND_KEYS, objects[0]),
@@ -71,8 +56,6 @@ public enum ExceptionHandlingWebElement {
 
 
     private final String methodName;
-    private final Map<Class<? extends Throwable>, TriFunction<WebDriver, SmartWebElement, Object[], Object>>
-        exceptionHandlingMap;
     private final Map<Class<? extends Throwable>, FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object>>
             exceptionHandlingMap;
 

@@ -3,36 +3,30 @@ package com.example.project;
 import com.example.project.base.World;
 import com.example.project.data.cleaner.TestDataCleaner;
 import com.example.project.model.Student;
-import com.example.project.model.TableEntry;
 import com.example.project.preconditions.QuestPreconditions;
 import com.example.project.rest.authentication.AdminAuth;
 import com.example.project.rest.authentication.PortalAuthentication;
+import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
+import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
 import com.theairebellion.zeus.framework.annotation.Ripper;
-import com.theairebellion.zeus.framework.base.BaseTestSequential;
+import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
-import com.theairebellion.zeus.ui.annotations.UI;
-import com.theairebellion.zeus.ui.components.table.base.TableField;
-import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
-import org.junit.jupiter.api.Assertions;
+import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static com.example.project.data.creator.TestDataCreator.Data;
-import static com.example.project.ui.elements.Tables.CAMPAIGNS;
-import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.*;
-import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.tableRowExtractor;
+import static com.example.project.ui.elements.InputFields.USERNAME;
 
-@UI
-// @API
-// @DB
-public class ExampleTest extends BaseTestSequential {
+// @UI
+@API
+@DB
+public class ExampleTest extends BaseTest {
 
 
     // @Test
@@ -79,33 +73,6 @@ public class ExampleTest extends BaseTestSequential {
     @Ripper(targets = {TestDataCleaner.Data.ALL_CREATED_STUDENTS})
     public void testExample1(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student1,
                              @Craft(model = Data.VALID_STUDENT) Late<Student> student2) {
-        ;
-        quest
-            .enters(World.EARTH)
-            .table().readTable(CAMPAIGNS, TableField.of(TableEntry::setStudentName),
-                TableField.of(TableEntry::setStudentSurname))
-            .validate(() -> Assertions.assertEquals(
-                "SomeName",
-                retrieve(tableRowExtractor(CAMPAIGNS, "123", "User"), TableEntry.class).getStudentName().getText(),
-                "Error Message")
-            )
-
-            .validate(() -> Assertions.assertEquals(
-                "SomeName",
-                DefaultStorage.retrieve(CAMPAIGNS, TableEntry.class).getStudentName().getText(),
-                "Error Message")
-            )
-
-
-            .validate(() -> Assertions.assertTrue(
-                DefaultStorage.retrieve(CAMPAIGNS, TableEntry.class).getStudentName().getElement().isDisplayed(),
-                "Error Message")
-            )
-
-            .table().readRow(CAMPAIGNS, List.of("123"), TableField.of(TableEntry::setStudentName),
-                TableField.of(TableEntry::setStudentSurname))
-            .complete();
-
         System.out.println("dsa");
     }
 
@@ -118,41 +85,41 @@ public class ExampleTest extends BaseTestSequential {
     @Ripper(targets = {TestDataCleaner.Data.ALL_CREATED_STUDENTS})
     public void testExample2(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student1,
                              @Craft(model = Data.VALID_STUDENT) Late<Student> student2) {
-
         System.out.println("dsa");
     }
 
-    //
-    // @Test
-    // @PreQuest({
-    //     @Journey(value = QuestPreconditions.Data.LOGIN,
-    //         journeyData = {@JourneyData(Data.USERNAME_JOHN), @JourneyData(Data.PASSWORD_JOHN)})
-    // })
-    //
-    // public void testExample3(Quest quest) {
-    //     quest.enters(World.FORGE)
-    //         .login(testData().username(), "sfsdfsdfs")
-    //         .then()
-    //
-    //         .enters(World.EARTH)
-    //         .input().insert(USERNAME, "vdsfsd")
-    //
-    //
-    //         .input().getErrorMessage(USERNAME)
-    //         .validate(softAssertions ->
-    //                       softAssertions.assertThat(retrieve(StorageKeysUi.UI, USERNAME, String.class))
-    //                           .isEqualTo("Expected Message"))
-    //
-    //         .validate(softAssertions ->
-    //                       softAssertions.assertThat(DefaultStorage.retrieve(USERNAME, String.class))
-    //                           .isEqualTo("Expected Message"))
-    //
-    //
-    //         .input().validateErrorMessage(USERNAME, "Expected Message")
-    //
-    //
-    //         .complete();
-    // }
+
+    @Test
+    @PreQuest({
+        @Journey(value = QuestPreconditions.Data.LOGIN,
+            journeyData = {@JourneyData(Data.USERNAME_JOHN), @JourneyData(Data.PASSWORD_JOHN)})
+    })
+
+    public void testExample3(Quest quest) {
+        quest.enters(World.FORGE)
+            .login(testData().username(), "sfsdfsdfs")
+            .then()
+
+            .enters(World.EARTH)
+            .input().insert(USERNAME, "vdsfsd")
+
+
+            .input().getErrorMessage(USERNAME)
+            .validate(softAssertions ->
+                          softAssertions.assertThat(retrieve(StorageKeysUi.UI, USERNAME, String.class))
+                              .isEqualTo("Expected Message"))
+
+            .validate(softAssertions ->
+                          softAssertions.assertThat(DefaultStorage.retrieve(USERNAME, String.class))
+                              .isEqualTo("Expected Message"))
+
+
+
+            .input().validateErrorMessage(USERNAME, "Expected Message")
+
+
+            .complete();
+    }
 
 
     //    @Override

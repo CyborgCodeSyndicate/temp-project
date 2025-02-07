@@ -4,8 +4,6 @@ import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
-import com.theairebellion.zeus.ui.components.table.service.Table;
-import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -18,10 +16,6 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 public class ComponentFactory {
 
-    //todo rename in future
-    private static final String FRAMEWORK_PACKAGE = "com.theairebellion.zeus";
-
-
     private ComponentFactory() {
     }
 
@@ -31,18 +25,10 @@ public class ComponentFactory {
     }
 
 
-    public static Table getTableComponent(TableComponentType type, SmartWebDriver smartWebDriver) {
-        return getComponent(Table.class, type, getUiConfig().projectPackage(), smartWebDriver);
-    }
-
-
     private static <T> T getComponent(Class<T> interfaceType, ComponentType componentType, String projectPackage,
                                       SmartWebDriver smartWebDriver) {
         List<Class<? extends T>> implementations = ReflectionUtil.findImplementationsOfInterface(interfaceType,
             projectPackage);
-        implementations.addAll(ReflectionUtil.findImplementationsOfInterface(interfaceType,
-            FRAMEWORK_PACKAGE));
-
 
         Optional<Class<? extends T>> implementation = implementations.stream()
                                                           .filter(

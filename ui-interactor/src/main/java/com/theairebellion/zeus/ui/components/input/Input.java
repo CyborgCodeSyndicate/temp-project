@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.components.input;
 
-import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 
@@ -45,14 +44,6 @@ public interface Input {
     String getErrorMessage(String inputFieldLabel);
 
     String getErrorMessage(By inputFieldContainerLocator);
-
-    default void tableInsertion(SmartWebElement cell, String... values) {
-
-    }
-
-    default void tableFilter(SmartWebElement headerCell, FilterStrategy filterStrategy, String... values) {
-
-    }
 
 
 }
