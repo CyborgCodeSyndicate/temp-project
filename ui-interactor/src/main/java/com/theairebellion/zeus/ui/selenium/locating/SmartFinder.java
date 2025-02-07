@@ -26,9 +26,9 @@ public final class SmartFinder {
 
 
     public static SmartWebElement findElementNormally(
-            WebDriver driver,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        WebDriver driver,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         waitFn.accept(ExpectedConditions.presenceOfElementLocated(by));
         return findElementNoWrap(driver, by);
@@ -36,10 +36,10 @@ public final class SmartFinder {
 
 
     public static SmartWebElement findElementWithShadowRootDriver(
-            SmartWebDriver smartDriver,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn,
-            Long waitInMillis
+        SmartWebDriver smartDriver,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn,
+        Long waitInMillis
     ) {
         List<WebElement> elements = smartDriver.getOriginal().findElements(by);
         if (!elements.isEmpty()) {
@@ -48,8 +48,8 @@ public final class SmartFinder {
 
         if (ShadowDomUtils.shadowRootElementsPresent(smartDriver)) {
             return (waitInMillis == null)
-                    ? ShadowDomUtils.findElementInShadowRoots(smartDriver, by)
-                    : ShadowDomUtils.findElementInShadowRoots(smartDriver, by, waitInMillis);
+                       ? ShadowDomUtils.findElementInShadowRoots(smartDriver, by)
+                       : ShadowDomUtils.findElementInShadowRoots(smartDriver, by, waitInMillis);
         } else {
             waitFn.accept(ExpectedConditions.presenceOfElementLocated(by));
             WebElement element = smartDriver.getOriginal().findElement(by);
@@ -59,9 +59,9 @@ public final class SmartFinder {
 
 
     public static SmartWebElement findElementWithShadowRootDriver(
-            SmartWebDriver smartDriver,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        SmartWebDriver smartDriver,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         return findElementWithShadowRootDriver(smartDriver, by, waitFn, null);
     }
@@ -69,15 +69,15 @@ public final class SmartFinder {
 
     public static List<SmartWebElement> findElementsNoWrap(WebDriver driver, By by) {
         return driver.findElements(by).stream()
-                .map(elem -> new SmartWebElement(elem, driver))
-                .collect(Collectors.toList()); // or .toList() if using Java 16+
+                   .map(elem -> new SmartWebElement(elem, driver))
+                   .collect(Collectors.toList()); // or .toList() if using Java 16+
     }
 
 
     public static List<SmartWebElement> findElementsNormally(
-            WebDriver driver,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        WebDriver driver,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         waitFn.accept(ExpectedConditions.presenceOfElementLocated(by));
         List<WebElement> elements = driver.findElements(by);
@@ -91,9 +91,9 @@ public final class SmartFinder {
 
 
     public static List<SmartWebElement> findElementsWithShadowRootDriver(
-            SmartWebDriver smartDriver,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        SmartWebDriver smartDriver,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         WebDriver driver = smartDriver.getOriginal();
         List<WebElement> elements = driver.findElements(by);
@@ -124,9 +124,9 @@ public final class SmartFinder {
 
 
     public static SmartWebElement findElementNormally(
-            SmartWebElement smartElem,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        SmartWebElement smartElem,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         waitFn.accept(ExpectedConditions.presenceOfElementLocated(by));
         WebElement element = smartElem.getOriginal().findElement(by);
@@ -135,9 +135,9 @@ public final class SmartFinder {
 
 
     public static SmartWebElement findElementWithShadowRootElement(
-            SmartWebElement smartElem,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        SmartWebElement smartElem,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         List<WebElement> elements = smartElem.getOriginal().findElements(by);
         if (!elements.isEmpty()) {
@@ -154,15 +154,15 @@ public final class SmartFinder {
 
     public static List<SmartWebElement> findElementsNoWrap(SmartWebElement smartElem, By by) {
         return smartElem.getOriginal().findElements(by).stream()
-                .map(e -> new SmartWebElement(e, smartElem.getDriver()))
-                .collect(Collectors.toList());
+                   .map(e -> new SmartWebElement(e, smartElem.getDriver()))
+                   .collect(Collectors.toList());
     }
 
 
     public static List<SmartWebElement> findElementsNormally(
-            SmartWebElement smartElem,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        SmartWebElement smartElem,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         waitFn.accept(ExpectedConditions.presenceOfElementLocated(by));
         List<WebElement> elements = smartElem.getOriginal().findElements(by);
@@ -176,9 +176,9 @@ public final class SmartFinder {
 
 
     public static List<SmartWebElement> findElementsWithShadowRootElement(
-            SmartWebElement smartElem,
-            By by,
-            Consumer<Function<WebDriver, ?>> waitFn
+        SmartWebElement smartElem,
+        By by,
+        Consumer<Function<WebDriver, ?>> waitFn
     ) {
         List<WebElement> elements = smartElem.getOriginal().findElements(by);
         if (!elements.isEmpty()) {
@@ -195,8 +195,8 @@ public final class SmartFinder {
 
     private static List<SmartWebElement> toSmartWebElements(List<WebElement> elements, WebDriver driver) {
         return elements.stream()
-                .map(e -> new SmartWebElement(e, driver))
-                .collect(Collectors.toList());
+                   .map(e -> new SmartWebElement(e, driver))
+                   .collect(Collectors.toList());
     }
 
 }

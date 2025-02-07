@@ -141,18 +141,18 @@ public class SmartWebElement extends WebElementDecorator {
         Throwable cause = exception.getCause() != null ? exception.getCause() : exception;
 
         Optional<ExceptionHandlingWebElement> exceptionHandlingOptional =
-                Arrays.stream(ExceptionHandlingWebElement.values())
-                        .filter(enumVal ->
-                                enumVal.getMethodName().equals(methodName)
-                                        && Objects.nonNull(enumVal.getExceptionHandlingMap().get(cause.getClass()))
-                        )
-                        .findFirst();
+            Arrays.stream(ExceptionHandlingWebElement.values())
+                .filter(enumVal ->
+                            enumVal.getMethodName().equals(methodName)
+                                && Objects.nonNull(enumVal.getExceptionHandlingMap().get(cause.getClass()))
+                )
+                .findFirst();
 
         if (exceptionHandlingOptional.isPresent()) {
             return (T) exceptionHandlingOptional.get()
-                    .getExceptionHandlingMap()
-                    .get(cause.getClass())
-                    .apply(driver, this, exception, params);
+                           .getExceptionHandlingMap()
+                           .get(cause.getClass())
+                           .apply(driver, this, exception, params);
         } else {
             LogUI.error("No exception handling for this specific exception.");
             throw exception;

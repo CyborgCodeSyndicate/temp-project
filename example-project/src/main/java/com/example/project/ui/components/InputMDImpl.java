@@ -4,6 +4,7 @@ import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.input.Input;
+import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-@ImplementationOfType(InputFieldTypes.MD_INPUT)
+@ImplementationOfType(InputFieldTypes.Data.MD_INPUT)
 public class InputMDImpl extends BaseComponent implements Input {
 
     private static final By INPUT_FIELD_CONTAINER = By.tagName("mat-form-field");
@@ -231,6 +232,19 @@ public class InputMDImpl extends BaseComponent implements Input {
         String classAttribute = fieldElement.getAttribute("class");
         return !classAttribute.contains(FIELD_DISABLE_CLASS_INDICATOR) && !classAttribute.contains(
                 FIELD_READONLY_CLASS_INDICATOR);
+    }
+
+
+    @Override
+    public void tableInsertion(final SmartWebElement cell, final String... values) {
+        Input.super.tableInsertion(cell, values);
+    }
+
+
+    @Override
+    public void tableFilter(final SmartWebElement headerCell, final FilterStrategy filterStrategy,
+                            final String... values) {
+        Input.super.tableFilter(headerCell, filterStrategy, values);
     }
 
 }

@@ -29,28 +29,28 @@ public class ShadowDomUtils {
 
         if (asString.startsWith("By.id: ")) {
             return Map.of("type", "id",
-                    "value", asString.substring("By.id: ".length()).trim());
+                "value", asString.substring("By.id: ".length()).trim());
         } else if (asString.startsWith("By.name: ")) {
             return Map.of("type", "name",
-                    "value", asString.substring("By.name: ".length()).trim());
+                "value", asString.substring("By.name: ".length()).trim());
         } else if (asString.startsWith("By.className: ")) {
             return Map.of("type", "className",
-                    "value", asString.substring("By.className: ".length()).trim());
+                "value", asString.substring("By.className: ".length()).trim());
         } else if (asString.startsWith("By.cssSelector: ")) {
             return Map.of("type", "css",
-                    "value", asString.substring("By.cssSelector: ".length()).trim());
+                "value", asString.substring("By.cssSelector: ".length()).trim());
         } else if (asString.startsWith("By.tagName: ")) {
             return Map.of("type", "tagName",
-                    "value", asString.substring("By.tagName: ".length()).trim());
+                "value", asString.substring("By.tagName: ".length()).trim());
         } else if (asString.startsWith("By.linkText: ")) {
             return Map.of("type", "linkText",
-                    "value", asString.substring("By.linkText: ".length()).trim());
+                "value", asString.substring("By.linkText: ".length()).trim());
         } else if (asString.startsWith("By.partialLinkText: ")) {
             return Map.of("type", "partialLinkText",
-                    "value", asString.substring("By.partialLinkText: ".length()).trim());
+                "value", asString.substring("By.partialLinkText: ".length()).trim());
         } else if (asString.startsWith("By.xpath: ")) {
             throw new IllegalArgumentException(
-                    "Xpath selectors are not supported inside shadow roots. Please change your xpath selector: " + asString + "to any other selenium supported selector");
+                "Xpath selectors are not supported inside shadow roots. Please change your xpath selector: " + asString + "to any other selenium supported selector");
         } else {
             throw new IllegalArgumentException("Unsupported By type: " + asString);
         }
@@ -65,94 +65,94 @@ public class ShadowDomUtils {
      * polling until found or time elapses.
      */
     private static final String FIND_SHADOW_ELEMENT_JS =
-            "function findShadowElement(params) {\n" +
-                    "  const type = params.type;\n" +
-                    "  const value = params.value;\n" +
-                    "  const maxWait = params.maxWait || 10000;\n" +
-                    "  const pollInterval = params.pollInterval || 500;\n" +
-                    "\n" +
-                    "  function findInRoot(root, type, value) {\n" +
-                    "    switch (type) {\n" +
-                    "      case 'id':\n" +
-                    "        return root.querySelector('#' + value);\n" +
-                    "      case 'name':\n" +
-                    "        return root.querySelector('[name=\"' + value + '\"]');\n" +
-                    "      case 'className':\n" +
-                    "        var classes = value.trim().split(/\\s+/).join('.');\n" +
-                    "        return root.querySelector('.' + classes);\n" +
-                    "      case 'css':\n" +
-                    "        return root.querySelector(value);\n" +
-                    "      case 'tagName':\n" +
-                    "        return root.querySelector(value);\n" +
-                    "      case 'xpath':\n" +
-                    "        return document.evaluate(\n" +
-                    "          value,\n" +
-                    "          root,\n" +
-                    "          null,\n" +
-                    "          XPathResult.FIRST_ORDERED_NODE_TYPE,\n" +
-                    "          null\n" +
-                    "        ).singleNodeValue;\n" +
-                    "      case 'linkText':\n" +
-                    "        var anchors = root.querySelectorAll('a');\n" +
-                    "        for (var i = 0; i < anchors.length; i++) {\n" +
-                    "          if (anchors[i].textContent === value) {\n" +
-                    "            return anchors[i];\n" +
-                    "          }\n" +
-                    "        }\n" +
-                    "        return null;\n" +
-                    "      case 'partialLinkText':\n" +
-                    "        var anchors2 = root.querySelectorAll('a');\n" +
-                    "        for (var j = 0; j < anchors2.length; j++) {\n" +
-                    "          if (anchors2[j].textContent.includes(value)) {\n" +
-                    "            return anchors2[j];\n" +
-                    "          }\n" +
-                    "        }\n" +
-                    "        return null;\n" +
-                    "      default:\n" +
-                    "        return null;\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  function searchShadow(rootNodes, type, value) {\n" +
-                    "    for (var i = 0; i < rootNodes.length; i++) {\n" +
-                    "      var node = rootNodes[i];\n" +
-                    "      if (node && node.shadowRoot) {\n" +
-                    "        var found = findInRoot(node.shadowRoot, type, value);\n" +
-                    "        if (found) {\n" +
-                    "          return found;\n" +
-                    "        }\n" +
-                    "        // Recurse deeper\n" +
-                    "        var deeper = searchShadow(node.shadowRoot.querySelectorAll('*'), type, value);\n" +
-                    "        if (deeper) {\n" +
-                    "          return deeper;\n" +
-                    "        }\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "    return null;\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  const startTime = performance.now();\n" +
-                    "  while ((performance.now() - startTime) < maxWait) {\n" +
-                    "    // 1) Try main document\n" +
-                    "    var direct = findInRoot(document, type, value);\n" +
-                    "    if (direct) {\n" +
-                    "      return direct;\n" +
-                    "    }\n" +
-                    "    // 2) Search shadow\n" +
-                    "    var all = document.querySelectorAll('*');\n" +
-                    "    var shadowFound = searchShadow(all, type, value);\n" +
-                    "    if (shadowFound) {\n" +
-                    "      return shadowFound;\n" +
-                    "    }\n" +
-                    "    // 3) Wait/poll\n" +
-                    "    var now = performance.now();\n" +
-                    "    while (performance.now() - now < pollInterval) {\n" +
-                    "      // busy wait - will block the page\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "  return null; // not found\n" +
-                    "} \n" +
-                    "return findShadowElement(arguments[0]);";
+        "function findShadowElement(params) {\n" +
+            "  const type = params.type;\n" +
+            "  const value = params.value;\n" +
+            "  const maxWait = params.maxWait || 10000;\n" +
+            "  const pollInterval = params.pollInterval || 500;\n" +
+            "\n" +
+            "  function findInRoot(root, type, value) {\n" +
+            "    switch (type) {\n" +
+            "      case 'id':\n" +
+            "        return root.querySelector('#' + value);\n" +
+            "      case 'name':\n" +
+            "        return root.querySelector('[name=\"' + value + '\"]');\n" +
+            "      case 'className':\n" +
+            "        var classes = value.trim().split(/\\s+/).join('.');\n" +
+            "        return root.querySelector('.' + classes);\n" +
+            "      case 'css':\n" +
+            "        return root.querySelector(value);\n" +
+            "      case 'tagName':\n" +
+            "        return root.querySelector(value);\n" +
+            "      case 'xpath':\n" +
+            "        return document.evaluate(\n" +
+            "          value,\n" +
+            "          root,\n" +
+            "          null,\n" +
+            "          XPathResult.FIRST_ORDERED_NODE_TYPE,\n" +
+            "          null\n" +
+            "        ).singleNodeValue;\n" +
+            "      case 'linkText':\n" +
+            "        var anchors = root.querySelectorAll('a');\n" +
+            "        for (var i = 0; i < anchors.length; i++) {\n" +
+            "          if (anchors[i].textContent === value) {\n" +
+            "            return anchors[i];\n" +
+            "          }\n" +
+            "        }\n" +
+            "        return null;\n" +
+            "      case 'partialLinkText':\n" +
+            "        var anchors2 = root.querySelectorAll('a');\n" +
+            "        for (var j = 0; j < anchors2.length; j++) {\n" +
+            "          if (anchors2[j].textContent.includes(value)) {\n" +
+            "            return anchors2[j];\n" +
+            "          }\n" +
+            "        }\n" +
+            "        return null;\n" +
+            "      default:\n" +
+            "        return null;\n" +
+            "    }\n" +
+            "  }\n" +
+            "\n" +
+            "  function searchShadow(rootNodes, type, value) {\n" +
+            "    for (var i = 0; i < rootNodes.length; i++) {\n" +
+            "      var node = rootNodes[i];\n" +
+            "      if (node && node.shadowRoot) {\n" +
+            "        var found = findInRoot(node.shadowRoot, type, value);\n" +
+            "        if (found) {\n" +
+            "          return found;\n" +
+            "        }\n" +
+            "        // Recurse deeper\n" +
+            "        var deeper = searchShadow(node.shadowRoot.querySelectorAll('*'), type, value);\n" +
+            "        if (deeper) {\n" +
+            "          return deeper;\n" +
+            "        }\n" +
+            "      }\n" +
+            "    }\n" +
+            "    return null;\n" +
+            "  }\n" +
+            "\n" +
+            "  const startTime = performance.now();\n" +
+            "  while ((performance.now() - startTime) < maxWait) {\n" +
+            "    // 1) Try main document\n" +
+            "    var direct = findInRoot(document, type, value);\n" +
+            "    if (direct) {\n" +
+            "      return direct;\n" +
+            "    }\n" +
+            "    // 2) Search shadow\n" +
+            "    var all = document.querySelectorAll('*');\n" +
+            "    var shadowFound = searchShadow(all, type, value);\n" +
+            "    if (shadowFound) {\n" +
+            "      return shadowFound;\n" +
+            "    }\n" +
+            "    // 3) Wait/poll\n" +
+            "    var now = performance.now();\n" +
+            "    while (performance.now() - now < pollInterval) {\n" +
+            "      // busy wait - will block the page\n" +
+            "    }\n" +
+            "  }\n" +
+            "  return null; // not found\n" +
+            "} \n" +
+            "return findShadowElement(arguments[0]);";
 
 
     /**
@@ -183,102 +183,102 @@ public class ShadowDomUtils {
      * We have a separate JS that searches from `rootElem` rather than `document`.
      */
     private static final String FIND_SHADOW_ELEMENT_FROM_ELEMENT_JS =
-            "function findShadowElementFromRoot(rootElem, params) {\n" +
-                    "  const type = params.type;\n" +
-                    "  const value = params.value;\n" +
-                    "  const maxWait = params.maxWait || 10000;\n" +
-                    "  const pollInterval = params.pollInterval || 500;\n" +
-                    "\n" +
-                    "  function findInRoot(root, type, value) {\n" +
-                    "    // same approach as above\n" +
-                    "    switch (type) {\n" +
-                    "      case 'id':\n" +
-                    "        return root.querySelector('#' + value);\n" +
-                    "      case 'name':\n" +
-                    "        return root.querySelector('[name=\"' + value + '\"]');\n" +
-                    "      case 'className':\n" +
-                    "        var classes = value.trim().split(/\\s+/).join('.');\n" +
-                    "        return root.querySelector('.' + classes);\n" +
-                    "      case 'css':\n" +
-                    "        return root.querySelector(value);\n" +
-                    "      case 'tagName':\n" +
-                    "        return root.querySelector(value);\n" +
-                    "      case 'xpath':\n" +
-                    "        return document.evaluate(value, root, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;\n" +
-                    "      case 'linkText':\n" +
-                    "        var anchors = root.querySelectorAll('a');\n" +
-                    "        for (var i = 0; i < anchors.length; i++) {\n" +
-                    "          if (anchors[i].textContent === value) {\n" +
-                    "            return anchors[i];\n" +
-                    "          }\n" +
-                    "        }\n" +
-                    "        return null;\n" +
-                    "      case 'partialLinkText':\n" +
-                    "        var anchors2 = root.querySelectorAll('a');\n" +
-                    "        for (var j = 0; j < anchors2.length; j++) {\n" +
-                    "          if (anchors2[j].textContent.includes(value)) {\n" +
-                    "            return anchors2[j];\n" +
-                    "          }\n" +
-                    "        }\n" +
-                    "        return null;\n" +
-                    "      default:\n" +
-                    "        return null;\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  function searchShadow(rootNodes, type, value) {\n" +
-                    "    for (var i = 0; i < rootNodes.length; i++) {\n" +
-                    "      var node = rootNodes[i];\n" +
-                    "      if (node && node.shadowRoot) {\n" +
-                    "        var found = findInRoot(node.shadowRoot, type, value);\n" +
-                    "        if (found) {\n" +
-                    "          return found;\n" +
-                    "        }\n" +
-                    "        var deeper = searchShadow(node.shadowRoot.querySelectorAll('*'), type, value);\n" +
-                    "        if (deeper) {\n" +
-                    "          return deeper;\n" +
-                    "        }\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "    return null;\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  const startTime = performance.now();\n" +
-                    "  while ((performance.now() - startTime) < maxWait) {\n" +
-                    "    // 1) if rootElem itself has a shadowRoot\n" +
-                    "    if (rootElem.shadowRoot) {\n" +
-                    "      var shadowDirect = findInRoot(rootElem.shadowRoot, type, value);\n" +
-                    "      if (shadowDirect) {\n" +
-                    "        return shadowDirect;\n" +
-                    "      }\n" +
-                    "      var shadowDeep = searchShadow(rootElem.shadowRoot.querySelectorAll('*'), type, value);\n" +
-                    "      if (shadowDeep) {\n" +
-                    "        return shadowDeep;\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "\n" +
-                    "    // 2) check rootElem itself as a normal DOM container\n" +
-                    "    var direct = findInRoot(rootElem, type, value);\n" +
-                    "    if (direct) {\n" +
-                    "      return direct;\n" +
-                    "    }\n" +
-                    "\n" +
-                    "    // 3) check children shadow roots\n" +
-                    "    var children = rootElem.querySelectorAll('*');\n" +
-                    "    var deeper = searchShadow(children, type, value);\n" +
-                    "    if (deeper) {\n" +
-                    "      return deeper;\n" +
-                    "    }\n" +
-                    "\n" +
-                    "    // 4) poll\n" +
-                    "    var now = performance.now();\n" +
-                    "    while (performance.now() - now < pollInterval) {\n" +
-                    "      // busy wait\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "  return null;\n" +
-                    "}\n" +
-                    "return findShadowElementFromRoot(arguments[0], arguments[1]);";
+        "function findShadowElementFromRoot(rootElem, params) {\n" +
+            "  const type = params.type;\n" +
+            "  const value = params.value;\n" +
+            "  const maxWait = params.maxWait || 10000;\n" +
+            "  const pollInterval = params.pollInterval || 500;\n" +
+            "\n" +
+            "  function findInRoot(root, type, value) {\n" +
+            "    // same approach as above\n" +
+            "    switch (type) {\n" +
+            "      case 'id':\n" +
+            "        return root.querySelector('#' + value);\n" +
+            "      case 'name':\n" +
+            "        return root.querySelector('[name=\"' + value + '\"]');\n" +
+            "      case 'className':\n" +
+            "        var classes = value.trim().split(/\\s+/).join('.');\n" +
+            "        return root.querySelector('.' + classes);\n" +
+            "      case 'css':\n" +
+            "        return root.querySelector(value);\n" +
+            "      case 'tagName':\n" +
+            "        return root.querySelector(value);\n" +
+            "      case 'xpath':\n" +
+            "        return document.evaluate(value, root, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;\n" +
+            "      case 'linkText':\n" +
+            "        var anchors = root.querySelectorAll('a');\n" +
+            "        for (var i = 0; i < anchors.length; i++) {\n" +
+            "          if (anchors[i].textContent === value) {\n" +
+            "            return anchors[i];\n" +
+            "          }\n" +
+            "        }\n" +
+            "        return null;\n" +
+            "      case 'partialLinkText':\n" +
+            "        var anchors2 = root.querySelectorAll('a');\n" +
+            "        for (var j = 0; j < anchors2.length; j++) {\n" +
+            "          if (anchors2[j].textContent.includes(value)) {\n" +
+            "            return anchors2[j];\n" +
+            "          }\n" +
+            "        }\n" +
+            "        return null;\n" +
+            "      default:\n" +
+            "        return null;\n" +
+            "    }\n" +
+            "  }\n" +
+            "\n" +
+            "  function searchShadow(rootNodes, type, value) {\n" +
+            "    for (var i = 0; i < rootNodes.length; i++) {\n" +
+            "      var node = rootNodes[i];\n" +
+            "      if (node && node.shadowRoot) {\n" +
+            "        var found = findInRoot(node.shadowRoot, type, value);\n" +
+            "        if (found) {\n" +
+            "          return found;\n" +
+            "        }\n" +
+            "        var deeper = searchShadow(node.shadowRoot.querySelectorAll('*'), type, value);\n" +
+            "        if (deeper) {\n" +
+            "          return deeper;\n" +
+            "        }\n" +
+            "      }\n" +
+            "    }\n" +
+            "    return null;\n" +
+            "  }\n" +
+            "\n" +
+            "  const startTime = performance.now();\n" +
+            "  while ((performance.now() - startTime) < maxWait) {\n" +
+            "    // 1) if rootElem itself has a shadowRoot\n" +
+            "    if (rootElem.shadowRoot) {\n" +
+            "      var shadowDirect = findInRoot(rootElem.shadowRoot, type, value);\n" +
+            "      if (shadowDirect) {\n" +
+            "        return shadowDirect;\n" +
+            "      }\n" +
+            "      var shadowDeep = searchShadow(rootElem.shadowRoot.querySelectorAll('*'), type, value);\n" +
+            "      if (shadowDeep) {\n" +
+            "        return shadowDeep;\n" +
+            "      }\n" +
+            "    }\n" +
+            "\n" +
+            "    // 2) check rootElem itself as a normal DOM container\n" +
+            "    var direct = findInRoot(rootElem, type, value);\n" +
+            "    if (direct) {\n" +
+            "      return direct;\n" +
+            "    }\n" +
+            "\n" +
+            "    // 3) check children shadow roots\n" +
+            "    var children = rootElem.querySelectorAll('*');\n" +
+            "    var deeper = searchShadow(children, type, value);\n" +
+            "    if (deeper) {\n" +
+            "      return deeper;\n" +
+            "    }\n" +
+            "\n" +
+            "    // 4) poll\n" +
+            "    var now = performance.now();\n" +
+            "    while (performance.now() - now < pollInterval) {\n" +
+            "      // busy wait\n" +
+            "    }\n" +
+            "  }\n" +
+            "  return null;\n" +
+            "}\n" +
+            "return findShadowElementFromRoot(arguments[0], arguments[1]);";
 
 
     /**
@@ -299,7 +299,7 @@ public class ShadowDomUtils {
         selector.put("pollInterval", DEFAULT_POLL_INTERVAL_MS);
 
         WebElement element = (WebElement) js.executeScript(FIND_SHADOW_ELEMENT_FROM_ELEMENT_JS, root.getOriginal(),
-                selector);
+            selector);
         return new SmartWebElement(element, driver);
     }
 
@@ -312,92 +312,92 @@ public class ShadowDomUtils {
      * with an internal poll/wait mechanism.
      */
     private static final String FIND_SHADOW_ELEMENTS_JS =
-            "function findShadowElements(params) {\n" +
-                    "  const type = params.type;\n" +
-                    "  const value = params.value;\n" +
-                    "  const maxWait = params.maxWait || 10000;\n" +
-                    "  const pollInterval = params.pollInterval || 500;\n" +
-                    "\n" +
-                    "  // We'll collect all matches in an array.\n" +
-                    "  function collectInRoot(root, type, value) {\n" +
-                    "    let nodeList = [];\n" +
-                    "    switch (type) {\n" +
-                    "      case 'id':\n" +
-                    "        let elById = root.querySelector('#' + value);\n" +
-                    "        if (elById) nodeList.push(elById);\n" +
-                    "        break;\n" +
-                    "      case 'name':\n" +
-                    "        nodeList = root.querySelectorAll('[name=\"' + value + '\"]');\n" +
-                    "        break;\n" +
-                    "      case 'className':\n" +
-                    "        var classes = value.trim().split(/\\s+/).join('.');\n" +
-                    "        nodeList = root.querySelectorAll('.' + classes);\n" +
-                    "        break;\n" +
-                    "      case 'css':\n" +
-                    "        nodeList = root.querySelectorAll(value);\n" +
-                    "        break;\n" +
-                    "      case 'tagName':\n" +
-                    "        nodeList = root.querySelectorAll(value);\n" +
-                    "        break;\n" +
-                    "      case 'xpath':\n" +
-                    "        let xresult = document.evaluate(value, root, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);\n" +
-                    "        for (let i = 0; i < xresult.snapshotLength; i++) {\n" +
-                    "          nodeList.push(xresult.snapshotItem(i));\n" +
-                    "        }\n" +
-                    "        break;\n" +
-                    "      case 'linkText':\n" +
-                    "        let allAnchors = root.querySelectorAll('a');\n" +
-                    "        allAnchors.forEach(a => {\n" +
-                    "          if (a.textContent === value) nodeList.push(a);\n" +
-                    "        });\n" +
-                    "        break;\n" +
-                    "      case 'partialLinkText':\n" +
-                    "        let anchors2 = root.querySelectorAll('a');\n" +
-                    "        anchors2.forEach(a => {\n" +
-                    "          if (a.textContent.includes(value)) nodeList.push(a);\n" +
-                    "        });\n" +
-                    "        break;\n" +
-                    "    }\n" +
-                    "    return Array.from(nodeList);\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  function collectShadow(rootNodes, type, value, results) {\n" +
-                    "    for (var i = 0; i < rootNodes.length; i++) {\n" +
-                    "      var node = rootNodes[i];\n" +
-                    "      if (node && node.shadowRoot) {\n" +
-                    "        // collect in this shadow root\n" +
-                    "        results.push(...collectInRoot(node.shadowRoot, type, value));\n" +
-                    "        // go deeper\n" +
-                    "        collectShadow(node.shadowRoot.querySelectorAll('*'), type, value, results);\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  function doSearch() {\n" +
-                    "    let found = [];\n" +
-                    "    // 1) main document\n" +
-                    "    found.push(...collectInRoot(document, type, value));\n" +
-                    "    // 2) shadow\n" +
-                    "    let all = document.querySelectorAll('*');\n" +
-                    "    collectShadow(all, type, value, found);\n" +
-                    "    return found;\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  const startTime = performance.now();\n" +
-                    "  while ((performance.now() - startTime) < maxWait) {\n" +
-                    "    let result = doSearch();\n" +
-                    "    if (result.length > 0) {\n" +
-                    "      return result; // return array of elements\n" +
-                    "    }\n" +
-                    "    // poll\n" +
-                    "    var now = performance.now();\n" +
-                    "    while (performance.now() - now < pollInterval) {\n" +
-                    "      // busy wait\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "  return [];\n" +
-                    "}\n" +
-                    "return findShadowElements(arguments[0]);";
+        "function findShadowElements(params) {\n" +
+            "  const type = params.type;\n" +
+            "  const value = params.value;\n" +
+            "  const maxWait = params.maxWait || 10000;\n" +
+            "  const pollInterval = params.pollInterval || 500;\n" +
+            "\n" +
+            "  // We'll collect all matches in an array.\n" +
+            "  function collectInRoot(root, type, value) {\n" +
+            "    let nodeList = [];\n" +
+            "    switch (type) {\n" +
+            "      case 'id':\n" +
+            "        let elById = root.querySelector('#' + value);\n" +
+            "        if (elById) nodeList.push(elById);\n" +
+            "        break;\n" +
+            "      case 'name':\n" +
+            "        nodeList = root.querySelectorAll('[name=\"' + value + '\"]');\n" +
+            "        break;\n" +
+            "      case 'className':\n" +
+            "        var classes = value.trim().split(/\\s+/).join('.');\n" +
+            "        nodeList = root.querySelectorAll('.' + classes);\n" +
+            "        break;\n" +
+            "      case 'css':\n" +
+            "        nodeList = root.querySelectorAll(value);\n" +
+            "        break;\n" +
+            "      case 'tagName':\n" +
+            "        nodeList = root.querySelectorAll(value);\n" +
+            "        break;\n" +
+            "      case 'xpath':\n" +
+            "        let xresult = document.evaluate(value, root, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);\n" +
+            "        for (let i = 0; i < xresult.snapshotLength; i++) {\n" +
+            "          nodeList.push(xresult.snapshotItem(i));\n" +
+            "        }\n" +
+            "        break;\n" +
+            "      case 'linkText':\n" +
+            "        let allAnchors = root.querySelectorAll('a');\n" +
+            "        allAnchors.forEach(a => {\n" +
+            "          if (a.textContent === value) nodeList.push(a);\n" +
+            "        });\n" +
+            "        break;\n" +
+            "      case 'partialLinkText':\n" +
+            "        let anchors2 = root.querySelectorAll('a');\n" +
+            "        anchors2.forEach(a => {\n" +
+            "          if (a.textContent.includes(value)) nodeList.push(a);\n" +
+            "        });\n" +
+            "        break;\n" +
+            "    }\n" +
+            "    return Array.from(nodeList);\n" +
+            "  }\n" +
+            "\n" +
+            "  function collectShadow(rootNodes, type, value, results) {\n" +
+            "    for (var i = 0; i < rootNodes.length; i++) {\n" +
+            "      var node = rootNodes[i];\n" +
+            "      if (node && node.shadowRoot) {\n" +
+            "        // collect in this shadow root\n" +
+            "        results.push(...collectInRoot(node.shadowRoot, type, value));\n" +
+            "        // go deeper\n" +
+            "        collectShadow(node.shadowRoot.querySelectorAll('*'), type, value, results);\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "\n" +
+            "  function doSearch() {\n" +
+            "    let found = [];\n" +
+            "    // 1) main document\n" +
+            "    found.push(...collectInRoot(document, type, value));\n" +
+            "    // 2) shadow\n" +
+            "    let all = document.querySelectorAll('*');\n" +
+            "    collectShadow(all, type, value, found);\n" +
+            "    return found;\n" +
+            "  }\n" +
+            "\n" +
+            "  const startTime = performance.now();\n" +
+            "  while ((performance.now() - startTime) < maxWait) {\n" +
+            "    let result = doSearch();\n" +
+            "    if (result.length > 0) {\n" +
+            "      return result; // return array of elements\n" +
+            "    }\n" +
+            "    // poll\n" +
+            "    var now = performance.now();\n" +
+            "    while (performance.now() - now < pollInterval) {\n" +
+            "      // busy wait\n" +
+            "    }\n" +
+            "  }\n" +
+            "  return [];\n" +
+            "}\n" +
+            "return findShadowElements(arguments[0]);";
 
 
     /**
@@ -418,7 +418,7 @@ public class ShadowDomUtils {
         // The returned object should be a List<RemoteWebElement> if found
         if (result instanceof java.util.List) {
             return ((java.util.List<WebElement>) result).stream()
-                    .map(webElement -> new SmartWebElement(webElement, driver.getOriginal())).toList();
+                       .map(webElement -> new SmartWebElement(webElement, driver.getOriginal())).toList();
         }
         // otherwise return empty
         return java.util.Collections.emptyList();
@@ -430,87 +430,87 @@ public class ShadowDomUtils {
      * its shadowRoot if present) and recursing into any shadow roots below it.
      */
     private static final String FIND_SHADOW_ELEMENTS_FROM_ELEMENT_JS =
-            "function findShadowElementsFromRoot(rootElem, params) {\n" +
-                    "  const type = params.type;\n" +
-                    "  const value = params.value;\n" +
-                    "  const maxWait = params.maxWait || 10000;\n" +
-                    "  const pollInterval = params.pollInterval || 500;\n" +
-                    "\n" +
-                    "  function collectInRoot(root, type, value) {\n" +
-                    "    let nodeList = [];\n" +
-                    "    switch (type) {\n" +
-                    "      case 'id':\n" +
-                    "        let elById = root.querySelector('#' + value);\n" +
-                    "        if (elById) nodeList.push(elById);\n" +
-                    "        break;\n" +
-                    "      case 'name':\n" +
-                    "        nodeList = root.querySelectorAll('[name=\"' + value + '\"]');\n" +
-                    "        break;\n" +
-                    "      case 'className':\n" +
-                    "        var classes = value.trim().split(/\\s+/).join('.');\n" +
-                    "        nodeList = root.querySelectorAll('.' + classes);\n" +
-                    "        break;\n" +
-                    "      case 'css':\n" +
-                    "        nodeList = root.querySelectorAll(value);\n" +
-                    "        break;\n" +
-                    "      case 'tagName':\n" +
-                    "        nodeList = root.querySelectorAll(value);\n" +
-                    "        break;\n" +
-                    "      case 'xpath':\n" +
-                    "        let xres = document.evaluate(value, root, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);\n" +
-                    "        for (let i = 0; i < xres.snapshotLength; i++) {\n" +
-                    "          nodeList.push(xres.snapshotItem(i));\n" +
-                    "        }\n" +
-                    "        break;\n" +
-                    "      case 'linkText':\n" +
-                    "        let allAnchors = root.querySelectorAll('a');\n" +
-                    "        allAnchors.forEach(a => { if (a.textContent === value) nodeList.push(a); });\n" +
-                    "        break;\n" +
-                    "      case 'partialLinkText':\n" +
-                    "        let anchors2 = root.querySelectorAll('a');\n" +
-                    "        anchors2.forEach(a => { if (a.textContent.includes(value)) nodeList.push(a); });\n" +
-                    "        break;\n" +
-                    "    }\n" +
-                    "    return Array.from(nodeList);\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  function collectShadow(rootNodes, type, value, results) {\n" +
-                    "    for (var i = 0; i < rootNodes.length; i++) {\n" +
-                    "      var node = rootNodes[i];\n" +
-                    "      if (node && node.shadowRoot) {\n" +
-                    "        results.push(...collectInRoot(node.shadowRoot, type, value));\n" +
-                    "        collectShadow(node.shadowRoot.querySelectorAll('*'), type, value, results);\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  function doSearch() {\n" +
-                    "    let found = [];\n" +
-                    "    // Check rootElem's shadow root\n" +
-                    "    if (rootElem.shadowRoot) {\n" +
-                    "      found.push(...collectInRoot(rootElem.shadowRoot, type, value));\n" +
-                    "      collectShadow(rootElem.shadowRoot.querySelectorAll('*'), type, value, found);\n" +
-                    "    }\n" +
-                    "    // Also treat rootElem as a normal DOM container\n" +
-                    "    found.push(...collectInRoot(rootElem, type, value));\n" +
-                    "    collectShadow(rootElem.querySelectorAll('*'), type, value, found);\n" +
-                    "    return found;\n" +
-                    "  }\n" +
-                    "\n" +
-                    "  const startTime = performance.now();\n" +
-                    "  while ((performance.now() - startTime) < maxWait) {\n" +
-                    "    let result = doSearch();\n" +
-                    "    if (result.length > 0) {\n" +
-                    "      return result;\n" +
-                    "    }\n" +
-                    "    var now = performance.now();\n" +
-                    "    while (performance.now() - now < pollInterval) {\n" +
-                    "      // busy wait\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "  return [];\n" +
-                    "}\n" +
-                    "return findShadowElementsFromRoot(arguments[0], arguments[1]);";
+        "function findShadowElementsFromRoot(rootElem, params) {\n" +
+            "  const type = params.type;\n" +
+            "  const value = params.value;\n" +
+            "  const maxWait = params.maxWait || 10000;\n" +
+            "  const pollInterval = params.pollInterval || 500;\n" +
+            "\n" +
+            "  function collectInRoot(root, type, value) {\n" +
+            "    let nodeList = [];\n" +
+            "    switch (type) {\n" +
+            "      case 'id':\n" +
+            "        let elById = root.querySelector('#' + value);\n" +
+            "        if (elById) nodeList.push(elById);\n" +
+            "        break;\n" +
+            "      case 'name':\n" +
+            "        nodeList = root.querySelectorAll('[name=\"' + value + '\"]');\n" +
+            "        break;\n" +
+            "      case 'className':\n" +
+            "        var classes = value.trim().split(/\\s+/).join('.');\n" +
+            "        nodeList = root.querySelectorAll('.' + classes);\n" +
+            "        break;\n" +
+            "      case 'css':\n" +
+            "        nodeList = root.querySelectorAll(value);\n" +
+            "        break;\n" +
+            "      case 'tagName':\n" +
+            "        nodeList = root.querySelectorAll(value);\n" +
+            "        break;\n" +
+            "      case 'xpath':\n" +
+            "        let xres = document.evaluate(value, root, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);\n" +
+            "        for (let i = 0; i < xres.snapshotLength; i++) {\n" +
+            "          nodeList.push(xres.snapshotItem(i));\n" +
+            "        }\n" +
+            "        break;\n" +
+            "      case 'linkText':\n" +
+            "        let allAnchors = root.querySelectorAll('a');\n" +
+            "        allAnchors.forEach(a => { if (a.textContent === value) nodeList.push(a); });\n" +
+            "        break;\n" +
+            "      case 'partialLinkText':\n" +
+            "        let anchors2 = root.querySelectorAll('a');\n" +
+            "        anchors2.forEach(a => { if (a.textContent.includes(value)) nodeList.push(a); });\n" +
+            "        break;\n" +
+            "    }\n" +
+            "    return Array.from(nodeList);\n" +
+            "  }\n" +
+            "\n" +
+            "  function collectShadow(rootNodes, type, value, results) {\n" +
+            "    for (var i = 0; i < rootNodes.length; i++) {\n" +
+            "      var node = rootNodes[i];\n" +
+            "      if (node && node.shadowRoot) {\n" +
+            "        results.push(...collectInRoot(node.shadowRoot, type, value));\n" +
+            "        collectShadow(node.shadowRoot.querySelectorAll('*'), type, value, results);\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "\n" +
+            "  function doSearch() {\n" +
+            "    let found = [];\n" +
+            "    // Check rootElem's shadow root\n" +
+            "    if (rootElem.shadowRoot) {\n" +
+            "      found.push(...collectInRoot(rootElem.shadowRoot, type, value));\n" +
+            "      collectShadow(rootElem.shadowRoot.querySelectorAll('*'), type, value, found);\n" +
+            "    }\n" +
+            "    // Also treat rootElem as a normal DOM container\n" +
+            "    found.push(...collectInRoot(rootElem, type, value));\n" +
+            "    collectShadow(rootElem.querySelectorAll('*'), type, value, found);\n" +
+            "    return found;\n" +
+            "  }\n" +
+            "\n" +
+            "  const startTime = performance.now();\n" +
+            "  while ((performance.now() - startTime) < maxWait) {\n" +
+            "    let result = doSearch();\n" +
+            "    if (result.length > 0) {\n" +
+            "      return result;\n" +
+            "    }\n" +
+            "    var now = performance.now();\n" +
+            "    while (performance.now() - now < pollInterval) {\n" +
+            "      // busy wait\n" +
+            "    }\n" +
+            "  }\n" +
+            "  return [];\n" +
+            "}\n" +
+            "return findShadowElementsFromRoot(arguments[0], arguments[1]);";
 
 
     /**
@@ -533,7 +533,7 @@ public class ShadowDomUtils {
         Object result = js.executeScript(FIND_SHADOW_ELEMENTS_FROM_ELEMENT_JS, root.getOriginal(), selector);
         if (result instanceof java.util.List) {
             return ((java.util.List<WebElement>) result).stream()
-                    .map(webElement -> new SmartWebElement(webElement, driver)).toList();
+                       .map(webElement -> new SmartWebElement(webElement, driver)).toList();
         }
         return java.util.Collections.emptyList();
     }
@@ -542,7 +542,7 @@ public class ShadowDomUtils {
     public static boolean shadowRootElementsPresent(SmartWebDriver driver) {
         JavascriptExecutor js = (JavascriptExecutor) driver.getOriginal();
         String script =
-                "return Array.from(document.querySelectorAll('*')).some(el => el.shadowRoot);";
+            "return Array.from(document.querySelectorAll('*')).some(el => el.shadowRoot);";
         Boolean result = (Boolean) js.executeScript(script);
         return result != null && result;
     }
@@ -564,11 +564,11 @@ public class ShadowDomUtils {
 
         // Check if the root itself has a shadowRoot or any of its descendants
         String script =
-                "if (arguments[0].shadowRoot) { " +
-                        "  return true; " +
-                        "} else { " +
-                        "  return Array.from(arguments[0].querySelectorAll('*')).some(el => el.shadowRoot);" +
-                        "}";
+            "if (arguments[0].shadowRoot) { " +
+                "  return true; " +
+                "} else { " +
+                "  return Array.from(arguments[0].querySelectorAll('*')).some(el => el.shadowRoot);" +
+                "}";
         Boolean result = (Boolean) js.executeScript(script, root.getOriginal());
         return result != null && result;
     }

@@ -4,23 +4,22 @@ import com.example.project.ui.functions.SharedUI;
 import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.InputUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
 
 import java.util.function.Consumer;
 
-public enum InputFields implements UIElement {
+public enum InputFields implements InputUIElement {
 
     USERNAME(
             By.cssSelector("locator_username"),
-            InputFieldTypes.MD_INPUT_TYPE,
+            InputFieldTypes.MD_INPUT,
             SharedUI.WAIT_FOR_LOADING,
             SharedUI.WAIT_FOR_LOADING
     ),
     PASSWORD(
-            By.cssSelector("locator_password"),
-            InputFieldTypes.MD_INPUT_TYPE
+            By.cssSelector("locator_password")
     );
 
     public static final class Data {
@@ -39,6 +38,11 @@ public enum InputFields implements UIElement {
     private final Consumer<SmartWebDriver> before;
     private final Consumer<SmartWebDriver> after;
 
+    InputFields(By locator) {
+        this(locator, null, smartWebDriver -> {
+        }, smartWebDriver -> {
+        });
+    }
 
     InputFields(By locator, InputComponentType componentType) {
         this(locator, componentType, smartWebDriver -> {
@@ -74,6 +78,9 @@ public enum InputFields implements UIElement {
 
     @Override
     public <T extends ComponentType> T componentType() {
+        if(componentType==null){
+            return InputUIElement.super.componentType();
+        }
         return (T) componentType;
     }
 
