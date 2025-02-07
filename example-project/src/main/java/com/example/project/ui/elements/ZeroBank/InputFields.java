@@ -3,10 +3,11 @@ package com.example.project.ui.elements.ZeroBank;
 import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
+import com.theairebellion.zeus.ui.selenium.InputUIElement;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import org.openqa.selenium.By;
 
-public enum InputFields implements UIElement {
+public enum InputFields implements InputUIElement {
 
     USERNAME_FIELD(By.id("user_login"), InputFieldTypes.BOOTSTRAP_INPUT_TYPE),
     PASSWORD_FIELD(By.id("user_password"), InputFieldTypes.BOOTSTRAP_INPUT_TYPE),

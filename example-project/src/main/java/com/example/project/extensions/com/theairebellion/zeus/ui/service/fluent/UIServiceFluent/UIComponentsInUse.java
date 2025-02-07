@@ -2,6 +2,7 @@ package com.example.project.extensions.com.theairebellion.zeus.ui.service.fluent
 
 import com.theairebellion.zeus.ui.enums.Features;
 import com.theairebellion.zeus.ui.service.fluent.*;
+import com.theairebellion.zeus.ui.service.tables.TableServiceFluent;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import manifold.ext.rt.api.Extension;
 import manifold.ext.rt.api.This;

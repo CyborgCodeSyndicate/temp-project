@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-@ImplementationOfType(InputFieldTypes.BOOTSTRAP_INPUT)
+@ImplementationOfType(InputFieldTypes.Data.BOOTSTRAP_INPUT)
 public class InputBootstrapImpl extends BaseComponent implements Input {
 
     private static final By INPUT_FIELD_CONTAINER = By.tagName("form");
