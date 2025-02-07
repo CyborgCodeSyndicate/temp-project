@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetUsersResponse {
+
     private int page;
     @JsonProperty("per_page")
     private int perPage;
@@ -21,4 +22,5 @@ public class GetUsersResponse {
     private int totalPages;
     private List<DataResponse> data;
     private SupportResponse support;
+
 }

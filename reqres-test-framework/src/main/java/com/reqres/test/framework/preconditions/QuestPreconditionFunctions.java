@@ -27,4 +27,5 @@ public class QuestPreconditionFunctions {
                         userObject,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build());
     }
+
 }

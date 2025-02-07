@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DataResponse {
+
     private int id;
     private String email;
     @JsonProperty("first_name")
@@ -18,4 +19,5 @@ public class DataResponse {
     @JsonProperty("last_name")
     private String lastName;
     private String avatar;
+
 }

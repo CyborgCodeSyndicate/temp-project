@@ -64,4 +64,5 @@ public class ReqresApiNewTest extends BaseTest {
                         Assertion.builder().target(STATUS).type(IS).expected(200).build()
                 ).complete();
     }
+
 }

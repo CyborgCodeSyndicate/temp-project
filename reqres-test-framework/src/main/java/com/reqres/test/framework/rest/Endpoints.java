@@ -6,6 +6,7 @@ import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
 public enum Endpoints implements Endpoint {
+
     GET_ALL_USERS(Method.GET, "/users?{page}"),
     GET_USER(Method.GET, "/users/{id}"),
     CREATE_USER(Method.POST, "/users"),
@@ -41,4 +42,5 @@ public enum Endpoints implements Endpoint {
         spec.contentType(ContentType.JSON);
         return spec;
     }
+
 }

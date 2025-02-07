@@ -4,6 +4,7 @@ import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 
 public enum TestDataCreator implements DataForge {
+
     USER_LEADER_FLOW(DataCreationFunctions::createLeaderUser),
     LOGIN_ADMIN_USER_FLOW(DataCreationFunctions::createAdminLoginUser),
     USER_JUNIOR_FLOW(DataCreationFunctions::createJuniorUser),
@@ -31,4 +32,5 @@ public enum TestDataCreator implements DataForge {
     public Enum<?> enumImpl() {
         return this;
     }
+
 }

@@ -27,4 +27,5 @@ public enum QuestPreconditions implements PreQuestJourney {
     public Enum<?> enumImpl() {
         return this;
     }
+
 }

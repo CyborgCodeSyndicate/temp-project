@@ -22,4 +22,5 @@ public class DataCleanUpFunctions {
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
                 );
     }
+
 }

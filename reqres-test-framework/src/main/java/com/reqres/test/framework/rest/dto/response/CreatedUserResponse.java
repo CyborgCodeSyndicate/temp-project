@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatedUserResponse {
+
     private String name;
     private String job;
     private String id;
     private String createdAt;
+
 }

@@ -244,4 +244,5 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
                 );
     }
+
 }

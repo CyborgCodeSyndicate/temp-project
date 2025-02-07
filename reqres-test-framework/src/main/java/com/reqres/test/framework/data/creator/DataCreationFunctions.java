@@ -14,6 +14,7 @@ import manifold.ext.rt.api.Jailbreak;
 
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER_FLOW;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
+
 public class DataCreationFunctions {
 
     public static User createLeaderUser() {

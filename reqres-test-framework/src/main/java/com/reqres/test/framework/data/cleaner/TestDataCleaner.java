@@ -7,6 +7,7 @@ import manifold.ext.rt.api.Jailbreak;
 import java.util.function.Consumer;
 
 public enum TestDataCleaner implements DataRipper {
+
     DELETE_ADMIN_USER_FLOW(DataCleanUpFunctions::deleteAdminUser);
 
     public static final String DELETE_ADMIN_USER = "DELETE_ADMIN_USER_FLOW";
@@ -26,4 +27,5 @@ public enum TestDataCleaner implements DataRipper {
     public Enum<?> enumImpl() {
         return this;
     }
+
 }

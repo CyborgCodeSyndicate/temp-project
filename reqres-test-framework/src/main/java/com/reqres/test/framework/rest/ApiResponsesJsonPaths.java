@@ -1,6 +1,7 @@
 package com.reqres.test.framework.rest;
 
 public enum ApiResponsesJsonPaths {
+
     TOTAL("total"),
     TOTAL_PAGES("total_pages"),
     PER_PAGE("per_page"),
@@ -33,4 +34,5 @@ public enum ApiResponsesJsonPaths {
         }
         return jsonPath;
     }
+
 }
