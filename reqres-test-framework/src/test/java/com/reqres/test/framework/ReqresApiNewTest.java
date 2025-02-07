@@ -26,10 +26,10 @@ public class ReqresApiNewTest extends BaseTest {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         GET_ALL_USERS.withQueryParam("page", 2),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),
-                        Assertion.builder(Integer.class).target(BODY).key("page").type(IS).expected(2).build(),
-                        Assertion.builder(Integer.class).target(BODY).key("data[0].id").type(IS).expected(7).build(),
-                        Assertion.builder(String.class).target(BODY).key("data[1].email").type(IS).expected("lindsay.ferguson@reqres.in").build()
+                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),
+                        Assertion.builder().target(BODY).key("page").type(IS).expected(2).build(),
+                        Assertion.builder().target(BODY).key("data[0].id").type(IS).expected(7).build(),
+                        Assertion.builder().target(BODY).key("data[1].email").type(IS).expected("lindsay.ferguson@reqres.in").build()
                 ).complete();
     }
 
@@ -38,9 +38,9 @@ public class ReqresApiNewTest extends BaseTest {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         GET_USER.withPathParam("id", 3),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).soft(true).build(),
-                        Assertion.builder(String.class).target(BODY).key("data.email").type(IS).expected("emma.wong@reqres.in").soft(true).build(),
-                        Assertion.builder(String.class).target(BODY).key("support.url").type(IS).expected("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral").soft(true).build()
+                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).soft(true).build(),
+                        Assertion.builder().target(BODY).key("data.email").type(IS).expected("emma.wong@reqres.in").soft(true).build(),
+                        Assertion.builder().target(BODY).key("support.url").type(IS).expected("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral").soft(true).build()
                 ).complete();
     }
 
@@ -50,8 +50,8 @@ public class ReqresApiNewTest extends BaseTest {
                 .requestAndValidate(
                         CREATE_USER,
                         user,
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(201).build(),
-                        Assertion.builder(String.class).target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build()
+                        Assertion.builder().target(STATUS).type(IS).expected(201).build(),
+                        Assertion.builder().target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build()
                 ).complete();
     }
 
@@ -61,7 +61,7 @@ public class ReqresApiNewTest extends BaseTest {
                 .requestAndValidate(
                         LOGIN_USER,
                         loginUser,
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(200).build()
+                        Assertion.builder().target(STATUS).type(IS).expected(200).build()
                 ).complete();
     }
 }

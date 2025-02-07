@@ -25,6 +25,6 @@ public class QuestPreconditionFunctions {
                 .requestAndValidate(
                         CREATE_USER,
                         userObject,
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build());
+                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build());
     }
 }

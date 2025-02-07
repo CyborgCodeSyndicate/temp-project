@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
+
 @Odyssey
 @SpringBootTest(
     classes = {TestConfig.class},
@@ -44,6 +46,11 @@ public class BaseTest {
         return quest.getStorage().sub(subKey).get(key, clazz);
     }
 
+    protected <T> List<T> retrieveAllByClass(Enum<?> subKey, Enum<?> key, Class<T> clazz) {
+        @Jailbreak Quest quest = QuestHolder.get();
+        LogTest.extended("Fetching all data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
+        return quest.getStorage().sub(subKey).getAllByClass(key, clazz);
+    }
 
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         @Jailbreak Quest quest = QuestHolder.get();

@@ -33,7 +33,7 @@ public class CustomService extends FluentService {
                                         .getBody()
                                         .jsonPath()
                                         .getString("token")),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
+                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
                 );
         return this;
     }

@@ -1,6 +1,6 @@
 package com.reqres.test.framework.rest;
 
-public enum ApiResponseField {
+public enum ApiResponsesJsonPaths {
     TOTAL("total"),
     TOTAL_PAGES("total_pages"),
     PER_PAGE("per_page"),
@@ -9,11 +9,11 @@ public enum ApiResponseField {
     DATA("data"),
     USER_ID("data[%d].id"),
     USER_FIRST_NAME("data[%d].first_name"),
-    USER_AVATAR("data[%d].avatar");
+    USER_AVATAR_BY_INDEX("data[%d].avatar");
 
     private final String jsonPath;
 
-    ApiResponseField(String jsonPath) {
+    ApiResponsesJsonPaths(String jsonPath) {
         this.jsonPath = jsonPath;
     }
 

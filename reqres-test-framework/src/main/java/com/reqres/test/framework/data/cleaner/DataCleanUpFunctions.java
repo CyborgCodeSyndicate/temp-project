@@ -19,7 +19,7 @@ public class DataCleanUpFunctions {
         enters
                 .requestAndValidate(
                         DELETE_USER.withPathParam("id", 2),
-                        Assertion.builder(Integer.class).target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
+                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
                 );
     }
 }
