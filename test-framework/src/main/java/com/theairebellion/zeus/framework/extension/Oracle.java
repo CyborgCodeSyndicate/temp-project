@@ -1,19 +1,29 @@
 package com.theairebellion.zeus.framework.extension;
 
+import com.theairebellion.zeus.framework.annotation.TestStaticData;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestFactory;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import manifold.ext.rt.api.Jailbreak;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
+import static com.theairebellion.zeus.framework.storage.StorageKeysTest.STATIC_DATA;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
@@ -36,7 +46,12 @@ public class Oracle implements ParameterResolver {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
         QuestFactory questFactory = appCtx.getBean(QuestFactory.class);
 
+
         @Jailbreak Quest quest = questFactory.createQuest();
+        Map<String, Object> staticTestData = getStaticTestData(extensionContext);
+        quest.getStorage().put(STATIC_DATA, staticTestData);
+
+
         LogTest.info("Quest crafted for scenario: '{}'.", extensionContext.getDisplayName());
         ExtensionContext.Store store = extensionContext.getStore(GLOBAL);
         @SuppressWarnings("unchecked")
@@ -46,6 +61,25 @@ public class Oracle implements ParameterResolver {
         }
         store.put(QUEST, quest);
         return quest;
+    }
+
+
+    private static Map<String, Object> getStaticTestData(final ExtensionContext extensionContext) {
+        Optional<Method> testMethod = extensionContext.getTestMethod();
+        if (testMethod.isPresent()) {
+            TestStaticData staticDataAnnotation = testMethod.get().getAnnotation(TestStaticData.class);
+            if (staticDataAnnotation != null) {
+                try {
+                    return staticDataAnnotation.value().getDeclaredConstructor()
+                               .newInstance().testStaticData();
+
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
     }
 
 }

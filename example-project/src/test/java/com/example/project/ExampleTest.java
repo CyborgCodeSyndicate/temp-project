@@ -18,7 +18,6 @@ import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
-import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,6 @@ import java.util.List;
 
 import static com.example.project.data.creator.TestDataCreator.Data;
 import static com.example.project.ui.elements.Tables.CAMPAIGNS;
-import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.*;
 import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.tableRowExtractor;
 
 @UI
@@ -69,6 +67,10 @@ public class ExampleTest extends BaseTestSequential {
     //         .interceptor().validateResponseHaveStatus("api", 2)
     //         .complete();
     // }
+
+    private record UserDto(String name, int age) {
+
+    }
 
 
     @Test
