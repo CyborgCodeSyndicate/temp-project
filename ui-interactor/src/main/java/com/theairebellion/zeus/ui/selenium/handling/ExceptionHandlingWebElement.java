@@ -31,7 +31,7 @@ public enum ExceptionHandlingWebElement {
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.CLICK),
                     NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.CLICK)
+                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.CLICK, objects[0])
             )),
 
     SEND_KEYS("sendKeys",
@@ -51,7 +51,16 @@ public enum ExceptionHandlingWebElement {
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.SUBMIT),
                     NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.SUBMIT)
+                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.SUBMIT, objects[0])
+            )),
+
+    CLEAR("clear",
+            Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
+                            ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.CLEAR),
+                    ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
+                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.CLEAR),
+                    NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
+                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.CLEAR, objects[0])
             ));
 
 

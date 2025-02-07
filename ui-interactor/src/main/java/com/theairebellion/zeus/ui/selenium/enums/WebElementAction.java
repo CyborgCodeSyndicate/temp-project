@@ -32,7 +32,7 @@ public enum WebElementAction {
 
     CLICK("click") {
         @Override
-        public Object performAction(WebDriver driver, WebElement element, Object... args) {
+        public Void performAction(WebDriver driver, WebElement element, Object... args) {
             element.click();
             return null;
         }
@@ -40,7 +40,7 @@ public enum WebElementAction {
 
     SEND_KEYS("sendKeys") {
         @Override
-        public Object performAction(WebDriver driver, WebElement element, Object... args) {
+        public Void performAction(WebDriver driver, WebElement element, Object... args) {
             element.sendKeys((String) args[0]);
             return null;
         }
@@ -48,8 +48,16 @@ public enum WebElementAction {
 
     SUBMIT("submit") {
         @Override
-        public Object performAction(WebDriver driver, WebElement element, Object... args) {
+        public Void performAction(WebDriver driver, WebElement element, Object... args) {
             element.submit();
+            return null;
+        }
+    },
+
+    CLEAR("clear") {
+        @Override
+        public Void performAction(WebDriver driver, WebElement element, Object... args) {
+            element.clear();
             return null;
         }
     };

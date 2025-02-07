@@ -23,9 +23,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.theairebellion.zeus.ui.selenium.enums.WebElementAction.CLICK;
-import static com.theairebellion.zeus.ui.selenium.enums.WebElementAction.SEND_KEYS;
-import static com.theairebellion.zeus.ui.selenium.enums.WebElementAction.SUBMIT;
+import static com.theairebellion.zeus.ui.selenium.enums.WebElementAction.*;
 
 
 public class ExceptionHandlingWebElementFunctions {
@@ -36,8 +34,8 @@ public class ExceptionHandlingWebElementFunctions {
         element = updateWebElement(driver, element);
 
         return switch (webElementAction) {
-            case FIND_ELEMENT -> new SmartWebElement(element.findSmartElement((By) args[0]), driver);
-            case FIND_ELEMENTS -> null;
+            case FIND_ELEMENT -> FIND_ELEMENT.performAction(driver, element, args[0]);
+            case FIND_ELEMENTS -> FIND_ELEMENTS.performAction(driver, element, args[0]);
             case CLICK -> {
                 CLICK.performAction(driver, element.getOriginal());
                 yield null;
@@ -48,6 +46,10 @@ public class ExceptionHandlingWebElementFunctions {
             }
             case SUBMIT -> {
                 SUBMIT.performAction(driver, element.getOriginal());
+                yield null;
+            }
+            case CLEAR -> {
+                CLEAR.performAction(driver, element.getOriginal());
                 yield null;
             }
         };
@@ -87,6 +89,10 @@ public class ExceptionHandlingWebElementFunctions {
                 SEND_KEYS.performAction(driver, element.getOriginal(), args[0]);
                 yield null;
             }
+            case CLEAR -> {
+                CLEAR.performAction(driver, element.getOriginal());
+                yield null;
+            }
             default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);
         };
     }
@@ -109,6 +115,10 @@ public class ExceptionHandlingWebElementFunctions {
             }
             case SUBMIT -> {
                 SUBMIT.performAction(driver, clickableElement);
+                yield null;
+            }
+            case CLEAR -> {
+                CLEAR.performAction(driver, clickableElement);
                 yield null;
             }
             default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);

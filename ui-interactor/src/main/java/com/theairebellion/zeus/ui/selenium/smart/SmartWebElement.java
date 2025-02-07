@@ -89,6 +89,7 @@ public class SmartWebElement extends WebElementDecorator {
 
 
     @Override
+    @HandleUIException
     public void clear() {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
             super.clear();
@@ -111,7 +112,7 @@ public class SmartWebElement extends WebElementDecorator {
             waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
             super.sendKeys(keysToSend);
         } catch (Exception e) {
-            handleException("clear", e, keysToSend);
+            handleException("sendKeys", e, keysToSend);
         }
     }
 
