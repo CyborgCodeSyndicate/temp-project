@@ -1,64 +1,75 @@
 package com.theairebellion.zeus.validator.core;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AssertionResultTest {
+class AssertionResultTest {
 
     @Test
     void testConstructorAndGetters() {
-        AssertionResult<String> r = new AssertionResult<>(
+        var result = new AssertionResult<>(
                 true,
                 "IS",
                 "Hello",
                 "Hello",
                 false
         );
-        assertTrue(r.isPassed());
-        assertEquals("IS", r.getDescription());
-        assertEquals("Hello", r.getExpectedValue());
-        assertEquals("Hello", r.getActualValue());
-        assertFalse(r.isSoft());
+
+        assertAll(
+                () -> assertTrue(result.isPassed()),
+                () -> assertEquals("IS", result.getDescription()),
+                () -> assertEquals("Hello", result.getExpectedValue()),
+                () -> assertEquals("Hello", result.getActualValue()),
+                () -> assertFalse(result.isSoft())
+        );
     }
 
     @Test
     void testToString_Passed() {
-        AssertionResult<String> r = new AssertionResult<>(
+        var result = new AssertionResult<>(
                 true,
                 "IS",
                 "Hello",
                 "Hello",
                 false
         );
-        String msg = r.toString();
-        assertTrue(msg.contains("✔ Validation passed: IS"));
-        assertTrue(msg.contains("Expected: Hello, Actual: Hello"));
+
+        var msg = result.toString();
+        assertAll(
+                () -> assertTrue(msg.contains("✔ Validation passed: IS")),
+                () -> assertTrue(msg.contains("Expected: Hello, Actual: Hello"))
+        );
     }
 
     @Test
     void testToString_Failed() {
-        AssertionResult<String> r = new AssertionResult<>(
+        var result = new AssertionResult<>(
                 false,
                 "IS",
                 "Hello",
                 "World",
                 false
         );
-        String msg = r.toString();
-        assertTrue(msg.contains("✘ Validation failed: IS"));
-        assertTrue(msg.contains("Expected: Hello, Actual: World"));
+
+        var msg = result.toString();
+        assertAll(
+                () -> assertTrue(msg.contains("✘ Validation failed: IS")),
+                () -> assertTrue(msg.contains("Expected: Hello, Actual: World"))
+        );
     }
 
     @Test
     void testToString_Soft() {
-        AssertionResult<String> r = new AssertionResult<>(
+        var result = new AssertionResult<>(
                 false,
                 "IS",
                 "Hello",
                 "World",
                 true
         );
-        String msg = r.toString();
+
+        var msg = result.toString();
         assertTrue(msg.contains("✘ Validation failed: IS"));
     }
 }

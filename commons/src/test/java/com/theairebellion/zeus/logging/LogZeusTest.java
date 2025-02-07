@@ -3,106 +3,78 @@ package com.theairebellion.zeus.logging;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LogZeusTest {
 
-    @Test
-    void testRegisterMarker_NewMarker() {
-        // Clear the markers map (reflection is needed because MARKERS is private and final)
-        ConcurrentHashMap<String, Marker> markers = getMarkersInstance();
+    public static final String MARKERS = "MARKERS";
+    public static final String TEST_MARKER = "TEST_MARKER";
+    public static final String EXISTING_MARKER = "EXISTING_MARKER";
+    public static final String NON_EXISTENT_MARKER = "NON_EXISTENT_MARKER";
+    public static final String TEST_LOGGER = "TestLogger";
 
-        // Ensure the map is empty
+    private static ConcurrentHashMap<String, Marker> markers;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        Field field = LogZeus.class.getDeclaredField(MARKERS);
+        field.setAccessible(true);
+        markers = (ConcurrentHashMap<String, Marker>) field.get(null);
         markers.clear();
-
-        // Register a new marker
-        Marker marker = LogZeus.registerMarker("TEST_MARKER");
-
-        // Assertions
-        assertNotNull(marker);
-        assertEquals("TEST_MARKER", marker.getName());
-        assertTrue(markers.containsKey("TEST_MARKER"));
     }
 
     @Test
-    void testRegisterMarker_ExistingMarker() {
-        // Clear the markers map
-        ConcurrentHashMap<String, Marker> markers = getMarkersInstance();
-        markers.clear();
+    void registerMarker_shouldCreateNewMarker_whenNotExists() {
+        Marker marker = LogZeus.registerMarker(TEST_MARKER);
 
-        // Add a marker directly to the map
-        Marker existingMarker = MarkerManager.getMarker("EXISTING_MARKER");
-        markers.put("EXISTING_MARKER", existingMarker);
-
-        // Register the same marker
-        Marker marker = LogZeus.registerMarker("EXISTING_MARKER");
-
-        // Assertions
-        assertSame(existingMarker, marker);
+        assertAll(
+                () -> assertNotNull(marker),
+                () -> assertEquals(TEST_MARKER, marker.getName()),
+                () -> assertTrue(markers.containsKey(TEST_MARKER))
+        );
     }
 
     @Test
-    void testGetMarker_ExistingMarker() {
-        // Clear the markers map
-        ConcurrentHashMap<String, Marker> markers = getMarkersInstance();
-        markers.clear();
+    void registerMarker_shouldReturnExistingMarker_whenAlreadyExists() {
+        Marker existingMarker = MarkerManager.getMarker(EXISTING_MARKER);
+        markers.put(EXISTING_MARKER, existingMarker);
 
-        // Add a marker directly to the map
-        Marker existingMarker = MarkerManager.getMarker("EXISTING_MARKER");
-        markers.put("EXISTING_MARKER", existingMarker);
+        Marker result = LogZeus.registerMarker(EXISTING_MARKER);
 
-        // Retrieve the marker
-        Marker result = LogZeus.getMarker("EXISTING_MARKER");
-
-        // Assertions
         assertSame(existingMarker, result);
     }
 
     @Test
-    void testGetMarker_NonExistentMarker() {
-        // Clear the markers map
-        ConcurrentHashMap<String, Marker> markers = getMarkersInstance();
-        markers.clear();
+    void getMarker_shouldReturnExistingMarker() {
+        Marker expected = MarkerManager.getMarker(EXISTING_MARKER);
+        markers.put(EXISTING_MARKER, expected);
 
-        // Retrieve a marker that does not exist
-        Marker result = LogZeus.getMarker("NON_EXISTENT_MARKER");
+        Marker result = LogZeus.getMarker(EXISTING_MARKER);
 
-        // Assertions
+        assertSame(expected, result);
+    }
+
+    @Test
+    void getMarker_shouldReturnNullForNonExistentMarker() {
+        Marker result = LogZeus.getMarker(NON_EXISTENT_MARKER);
         assertNull(result);
     }
 
     @Test
-    void testGetLogger_ByClass() {
-        // Retrieve a logger by class
+    void getLogger_shouldReturnLoggerWithClassName() {
         Logger logger = LogZeus.getLogger(LogZeusTest.class);
-
-        // Assertions
-        assertNotNull(logger);
         assertEquals(LogZeusTest.class.getName(), logger.getName());
     }
 
     @Test
-    void testGetLogger_ByName() {
-        // Retrieve a logger by name
-        Logger logger = LogZeus.getLogger("TestLogger");
-
-        // Assertions
-        assertNotNull(logger);
-        assertEquals("TestLogger", logger.getName());
-    }
-
-    // Helper method to access the private static MARKERS field via reflection
-    private ConcurrentHashMap<String, Marker> getMarkersInstance() {
-        try {
-            var field = LogZeus.class.getDeclaredField("MARKERS");
-            field.setAccessible(true);
-            return (ConcurrentHashMap<String, Marker>) field.get(null);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to access MARKERS field", e);
-        }
+    void getLogger_shouldReturnLoggerWithSpecifiedName() {
+        Logger logger = LogZeus.getLogger(TEST_LOGGER);
+        assertEquals(TEST_LOGGER, logger.getName());
     }
 }

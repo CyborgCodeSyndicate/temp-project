@@ -1,116 +1,75 @@
 package com.theairebellion.zeus.logging;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.lang.reflect.Field;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 class LogCommonTest {
 
-    private LogCommon logCommon;
+    private static final String ARG_1 = "arg1";
+    private static final String ARG_2 = "arg2";
 
-    @BeforeEach
-    void setup() {
-        logCommon = mock(LogCommon.class);
-    }
+    private static final String INFO = "info";
+    private static final String WARN = "warn";
+    private static final String ERROR = "error";
+    private static final String DEBUG = "debug";
+    private static final String TRACE = "trace";
+    private static final String STEP = "step";
+    private static final String EXTENDED = "extended";
 
-    @Test
-    void testInfo() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            mockedStatic.when(() -> LogCommon.info("Test info message", "arg1", "arg2"))
-                    .thenCallRealMethod();
+    @ParameterizedTest(name = "verify {1} logging")
+    @MethodSource("loggingMethods")
+    void testLoggingMethods(BiConsumer<String, Object[]> method, String methodName) {
+        String message = "Test %s message".formatted(methodName);
+        Object[] args = {ARG_1, ARG_2};
 
-            LogCommon.info("Test info message", "arg1", "arg2");
+        LogCommon mockInstance = mock(LogCommon.class);
+        LogCommon.extend(mockInstance);
 
-            mockedStatic.verify(() -> LogCommon.info("Test info message", "arg1", "arg2"));
+        method.accept(message, args);
+
+        switch (methodName) {
+            case INFO -> verify(mockInstance).infoLog(message, args);
+            case WARN -> verify(mockInstance).warnLog(message, args);
+            case ERROR -> verify(mockInstance).errorLog(message, args);
+            case DEBUG -> verify(mockInstance).debugLog(message, args);
+            case TRACE -> verify(mockInstance).traceLog(message, args);
+            case STEP -> verify(mockInstance).stepLog(message, args);
+            case EXTENDED -> verify(mockInstance).extendedLog(message, args);
+            default -> throw new IllegalStateException("Unexpected method: " + methodName);
         }
     }
 
-    @Test
-    void testWarn() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            mockedStatic.when(() -> LogCommon.warn("Test warn message", "arg1", "arg2"))
-                    .thenCallRealMethod();
-
-            LogCommon.warn("Test warn message", "arg1", "arg2");
-
-            mockedStatic.verify(() -> LogCommon.warn("Test warn message", "arg1", "arg2"));
-        }
+    private static Stream<Arguments> loggingMethods() {
+        return Stream.of(
+                Arguments.of((BiConsumer<String, Object[]>) LogCommon::info, INFO),
+                Arguments.of((BiConsumer<String, Object[]>) LogCommon::warn, WARN),
+                Arguments.of((BiConsumer<String, Object[]>) LogCommon::error, ERROR),
+                Arguments.of((BiConsumer<String, Object[]>) LogCommon::debug, DEBUG),
+                Arguments.of((BiConsumer<String, Object[]>) LogCommon::trace, TRACE),
+                Arguments.of((BiConsumer<String, Object[]>) LogCommon::step, STEP),
+                Arguments.of((BiConsumer<String, Object[]>) LogCommon::extended, EXTENDED)
+        );
     }
 
     @Test
-    void testError() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            mockedStatic.when(() -> LogCommon.error("Test error message", "arg1", "arg2"))
-                    .thenCallRealMethod();
+    void testExtend() throws Exception {
+        Field instanceField = LogCommon.class.getDeclaredField("INSTANCE");
+        instanceField.setAccessible(true);
+        LogCommon original = (LogCommon) instanceField.get(null);
 
-            LogCommon.error("Test error message", "arg1", "arg2");
+        LogCommon mockInstance = mock(LogCommon.class);
+        LogCommon.extend(mockInstance);
+        assertSame(mockInstance, instanceField.get(null));
 
-            mockedStatic.verify(() -> LogCommon.error("Test error message", "arg1", "arg2"));
-        }
-    }
-
-    @Test
-    void testDebug() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            mockedStatic.when(() -> LogCommon.debug("Test debug message", "arg1", "arg2"))
-                    .thenCallRealMethod();
-
-            LogCommon.debug("Test debug message", "arg1", "arg2");
-
-            mockedStatic.verify(() -> LogCommon.debug("Test debug message", "arg1", "arg2"));
-        }
-    }
-
-    @Test
-    void testTrace() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            mockedStatic.when(() -> LogCommon.trace("Test trace message", "arg1", "arg2"))
-                    .thenCallRealMethod();
-
-            LogCommon.trace("Test trace message", "arg1", "arg2");
-
-            mockedStatic.verify(() -> LogCommon.trace("Test trace message", "arg1", "arg2"));
-        }
-    }
-
-    @Test
-    void testStep() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            mockedStatic.when(() -> LogCommon.step("Test step message", "arg1", "arg2"))
-                    .thenCallRealMethod();
-
-            LogCommon.step("Test step message", "arg1", "arg2");
-
-            mockedStatic.verify(() -> LogCommon.step("Test step message", "arg1", "arg2"));
-        }
-    }
-
-    @Test
-    void testExtended() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            mockedStatic.when(() -> LogCommon.extended("Test extended message", "arg1", "arg2"))
-                    .thenCallRealMethod();
-
-            LogCommon.extended("Test extended message", "arg1", "arg2");
-
-            mockedStatic.verify(() -> LogCommon.extended("Test extended message", "arg1", "arg2"));
-        }
-    }
-
-    @Test
-    void testExtend() {
-        try (MockedStatic<LogCommon> mockedStatic = Mockito.mockStatic(LogCommon.class)) {
-            LogCommon mockInstance = mock(LogCommon.class);
-
-            mockedStatic.when(() -> LogCommon.extend(mockInstance))
-                    .thenCallRealMethod();
-
-            LogCommon.extend(mockInstance);
-
-            mockedStatic.verify(() -> LogCommon.extend(mockInstance));
-        }
+        instanceField.set(null, original); // Cleanup
     }
 }

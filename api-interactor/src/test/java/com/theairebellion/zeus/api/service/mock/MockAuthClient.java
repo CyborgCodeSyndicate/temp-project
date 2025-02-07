@@ -8,8 +8,7 @@ import io.restassured.http.Header;
 public class MockAuthClient extends BaseAuthenticationClient {
 
     @Override
-    public AuthenticationKey authenticate(
-            RestService restService, String user, String pass) {
+    public AuthenticationKey authenticate(RestService restService, String user, String pass, boolean cache) {
         return new AuthenticationKey("username", "password", null);
     }
 

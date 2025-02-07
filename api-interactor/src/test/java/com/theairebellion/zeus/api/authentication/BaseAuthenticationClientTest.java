@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.authentication;
 
+import com.theairebellion.zeus.api.authentication.mock.TestAuthenticationClient;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class BaseAuthenticationClientTest {
-
-    @Mock
-    private RestService restService;
 
     @Mock
     private Header header;
@@ -28,66 +26,50 @@ class BaseAuthenticationClientTest {
 
     @Test
     void testAuthenticate_AddsToCache() {
-        RestService restServiceMock = mock(RestService.class);
-        BaseAuthenticationClient authClient = spy(BaseAuthenticationClient.class);
+        var restServiceMock = mock(RestService.class);
+        var authClient = spy(BaseAuthenticationClient.class);
 
         doReturn(new Header("Authorization", "Bearer token"))
                 .when(authClient)
                 .authenticateImpl(restServiceMock, "username", "password");
 
-        AuthenticationKey key = authClient.authenticate(restServiceMock, "username", "password");
+        var key = authClient.authenticate(restServiceMock, "username", "password", false);
 
-        assertNotNull(key); // Ensure a non-null key is returned
-        assertTrue(BaseAuthenticationClient.userAuthenticationHeaderMap.containsKey(key)); // Ensure it's cached
-        assertEquals("username", key.getUsername());
-        assertEquals("password", key.getPassword());
+        assertAll(
+                () -> assertNotNull(key),
+                () -> assertTrue(BaseAuthenticationClient.userAuthenticationHeaderMap.containsKey(key)),
+                () -> assertEquals("username", key.getUsername()),
+                () -> assertEquals("password", key.getPassword())
+        );
     }
 
     @Test
     void testGetAuthentication_RetrievesFromCache() {
-        String username = "user";
-        String password = "pass";
-        AuthenticationKey key = new AuthenticationKey(username, password, TestAuthenticationClient.class);
-
-        // Add to cache manually
+        var key = new AuthenticationKey("user", "pass", TestAuthenticationClient.class);
         BaseAuthenticationClient.userAuthenticationHeaderMap.put(key, header);
 
-        // Retrieve from cache
-        Header retrievedHeader = authenticationClient.getAuthentication(key);
+        var retrievedHeader = authenticationClient.getAuthentication(key);
 
-        assertNotNull(retrievedHeader);
-        assertEquals(header, retrievedHeader);
+        assertAll(
+                () -> assertNotNull(retrievedHeader),
+                () -> assertEquals(header, retrievedHeader)
+        );
     }
 
     @Test
     void testGetAuthentication_ReturnsNullIfNotInCache() {
-        String username = "user";
-        String password = "pass";
-        AuthenticationKey key = new AuthenticationKey(username, password, TestAuthenticationClient.class);
+        var key = new AuthenticationKey("user", "pass", TestAuthenticationClient.class);
 
-        // Retrieve from cache (should return null)
-        Header retrievedHeader = authenticationClient.getAuthentication(key);
-
-        assertNull(retrievedHeader);
+        assertNull(authenticationClient.getAuthentication(key));
     }
 
     @Test
     void testAuthenticate_ThrowsExceptionForNullService() {
-        BaseAuthenticationClient authClient = spy(BaseAuthenticationClient.class);
+        var authClient = spy(BaseAuthenticationClient.class);
 
-        NullPointerException exception = assertThrows(
-                NullPointerException.class,
-                () -> authClient.authenticate(null, "username", "password")
-        );
+        var exception = assertThrows(NullPointerException.class,
+                () -> authClient.authenticate(null, "username", "password", false));
 
         assertEquals("RestService must not be null", exception.getMessage());
-    }
-
-    // Concrete class for testing purposes
-    private static class TestAuthenticationClient extends BaseAuthenticationClient {
-        @Override
-        protected Header authenticateImpl(RestService restService, String username, String password) {
-            return new Header("Authorization", "Bearer dummy-token");
-        }
     }
 }

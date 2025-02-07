@@ -6,35 +6,28 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class DataExtractorsApiTest {
 
     @Test
     void testResponseBodyExtraction() {
-        // 1) create the data extractor
         var extractor = DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, "some.json.path");
 
-        // 2) mock response
-        Response resp = mock(Response.class);
-        when(resp.body()).thenReturn(mock(io.restassured.response.ResponseBody.class));
-        // or we can do a real JsonPath if we want
-        // let's do partial stubbing:
-        when(resp.body().jsonPath()).thenReturn(new JsonPath("{\"some\":{\"json\":{\"path\":\"extractedValue\"}}}"));
+        var resp = mock(Response.class);
+        var body = mock(io.restassured.response.ResponseBody.class);
+        when(resp.body()).thenReturn(body);
+        when(body.jsonPath()).thenReturn(new JsonPath("{\"some\":{\"json\":{\"path\":\"extractedValue\"}}}"));
 
-        // 3) do extraction
-        Object extracted = extractor.extract(resp);
-        assertEquals("extractedValue", extracted);
+        assertEquals("extractedValue", extractor.extract(resp));
     }
 
     @Test
     void testStatusExtraction() {
         var extractor = DataExtractorsApi.statusExtraction(TestEnum.API_RESPONSE);
-        Response resp = mock(Response.class);
+        var resp = mock(Response.class);
         when(resp.statusCode()).thenReturn(201);
 
-        Object extracted = extractor.extract(resp);
-        assertEquals(201, extracted);
+        assertEquals(201, extractor.extract(resp));
     }
 }

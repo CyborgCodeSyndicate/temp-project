@@ -8,11 +8,14 @@ class CredentialsTest {
 
     @Test
     void testCredentialsImpl() {
-        Credentials creds = new Credentials() {
+        var creds = new Credentials() {
             @Override public String username() { return "demoUser"; }
             @Override public String password() { return "demoPass"; }
         };
-        assertEquals("demoUser", creds.username());
-        assertEquals("demoPass", creds.password());
+
+        assertAll(
+                () -> assertEquals("demoUser", creds.username()),
+                () -> assertEquals("demoPass", creds.password())
+        );
     }
 }

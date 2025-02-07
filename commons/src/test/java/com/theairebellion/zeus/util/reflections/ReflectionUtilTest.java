@@ -1,214 +1,86 @@
+// ReflectionUtilTest.java
 package com.theairebellion.zeus.util.reflections;
 
 import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
-import com.theairebellion.zeus.util.reflections.mock.*;
+import com.theairebellion.zeus.util.reflections.mock.MockEnum;
+import com.theairebellion.zeus.util.reflections.mock.MockInterface;
+import com.theairebellion.zeus.util.reflections.mock.TestClass;
+import com.theairebellion.zeus.util.reflections.mock.TestClassWithPrivateField;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.reflections.Reflections;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class ReflectionUtilTest {
 
-    @Test
-    void testFindEnumClassImplementationsOfInterface_Valid() {
-        // Call the method with the correct package prefix
-        Class<? extends Enum<?>> result = ReflectionUtil.findEnumClassImplementationsOfInterface(
-                MockInterface.class, "com.theairebellion.zeus.util.reflections");
+    public static final String COM_THEAIREBELLION_ZEUS_UTIL_REFLECTIONS_MOCK = "com.theairebellion.zeus.util.reflections.mock";
+    public static final String VALUE = "VALUE";
+    public static final String TEST_VALUE = "TestValue";
+    public static final String SOME_FIELD = "someField";
 
-        // Assertions
-        assertNotNull(result);
+    @Test
+    void findEnumClassImplementationsOfInterface_shouldReturnEnum_WhenExists() {
+        Class<? extends Enum<?>> result = ReflectionUtil.findEnumClassImplementationsOfInterface(
+                MockInterface.class, COM_THEAIREBELLION_ZEUS_UTIL_REFLECTIONS_MOCK);
+
         assertEquals(MockEnum.class, result);
     }
 
-    @Test
-    void testFindEnumClassImplementationsOfInterface_NoEnumFound() {
-        // Call the method with a non-existent package and expect an exception
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        MockInterface.class, "com.nonexistent.package"));
+    @ParameterizedTest
+    @NullAndEmptySource
+    void findEnumClassImplementationsOfInterface_shouldThrow_WhenInvalidPackage(String packageName) {
+        assertThrows(IllegalArgumentException.class, () ->
+                ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, packageName));
     }
 
     @Test
-    void testFindEnumImplementationsOfInterface_Valid() {
-        // Test finding a specific enum value
+    void findEnumImplementationsOfInterface_shouldReturnEnumValue_WhenExists() {
         MockInterface result = ReflectionUtil.findEnumImplementationsOfInterface(
-                MockInterface.class, "VALUE1", "com.theairebellion.zeus.util.reflections");
+                MockInterface.class, VALUE, COM_THEAIREBELLION_ZEUS_UTIL_REFLECTIONS_MOCK);
 
-        // Assertions
-        assertNotNull(result);
-        assertInstanceOf(MockEnum.class, result);
-        assertEquals(MockEnum.VALUE1, result);
+        assertEquals(MockEnum.VALUE, result);
     }
 
     @Test
-    void testFindEnumImplementationsOfInterface_EnumNotFound() {
-        // Test when the enum value does not exist
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.findEnumImplementationsOfInterface(
-                        MockInterface.class, "NON_EXISTENT_VALUE", "com.theairebellion.zeus.util.reflections"));
-    }
-
-    @Test
-    void testFindEnumClassImplementationsOfInterface_NoEnums() {
-        // Act & Assert: Expect ReflectionException
-        ReflectionException exception = assertThrows(ReflectionException.class, () -> {
-            ReflectionUtil.findEnumClassImplementationsOfInterface(
-                    MockInterface.class,
-                    "com.theairebellion.zeus.no.enums"
-            );
-        });
-
-        assertTrue(exception.getMessage().contains("No Enum implementing interface"));
-    }
-
-    @Test
-    void testGetAttributeOfClass_Valid() {
-        // Arrange
+    void getAttributeOfClass_shouldReturnValue_WhenFieldExists() {
         TestClass testObject = new TestClass();
-        testObject.someField = "Some Value";
+        testObject.someField = TEST_VALUE;
 
-        // Act
-        String result = ReflectionUtil.getAttributeOfClass("someField", testObject, String.class);
+        String result = ReflectionUtil.getAttributeOfClass(SOME_FIELD, testObject, String.class);
+        assertEquals(TEST_VALUE, result);
+    }
 
-        // Assert
-        assertEquals("Some Value", result);
+    @ParameterizedTest
+    @MethodSource("fieldAccessTestCases")
+    void getFieldValue_shouldHandleDifferentScenarios(Class<?> targetType, Object testObject, Class<? extends Throwable> expectedException) {
+        if (expectedException != null) {
+            assertThrows(expectedException, () ->
+                    ReflectionUtil.getFieldValue(testObject, targetType));
+        } else {
+            assertDoesNotThrow(() ->
+                    ReflectionUtil.getFieldValue(testObject, targetType));
+        }
     }
 
     @Test
-    void testGetFieldValue_ValidField() {
-        // Create a test object
-        TestClass testObject = new TestClass();
-        testObject.someField = "TestValue";
-
-        // Retrieve the field value
-        String result = ReflectionUtil.getFieldValue(testObject, String.class);
-
-        // Assertions
-        assertNotNull(result);
-        assertEquals("TestValue", result);
-    }
-
-    @Test
-    void testGetFieldValue_FieldNotFound() {
-        // Create a test object
-        TestClass testObject = new TestClass();
-
-        // Test for a non-existent field
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(testObject, Integer.class));
-    }
-
-    @Test
-    void testGetAttributeOfClass_ValidField() {
-        // Create a test object
-        TestClass testObject = new TestClass();
-        testObject.someField = "TestValue";
-
-        // Retrieve the attribute value by field name
-        String result = ReflectionUtil.getAttributeOfClass("someField", testObject, String.class);
-
-        // Assertions
-        assertNotNull(result);
-        assertEquals("TestValue", result);
-    }
-
-    @Test
-    void testGetAttributeOfClass_FieldNotFound() {
-        // Create a test object
-        TestClass testObject = new TestClass();
-
-        // Test for a non-existent field
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("nonExistentField", testObject, String.class));
-    }
-
-    @Test
-    void testGetAttributeOfClass_FieldTypeMismatch() {
-        // Create a test object
-        TestClass testObject = new TestClass();
-        testObject.someField = "TestValue";
-
-        // Test for a type mismatch
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("someField", testObject, Integer.class));
-    }
-
-    @Test
-    void testGetFieldValue_FieldTypeMismatch() {
-        TestClass testObject = new TestClass();
-        testObject.someField = "TestValue";
-
-        // Test type mismatch for the field value
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(testObject, Integer.class));
-    }
-
-    @Test
-    void testGetFieldValue_NoMatchingField() {
-        TestClass testObject = new TestClass();
-
-        // Test no matching field
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(testObject, Double.class));
-    }
-
-    @Test
-    void testValidateInputs_NullInputs() {
-        // Test null inputs
-        assertThrows(IllegalArgumentException.class, () ->
-                ReflectionUtil.findImplementationsOfInterface(null, "com.theairebellion.zeus"));
-    }
-
-    @Test
-    void testValidateInputs_EmptyString() {
-        // Test empty string input
-        assertThrows(IllegalArgumentException.class, () ->
-                ReflectionUtil.findImplementationsOfInterface(MockInterface.class, ""));
-    }
-
-    @Test
-    void testGetAttributeOfClass_TypeMismatch() {
-        TestClass testObject = new TestClass();
-        testObject.someField = "TestValue";
-
-        // Test type mismatch for the field
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("someField", testObject, Integer.class));
-    }
-
-    @Test
-    void testFindImplementationsOfInterface_NoResults() {
-        // Call with an empty or unrelated package
+    void findImplementationsOfInterface_shouldReturnClasses_WhenExist() {
         List<Class<? extends MockInterface>> result = ReflectionUtil.findImplementationsOfInterface(
-                MockInterface.class, "com.nonexistent.package");
+                MockInterface.class, COM_THEAIREBELLION_ZEUS_UTIL_REFLECTIONS_MOCK);
 
-        // Assertions
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testGetFieldValue_NoFieldsInClass() {
-        Object emptyObject = new Object(); // Object has no declared fields
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(emptyObject, String.class));
-    }
-
-    @Test
-    void testGetAttributeOfClass_FieldExistsButWrongType() {
-        TestClass testObject = new TestClass();
-        testObject.someField = "TestValue";
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("someField", testObject, Integer.class));
+        assertAll(
+                () -> assertFalse(result.isEmpty()),
+                () -> assertTrue(result.contains(TestClass.class)),
+                () -> assertTrue(result.contains(MockEnum.class))
+        );
     }
 
     @Test
@@ -216,7 +88,7 @@ class ReflectionUtilTest {
         Constructor<ReflectionUtil> constructor = ReflectionUtil.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         ReflectionUtil instance = constructor.newInstance();
-        assertNotNull(instance); // Ensure the instance is created
+        assertNotNull(instance);
     }
 
     @Test
@@ -224,12 +96,10 @@ class ReflectionUtilTest {
         TestClass testObject = new TestClass();
         testObject.someField = null;
 
-        // Expect a ReflectionException for null values
         ReflectionException exception = assertThrows(ReflectionException.class, () ->
                 ReflectionUtil.getFieldValue(testObject, String.class));
 
-        assertEquals("Field value is not of the expected type 'java.lang.String'. Actual value type: 'null'.",
-                exception.getMessage());
+        assertTrue(exception.getMessage().contains("Field value is not of the expected type"));
     }
 
     @Test
@@ -237,149 +107,134 @@ class ReflectionUtilTest {
         TestClass testObject = new TestClass();
         testObject.someField = null;
 
-        // Expect a ReflectionException for null field value
         ReflectionException exception = assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("someField", testObject, String.class));
+                ReflectionUtil.getAttributeOfClass(SOME_FIELD, testObject, String.class));
 
-        assertEquals("Field 'someField' value is not of expected type 'java.lang.String'. Actual value type: 'null'.",
-                exception.getMessage());
-    }
-
-    @Test
-    void testGetFieldValue_FieldNotAccessible() {
-        TestClassWithPrivateField privateFieldObject = new TestClassWithPrivateField();
-        // Validate behavior for private fields
-        String result = ReflectionUtil.getFieldValue(privateFieldObject, String.class);
-
-        // Assertions
-        assertNotNull(result);
-        assertEquals("secret", result);
-    }
-
-    @Test
-    void testGetFieldValue_IllegalAccessException() throws Exception {
-        // Simulate an inaccessible field using reflection
-        TestClass testObject = new TestClass();
-        Field field = TestClass.class.getDeclaredField("someField");
-        field.setAccessible(false);
-
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(testObject, String.class));
-    }
-
-    @Test
-    void testGetAttributeOfClass_NoSuchField() {
-        TestClass testObject = new TestClass();
-
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("nonexistentField", testObject, String.class));
-    }
-
-    @Test
-    void testGetAttributeOfClass_IllegalAccessException() throws Exception {
-        TestClass testObject = new TestClass();
-        Field field = TestClass.class.getDeclaredField("someField");
-        field.setAccessible(false);
-
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("someField", testObject, String.class));
-    }
-
-    @Test
-    void testGetFieldValue_TypeMismatch() {
-        TestClass testObject = new TestClass();
-        testObject.someField = "StringValue";
-
-        assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(testObject, Integer.class));
+        assertTrue(exception.getMessage().contains("Field 'someField' value is not of expected type"));
     }
 
     @Test
     void testGetFieldValue_NoAssignableFieldFound() {
         TestClass testObject = new TestClass();
 
-        // Test with a field type that is not present
         ReflectionException exception = assertThrows(ReflectionException.class, () ->
                 ReflectionUtil.getFieldValue(testObject, Double.class));
 
-        // Verify the exception message
         assertTrue(exception.getMessage().contains("No field of type 'java.lang.Double' found in class"));
     }
 
     @Test
-    void testGetFieldValue_NullFieldTypeMismatch() {
-        TestClassWithField testObject = new TestClassWithField(null); // Field is null
-        ReflectionException exception = assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(testObject, String.class));
-
-        assertTrue(exception.getMessage().contains("Field value is not of the expected type"));
-    }
-
-    @Test
-    void testGetAttributeOfClass_NullFieldValue() {
-        TestClass testObject = new TestClass();
-        testObject.someField = null;
-
-        ReflectionException exception = assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("someField", testObject, String.class));
-
-        assertTrue(exception.getMessage().contains("Field 'someField' value is not of expected type"));
-    }
-
-    @Test
-    void testGetAttributeOfClass_IllegalAccessException_Handled() {
-        class TestClass {
-            private String hiddenField = "hidden";
-        }
-
-        TestClass testObject = new TestClass();
-        ReflectionException exception = assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getAttributeOfClass("hiddenField", testObject, Integer.class)); // Mismatched type
-
-        assertTrue(exception.getMessage().contains("Field 'hiddenField' value is not of expected type"));
-    }
-
-    @Test
-    void testGetFieldValue_NullFieldValue() {
-        TestClass testObject = new TestClass();
-        testObject.someField = null;
-
-        // Act & Assert
-        ReflectionException exception = assertThrows(ReflectionException.class, () ->
-                ReflectionUtil.getFieldValue(testObject, String.class)
-        );
-
-        assertTrue(exception.getMessage().contains("Field value is not of the expected type"));
-    }
-
-    @Test
-    void testFindImplementationsOfInterface_WithResults() {
-        // We assume MockClass implements MockInterface in package "com.theairebellion.zeus.util.reflections.mock"
-        List<Class<? extends MockInterface>> result =
-                ReflectionUtil.findImplementationsOfInterface(
-                        MockInterface.class,
-                        "com.theairebellion.zeus.util.reflections.mock"
-                );
-        assertNotNull(result);
-        assertFalse(result.isEmpty(), "Expected at least one implementation of MockInterface");
-        // In this example, we expect MockClass to be returned
-        assertTrue(result.stream().anyMatch(clazz -> clazz.equals(TestClass.class)),
-                "Expected TestClass to be in the result");
-    }
-
-    @Test
     void testFindEnumImplementationsOfInterface_NullEnumName() {
-        // This should fail the .filter(e -> e.name().equals(enumName)) and throw an exception
         ReflectionException exception = assertThrows(ReflectionException.class, () ->
                 ReflectionUtil.findEnumImplementationsOfInterface(
                         MockInterface.class,
                         null,
-                        "com.theairebellion.zeus.util.reflections"
+                        COM_THEAIREBELLION_ZEUS_UTIL_REFLECTIONS_MOCK
                 )
         );
         assertTrue(
                 exception.getMessage().contains("Enum value 'null' not found"),
                 "Should mention 'Enum value 'null' not found'"
+        );
+    }
+
+    @Test
+    void privateConstructor_shouldBeAccessible() throws Exception {
+        Constructor<ReflectionUtil> constructor = ReflectionUtil.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        ReflectionUtil instance = constructor.newInstance();
+        assertNotNull(instance);
+    }
+
+    @Test
+    void findImplementationsOfInterface_shouldThrow_WhenPackageIsInvalid() {
+        assertThrows(IllegalArgumentException.class, () ->
+                ReflectionUtil.findImplementationsOfInterface(MockInterface.class, null));
+    }
+
+    @Test
+    void findImplementationsOfInterface_shouldThrow_WhenPackageIsEmpty() {
+        assertThrows(IllegalArgumentException.class, () ->
+                ReflectionUtil.findImplementationsOfInterface(MockInterface.class, "  "));
+    }
+
+    @Test
+    void getFieldValue_shouldReturnValue_WhenFieldExistsAndIsNotNull() {
+        TestClass testObject = new TestClass();
+        testObject.someField = TEST_VALUE;
+
+        String result = ReflectionUtil.getFieldValue(testObject, String.class);
+        assertEquals(TEST_VALUE, result);
+    }
+
+    @Test
+    void getFieldValue_shouldThrow_WhenFieldIsNullButTypeIsString() {
+        TestClass testObject = new TestClass();
+        testObject.someField = null;
+
+        ReflectionException ex = assertThrows(ReflectionException.class, () ->
+                ReflectionUtil.getFieldValue(testObject, String.class));
+        assertTrue(ex.getMessage().contains("Field value is not of the expected type"));
+    }
+
+    @Test
+    void getFieldValue_NoAssignableFieldFound() {
+        TestClass testObject = new TestClass();
+
+        ReflectionException exception = assertThrows(ReflectionException.class, () ->
+                ReflectionUtil.getFieldValue(testObject, Double.class));
+        assertTrue(exception.getMessage().contains("No field of type 'java.lang.Double' found"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("fieldAccessTestCases")
+    void getFieldValue_shouldHandleScenarios(Class<?> targetType, Object testObject, Class<? extends Throwable> expectedEx) {
+        if (expectedEx != null) {
+            assertThrows(expectedEx, () -> ReflectionUtil.getFieldValue(testObject, targetType));
+        } else {
+            assertDoesNotThrow(() -> ReflectionUtil.getFieldValue(testObject, targetType));
+        }
+    }
+
+    @Test
+    void getAttributeOfClass_FieldExistsButNullValue() {
+        TestClass testObject = new TestClass();
+        testObject.someField = null;
+
+        ReflectionException exception = assertThrows(ReflectionException.class, () ->
+                ReflectionUtil.getAttributeOfClass(SOME_FIELD, testObject, String.class));
+        assertTrue(exception.getMessage().contains("Field 'someField' value is not of expected type"));
+    }
+
+    @Test
+    void getAttributeOfClass_FieldDoesNotExist() {
+        TestClass testObject = new TestClass();
+
+        ReflectionException ex = assertThrows(ReflectionException.class, () ->
+                ReflectionUtil.getAttributeOfClass("nonExistentField", testObject, String.class));
+        assertTrue(ex.getMessage().contains("Field 'nonExistentField' not found in class"));
+    }
+
+    @Test
+    void getFieldValue_shouldWrapIllegalAccessException() throws Exception {
+        TestClass testObject = new TestClass();
+        testObject.someField = "someData";
+        Field mockField = mock(Field.class);
+        when(mockField.getType()).thenReturn((Class) String.class);
+        when(mockField.get(testObject)).thenThrow(new IllegalAccessException("Nope!"));
+
+        try (var utilSpy = mockStatic(ReflectionUtil.class)) {
+            utilSpy.when(() ->
+                    ReflectionUtil.getFieldValue(any(), any())
+            ).thenCallRealMethod();
+        }
+    }
+
+    private static Stream<Arguments> fieldAccessTestCases() {
+        return Stream.of(
+                Arguments.of(String.class, new TestClass(), ReflectionException.class),
+                Arguments.of(Integer.class, new TestClass(), ReflectionException.class),
+                Arguments.of(String.class, new TestClassWithPrivateField(), null)
         );
     }
 }

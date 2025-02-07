@@ -8,15 +8,19 @@ class AssertionTypesTest {
 
     @Test
     void testEachEnum() {
-        for (AssertionTypes t : AssertionTypes.values()) {
-            assertSame(t, t.type());
-            assertNotNull(t.getSupportedType());
+        for (var type : AssertionTypes.values()) {
+            assertAll(
+                    () -> assertSame(type, type.type()),
+                    () -> assertNotNull(type.getSupportedType())
+            );
         }
     }
 
     @Test
     void testSample() {
-        assertEquals(Number.class, AssertionTypes.GREATER_THAN.getSupportedType());
-        assertEquals(String.class, AssertionTypes.CONTAINS.getSupportedType());
+        assertAll(
+                () -> assertEquals(Number.class, AssertionTypes.GREATER_THAN.getSupportedType()),
+                () -> assertEquals(String.class, AssertionTypes.CONTAINS.getSupportedType())
+        );
     }
 }
