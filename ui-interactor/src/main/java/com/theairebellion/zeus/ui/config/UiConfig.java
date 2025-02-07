@@ -30,9 +30,17 @@ public interface UiConfig extends Config {
     @Key("radio.default.type")
     String radioDefaultType();
 
+    @Key("table.default.type")
+    String tableDefaultType();
+
     @DefaultValue("true")
     @Key("use.wrap.selenium.function")
     boolean useWrappedSeleniumFunctions();
+
+    @DefaultValue("false")
+    @Key("use.shadow.root")
+    boolean useShadowRoot();
+
 
 
 }
