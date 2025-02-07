@@ -2,8 +2,10 @@ package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -34,7 +36,7 @@ public class ExceptionHandlingWebElementFunctions {
         element = updateWebElement(driver, element);
 
         return switch (webElementAction) {
-            case FIND_ELEMENT -> new SmartWebElement(element.getOriginal().findElement((By) args[0]), driver);
+            case FIND_ELEMENT -> new SmartWebElement(element.findSmartElement((By) args[0]), driver);
             case FIND_ELEMENTS -> null;
             case CLICK -> {
                 CLICK.performAction(driver, element.getOriginal());
@@ -51,13 +53,13 @@ public class ExceptionHandlingWebElementFunctions {
         };
     }
 
-    public static Object handleNoSuchElement(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
+    public static Object handleNoSuchElement(WebDriver driver, WebElementAction webElementAction, Object... args) {
         if (args.length == 0 || !(args[0] instanceof By)) {
             LogUI.error("Invalid or missing locator argument for FIND_ELEMENT.");
             throw new IllegalArgumentException("FIND_ELEMENT action requires a By locator.");
         }
 
-        WebElement foundElement = findElementInFrames(driver, element);
+        WebElement foundElement = tryToFindElementInIFrame(driver, (By) args[0]);
         if (foundElement != null) {
             return webElementAction.performAction(driver, foundElement, args);
         }
@@ -134,9 +136,8 @@ public class ExceptionHandlingWebElementFunctions {
             createLocator(locatorsList, trimmedLocators.get(i), "partial link text", By::partialLinkText);
         }
 
-        WebElement updatedElement = driver.findElement(new ByChained(locatorsList.toArray(new By[0])));
-
-        return new SmartWebElement(updatedElement, driver);
+        return new SmartWebDriver(driver).findSmartElement(
+                new ByChained(locatorsList.toArray(new By[0])), 10);
     }
 
 
@@ -182,18 +183,35 @@ public class ExceptionHandlingWebElementFunctions {
         return null;
     }
 
-    private static WebElement findElementInFrames(WebDriver driver, SmartWebElement element) {
-        if (element.isDisplayed()) {
-            return element.getOriginal();
+    private static SmartWebElement tryToFindElementInIFrame(WebDriver driver, By by) {
+        driver.switchTo().defaultContent();
+        return findElementRecursively(driver, by);
+
+    }
+
+    private static SmartWebElement findElementRecursively(WebDriver driver, By by) {
+        try {
+            SmartWebElement element = new SmartWebDriver(driver).findSmartElement(by, 10);
+            return element;
+        } catch (NoSuchElementException e) {
         }
-        List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
-        for (WebElement iframe : iframes) {
-            driver.switchTo().frame(iframe);
-            if (element.isDisplayed()) {
-                return element.getOriginal();
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        List<WebElement> frames = (List<WebElement>) js.executeScript(
+                "return Array.from(document.getElementsByTagName('iframe'));"
+        );
+
+        for (WebElement frame : frames) {
+            driver.switchTo().frame(frame);
+
+            WebElement elementInChild = findElementRecursively(driver, by);
+            if (elementInChild != null) {
+                return new SmartWebElement(elementInChild, driver);
             }
-            driver.switchTo().defaultContent();
+
+            driver.switchTo().parentFrame();
         }
+
         return null;
     }
 }

@@ -19,7 +19,7 @@ public enum ExceptionHandlingWebElement {
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.FIND_ELEMENT, objects[0]),
                     NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, smartWebElement, WebElementAction.FIND_ELEMENT, objects[0])
+                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.FIND_ELEMENT, objects[0])
             )),
 
 
@@ -31,7 +31,7 @@ public enum ExceptionHandlingWebElement {
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.CLICK),
                     NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, smartWebElement, WebElementAction.CLICK)
+                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.CLICK)
             )),
 
     SEND_KEYS("sendKeys",
@@ -42,7 +42,7 @@ public enum ExceptionHandlingWebElement {
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.SEND_KEYS, objects[0]),
                     NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, smartWebElement, WebElementAction.SEND_KEYS, objects[0])
+                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.SEND_KEYS, objects[0])
             )),
 
     SUBMIT("submit",
@@ -51,7 +51,7 @@ public enum ExceptionHandlingWebElement {
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.SUBMIT),
                     NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, smartWebElement, WebElementAction.SUBMIT)
+                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.SUBMIT)
             ));
 
 
