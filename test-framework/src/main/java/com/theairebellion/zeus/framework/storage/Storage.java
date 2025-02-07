@@ -5,20 +5,21 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 
 public class Storage {
 
-    private final Map<Enum<?>, List<Object>> data = new HashMap<>();
+    private final Map<Enum<?>, LinkedList<Object>> data = new ConcurrentHashMap<>();
     private static Enum<?> defaultStorageEnum;
 
 
     public <T> void put(Enum<?> key, T value) {
-        data.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        data.computeIfAbsent(key, k -> new LinkedList<>()).add(value);
     }
 
 
@@ -82,7 +83,7 @@ public class Storage {
                 }
             }
             Storage newSub = new Storage();
-            data.put(subKey, new ArrayList<>(Collections.singletonList(newSub)));
+            data.put(subKey, new LinkedList<>(Collections.singletonList(newSub)));
             return newSub;
         }
 
@@ -106,7 +107,7 @@ public class Storage {
 
     public void joinLateArguments() {
         data.replaceAll((key, objects) -> {
-            List<Object> updatedObjects = new ArrayList<>();
+            LinkedList<Object> updatedObjects = new LinkedList<>();
             for (Object o : objects) {
                 if (o instanceof Late<?>) {
                     try {

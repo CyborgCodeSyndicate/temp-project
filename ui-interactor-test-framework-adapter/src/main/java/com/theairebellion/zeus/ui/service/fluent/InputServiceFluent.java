@@ -2,19 +2,16 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 
 import com.theairebellion.zeus.framework.storage.Storage;
-import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
-import com.theairebellion.zeus.ui.insertion.Insertion;
+import com.theairebellion.zeus.ui.selenium.InputUIElement;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
-import manifold.ext.rt.api.Jailbreak;
 import org.assertj.core.api.Assertions;
-import org.openqa.selenium.By;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
-public class InputServiceFluent implements Insertion {
+public class InputServiceFluent {
 
     private final InputService inputService;
     private final UIServiceFluent uiServiceFluent;
@@ -22,7 +19,8 @@ public class InputServiceFluent implements Insertion {
     private final SmartWebDriver driver;
 
 
-    public InputServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, InputService inputService, SmartWebDriver webDriver) {
+    public InputServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, InputService inputService,
+                              SmartWebDriver webDriver) {
         this.inputService = inputService;
         this.uiServiceFluent = uiServiceFluent;
         this.storage = storage;
@@ -30,7 +28,7 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent insert(final UIElement element, final String value) {
+    public UIServiceFluent insert(final InputUIElement element, final String value) {
         Allure.step(String.format("Inserting value: '%s' into input component of type: '%s'.", value,
             element.componentType().toString()));
         element.before().accept(driver);
@@ -40,7 +38,7 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent clear(final UIElement element) {
+    public UIServiceFluent clear(final InputUIElement element) {
         element.before().accept(driver);
         inputService.clear(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -48,7 +46,7 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent getValue(final UIElement element) {
+    public UIServiceFluent getValue(final InputUIElement element) {
         element.before().accept(driver);
         String value = inputService.getValue(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -57,12 +55,12 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateValue(final UIElement element, String expectedValue) {
+    public UIServiceFluent validateValue(final InputUIElement element, String expectedValue) {
         return validateValue(element, expectedValue, false);
     }
 
 
-    public UIServiceFluent validateValue(final UIElement element, String expectedValue, boolean soft) {
+    public UIServiceFluent validateValue(final InputUIElement element, String expectedValue, boolean soft) {
         element.before().accept(driver);
         String value = inputService.getValue(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -79,7 +77,7 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isEnabled(final UIElement element) {
+    public UIServiceFluent isEnabled(final InputUIElement element) {
         element.before().accept(driver);
         boolean enabled = inputService.isEnabled(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -88,27 +86,27 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element) {
+    public UIServiceFluent validateIsEnabled(final InputUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsEnabled(final InputUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element) {
+    public UIServiceFluent validateIsDisabled(final InputUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsDisabled(final InputUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsEnabled(final UIElement element, boolean shouldBeEnabled, boolean soft) {
+    private UIServiceFluent validateIsEnabled(final InputUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
         boolean enabled = inputService.isEnabled(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -142,7 +140,7 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent getErrorMessage(final UIElement element) {
+    public UIServiceFluent getErrorMessage(final InputUIElement element) {
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -151,12 +149,12 @@ public class InputServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateErrorMessage(final UIElement element, String expectedMessage) {
+    public UIServiceFluent validateErrorMessage(final InputUIElement element, String expectedMessage) {
         return validateErrorMessage(element, expectedMessage, false);
     }
 
 
-    public UIServiceFluent validateErrorMessage(final UIElement element, String expectedMessage, boolean soft) {
+    public UIServiceFluent validateErrorMessage(final InputUIElement element, String expectedMessage, boolean soft) {
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -170,12 +168,6 @@ public class InputServiceFluent implements Insertion {
                 () -> Assertions.assertThat(errorMessage).as("Validating UI Message")
                           .isEqualTo(expectedMessage));
         }
-    }
-
-
-    @Override
-    public void insertion(final By locator, final ComponentType componentType, final Object... values) {
-        inputService.insertion(locator, componentType, values);
     }
 
 }

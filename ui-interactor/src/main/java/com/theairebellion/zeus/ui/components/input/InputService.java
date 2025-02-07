@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.ui.components.input;
 
+import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
+import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -10,7 +12,7 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 /**
  * Interface defining operations for interacting with input elements within a web interface using Selenium.
  */
-public interface InputService extends Insertion {
+public interface InputService extends Insertion, TableInsertion, TableFilter {
 
     InputComponentType DEFAULT_TYPE = getDefaultType();
 
@@ -423,7 +425,7 @@ public interface InputService extends Insertion {
     String getErrorMessage(By inputFieldContainerLocator, InputComponentType componentType);
 
 
-    private static InputComponentType getDefaultType() {
+    public static InputComponentType getDefaultType() {
         return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
             getUiConfig().inputDefaultType(),
             getUiConfig().projectPackage());
