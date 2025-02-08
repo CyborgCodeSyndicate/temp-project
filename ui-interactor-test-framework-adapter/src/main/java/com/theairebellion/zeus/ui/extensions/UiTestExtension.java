@@ -37,17 +37,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.PASSWORD;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.RESPONSES;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.USERNAME;
+import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
+import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
                                             TestExecutionExceptionHandler {
+
+    private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
+    private static final String UI_MODULE_PACKAGE = "theairebellion.zeus.ui";
+
+
     static {
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.VALUES_PRESENT_IN_ALL_ROWS,
             TableAssertionFunctions::valuesPresentInAllRows);
     }
+
 
     @Override
     public void beforeTestExecution(final ExtensionContext context) {
@@ -126,7 +130,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     @Override
     public void afterTestExecution(ExtensionContext context) {
         WebDriver driver = getWebDriver(context);
-        if (context.getExecutionException().isPresent()) {
+        if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
             takeScreenshot(driver, context.getDisplayName());
         }
         driver.close();
@@ -189,7 +193,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
                 "soft_assert_failure_" + testName),
             stackTrace -> Arrays.stream(stackTrace)
-                              .anyMatch(element -> element.getClassName().contains("org.openqa.selenium"))
+                    .anyMatch(element -> element.getClassName().contains(SELENIUM_PACKAGE) ||
+                            element.getClassName().contains(UI_MODULE_PACKAGE))
         );
     }
 
