@@ -36,7 +36,7 @@
         <restassured.version>5.5.0</restassured.version>
         <jackson.version>2.18.2</jackson.version>
         <jsonpath.version>2.9.0</jsonpath.version>
-        <manifold.version>2024.1.47</manifold.version>
+        <manifold.version>2024.1.54</manifold.version>
         <assertj.version>3.27.2</assertj.version>
         <junit.version>5.11.4</junit.version>
         <allure.version>2.29.1</allure.version>

@@ -1,48 +1,40 @@
 package com.theairebellion.zeus.ui.components.input;
 
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
+import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.log.LogUI;
-import com.theairebellion.zeus.ui.selenium.SmartSelenium;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+public class InputServiceImpl extends AbstractComponentService<InputComponentType, Input> implements InputService {
 
-public class InputServiceImpl implements InputService {
-
-    protected SmartSelenium smartSelenium;
-    private static Map<InputComponentType, Input> components;
-
-
-    public InputServiceImpl(WebDriver driver) {
-        this.smartSelenium = new SmartSelenium(driver);
-        components = new HashMap<>();
-    }
-
-
-    public InputServiceImpl(SmartSelenium smartSelenium) {
-        this.smartSelenium = smartSelenium;
-        components = new HashMap<>();
+    public InputServiceImpl(SmartWebDriver driver) {
+        super(driver);
     }
 
 
     @Override
-    public void insert(final WebElement container, final String value, final InputComponentType componentType) {
+    protected Input createComponent(InputComponentType componentType) {
+        return ComponentFactory.getInputComponent(componentType, driver);
+    }
+
+
+    @Override
+    public void insert(final SmartWebElement container, final String value, final InputComponentType componentType) {
         LogUI.info("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
-        inputComponent(componentType).insert(container, value);
+        getOrCreateComponent(componentType).insert(container, value);
     }
 
 
     @Override
-    public void insert(final WebElement container, final String inputFieldLabel, final String value,
+    public void insert(final SmartWebElement container, final String inputFieldLabel, final String value,
                        final InputComponentType componentType) {
         LogUI.info("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
             componentType.getType().name());
-        inputComponent(componentType).insert(container, inputFieldLabel, value);
+        getOrCreateComponent(componentType).insert(container, inputFieldLabel, value);
     }
 
 
@@ -50,7 +42,7 @@ public class InputServiceImpl implements InputService {
     public void insert(final String inputFieldLabel, final String value, final InputComponentType componentType) {
         LogUI.info("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
             componentType.getType().name());
-        inputComponent(componentType).insert(inputFieldLabel, value);
+        getOrCreateComponent(componentType).insert(inputFieldLabel, value);
     }
 
 
@@ -58,23 +50,23 @@ public class InputServiceImpl implements InputService {
     public void insert(final By inputFieldContainerLocator, final String value,
                        final InputComponentType componentType) {
         LogUI.info("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
-        inputComponent(componentType).insert(inputFieldContainerLocator, value);
+        getOrCreateComponent(componentType).insert(inputFieldContainerLocator, value);
     }
 
 
     @Override
-    public void clear(final WebElement container, final InputComponentType componentType) {
+    public void clear(final SmartWebElement container, final InputComponentType componentType) {
         LogUI.info("Clearing value in input component of type: '{}'.", componentType.getType().name());
-        inputComponent(componentType).clear(container);
+        getOrCreateComponent(componentType).clear(container);
     }
 
 
     @Override
-    public void clear(final WebElement container, final String inputFieldLabel,
+    public void clear(final SmartWebElement container, final String inputFieldLabel,
                       final InputComponentType componentType) {
         LogUI.info("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-        inputComponent(componentType).clear(container, inputFieldLabel);
+        getOrCreateComponent(componentType).clear(container, inputFieldLabel);
     }
 
 
@@ -82,30 +74,30 @@ public class InputServiceImpl implements InputService {
     public void clear(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-        inputComponent(componentType).clear(inputFieldLabel);
+        getOrCreateComponent(componentType).clear(inputFieldLabel);
     }
 
 
     @Override
     public void clear(final By inputFieldContainerLocator, final InputComponentType componentType) {
         LogUI.info("Clearing value in input component of type: '{}'.", componentType.getType().name());
-        inputComponent(componentType).clear(inputFieldContainerLocator);
+        getOrCreateComponent(componentType).clear(inputFieldContainerLocator);
     }
 
 
     @Override
-    public String getValue(final WebElement container, final InputComponentType componentType) {
+    public String getValue(final SmartWebElement container, final InputComponentType componentType) {
         LogUI.info("Fetching value from input component of type: '{}'.", componentType.getType().name());
-        return inputComponent(componentType).getValue(container);
+        return getOrCreateComponent(componentType).getValue(container);
     }
 
 
     @Override
-    public String getValue(final WebElement container, final String inputFieldLabel,
+    public String getValue(final SmartWebElement container, final String inputFieldLabel,
                            final InputComponentType componentType) {
         LogUI.info("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-        return inputComponent(componentType).getValue(container);
+        return getOrCreateComponent(componentType).getValue(container);
     }
 
 
@@ -113,30 +105,30 @@ public class InputServiceImpl implements InputService {
     public String getValue(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-        return inputComponent(componentType).getValue(inputFieldLabel);
+        return getOrCreateComponent(componentType).getValue(inputFieldLabel);
     }
 
 
     @Override
     public String getValue(final By inputFieldContainerLocator, final InputComponentType componentType) {
         LogUI.info("Fetching value from input component of type: '{}'.", componentType.getType().name());
-        return inputComponent(componentType).getValue(inputFieldContainerLocator);
+        return getOrCreateComponent(componentType).getValue(inputFieldContainerLocator);
     }
 
 
     @Override
-    public boolean isEnabled(final WebElement container, final InputComponentType componentType) {
+    public boolean isEnabled(final SmartWebElement container, final InputComponentType componentType) {
         LogUI.info("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
-        return inputComponent(componentType).isEnabled(container);
+        return getOrCreateComponent(componentType).isEnabled(container);
     }
 
 
     @Override
-    public boolean isEnabled(final WebElement container, final String inputFieldLabel,
+    public boolean isEnabled(final SmartWebElement container, final String inputFieldLabel,
                              final InputComponentType componentType) {
         LogUI.info("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
             componentType.getType().name());
-        return inputComponent(componentType).isEnabled(container, inputFieldLabel);
+        return getOrCreateComponent(componentType).isEnabled(container, inputFieldLabel);
     }
 
 
@@ -144,30 +136,30 @@ public class InputServiceImpl implements InputService {
     public boolean isEnabled(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
             componentType.getType().name());
-        return inputComponent(componentType).isEnabled(inputFieldLabel);
+        return getOrCreateComponent(componentType).isEnabled(inputFieldLabel);
     }
 
 
     @Override
     public boolean isEnabled(final By inputFieldContainerLocator, final InputComponentType componentType) {
         LogUI.info("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
-        return inputComponent(componentType).isEnabled(inputFieldContainerLocator);
+        return getOrCreateComponent(componentType).isEnabled(inputFieldContainerLocator);
     }
 
 
     @Override
-    public String getErrorMessage(final WebElement container, final InputComponentType componentType) {
+    public String getErrorMessage(final SmartWebElement container, final InputComponentType componentType) {
         LogUI.info("Fetching error message from input component of type: '{}'.", componentType.getType().name());
-        return inputComponent(componentType).getErrorMessage(container);
+        return getOrCreateComponent(componentType).getErrorMessage(container);
     }
 
 
     @Override
-    public String getErrorMessage(final WebElement container, final String inputFieldLabel,
+    public String getErrorMessage(final SmartWebElement container, final String inputFieldLabel,
                                   final InputComponentType componentType) {
         LogUI.info("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-        return inputComponent(componentType).getErrorMessage(container, inputFieldLabel);
+        return getOrCreateComponent(componentType).getErrorMessage(container, inputFieldLabel);
     }
 
 
@@ -175,16 +167,15 @@ public class InputServiceImpl implements InputService {
     public String getErrorMessage(final String inputFieldLabel, final InputComponentType componentType) {
         LogUI.info("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-        return inputComponent(componentType).getErrorMessage(inputFieldLabel);
+        return getOrCreateComponent(componentType).getErrorMessage(inputFieldLabel);
     }
 
 
     @Override
     public String getErrorMessage(final By inputFieldContainerLocator, final InputComponentType componentType) {
         LogUI.info("Fetching error message from input component of type: '{}'.", componentType.getType().name());
-        return inputComponent(componentType).getErrorMessage(inputFieldContainerLocator);
+        return getOrCreateComponent(componentType).getErrorMessage(inputFieldContainerLocator);
     }
-
 
 
     @Override
@@ -192,11 +183,20 @@ public class InputServiceImpl implements InputService {
         insert(locator, (String) values[0], (InputComponentType) componentType);
     }
 
-    private Input inputComponent(InputComponentType componentType) {
-        if (Objects.isNull(components.get(componentType))) {
-            components.put(componentType, ComponentFactory.getInputComponent(componentType, smartSelenium));
-        }
-        return components.get(componentType);
+
+    @Override
+    public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
+                               final String... values) {
+        getOrCreateComponent((InputComponentType) componentType).tableInsertion(cellElement, values);
     }
+
+
+    @Override
+    public void tableFilter(final SmartWebElement cellElement, final ComponentType componentType,
+                            final FilterStrategy filterStrategy,
+                            final String... values) {
+        getOrCreateComponent((InputComponentType) componentType).tableFilter(cellElement, filterStrategy, values);
+    }
+
 
 }

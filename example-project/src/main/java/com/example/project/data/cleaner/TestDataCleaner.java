@@ -7,9 +7,15 @@ import manifold.ext.rt.api.Jailbreak;
 import java.util.function.Consumer;
 
 public enum TestDataCleaner implements DataRipper {
-    ALL_CREATED_STUDENTS_FLOW(DataCleanUpFunctions::cleanAllStudents);
+    ALL_CREATED_STUDENTS(DataCleanUpFunctions::cleanAllStudents);
 
-    public static final String ALL_CREATED_STUDENTS = "ALL_CREATED_STUDENTS_FLOW";
+    public static final class Data {
+        public static final String ALL_CREATED_STUDENTS = "ALL_CREATED_STUDENTS";
+
+        private Data() {
+        }
+    }
+
 
     private final Consumer<@Jailbreak Quest> cleanUpFunction;
 

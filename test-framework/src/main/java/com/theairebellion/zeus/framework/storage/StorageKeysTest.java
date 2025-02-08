@@ -5,6 +5,7 @@ public enum StorageKeysTest {
     //sub storage
     ARGUMENTS,
     PRE_ARGUMENTS,
+    STATIC_DATA,
 
 
 

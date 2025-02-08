@@ -28,9 +28,7 @@ public class QuestFactory {
 
     public Quest createQuest() {
         Quest quest = new Quest();
-
         registerServices(quest);
-
         QuestHolder.set(quest);
         return quest;
     }
@@ -45,9 +43,5 @@ public class QuestFactory {
             LogTest.extended("Service: '{}' has been registered for the quest", fluentService.getClass().getName());
         }
     }
-
-
-
-
 
 }

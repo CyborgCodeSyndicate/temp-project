@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DbInteractionAutoConfiguration {
 
-
     @Bean
     public ObjectMapper defaultObjectMapper() {
         return new ObjectMapper();

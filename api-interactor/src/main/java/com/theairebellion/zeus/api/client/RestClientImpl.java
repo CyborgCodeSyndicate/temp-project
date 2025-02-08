@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.theairebellion.zeus.api.log.LogAPI.extended;
-import static com.theairebellion.zeus.api.log.LogAPI.step;
+import static com.theairebellion.zeus.api.log.LogApi.extended;
+import static com.theairebellion.zeus.api.log.LogApi.step;
 
 @Component
 @NoArgsConstructor

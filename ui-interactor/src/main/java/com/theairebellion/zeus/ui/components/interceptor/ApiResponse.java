@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter
 public class ApiResponse {
 
-    private String url;
-    private int status;
+    private final String url;
+    private final int status;
     @Setter
     private String body;
 

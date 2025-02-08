@@ -9,4 +9,7 @@ public interface FrameworkConfig extends Config {
     @Key("project.package")
     String projectPackage();
 
+    @Key("default.storage")
+    String defaultStorage();
+
 }

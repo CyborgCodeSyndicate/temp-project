@@ -6,7 +6,11 @@ public enum StorageKeysUi {
     UI,
 
 
-    RESPONSES
+    RESPONSES,
+    USERNAME,
+    PASSWORD,
+
+
     ;
 
 }
