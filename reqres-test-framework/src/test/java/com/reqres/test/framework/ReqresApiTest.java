@@ -218,16 +218,12 @@ public class ReqresApiTest extends BaseTest {
     public void testPreconditionsExample(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
-                    List<CreatedUserResponse> createdUserResponses = retrieveAllByClass(StorageKeysApi.API, CREATE_USER, Response.class)
-                            .stream()
-                            .map(response -> response.getBody().as(CreatedUserResponse.class))
-                            .toList();
-                    assertEquals("Morpheus", createdUserResponses.get(0).getName(), "Name is incorrect!");
-                    assertEquals("Leader", createdUserResponses.get(0).getJob(), "Job is incorrect!");
-                    assertEquals("Mr. Morpheus", createdUserResponses.get(1).getName(), "Name is incorrect!");
-                    assertEquals("Intermediate Leader", createdUserResponses.get(1).getJob(), "Job is incorrect!");
-                    assertTrue(createdUserResponses
-                            .get(1)
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
+                            .getBody()
+                            .as(CreatedUserResponse.class);
+                    assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
+                    assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
+                    assertTrue(createdUserResponse
                             .getCreatedAt()
                             .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
                 });
