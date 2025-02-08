@@ -14,6 +14,12 @@ import java.util.Map;
 @Getter
 public enum ExceptionHandlingWebElement {
 
+    FIND_ELEMENTS("findElements",
+            Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
+                            ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.FIND_ELEMENTS, objects[0])
+            )),
+
+
     FIND_ELEMENT("findElement",
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.FIND_ELEMENT, objects[0])
