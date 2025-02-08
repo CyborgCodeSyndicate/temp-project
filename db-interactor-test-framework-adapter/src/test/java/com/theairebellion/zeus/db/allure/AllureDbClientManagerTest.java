@@ -11,16 +11,20 @@ import static org.mockito.Mockito.mock;
 
 public class AllureDbClientManagerTest {
 
-    // We assume that DatabaseConfiguration has a builder method.
+    private static final String HOST = "localhost";
+    private static final int PORT = 1234;
+    private static final String DATABASE = "testdb";
+    private static final String USER = "user";
+    private static final String PASSWORD = "pass";
+
     private DatabaseConfiguration createDummyConfig() {
         return DatabaseConfiguration.builder()
-                // For testing purposes, passing null for DbType is acceptable if not used.
-                .dbType(null)
-                .host("localhost")
-                .port(1234)
-                .database("testdb")
-                .dbUser("user")
-                .dbPassword("pass")
+                .dbType(null) // For testing purposes, passing null for DbType is acceptable if not used
+                .host(HOST)
+                .port(PORT)
+                .database(DATABASE)
+                .dbUser(USER)
+                .dbPassword(PASSWORD)
                 .build();
     }
 
@@ -30,11 +34,9 @@ public class AllureDbClientManagerTest {
         AllureDbClientManager manager = new AllureDbClientManager(connector);
         DatabaseConfiguration config = createDummyConfig();
 
-        // Call the (protected) method initializeDbClient.
-        // (Because the test is in the same package, we can call it directly.)
         DbClient client = manager.initializeDbClient(config);
+
         assertNotNull(client);
-        // Verify that the returned client is an instance of RelationalDbClientAllure.
         assertInstanceOf(RelationalDbClientAllure.class, client);
     }
 }

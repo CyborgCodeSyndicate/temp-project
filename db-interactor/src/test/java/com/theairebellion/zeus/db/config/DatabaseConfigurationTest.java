@@ -6,9 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DatabaseConfigurationTest {
 
+    private static final String MOCK_PROTOCOL = "mock-protocol";
+    private static final String HOST = "localhost";
+    private static final int PORT = 5432;
+    private static final String DATABASE = "testdb";
+    private static final String USER = "user";
+    private static final String PASSWORD = "password";
+
     @Test
     void testDatabaseConfigurationBuilder() {
-        // Arrange
         DbType mockDbType = new DbType() {
             @Override
             public java.sql.Driver driver() {
@@ -17,7 +23,7 @@ class DatabaseConfigurationTest {
 
             @Override
             public String protocol() {
-                return "mock-protocol";
+                return MOCK_PROTOCOL;
             }
 
             @Override
@@ -26,28 +32,20 @@ class DatabaseConfigurationTest {
             }
         };
 
-        String host = "localhost";
-        int port = 5432;
-        String database = "testdb";
-        String dbUser = "user";
-        String dbPassword = "password";
-
-        // Act
         DatabaseConfiguration config = DatabaseConfiguration.builder()
                 .dbType(mockDbType)
-                .host(host)
-                .port(port)
-                .database(database)
-                .dbUser(dbUser)
-                .dbPassword(dbPassword)
+                .host(HOST)
+                .port(PORT)
+                .database(DATABASE)
+                .dbUser(USER)
+                .dbPassword(PASSWORD)
                 .build();
 
-        // Assert
         assertEquals(mockDbType, config.getDbType());
-        assertEquals(host, config.getHost());
-        assertEquals(port, config.getPort());
-        assertEquals(database, config.getDatabase());
-        assertEquals(dbUser, config.getDbUser());
-        assertEquals(dbPassword, config.getDbPassword());
+        assertEquals(HOST, config.getHost());
+        assertEquals(PORT, config.getPort());
+        assertEquals(DATABASE, config.getDatabase());
+        assertEquals(USER, config.getDbUser());
+        assertEquals(PASSWORD, config.getDbPassword());
     }
 }

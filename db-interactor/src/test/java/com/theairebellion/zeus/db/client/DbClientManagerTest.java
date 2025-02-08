@@ -11,38 +11,46 @@ import static org.mockito.Mockito.*;
 
 class DbClientManagerTest {
 
+    private static final String JDBC_PROTOCOL = "jdbc";
+    private static final String LOCALHOST = "localhost";
+    private static final int DEFAULT_PORT = 3306;
+    private static final String TEST_DATABASE = "testdb";
+    private static final String SAME_CLIENT_ERROR = "Expected the same client instance for the same configuration";
+    private static final String CLIENT_NOT_NULL = "Expected a non-null client to be created";
+    private static final String CLIENT_INSTANCE_TYPE = "Expected client to be an instance of RelationalDbClient";
+
     private DbClientManager manager;
 
     @BeforeEach
     void setUp() {
-        BaseDbConnectorService connector = mock(BaseDbConnectorService.class);
+        var connector = mock(BaseDbConnectorService.class);
         manager = new DbClientManager(connector);
     }
 
     @Test
     void testGetClient_ShouldReturnCachedClient() {
-        DatabaseConfiguration dbConfig = mock(DatabaseConfiguration.class);
-        DbType dbType = mock(DbType.class);
+        var dbConfig = mock(DatabaseConfiguration.class);
+        var dbType = mock(DbType.class);
 
         when(dbConfig.getDbType()).thenReturn(dbType);
-        when(dbType.protocol()).thenReturn("jdbc");
-        when(dbConfig.getHost()).thenReturn("localhost");
-        when(dbConfig.getPort()).thenReturn(3306);
-        when(dbConfig.getDatabase()).thenReturn("testdb");
+        when(dbType.protocol()).thenReturn(JDBC_PROTOCOL);
+        when(dbConfig.getHost()).thenReturn(LOCALHOST);
+        when(dbConfig.getPort()).thenReturn(DEFAULT_PORT);
+        when(dbConfig.getDatabase()).thenReturn(TEST_DATABASE);
 
-        DbClient client1 = manager.getClient(dbConfig);
-        DbClient client2 = manager.getClient(dbConfig);
+        var client1 = manager.getClient(dbConfig);
+        var client2 = manager.getClient(dbConfig);
 
-        assertSame(client1, client2, "Expected the same client instance for the same configuration");
+        assertSame(client1, client2, SAME_CLIENT_ERROR);
     }
 
     @Test
     void testInitializeDbClient_ShouldCreateNewClient() {
-        DatabaseConfiguration dbConfig = mock(DatabaseConfiguration.class);
+        var dbConfig = mock(DatabaseConfiguration.class);
 
-        DbClient client = manager.initializeDbClient(dbConfig);
+        var client = manager.initializeDbClient(dbConfig);
 
-        assertNotNull(client, "Expected a non-null client to be created");
-        assertInstanceOf(RelationalDbClient.class, client, "Expected client to be an instance of RelationalDbClient");
+        assertNotNull(client, CLIENT_NOT_NULL);
+        assertInstanceOf(RelationalDbClient.class, client, CLIENT_INSTANCE_TYPE);
     }
 }

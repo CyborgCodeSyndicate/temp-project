@@ -16,6 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JsonPathExtractorTest {
 
+    private static final String NAME_KEY = "name";
+    private static final String NAME_VALUE = "John Doe";
+    private static final String VALID_JSON_PATH = "$.name";
+    private static final String INVALID_JSON_PATH = "$.nonExistentProperty";
+    private static final String NON_OBJECT_INPUT = "Just a string";
+
     private JsonPathExtractor jsonPathExtractor;
 
     @BeforeEach
@@ -29,41 +35,29 @@ class JsonPathExtractorTest {
 
     @Test
     void testExtract_ShouldReturnExtractedValue() {
-        // Arrange: Use a Map to represent the JSON structure
         Map<String, String> data = new HashMap<>();
-        data.put("name", "John Doe");
-        String jsonPath = "$.name";
+        data.put(NAME_KEY, NAME_VALUE);
 
-        // Act: Extract using the JsonPath
-        List<String> result = jsonPathExtractor.extract(data, jsonPath, List.class);
+        List<String> result = jsonPathExtractor.extract(data, VALID_JSON_PATH, List.class);
 
-        // Assert: Check the extracted list contains the expected value
         assertEquals(1, result.size());
-        assertEquals("John Doe", result.get(0));
+        assertEquals(NAME_VALUE, result.get(0));
     }
 
     @Test
     void testExtract_ShouldThrowExceptionForInvalidJsonPath() {
-        // Arrange: Valid data but invalid JSONPath
         Map<String, String> data = new HashMap<>();
-        data.put("name", "John Doe");
-        String invalidJsonPath = "$.nonExistentProperty";
+        data.put(NAME_KEY, NAME_VALUE);
 
-        // Act & Assert: Expect exception due to conversion failure from empty list to String
         assertThrows(JsonPathExtractionException.class, () ->
-                jsonPathExtractor.extract(data, invalidJsonPath, String.class)
+                jsonPathExtractor.extract(data, INVALID_JSON_PATH, String.class)
         );
     }
 
     @Test
     void testExtract_ShouldHandleNonObjectInputGracefully() {
-        // Arrange: Input is a plain string, not a JSON object
-        String invalidJsonInput = "Just a string";
-        String jsonPath = "$.name";
-
-        // Act & Assert: Expect exception when applying JsonPath to a non-object
         assertThrows(JsonPathExtractionException.class, () ->
-                jsonPathExtractor.extract(invalidJsonInput, jsonPath, String.class)
+                jsonPathExtractor.extract(NON_OBJECT_INPUT, VALID_JSON_PATH, String.class)
         );
     }
 }

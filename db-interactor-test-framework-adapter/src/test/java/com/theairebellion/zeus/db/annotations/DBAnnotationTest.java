@@ -14,23 +14,25 @@ public class DBAnnotationTest {
     @DB
     private static class DummyClass {}
 
+    private static final String DB_ANNOTATION_ERROR = "@DB annotation should be present";
+    private static final String EXTEND_WITH_ERROR = "@ExtendWith meta-annotation should be present on @DB";
+    private static final String FRAMEWORK_ADAPTER_ERROR = "@FrameworkAdapter meta-annotation should be present";
+
+    private static final String[] EXPECTED_BASE_PACKAGES = {"com.theairebellion.zeus.db"};
+
     @Test
     void testDBAnnotationMetaAnnotations() {
-        // Get the DB annotation from the test class
         DB dbAnnotation = DummyClass.class.getAnnotation(DB.class);
-        assertNotNull(dbAnnotation, "@DB annotation should be present");
+        assertNotNull(dbAnnotation, DB_ANNOTATION_ERROR);
 
-        // Check for meta-annotations on the DB annotation itself
         Annotation[] metaAnnotations = dbAnnotation.annotationType().getAnnotations();
 
-        // Verify ExtendWith meta-annotation
         ExtendWith extendWith = dbAnnotation.annotationType().getAnnotation(ExtendWith.class);
-        assertNotNull(extendWith, "@ExtendWith meta-annotation should be present on @DB");
+        assertNotNull(extendWith, EXTEND_WITH_ERROR);
         assertEquals(DbTestExtension.class, extendWith.value()[0]);
 
-        // Verify FrameworkAdapter meta-annotation
         FrameworkAdapter frameworkAdapter = dbAnnotation.annotationType().getAnnotation(FrameworkAdapter.class);
-        assertNotNull(frameworkAdapter, "@FrameworkAdapter meta-annotation should be present");
-        assertArrayEquals(new String[]{"com.theairebellion.zeus.db"}, frameworkAdapter.basePackages());
+        assertNotNull(frameworkAdapter, FRAMEWORK_ADAPTER_ERROR);
+        assertArrayEquals(EXPECTED_BASE_PACKAGES, frameworkAdapter.basePackages());
     }
 }

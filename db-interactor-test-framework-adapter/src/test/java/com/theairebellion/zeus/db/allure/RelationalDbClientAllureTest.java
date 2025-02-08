@@ -18,14 +18,25 @@ import static org.mockito.Mockito.*;
 
 public class RelationalDbClientAllureTest {
 
+    private static final String QUERY_SELECT_1 = "SELECT 1";
+    private static final String QUERY_FINISH_MESSAGE_TEMPLATE = "Finished executing query in %dms";
+    private static final String ATTACHMENT_EXECUTED_SQL = "Executed SQL";
+    private static final String ATTACHMENT_DURATION = "Duration (ms)";
+    private static final String ATTACHMENT_RESULT_ROWS = "Result Rows";
+    private static final String DUMMY_DB_HOST = "localhost";
+    private static final String DUMMY_DB_USER = "user";
+    private static final String DUMMY_DB_PASS = "pass";
+    private static final int DUMMY_DB_PORT = 1234;
+    private static final String DUMMY_DB_NAME = "testdb";
+
     private DatabaseConfiguration createDummyConfig() {
         return DatabaseConfiguration.builder()
                 .dbType(null)
-                .host("localhost")
-                .port(1234)
-                .database("testdb")
-                .dbUser("user")
-                .dbPassword("pass")
+                .host(DUMMY_DB_HOST)
+                .port(DUMMY_DB_PORT)
+                .database(DUMMY_DB_NAME)
+                .dbUser(DUMMY_DB_USER)
+                .dbPassword(DUMMY_DB_PASS)
                 .build();
     }
 
@@ -34,11 +45,11 @@ public class RelationalDbClientAllureTest {
         BaseDbConnectorService connector = mock(BaseDbConnectorService.class);
         DatabaseConfiguration config = createDummyConfig();
         RelationalDbClientAllure client = new RelationalDbClientAllure(connector, config);
-        String query = "SELECT 1";
+
         try (MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            client.printQuery(query);
-            // Verify that Allure.step was called with the expected message.
-            allureMock.verify(() -> Allure.step("Executing SQL query: SELECT 1"));
+            client.printQuery(QUERY_SELECT_1);
+
+            allureMock.verify(() -> Allure.step("Executing SQL query: " + QUERY_SELECT_1));
         }
     }
 
@@ -49,29 +60,24 @@ public class RelationalDbClientAllureTest {
         RelationalDbClientAllure client = new RelationalDbClientAllure(connector, config);
         QueryResponse response = mock(QueryResponse.class);
 
-        // Use type-safe empty list
         when(response.getRows()).thenReturn(Collections.emptyList());
-
         long duration = 100;
-        String query = "SELECT 1";
 
         try (MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            ArgumentCaptor<Allure.ThrowableRunnableVoid> runnableCaptor =
-                    ArgumentCaptor.forClass(Allure.ThrowableRunnableVoid.class);
+            ArgumentCaptor<Allure.ThrowableRunnableVoid> runnableCaptor = ArgumentCaptor.forClass(Allure.ThrowableRunnableVoid.class);
 
-            client.printResponse(query, response, duration);
+            client.printResponse(QUERY_SELECT_1, response, duration);
 
             allureMock.verify(() -> Allure.step(
-                    eq("Finished executing query in 100ms"),
+                    eq(QUERY_FINISH_MESSAGE_TEMPLATE.formatted(duration)),
                     runnableCaptor.capture()
             ));
 
             runnableCaptor.getValue().run();
 
-            // Resolve ambiguity with explicit String type
-            allureMock.verify(() -> Allure.addAttachment(eq("Executed SQL"), eq(query)));
-            allureMock.verify(() -> Allure.addAttachment(eq("Duration (ms)"), eq("100")));
-            allureMock.verify(() -> Allure.addAttachment(eq("Result Rows"), any(String.class)), never());
+            allureMock.verify(() -> Allure.addAttachment(eq(ATTACHMENT_EXECUTED_SQL), eq(QUERY_SELECT_1)));
+            allureMock.verify(() -> Allure.addAttachment(eq(ATTACHMENT_DURATION), eq(String.valueOf(duration))));
+            allureMock.verify(() -> Allure.addAttachment(eq(ATTACHMENT_RESULT_ROWS), any(String.class)), never());
         }
     }
 
@@ -82,30 +88,26 @@ public class RelationalDbClientAllureTest {
         RelationalDbClientAllure client = new RelationalDbClientAllure(connector, config);
         QueryResponse response = mock(QueryResponse.class);
 
-        // Create properly typed mock list
         List<Map<String, Object>> mockRows = Collections.singletonList(mock(Map.class));
         when(response.getRows()).thenReturn(mockRows);
         when(response.toString()).thenReturn("responseString");
-
         long duration = 200;
-        String query = "SELECT * FROM table";
 
         try (MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            ArgumentCaptor<Allure.ThrowableRunnableVoid> runnableCaptor =
-                    ArgumentCaptor.forClass(Allure.ThrowableRunnableVoid.class);
+            ArgumentCaptor<Allure.ThrowableRunnableVoid> runnableCaptor = ArgumentCaptor.forClass(Allure.ThrowableRunnableVoid.class);
 
-            client.printResponse(query, response, duration);
+            client.printResponse(QUERY_SELECT_1, response, duration);
 
             allureMock.verify(() -> Allure.step(
-                    eq("Finished executing query in 200ms"),
+                    eq(QUERY_FINISH_MESSAGE_TEMPLATE.formatted(duration)),
                     runnableCaptor.capture()
             ));
 
             runnableCaptor.getValue().run();
 
-            allureMock.verify(() -> Allure.addAttachment(eq("Executed SQL"), eq(query)));
-            allureMock.verify(() -> Allure.addAttachment(eq("Duration (ms)"), eq("200")));
-            allureMock.verify(() -> Allure.addAttachment(eq("Result Rows"), eq("responseString")));
+            allureMock.verify(() -> Allure.addAttachment(eq(ATTACHMENT_EXECUTED_SQL), eq(QUERY_SELECT_1)));
+            allureMock.verify(() -> Allure.addAttachment(eq(ATTACHMENT_DURATION), eq(String.valueOf(duration))));
+            allureMock.verify(() -> Allure.addAttachment(eq(ATTACHMENT_RESULT_ROWS), eq("responseString")));
         }
     }
 }

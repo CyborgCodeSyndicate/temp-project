@@ -2,12 +2,12 @@ package com.theairebellion.zeus.db.storage;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StorageKeysDbTest {
+class StorageKeysDbTest {
 
     @Test
-    void testEnum() {
+    void shouldReturnCorrectEnumName() {
         assertEquals("DB", StorageKeysDb.DB.name());
     }
 }

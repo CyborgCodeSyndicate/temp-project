@@ -6,9 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DbTypeTest {
 
+    private static final String MOCK_PROTOCOL = "mock-protocol";
+
     @Test
     void testMockDbTypeImplementation() {
-        // Arrange
         DbType mockDbType = new DbType() {
             @Override
             public java.sql.Driver driver() {
@@ -17,7 +18,7 @@ class DbTypeTest {
 
             @Override
             public String protocol() {
-                return "mock-protocol";
+                return MOCK_PROTOCOL;
             }
 
             @Override
@@ -26,7 +27,6 @@ class DbTypeTest {
             }
         };
 
-        // Act & Assert
-        assertEquals("mock-protocol", mockDbType.protocol());
+        assertEquals(MOCK_PROTOCOL, mockDbType.protocol());
     }
 }

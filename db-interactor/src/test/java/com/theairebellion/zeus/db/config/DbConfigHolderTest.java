@@ -2,22 +2,21 @@ package com.theairebellion.zeus.db.config;
 
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 class DbConfigHolderTest {
 
+    private static final String DB_CONFIG_FILE_PROPERTY = "db.config.file";
+    private static final String TEST_DB_CONFIG = "test-db-config";
+
     @Test
     void testGetDbConfig_ShouldReturnConfig() {
-        // Arrange
-        DbConfig mockConfig = mock(DbConfig.class);
-        ConfigFactory.setProperty("db.config.file", "test-db-config");
+        ConfigFactory.setProperty(DB_CONFIG_FILE_PROPERTY, TEST_DB_CONFIG);
 
-        // Act
-        DbConfigHolder.getDbConfig(); // Triggers the initialization
+        DbConfigHolder.getDbConfig();
         DbConfig config = DbConfigHolder.getDbConfig();
 
-        // Assert
         assertNotNull(config, "Config should not be null");
     }
 }

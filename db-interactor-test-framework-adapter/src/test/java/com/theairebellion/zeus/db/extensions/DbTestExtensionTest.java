@@ -12,17 +12,21 @@ import static org.mockito.Mockito.*;
 public class DbTestExtensionTest {
 
     @Test
-    void testAfterAllCallsCloseConnections() {
+    void verifyAfterAllInvokesCloseConnections() {
         DbTestExtension extension = new DbTestExtension();
-        ExtensionContext context = mock(ExtensionContext.class);
-        ApplicationContext appCtx = mock(ApplicationContext.class);
-        BaseDbConnectorService connector = mock(BaseDbConnectorService.class);
-        when(appCtx.getBean(BaseDbConnectorService.class)).thenReturn(connector);
+        ExtensionContext extensionContext = mock(ExtensionContext.class);
+        ApplicationContext applicationContext = mock(ApplicationContext.class);
+        BaseDbConnectorService connectorService = mock(BaseDbConnectorService.class);
 
-        try (MockedStatic<SpringExtension> springMock = mockStatic(SpringExtension.class)) {
-            springMock.when(() -> SpringExtension.getApplicationContext(context)).thenReturn(appCtx);
-            extension.afterAll(context);
-            verify(connector).closeConnections();
+        when(applicationContext.getBean(BaseDbConnectorService.class)).thenReturn(connectorService);
+
+        try (MockedStatic<SpringExtension> springExtensionMock = mockStatic(SpringExtension.class)) {
+            springExtensionMock.when(() -> SpringExtension.getApplicationContext(extensionContext))
+                    .thenReturn(applicationContext);
+
+            extension.afterAll(extensionContext);
+
+            verify(connectorService).closeConnections();
         }
     }
 }

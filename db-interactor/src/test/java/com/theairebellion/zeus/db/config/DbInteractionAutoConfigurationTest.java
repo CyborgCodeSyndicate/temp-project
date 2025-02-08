@@ -12,19 +12,13 @@ class DbInteractionAutoConfigurationTest {
 
     @Test
     void testDefaultObjectMapper() {
-        // Act
         ObjectMapper objectMapper = configuration.defaultObjectMapper();
-
-        // Assert
         assertNotNull(objectMapper, "ObjectMapper should not be null");
     }
 
     @Test
     void testJsonPathExtractor() {
-        // Act
         JsonPathExtractor jsonPathExtractor = configuration.jsonPathExtractor(configuration.defaultObjectMapper());
-
-        // Assert
         assertNotNull(jsonPathExtractor, "JsonPathExtractor should not be null");
     }
 }

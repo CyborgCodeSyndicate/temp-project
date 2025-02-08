@@ -19,6 +19,15 @@ import static org.mockito.Mockito.*;
 
 class BaseDbConnectorServiceTest {
 
+    private static final String HOST = "localhost";
+    private static final int PORT = 5432;
+    private static final String DATABASE = "testdb";
+    private static final String DB_USER = "user";
+    private static final String DB_PASSWORD = "password";
+    private static final String MOCK_PROTOCOL = "jdbc:mock";
+    private static final String FAILING_PROTOCOL = "jdbc:fail";
+    private static final String FAILING_DATABASE = "faildb";
+
     private BaseDbConnectorService dbConnectorService;
     private DatabaseConfiguration mockConfig;
     private DbType mockDbType;
@@ -33,163 +42,135 @@ class BaseDbConnectorServiceTest {
         mockConnection = mock(Connection.class);
         mockDriver = mock(Driver.class);
 
-        // Mock DatabaseConfiguration behavior
         when(mockConfig.getDbType()).thenReturn(mockDbType);
-        when(mockConfig.getHost()).thenReturn("localhost");
-        when(mockConfig.getPort()).thenReturn(5432);
-        when(mockConfig.getDatabase()).thenReturn("testdb");
-        when(mockConfig.getDbUser()).thenReturn("user");
-        when(mockConfig.getDbPassword()).thenReturn("password");
+        when(mockConfig.getHost()).thenReturn(HOST);
+        when(mockConfig.getPort()).thenReturn(PORT);
+        when(mockConfig.getDatabase()).thenReturn(DATABASE);
+        when(mockConfig.getDbUser()).thenReturn(DB_USER);
+        when(mockConfig.getDbPassword()).thenReturn(DB_PASSWORD);
 
-        // Mock DbType behavior
-        when(mockDbType.protocol()).thenReturn("jdbc:mock");
+        when(mockDbType.protocol()).thenReturn(MOCK_PROTOCOL);
         when(mockDbType.driver()).thenReturn(mockDriver);
 
-        // Mock Driver behavior
-        when(mockDriver.acceptsURL("jdbc:mock://localhost:5432/testdb")).thenReturn(true);
-        when(mockDriver.connect(eq("jdbc:mock://localhost:5432/testdb"), any())).thenReturn(mockConnection);
+        when(mockDriver.acceptsURL(MOCK_PROTOCOL + "://" + HOST + ":" + PORT + "/" + DATABASE)).thenReturn(true);
+        when(mockDriver.connect(eq(MOCK_PROTOCOL + "://" + HOST + ":" + PORT + "/" + DATABASE), any())).thenReturn(mockConnection);
 
-        // Register the mocked Driver
         DriverManager.registerDriver(mockDriver);
     }
 
     @AfterEach
     void teardown() throws SQLException {
-        // Unregister the mocked Driver to avoid affecting other tests
         DriverManager.deregisterDriver(mockDriver);
     }
 
     @Test
     void testGetConnection_ShouldReturnSameConnectionForSameURL() throws SQLException {
-        // Act
         Connection firstConnection = dbConnectorService.getConnection(mockConfig);
         Connection secondConnection = dbConnectorService.getConnection(mockConfig);
 
-        // Assert
         assertNotNull(firstConnection);
-        assertSame(firstConnection, secondConnection, "Connections should be the same for the same URL");
+        assertSame(firstConnection, secondConnection);
         verify(mockConnection, never()).close();
     }
 
     @Test
     void testRegisterDriverIfNecessary_ShouldNotRegisterDriverIfAlreadyRegistered() throws SQLException {
-        // Act
         dbConnectorService.getConnection(mockConfig);
-        dbConnectorService.getConnection(mockConfig); // Call again to ensure no duplicate registration
+        dbConnectorService.getConnection(mockConfig);
 
-        // Assert
         verify(mockDbType, times(1)).driver();
     }
 
     @Test
     void testCloseConnections_ShouldHandleEmptyConnectionsGracefully() throws SQLException {
-        // Act
         dbConnectorService.closeConnections();
 
-        // Assert
-        verify(mockConnection, never()).close(); // No connection to close
+        verify(mockConnection, never()).close();
     }
 
     @Test
     void testCloseConnections_ShouldHandleAlreadyClosedConnections() throws SQLException {
-        // Arrange
         when(mockConnection.isClosed()).thenReturn(true);
 
-        // Act
         dbConnectorService.getConnection(mockConfig);
         dbConnectorService.closeConnections();
 
-        // Assert
-        verify(mockConnection, never()).close(); // Connection is already closed
+        verify(mockConnection, never()).close();
     }
 
     @Test
     void testCreateConnection_ShouldThrowExceptionForInvalidUrl() {
-        // Arrange
         when(mockConfig.getDatabase()).thenReturn("invalid-db");
         when(mockDbType.protocol()).thenReturn("jdbc:invalid");
 
-        // Act & Assert
         assertThrows(IllegalStateException.class, () -> dbConnectorService.getConnection(mockConfig));
     }
 
     @Test
     void testRegisterDriverIfNecessary_ShouldThrowExceptionOnDriverRegistrationFailure() throws SQLException {
-        // Arrange
         DbType faultyDbType = mock(DbType.class);
         Driver mockDriver = mock(Driver.class);
         when(faultyDbType.driver()).thenReturn(mockDriver);
         doThrow(new SQLException("Driver registration failed")).when(mockDriver).acceptsURL(anyString());
 
-        // Act & Assert
         assertThrows(IllegalStateException.class, () -> {
             dbConnectorService.getConnection(
                     DatabaseConfiguration.builder()
                             .dbType(faultyDbType)
-                            .host("localhost")
-                            .port(5432)
-                            .database("testdb")
-                            .dbUser("user")
-                            .dbPassword("password")
+                            .host(HOST)
+                            .port(PORT)
+                            .database(DATABASE)
+                            .dbUser(DB_USER)
+                            .dbPassword(DB_PASSWORD)
                             .build()
             );
         });
 
-        verify(faultyDbType, times(1)).driver(); // Ensure the driver is fetched
+        verify(faultyDbType, times(1)).driver();
     }
 
     @Test
     void testRegisterDriverIfNecessary_ShouldNotRegisterAlreadyRegisteredDriver() {
-        // Act: Call getConnection multiple times
         dbConnectorService.getConnection(mockConfig);
         dbConnectorService.getConnection(mockConfig);
 
-        // Assert: Verify the driver was only registered once
         verify(mockDbType, times(1)).driver();
     }
 
     @Test
     void testRegisterDriverIfNecessary_ShouldThrowExceptionOnDriverRegistrationFailure_StaticMock() {
-        // Create a new DbType and a new Driver that have not been registered before.
         DbType failingDbType = mock(DbType.class);
         Driver failingDriver = mock(Driver.class);
-        when(failingDbType.protocol()).thenReturn("jdbc:fail");
+        when(failingDbType.protocol()).thenReturn(FAILING_PROTOCOL);
         when(failingDbType.driver()).thenReturn(failingDriver);
 
-        // Create a new DatabaseConfiguration using the failing DbType.
         DatabaseConfiguration failingConfig = DatabaseConfiguration.builder()
                 .dbType(failingDbType)
-                .host("localhost")
-                .port(5432)
-                .database("faildb")
-                .dbUser("user")
-                .dbPassword("password")
+                .host(HOST)
+                .port(PORT)
+                .database(FAILING_DATABASE)
+                .dbUser(DB_USER)
+                .dbPassword(DB_PASSWORD)
                 .build();
 
-        // Create a default answer that intercepts static calls.
         Answer<Object> defaultAnswer = new Answer<>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 String methodName = invocation.getMethod().getName();
-                // Stub getLogWriter() to always return null.
                 if ("getLogWriter".equals(methodName)) {
                     return null;
                 }
-                // For registerDriver(Driver): if the argument is our failingDriver, throw SQLException.
                 if ("registerDriver".equals(methodName)) {
                     Object arg0 = invocation.getArgument(0);
                     if (failingDriver.equals(arg0)) {
                         throw new SQLException("Simulated registration failure");
                     }
                 }
-                // For any other static method call on DriverManager, return null.
                 return null;
             }
         };
 
-        // Use static mocking with the default answer.
         try (MockedStatic<DriverManager> driverManagerMock = mockStatic(DriverManager.class, defaultAnswer)) {
-            // Act & Assert: When getConnection is called, driver registration should fail.
             IllegalStateException exception = assertThrows(IllegalStateException.class,
                     () -> dbConnectorService.getConnection(failingConfig));
             assertTrue(exception.getMessage().contains("Failed to register database driver for type:"));
@@ -198,14 +179,11 @@ class BaseDbConnectorServiceTest {
 
     @Test
     void testCloseConnections_ShouldHandleSQLExceptionOnClose() throws SQLException {
-        // Arrange: Set up the connection to appear open and then throw an exception when close() is called.
         when(mockConnection.isClosed()).thenReturn(false);
         doThrow(new SQLException("Simulated close failure")).when(mockConnection).close();
 
-        // Ensure the connection is created (and added to the internal map).
         dbConnectorService.getConnection(mockConfig);
 
-        // Act & Assert: Calling closeConnections() should not propagate the SQLException.
         assertDoesNotThrow(() -> dbConnectorService.closeConnections());
     }
 }

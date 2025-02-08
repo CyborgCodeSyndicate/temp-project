@@ -7,12 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JsonPathExtractionExceptionTest {
 
+    private static final String TEST_MESSAGE = "Test exception";
+    private static final String ROOT_CAUSE_MESSAGE = "Root cause";
+
     @Test
     void testJsonPathExtractionException_ShouldSetMessageAndCause() {
-        Throwable cause = new Throwable("Root cause");
-        JsonPathExtractionException exception = new JsonPathExtractionException("Test exception", cause);
+        Throwable rootCause = new Throwable(ROOT_CAUSE_MESSAGE);
+        JsonPathExtractionException exception = new JsonPathExtractionException(TEST_MESSAGE, rootCause);
 
-        assertEquals("Test exception", exception.getMessage());
-        assertEquals(cause, exception.getCause());
+        assertEquals(TEST_MESSAGE, exception.getMessage());
+        assertEquals(rootCause, exception.getCause());
     }
 }

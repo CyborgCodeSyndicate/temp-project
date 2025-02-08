@@ -3,7 +3,6 @@ package com.theairebellion.zeus.db.client;
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.connector.BaseDbConnectorService;
 import com.theairebellion.zeus.db.exceptions.DatabaseOperationException;
-import com.theairebellion.zeus.db.query.QueryResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +12,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RelationalDbClientTest {
+
+    private static final String SELECT_QUERY = "SELECT * FROM users";
+    private static final String UPDATE_QUERY = "UPDATE users SET name='test'";
+    private static final String INVALID_QUERY = "SELECT * FROM invalid_table";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String TEST_USER_NAME = "Test User";
+    private static final int TEST_USER_ID = 1;
+    private static final int UPDATED_ROWS_COUNT = 1;
+    private static final String EXCEPTION_MESSAGE = "Error executing query";
+    private static final String CONNECTION_ERROR = "Database connection error";
 
     private BaseDbConnectorService connector;
     private DatabaseConfiguration dbConfig;
@@ -27,29 +37,28 @@ class RelationalDbClientTest {
 
     @Test
     void testExecuteQuery_Select_ShouldReturnQueryResponse() throws Exception {
-        String query = "SELECT * FROM users";
-        Connection connection = mock(Connection.class);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        var connection = mock(Connection.class);
+        var preparedStatement = mock(PreparedStatement.class);
+        var resultSet = mock(ResultSet.class);
+        var metaData = mock(ResultSetMetaData.class);
 
         when(connector.getConnection(dbConfig)).thenReturn(connection);
-        when(connection.prepareStatement(query)).thenReturn(preparedStatement);
+        when(connection.prepareStatement(SELECT_QUERY)).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.getMetaData()).thenReturn(metaData);
         when(metaData.getColumnCount()).thenReturn(2);
-        when(metaData.getColumnName(1)).thenReturn("id");
-        when(metaData.getColumnName(2)).thenReturn("name");
+        when(metaData.getColumnName(1)).thenReturn(COLUMN_ID);
+        when(metaData.getColumnName(2)).thenReturn(COLUMN_NAME);
         when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getObject(1)).thenReturn(1);
-        when(resultSet.getObject(2)).thenReturn("Test User");
+        when(resultSet.getObject(1)).thenReturn(TEST_USER_ID);
+        when(resultSet.getObject(2)).thenReturn(TEST_USER_NAME);
 
-        QueryResponse response = client.executeQuery(query);
+        var response = client.executeQuery(SELECT_QUERY);
 
-        assertNotNull(response, "Expected a non-null QueryResponse");
-        assertEquals(1, response.getRows().size(), "Expected one row in the result set");
-        assertEquals(1, response.getRows().get(0).get("id"));
-        assertEquals("Test User", response.getRows().get(0).get("name"));
+        assertNotNull(response, "QueryResponse should not be null");
+        assertEquals(1, response.getRows().size(), "Result set should contain one row");
+        assertEquals(TEST_USER_ID, response.getRows().get(0).get(COLUMN_ID));
+        assertEquals(TEST_USER_NAME, response.getRows().get(0).get(COLUMN_NAME));
 
         verify(connector).getConnection(dbConfig);
         verify(connection).close();
@@ -57,43 +66,34 @@ class RelationalDbClientTest {
 
     @Test
     void testExecuteQuery_Update_ShouldReturnQueryResponse() throws Exception {
-        String query = "UPDATE users SET name='test'";
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
+        var connection = mock(Connection.class);
+        var statement = mock(Statement.class);
 
         when(connector.getConnection(dbConfig)).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeUpdate(query)).thenReturn(1);
+        when(statement.executeUpdate(UPDATE_QUERY)).thenReturn(UPDATED_ROWS_COUNT);
 
-        QueryResponse response = client.executeQuery(query);
+        var response = client.executeQuery(UPDATE_QUERY);
 
-        assertNotNull(response, "Expected a non-null QueryResponse");
-        assertEquals(1, response.getRows().get(0).get("updatedRows"), "Expected 1 row to be updated");
+        assertNotNull(response, "QueryResponse should not be null");
+        assertEquals(UPDATED_ROWS_COUNT, response.getRows().get(0).get("updatedRows"));
         verify(connector).getConnection(dbConfig);
         verify(connection).close();
     }
 
     @Test
     void testExecuteQuery_ShouldThrowDatabaseOperationException_OnSQLException() {
-        // Setup
-        String query = "SELECT * FROM invalid_table";
-
-        // Mock the connector to simulate a SQLException
         doAnswer(invocation -> {
-            throw new SQLException("Database connection error");
+            throw new SQLException(CONNECTION_ERROR);
         }).when(connector).getConnection(eq(dbConfig));
 
-        // Act and Assert
-        DatabaseOperationException exception = assertThrows(
+        var exception = assertThrows(
                 DatabaseOperationException.class,
-                () -> client.executeQuery(query),
-                "Expected DatabaseOperationException for query failure"
+                () -> client.executeQuery(INVALID_QUERY)
         );
 
-        // Assert Exception Details
         assertNotNull(exception, "Exception should not be null");
-        assertTrue(exception.getMessage().contains("Error executing query"),
-                "Exception message should mention query failure");
-        assertInstanceOf(SQLException.class, exception.getCause(), "The root cause of DatabaseOperationException should be SQLException");
+        assertTrue(exception.getMessage().contains(EXCEPTION_MESSAGE), "Exception message should indicate query failure");
+        assertInstanceOf(SQLException.class, exception.getCause(), "The root cause should be SQLException");
     }
 }

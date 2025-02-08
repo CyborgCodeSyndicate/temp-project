@@ -12,64 +12,64 @@ import com.theairebellion.zeus.db.query.mock.TestEnum;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-public class DbQueryTest {
+class DbQueryTest {
+
+    private static final String MOCK_HOST = "mockHost";
+    private static final String MOCK_DATABASE = "mockDatabase";
+    private static final String MOCK_USER = "mockUser";
+    private static final String MOCK_PASSWORD = "mockPassword";
+    private static final int MOCK_PORT = 1234;
+    private static final String QUERY_RESULT = "SELECT * FROM dummy";
+    private static final TestEnum EXPECTED_ENUM = TestEnum.VALUE;
+    private static final String PARAM_KEY = "key";
+    private static final String PARAM_VALUE = "value";
 
     @Test
     void testQuery() {
         DummyDbQuery dummy = new DummyDbQuery();
-        // Verify that the abstract query() method returns the expected string.
-        assertEquals("SELECT * FROM dummy", dummy.query());
+        assertEquals(QUERY_RESULT, dummy.query());
     }
 
     @Test
     void testEnumImpl() {
         DummyDbQuery dummy = new DummyDbQuery();
-        // Verify that the abstract enumImpl() returns the expected enum value.
-        assertEquals(TestEnum.VALUE, dummy.enumImpl());
+        assertEquals(EXPECTED_ENUM, dummy.enumImpl());
     }
 
     @Test
     void testConfig() {
         DbType mockDbType = mock(DbType.class);
-
-        // Create a mock DbConfig and stub its methods.
         DbConfig mockDbConfig = mock(DbConfig.class);
-        when(mockDbConfig.type()).thenReturn(mockDbType);
-        when(mockDbConfig.host()).thenReturn("mockHost");
-        when(mockDbConfig.port()).thenReturn(1234);
-        when(mockDbConfig.name()).thenReturn("mockDatabase");
-        when(mockDbConfig.username()).thenReturn("mockUser");
-        when(mockDbConfig.password()).thenReturn("mockPassword");
 
-        // Use static mocking for DbConfigHolder to control its getDbConfig() return value.
+        when(mockDbConfig.type()).thenReturn(mockDbType);
+        when(mockDbConfig.host()).thenReturn(MOCK_HOST);
+        when(mockDbConfig.port()).thenReturn(MOCK_PORT);
+        when(mockDbConfig.name()).thenReturn(MOCK_DATABASE);
+        when(mockDbConfig.username()).thenReturn(MOCK_USER);
+        when(mockDbConfig.password()).thenReturn(MOCK_PASSWORD);
+
         try (MockedStatic<DbConfigHolder> mockedHolder = mockStatic(DbConfigHolder.class)) {
             mockedHolder.when(DbConfigHolder::getDbConfig).thenReturn(mockDbConfig);
 
             DummyDbQuery dummy = new DummyDbQuery();
             DatabaseConfiguration config = dummy.config();
 
-            // Assert that the configuration built from the mock DbConfig has the expected values.
             assertEquals(mockDbType, config.getDbType());
-            assertEquals("mockHost", config.getHost());
-            assertEquals(1234, config.getPort());
-            assertEquals("mockDatabase", config.getDatabase());
-            assertEquals("mockUser", config.getDbUser());
-            assertEquals("mockPassword", config.getDbPassword());
+            assertEquals(MOCK_HOST, config.getHost());
+            assertEquals(MOCK_PORT, config.getPort());
+            assertEquals(MOCK_DATABASE, config.getDatabase());
+            assertEquals(MOCK_USER, config.getDbUser());
+            assertEquals(MOCK_PASSWORD, config.getDbPassword());
         }
     }
 
     @Test
     void testWithParam() {
         DummyDbQuery dummy = new DummyDbQuery();
-        // Call withParam; it should return a new instance wrapping the original query.
-        DbQuery paramQuery = dummy.withParam("key", "value");
+        DbQuery paramQuery = dummy.withParam(PARAM_KEY, PARAM_VALUE);
 
-        // Check that the returned value is not null and is not the same instance as dummy.
         assertNotNull(paramQuery);
         assertNotSame(dummy, paramQuery);
-
-        // Optionally, verify that it is an instance of ParametrizedQuery.
-        // This assumes that ParametrizedQuery is a public class implementing DbQuery.
         assertInstanceOf(ParametrizedQuery.class, paramQuery);
     }
 }

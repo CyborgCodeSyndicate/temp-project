@@ -7,12 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DatabaseOperationExceptionTest {
 
+    private static final String TEST_MESSAGE = "Test exception";
+    private static final String ROOT_CAUSE_MESSAGE = "Root cause";
+
     @Test
     void testDatabaseOperationException_ShouldSetMessageAndCause() {
-        Throwable cause = new Throwable("Root cause");
-        DatabaseOperationException exception = new DatabaseOperationException("Test exception", cause);
+        Throwable rootCause = new Throwable(ROOT_CAUSE_MESSAGE);
+        DatabaseOperationException exception = new DatabaseOperationException(TEST_MESSAGE, rootCause);
 
-        assertEquals("Test exception", exception.getMessage());
-        assertEquals(cause, exception.getCause());
+        assertEquals(TEST_MESSAGE, exception.getMessage());
+        assertEquals(rootCause, exception.getCause());
     }
 }

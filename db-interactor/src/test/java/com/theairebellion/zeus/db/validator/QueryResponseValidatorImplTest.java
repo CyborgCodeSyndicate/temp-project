@@ -17,86 +17,83 @@ import static org.mockito.Mockito.*;
 
 class QueryResponseValidatorImplTest {
 
+    private static final String KEY_NUM_ROWS = "numRows";
+    private static final String KEY_JSON_PATH_NAME = "$.name";
+    private static final String KEY_COLUMN_NAME = "name";
+    private static final String VALUE_NAME = "John Doe";
+    private static final int EXPECTED_ROW_COUNT = 2;
+
     private QueryResponseValidatorImpl validator;
     private JsonPathExtractor mockExtractor;
 
     @BeforeEach
     void setUp() {
-        // Create a mock for JsonPathExtractor
         mockExtractor = Mockito.mock(JsonPathExtractor.class);
         validator = new QueryResponseValidatorImpl(mockExtractor);
     }
 
     @Test
     void testValidateQueryResponse_NumberRowsValidation() {
-        // Arrange
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1), Map.of("id", 2)));
+
         Assertion<Integer> assertion = Assertion.builder(Integer.class)
-                .key("numRows")
+                .key(KEY_NUM_ROWS)
                 .type(AssertionTypes.IS)
-                .target(DbAssertionTarget.NUMBER_ROWS) // Set the target
-                .expected(2)
+                .target(DbAssertionTarget.NUMBER_ROWS)
+                .expected(EXPECTED_ROW_COUNT)
                 .soft(false)
                 .build();
 
-        // Act
         List<AssertionResult<Integer>> results = validator.validateQueryResponse(queryResponse, assertion);
 
-        // Assert
         assertEquals(1, results.size());
         AssertionResult<Integer> result = results.get(0);
-        assertTrue(result.isPassed(), "Expected the validation to pass");
-        assertEquals(2, result.getExpectedValue());
-        assertEquals(2, result.getActualValue());
+        assertTrue(result.isPassed());
+        assertEquals(EXPECTED_ROW_COUNT, result.getExpectedValue());
+        assertEquals(EXPECTED_ROW_COUNT, result.getActualValue());
     }
 
     @Test
     void testValidateQueryResponse_JsonPathValidation() {
-        // Arrange
-        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", "John Doe")));
-        when(mockExtractor.extract(queryResponse.getRows(), "$.name", Object.class)).thenReturn("John Doe");
+        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
+        when(mockExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(VALUE_NAME);
 
         Assertion<String> assertion = Assertion.builder(String.class)
-                .key("$.name")
+                .key(KEY_JSON_PATH_NAME)
                 .type(AssertionTypes.IS)
-                .target(DbAssertionTarget.QUERY_RESULT) // Set the target
-                .expected("John Doe")
+                .target(DbAssertionTarget.QUERY_RESULT)
+                .expected(VALUE_NAME)
                 .soft(false)
                 .build();
 
-        // Act
         List<AssertionResult<String>> results = validator.validateQueryResponse(queryResponse, assertion);
 
-        // Assert
         assertEquals(1, results.size());
         AssertionResult<String> result = results.get(0);
-        assertTrue(result.isPassed(), "Expected the validation to pass");
-        assertEquals("John Doe", result.getExpectedValue());
-        assertEquals("John Doe", result.getActualValue());
+        assertTrue(result.isPassed());
+        assertEquals(VALUE_NAME, result.getExpectedValue());
+        assertEquals(VALUE_NAME, result.getActualValue());
     }
 
     @Test
     void testValidateQueryResponse_ColumnValidation() {
-        // Arrange
-        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1, "name", "John Doe")));
-        when(mockExtractor.extract(queryResponse.getRows().get(0).keySet(), "name", Object.class)).thenReturn("name");
+        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1, "name", VALUE_NAME)));
+        when(mockExtractor.extract(queryResponse.getRows().get(0).keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(KEY_COLUMN_NAME);
 
         Assertion<String> assertion = Assertion.builder(String.class)
-                .key("name")
-                .target(DbAssertionTarget.COLUMNS) // Set the target
+                .key(KEY_COLUMN_NAME)
+                .target(DbAssertionTarget.COLUMNS)
                 .type(AssertionTypes.CONTAINS)
-                .expected("name")
+                .expected(KEY_COLUMN_NAME)
                 .soft(false)
                 .build();
 
-        // Act
         List<AssertionResult<String>> results = validator.validateQueryResponse(queryResponse, assertion);
 
-        // Assert
         assertEquals(1, results.size());
         AssertionResult<String> result = results.get(0);
-        assertTrue(result.isPassed(), "Expected the validation to pass");
-        assertEquals("name", result.getExpectedValue());
-        assertEquals("name", result.getActualValue());
+        assertTrue(result.isPassed());
+        assertEquals(KEY_COLUMN_NAME, result.getExpectedValue());
+        assertEquals(KEY_COLUMN_NAME, result.getActualValue());
     }
 }
