@@ -14,6 +14,7 @@ public enum Features {
     ALERT_FIELDS("alertField"),
     TAB_FIELDS("tabField"),
     REQUESTS_INTERCEPTOR("interceptor"),
+//    VALIDATION("validation"),
     DATA_INSERTION("insertionService");
 
     @Getter

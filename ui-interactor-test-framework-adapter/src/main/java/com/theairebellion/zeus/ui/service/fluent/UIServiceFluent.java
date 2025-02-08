@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.annotation.WorldName;
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
@@ -18,12 +19,14 @@ import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
+import manifold.ext.rt.api.Jailbreak;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.HTML;
 import java.util.function.Consumer;
 
 @WorldName("UI")
@@ -41,6 +44,7 @@ public class UIServiceFluent extends FluentService {
     private LinkServiceFluent linkField;
     private AlertServiceFluent alertField;
     private TabServiceFluent tabField;
+    private ValidationServiceFluent validation;
     private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
@@ -71,6 +75,22 @@ public class UIServiceFluent extends FluentService {
     }
 
 
+    public UIServiceFluent validateTextInField(HTML.Tag tag, String text, boolean soft) {
+        return validation.validateTextInField(tag, text, soft);
+    }
+
+
+    public UIServiceFluent validateTextInField(HTML.Tag tag, String text) {
+        return validation.validateTextInField(tag, text, false);
+    }
+
+
+    public UIServiceFluent validateTextInField(String text) {
+        HTML.Tag tag = HTML.Tag.I;
+        return validation.validateTextInField(tag, text, false);
+    }
+
+
     @Override
     protected void postQuestSetupInitialization() {
         inputField = new InputServiceFluent(this, quest.getStorage(), new InputServiceImpl(driver), driver);
@@ -82,6 +102,7 @@ public class UIServiceFluent extends FluentService {
         linkField = new LinkServiceFluent(this, quest.getStorage(), new LinkServiceImpl(driver), driver);
         alertField = new AlertServiceFluent(this, quest.getStorage(), new AlertServiceImpl(driver), driver);
         tabField = new TabServiceFluent(this, quest.getStorage(), new TabServiceImpl(driver), driver);
+        validation = new ValidationServiceFluent(this, driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices();
