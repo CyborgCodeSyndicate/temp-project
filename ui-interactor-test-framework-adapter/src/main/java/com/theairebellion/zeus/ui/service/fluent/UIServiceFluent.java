@@ -69,7 +69,6 @@ public class UIServiceFluent extends FluentService {
     }
 
 
-
     public UIServiceFluent validate(Runnable assertion) {
         return (UIServiceFluent) super.validate(assertion);
     }
@@ -140,5 +139,4 @@ public class UIServiceFluent extends FluentService {
         getDriver().navigate().back();
         return this;
     }
-
 }
