@@ -6,6 +6,7 @@ import com.theairebellion.zeus.db.service.DatabaseService;
 import com.theairebellion.zeus.framework.annotation.WorldName;
 import com.theairebellion.zeus.framework.base.ClassLevelHook;
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.framework.retry.RetryCondition;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import org.assertj.core.api.SoftAssertions;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -40,6 +42,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
         return this;
     }
 
+
     public <T> DatabaseServiceFluent query(final DbQuery query,
                                            final String jsonPath,
                                            final Class<T> resultType) {
@@ -52,7 +55,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
     public DatabaseServiceFluent validate(final QueryResponse queryResponse,
                                           final Assertion<?>... assertions) {
         final List<AssertionResult<Object>> assertionResults =
-                databaseService.validate(queryResponse, assertions);
+            databaseService.validate(queryResponse, assertions);
         validation(assertionResults);
         return this;
     }
@@ -75,6 +78,12 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
     @Override
     public DatabaseServiceFluent validate(final Consumer<SoftAssertions> assertion) {
         return (DatabaseServiceFluent) super.validate(assertion);
+    }
+
+
+    public <T> DatabaseServiceFluent retryUntil(final RetryCondition<T> retryCondition, final Duration maxWait,
+                                                final Duration retryInterval) {
+        return (DatabaseServiceFluent) super.retryUntil(retryCondition, maxWait, retryInterval, databaseService);
     }
 
 

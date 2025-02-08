@@ -33,6 +33,14 @@ public class Storage {
     }
 
 
+    public <T> T get(DataExtractor<T> extractor, Class<T> clazz, int index) {
+        Object result = (extractor.getSubKey() != null)
+                            ? sub(extractor.getSubKey()).getByIndex(extractor.getKey(), index, Object.class)
+                            : getByIndex(extractor.getKey(), index, Object.class);
+
+        return clazz.cast(extractor.extract(result));
+    }
+
     public <T> T get(DataExtractor<T> extractor, Class<T> clazz) {
         Object result = (extractor.getSubKey() != null)
                             ? sub(extractor.getSubKey()).get(extractor.getKey(), Object.class)
