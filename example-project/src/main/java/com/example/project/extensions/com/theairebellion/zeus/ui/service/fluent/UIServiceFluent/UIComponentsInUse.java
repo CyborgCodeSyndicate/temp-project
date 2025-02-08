@@ -91,5 +91,10 @@ public class UIComponentsInUse {
                 InsertionServiceFluent.class);
     }
 
+    public static ValidationServiceFluent validate(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.VALIDATION.getFieldName(), uiServiceFluent,
+                ValidationServiceFluent.class);
+    }
+
 
 }

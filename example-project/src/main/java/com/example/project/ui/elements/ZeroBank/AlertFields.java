@@ -9,7 +9,7 @@ import org.openqa.selenium.By;
 public enum AlertFields implements UIElement {
 
     SUBMITTED_TRANSACTION(By.className("alert"), AlertFieldTypes.BOOTSTRAP_ALERT_TYPE),
-    FOREIGN_CURRENCY_CASH(By.id("alert_container"), AlertFieldTypes.BOOTSTRAP_ALERT_TYPE),
+    FOREIGN_CURRENCY_CASH(By.id("alert_content"), AlertFieldTypes.BOOTSTRAP_ALERT_TYPE),
     PAYMENT_MESSAGE(By.id("alert_content"), AlertFieldTypes.BOOTSTRAP_ALERT_TYPE)
     ;
 

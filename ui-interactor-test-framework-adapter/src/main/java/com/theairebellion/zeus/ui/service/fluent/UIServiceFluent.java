@@ -55,6 +55,7 @@ public class UIServiceFluent extends FluentService {
     private ModalServiceFluent modalField;
     private AccordionServiceFluent accordionField;
     private TableServiceFluent table;
+    private ValidationServiceFluent validation;
     private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
@@ -94,6 +95,7 @@ public class UIServiceFluent extends FluentService {
         accordionField = new AccordionServiceFluent(this, quest.getStorage(), new AccordionServiceImpl(driver), driver);
         InputService inputService = new InputServiceImpl(driver);
         inputField = new InputServiceFluent(this, quest.getStorage(), inputService, driver);
+        validation = new ValidationServiceFluent(this, driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices(inputService);
