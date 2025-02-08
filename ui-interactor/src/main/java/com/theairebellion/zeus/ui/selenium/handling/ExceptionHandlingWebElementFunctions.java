@@ -34,22 +34,22 @@ public class ExceptionHandlingWebElementFunctions {
         element = updateWebElement(driver, element);
 
         return switch (webElementAction) {
-            case FIND_ELEMENT -> FIND_ELEMENT.performAction(driver, element, args[0]);
-            case FIND_ELEMENTS -> FIND_ELEMENTS.performAction(driver, element, args[0]);
+            case FIND_ELEMENT -> FIND_ELEMENT.performActionWebElement(driver, element, args[0]);
+            case FIND_ELEMENTS -> FIND_ELEMENTS.performActionWebElement(driver, element, args[0]);
             case CLICK -> {
-                CLICK.performAction(driver, element.getOriginal());
+                CLICK.performActionWebElement(driver, element.getOriginal());
                 yield null;
             }
             case SEND_KEYS -> {
-                SEND_KEYS.performAction(driver, element.getOriginal(), args[0]);
+                SEND_KEYS.performActionWebElement(driver, element.getOriginal(), args[0]);
                 yield null;
             }
             case SUBMIT -> {
-                SUBMIT.performAction(driver, element.getOriginal());
+                SUBMIT.performActionWebElement(driver, element.getOriginal());
                 yield null;
             }
             case CLEAR -> {
-                CLEAR.performAction(driver, element.getOriginal());
+                CLEAR.performActionWebElement(driver, element.getOriginal());
                 yield null;
             }
         };
@@ -63,7 +63,7 @@ public class ExceptionHandlingWebElementFunctions {
 
         WebElement foundElement = tryToFindElementInIFrame(driver, (By) args[0]);
         if (foundElement != null) {
-            return webElementAction.performAction(driver, foundElement, args);
+            return webElementAction.performActionWebElement(driver, foundElement, args);
         }
 
         LogUI.error("Element not found in the main DOM or any iframe.");
@@ -82,15 +82,15 @@ public class ExceptionHandlingWebElementFunctions {
 
         return switch (webElementAction) {
             case CLICK -> {
-                CLICK.performAction(driver, element.getOriginal());
+                CLICK.performActionWebElement(driver, element.getOriginal());
                 yield null;
             }
             case SEND_KEYS -> {
-                SEND_KEYS.performAction(driver, element.getOriginal(), args[0]);
+                SEND_KEYS.performActionWebElement(driver, element.getOriginal(), args[0]);
                 yield null;
             }
             case CLEAR -> {
-                CLEAR.performAction(driver, element.getOriginal());
+                CLEAR.performActionWebElement(driver, element.getOriginal());
                 yield null;
             }
             default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);
@@ -106,19 +106,19 @@ public class ExceptionHandlingWebElementFunctions {
 
         return switch (webElementAction) {
             case CLICK -> {
-                CLICK.performAction(driver, clickableElement);
+                CLICK.performActionWebElement(driver, clickableElement);
                 yield null;
             }
             case SEND_KEYS -> {
-                SEND_KEYS.performAction(driver, clickableElement, args[0]);
+                SEND_KEYS.performActionWebElement(driver, clickableElement, args[0]);
                 yield null;
             }
             case SUBMIT -> {
-                SUBMIT.performAction(driver, clickableElement);
+                SUBMIT.performActionWebElement(driver, clickableElement);
                 yield null;
             }
             case CLEAR -> {
-                CLEAR.performAction(driver, clickableElement);
+                CLEAR.performActionWebElement(driver, clickableElement);
                 yield null;
             }
             default -> throw new IllegalArgumentException(UNSUPPORTED_OPERATION);

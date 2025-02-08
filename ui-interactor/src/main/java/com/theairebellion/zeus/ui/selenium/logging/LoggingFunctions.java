@@ -78,6 +78,7 @@ public class LoggingFunctions {
             case SUBMIT -> String.format("Exception [%s]: Unable to submit form using element [%s]. " +
                             "Possible reasons: element is not a valid form element, not interactable, or detached from the DOM.",
                     cause.getClass().getSimpleName(), elementTagName);
+            default -> throw new IllegalStateException("Unexpected value: " + webElementAction);
         };
 
         String additionalInfo = String.format(
