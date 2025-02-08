@@ -40,6 +40,7 @@
         <junit.version>5.11.4</junit.version>
         <mockito.core.version>5.2.0</mockito.core.version>
         <mockito.junit.jupiter.version>5.2.0</mockito.junit.jupiter.version>
+        <h2.database.version>2.3.232</h2.database.version>
         <jacoco.version>0.8.8</jacoco.version>
         <allure.version>2.29.1</allure.version>
         <selenium.version>4.27.0</selenium.version>
@@ -149,7 +150,13 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito.core.version}</version> <!-- or latest -->
+                <version>${mockito.core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.database.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

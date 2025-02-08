@@ -19,7 +19,7 @@ public class AllureDbClientManagerTest {
 
     private DatabaseConfiguration createDummyConfig() {
         return DatabaseConfiguration.builder()
-                .dbType(null) // For testing purposes, passing null for DbType is acceptable if not used
+                .dbType(null)
                 .host(HOST)
                 .port(PORT)
                 .database(DATABASE)
