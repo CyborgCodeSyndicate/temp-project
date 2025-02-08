@@ -34,6 +34,7 @@ public class CustomSoftAssertion extends SoftAssertions {
                 }
             });
         });
+        super.collectAssertionError(error);
     }
 
 
