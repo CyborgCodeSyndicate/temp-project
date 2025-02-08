@@ -2,10 +2,10 @@ package com.theairebellion.zeus.ui.service.tables;
 
 
 import com.theairebellion.zeus.framework.storage.Storage;
-import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
-import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
+import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.service.TableService;
+import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import manifold.ext.rt.api.Jailbreak;

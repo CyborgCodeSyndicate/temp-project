@@ -20,8 +20,8 @@ import java.util.Properties;
 
 @Odyssey
 @SpringBootTest(
-        classes = {TestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.NONE
+    classes = {TestConfig.class},
+    webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 public class BaseTest {
 
@@ -51,8 +51,16 @@ public class BaseTest {
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         @Jailbreak Quest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-                clazz.getName());
+            clazz.getName());
         return quest.getStorage().get(extractor, clazz);
+    }
+
+
+    protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
+        @Jailbreak Quest quest = QuestHolder.get();
+        LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
+            clazz.getName());
+        return quest.getStorage().get(extractor, clazz, index);
     }
 
 
