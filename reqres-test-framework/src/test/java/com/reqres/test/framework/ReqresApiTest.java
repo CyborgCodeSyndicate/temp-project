@@ -1,6 +1,5 @@
 package com.reqres.test.framework;
 
-import com.reqres.test.framework.annotations.Rivendell;
 import com.reqres.test.framework.rest.ApiResponsesJsonPaths;
 import com.reqres.test.framework.rest.authentication.AdminAuth;
 import com.reqres.test.framework.rest.authentication.ReqResAuthentication;
@@ -11,7 +10,7 @@ import com.reqres.test.framework.rest.dto.response.DataResponse;
 import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
 import com.reqres.test.framework.rest.dto.response.UserResponse;
 import com.theairebellion.zeus.api.annotations.API;
-import com.theairebellion.zeus.api.annotations.AuthenticateAs;
+import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
@@ -42,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @API
-@Rivendell
 public class ReqresApiTest extends BaseTest {
 
     @Test
@@ -209,7 +207,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
-    @AuthenticateAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
+    @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
     @PreQuest({
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
