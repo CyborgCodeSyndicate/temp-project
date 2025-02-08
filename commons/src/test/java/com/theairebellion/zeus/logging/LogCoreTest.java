@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import static org.mockito.AdditionalMatchers.aryEq;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class LogCoreTest {
@@ -30,13 +30,12 @@ class LogCoreTest {
     private static final String STEP = "step";
     private static final String VALIDATION = "validation";
     private static final String EXTENDED = "extended";
-
     private static final String ARG_1 = "arg1";
     private static final String ARG_2 = "arg2";
     private static final String TEST_LOGGER = "TestLogger";
     private static final String TEST_MARKER = "TestMarker";
     private static final String EXTENDED_MESSAGE = "Extended message";
-    private static final String EXTENDED_LOGGING = "EXTENDED_LOGGING";
+    private static final String EXTENDED_LOGGING_FIELD = "EXTENDED_LOGGING";
 
     private Logger mockLogger;
     private Marker mockMarker;
@@ -68,76 +67,28 @@ class LogCoreTest {
         method.accept(dummyLogCore, new String[]{message, ARG_1, ARG_2});
 
         switch (methodName) {
-            case INFO -> verify(mockLogger).info(
-                    eq(mockMarker),
-                    eq(message),
-                    aryEq(new Object[]{ARG_1, ARG_2})
-            );
-            case WARN -> verify(mockLogger).warn(
-                    eq(mockMarker),
-                    eq(message),
-                    aryEq(new Object[]{ARG_1, ARG_2})
-            );
-            case ERROR -> verify(mockLogger).error(
-                    eq(mockMarker),
-                    eq(message),
-                    aryEq(new Object[]{ARG_1, ARG_2})
-            );
-            case DEBUG -> verify(mockLogger).debug(
-                    eq(mockMarker),
-                    eq(message),
-                    aryEq(new Object[]{ARG_1, ARG_2})
-            );
-            case TRACE -> verify(mockLogger).trace(
-                    eq(mockMarker),
-                    eq(message),
-                    aryEq(new Object[]{ARG_1, ARG_2})
-            );
-            case STEP -> verify(mockLogger).log(
-                    eq(Level.forName("STEP", 350)),
-                    eq(mockMarker),
-                    eq(message),
-                    aryEq(new Object[]{ARG_1, ARG_2})
-            );
-            case VALIDATION -> verify(mockLogger).log(
-                    eq(Level.forName("VALIDATION", 350)),
-                    eq(mockMarker),
-                    eq(message),
-                    aryEq(new Object[]{ARG_1, ARG_2})
-            );
+            case INFO -> verify(mockLogger).info(eq(mockMarker), eq(message), aryEq(new Object[]{ARG_1, ARG_2}));
+            case WARN -> verify(mockLogger).warn(eq(mockMarker), eq(message), aryEq(new Object[]{ARG_1, ARG_2}));
+            case ERROR -> verify(mockLogger).error(eq(mockMarker), eq(message), aryEq(new Object[]{ARG_1, ARG_2}));
+            case DEBUG -> verify(mockLogger).debug(eq(mockMarker), eq(message), aryEq(new Object[]{ARG_1, ARG_2}));
+            case TRACE -> verify(mockLogger).trace(eq(mockMarker), eq(message), aryEq(new Object[]{ARG_1, ARG_2}));
+            case STEP -> verify(mockLogger).log(eq(Level.forName("STEP", 350)), eq(mockMarker), eq(message),
+                    aryEq(new Object[]{ARG_1, ARG_2}));
+            case VALIDATION -> verify(mockLogger).log(eq(Level.forName("VALIDATION", 350)), eq(mockMarker), eq(message),
+                    aryEq(new Object[]{ARG_1, ARG_2}));
         }
     }
 
     private static Stream<Arguments> loggingMethods() {
         return Stream.of(
-                Arguments.of(
-                        (BiConsumer<DummyLogCore, String[]>) (core, a) -> core.infoLog(a[0], a[1], a[2]),
-                        INFO
-                ),
-                Arguments.of(
-                        (BiConsumer<DummyLogCore, String[]>) (core, a) -> core.warnLog(a[0], a[1], a[2]),
-                        WARN
-                ),
-                Arguments.of(
-                        (BiConsumer<DummyLogCore, String[]>) (core, a) -> core.errorLog(a[0], a[1], a[2]),
-                        ERROR
-                ),
-                Arguments.of(
-                        (BiConsumer<DummyLogCore, String[]>) (core, a) -> core.debugLog(a[0], a[1], a[2]),
-                        DEBUG
-                ),
-                Arguments.of(
-                        (BiConsumer<DummyLogCore, String[]>) (core, a) -> core.traceLog(a[0], a[1], a[2]),
-                        TRACE
-                ),
-                Arguments.of(
-                        (BiConsumer<DummyLogCore, String[]>) (core, a) -> core.stepLog(a[0], a[1], a[2]),
-                        STEP
-                ),
-                Arguments.of(
-                        (BiConsumer<DummyLogCore, String[]>) (core, a) -> core.validationLog(a[0], a[1], a[2]),
-                        VALIDATION
-                )
+                Arguments.of((BiConsumer<DummyLogCore, String[]>) (core, a) -> core.infoLog(a[0], a[1], a[2]), INFO),
+                Arguments.of((BiConsumer<DummyLogCore, String[]>) (core, a) -> core.warnLog(a[0], a[1], a[2]), WARN),
+                Arguments.of((BiConsumer<DummyLogCore, String[]>) (core, a) -> core.errorLog(a[0], a[1], a[2]), ERROR),
+                Arguments.of((BiConsumer<DummyLogCore, String[]>) (core, a) -> core.debugLog(a[0], a[1], a[2]), DEBUG),
+                Arguments.of((BiConsumer<DummyLogCore, String[]>) (core, a) -> core.traceLog(a[0], a[1], a[2]), TRACE),
+                Arguments.of((BiConsumer<DummyLogCore, String[]>) (core, a) -> core.stepLog(a[0], a[1], a[2]), STEP),
+                Arguments.of((BiConsumer<DummyLogCore, String[]>) (core, a) -> core.validationLog(a[0], a[1], a[2]),
+                        VALIDATION)
         );
     }
 
@@ -157,17 +108,11 @@ class LogCoreTest {
     void testExtendedLogWhenDisabled() throws Exception {
         setExtendedLogging(false);
         dummyLogCore.extendedLog(EXTENDED_MESSAGE, ARG_1, ARG_2);
-
-        verify(mockLogger, never()).log(
-                any(Level.class),
-                eq(mockMarker),
-                anyString(),
-                any(Object[].class)
-        );
+        verify(mockLogger, never()).log(any(Level.class), eq(mockMarker), anyString(), any(Object[].class));
     }
 
     private void setExtendedLogging(boolean value) throws Exception {
-        Field field = LogCore.class.getDeclaredField(EXTENDED_LOGGING);
+        Field field = LogCore.class.getDeclaredField(EXTENDED_LOGGING_FIELD);
         field.setAccessible(true);
         field.set(null, value);
     }

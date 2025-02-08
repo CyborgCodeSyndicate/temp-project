@@ -71,7 +71,8 @@ class AssertionFunctionsTest {
         assertAll(
                 () -> assertTrue(AssertionFunctions.greaterThan(5, 2)),
                 () -> assertFalse(AssertionFunctions.greaterThan(2.0, 2.0)),
-                () -> assertThrows(IllegalArgumentException.class, () -> AssertionFunctions.greaterThan("notNumber", 2))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> AssertionFunctions.greaterThan("notNumber", 2))
         );
     }
 
@@ -80,7 +81,8 @@ class AssertionFunctionsTest {
         assertAll(
                 () -> assertTrue(AssertionFunctions.lessThan(2, 5)),
                 () -> assertFalse(AssertionFunctions.lessThan(5, 5)),
-                () -> assertThrows(IllegalArgumentException.class, () -> AssertionFunctions.lessThan(5, "notNumber"))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> AssertionFunctions.lessThan(5, "notNumber"))
         );
     }
 
@@ -106,7 +108,8 @@ class AssertionFunctionsTest {
         assertAll(
                 () -> assertTrue(AssertionFunctions.matchesRegex("abc123", "[a-z]+\\d+")),
                 () -> assertFalse(AssertionFunctions.matchesRegex("abc", "\\d+")),
-                () -> assertThrows(IllegalArgumentException.class, () -> AssertionFunctions.matchesRegex("abc", 123))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> AssertionFunctions.matchesRegex("abc", 123))
         );
     }
 
@@ -115,9 +118,12 @@ class AssertionFunctionsTest {
         assertAll(
                 () -> assertTrue(AssertionFunctions.between(5, Arrays.asList(1, 10))),
                 () -> assertFalse(AssertionFunctions.between(11, Arrays.asList(1, 10))),
-                () -> assertThrows(IllegalArgumentException.class, () -> AssertionFunctions.between("foo", Arrays.asList(1, 5))),
-                () -> assertThrows(IllegalArgumentException.class, () -> AssertionFunctions.between(5, "notAList")),
-                () -> assertThrows(IllegalArgumentException.class, () -> AssertionFunctions.between(5, Arrays.asList(1, 2, 3)))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> AssertionFunctions.between("foo", Arrays.asList(1, 5))),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> AssertionFunctions.between(5, "notAList")),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> AssertionFunctions.between(5, Arrays.asList(1, 2, 3)))
         );
     }
 

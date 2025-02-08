@@ -17,8 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RestServiceFluentTest {
@@ -95,7 +94,6 @@ class RestServiceFluentTest {
         doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
 
         var result = restFluent.requestAndValidate(endpoint);
-
         assertSame(restFluent, result);
         verify(restServiceMock).request(endpoint);
         verify(restServiceMock).validate(eq(mockResponse), any(Assertion[].class));

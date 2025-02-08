@@ -1,17 +1,24 @@
 package com.theairebellion.zeus.api.core;
 
 import com.theairebellion.zeus.api.config.ApiConfig;
+import com.theairebellion.zeus.api.config.ApiConfigHolder;
 import com.theairebellion.zeus.api.core.mock.TestEnum;
 import io.restassured.http.Method;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class EndpointTest {
+
+    private static final String TEST_URL = "/test/path";
+    private static final String NULL_URL = null;
+    private static final String FAKE_LEVEL = "FAKE";
+    private static final String ALL_LEVEL = "ALL";
+    private static final String NONE_LEVEL = "NONE";
 
     private Endpoint validEndpoint;
     private Endpoint invalidEndpointNoUrl;
@@ -26,16 +33,14 @@ class EndpointTest {
     void setUp() {
         validEndpoint = new Endpoint() {
             @Override public Method method() { return Method.GET; }
-            @Override public String url() { return "/test/path"; }
+            @Override public String url() { return TEST_URL; }
             @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
         };
-
         invalidEndpointNoUrl = new Endpoint() {
             @Override public Method method() { return Method.GET; }
-            @Override public String url() { return null; }
+            @Override public String url() { return NULL_URL; }
             @Override public Enum<?> enumImpl() { return TestEnum.NO_URL; }
         };
-
         invalidEndpointNoMethod = new Endpoint() {
             @Override public Method method() { return null; }
             @Override public String url() { return "/some/url"; }
@@ -59,32 +64,15 @@ class EndpointTest {
     }
 
     @Test
-    void testDefaultConfiguration_UnsupportedLoggingLevel() {
-        var mockConfig = mock(ApiConfig.class);
-        when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
-        when(mockConfig.restAssuredLoggingLevel()).thenReturn("FAKE");
-
-        var fakeLevelEndpoint = new Endpoint() {
-            @Override public Method method() { return Method.GET; }
-            @Override public String url() { return "/fake/log/level"; }
-            @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
-        };
-
-        assertThrows(IllegalArgumentException.class, fakeLevelEndpoint::defaultConfiguration);
-    }
-
-    @Test
     void testDefaultConfiguration_ALLLogging() {
         var mockConfig = mock(ApiConfig.class);
         when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
-        when(mockConfig.restAssuredLoggingLevel()).thenReturn("ALL");
-
+        when(mockConfig.restAssuredLoggingLevel()).thenReturn(ALL_LEVEL);
         var endpointAllLogging = new Endpoint() {
             @Override public Method method() { return Method.GET; }
             @Override public String url() { return "/some/path"; }
             @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
         };
-
         assertNotNull(endpointAllLogging.defaultConfiguration());
     }
 
@@ -92,14 +80,12 @@ class EndpointTest {
     void testDefaultConfiguration_NONE() {
         var mockConfig = mock(ApiConfig.class);
         when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
-        when(mockConfig.restAssuredLoggingLevel()).thenReturn("NONE");
-
+        when(mockConfig.restAssuredLoggingLevel()).thenReturn(NONE_LEVEL);
         var endpointNone = new Endpoint() {
             @Override public Method method() { return Method.POST; }
             @Override public String url() { return "/none"; }
             @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
         };
-
         assertNotNull(endpointNone.defaultConfiguration());
     }
 
@@ -107,13 +93,11 @@ class EndpointTest {
     void testDefaultConfiguration_DisabledLogging() {
         var mockConfig = mock(ApiConfig.class);
         when(mockConfig.restAssuredLoggingEnabled()).thenReturn(false);
-
         var endpointNoLogging = new Endpoint() {
             @Override public Method method() { return Method.GET; }
             @Override public String url() { return "/no/log"; }
             @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
         };
-
         assertNotNull(endpointNoLogging.defaultConfiguration());
     }
 
@@ -134,7 +118,6 @@ class EndpointTest {
             @Override public String url() { return "/some/url"; }
             @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
         };
-
         assertAll(
                 () -> assertEquals(Method.DELETE, endpoint.method()),
                 () -> assertEquals("/some/url", endpoint.url()),
@@ -175,5 +158,27 @@ class EndpointTest {
     @Test
     void testWithHeader_List() {
         assertInstanceOf(ParametrizedEndpoint.class, validEndpoint.withHeader("X-Header", java.util.Arrays.asList("Val1", "Val2")));
+    }
+
+    @Test
+    void testDefaultConfiguration_UnsupportedLoggingLevel() {
+        try (MockedStatic<ApiConfigHolder> mockedApi = mockStatic(ApiConfigHolder.class)) {
+            ApiConfig mockConfig = mock(ApiConfig.class);
+            when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
+            when(mockConfig.restAssuredLoggingLevel()).thenReturn(FAKE_LEVEL);
+            mockedApi.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
+
+            Endpoint fakeLevelEndpoint = new Endpoint() {
+                @Override public Method method() { return Method.GET; }
+                @Override public String url() { return "/fake/log/level"; }
+                @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
+            };
+
+            assertThrows(
+                    IllegalArgumentException.class,
+                    fakeLevelEndpoint::defaultConfiguration,
+                    "Expected exception for 'FAKE' logging level"
+            );
+        }
     }
 }

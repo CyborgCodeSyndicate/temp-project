@@ -14,6 +14,13 @@ import static org.mockito.Mockito.*;
 
 class ParametrizedEndpointTest {
 
+    private static final String KEY = "key";
+    private static final String VALUE = "value";
+    private static final String ID = "id";
+    private static final String X_HEADER = "X-Header";
+    private static final String X_LIST = "X-List";
+    private static final List<String> LIST_VALS = List.of("one", "two");
+
     private Endpoint baseEndpointMock;
     private ParametrizedEndpoint parametrized;
 
@@ -32,38 +39,38 @@ class ParametrizedEndpointTest {
 
     @Test
     void testWithQueryParam_Valid() {
-        assertNotEquals(parametrized, parametrized.withQueryParam("key", "value"));
+        assertNotEquals(parametrized, parametrized.withQueryParam(KEY, VALUE));
     }
 
     @Test
     void testWithQueryParam_InvalidKey() {
         assertAll(
-                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withQueryParam(null, "value")),
-                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withQueryParam("", "value"))
+                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withQueryParam(null, VALUE)),
+                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withQueryParam("", VALUE))
         );
     }
 
     @Test
     void testWithQueryParam_InvalidValue() {
-        assertThrows(IllegalArgumentException.class, () -> parametrized.withQueryParam("key", null));
+        assertThrows(IllegalArgumentException.class, () -> parametrized.withQueryParam(KEY, null));
     }
 
     @Test
     void testWithPathParam_Valid() {
-        assertNotNull(parametrized.withPathParam("id", 123));
+        assertNotNull(parametrized.withPathParam(ID, 123));
     }
 
     @Test
     void testWithPathParam_Invalid() {
         assertAll(
                 () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withPathParam("", 123)),
-                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withPathParam("id", null))
+                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withPathParam(ID, null))
         );
     }
 
     @Test
     void testWithHeader_Single_Valid() {
-        assertNotNull(parametrized.withHeader("X-Header", "Value"));
+        assertNotNull(parametrized.withHeader(X_HEADER, "Value"));
     }
 
     @Test
@@ -71,21 +78,21 @@ class ParametrizedEndpointTest {
         assertAll(
                 () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader(null, "Value")),
                 () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader("", "Value")),
-                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader("X-Header", (String) null))
+                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader(X_HEADER, (String) null))
         );
     }
 
     @Test
     void testWithHeader_List_Valid() {
-        assertNotNull(parametrized.withHeader("X-List", List.of("one", "two")));
+        assertNotNull(parametrized.withHeader(X_LIST, LIST_VALS));
     }
 
     @Test
     void testWithHeader_List_Invalid() {
         assertAll(
                 () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader(null, List.of("one"))),
-                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader("X-List", (List<String>) null)),
-                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader("X-List", Collections.emptyList()))
+                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader(X_LIST, (List<String>) null)),
+                () -> assertThrows(IllegalArgumentException.class, () -> parametrized.withHeader(X_LIST, Collections.emptyList()))
         );
     }
 
@@ -104,7 +111,8 @@ class ParametrizedEndpointTest {
 
     @Test
     void testPrepareRequestSpec_CallsOriginalAndAddsParams() {
-        var newEp = parametrized.withQueryParam("q", "123")
+        var newEp = parametrized
+                .withQueryParam("q", "123")
                 .withPathParam("id", 999)
                 .withHeader("X-Hdr", "Hello");
 

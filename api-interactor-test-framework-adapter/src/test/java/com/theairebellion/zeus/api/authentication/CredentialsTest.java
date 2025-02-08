@@ -6,16 +6,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CredentialsTest {
 
+    private static final String USERNAME = "demoUser";
+    private static final String PASSWORD = "demoPass";
+
     @Test
     void testCredentialsImpl() {
-        var creds = new Credentials() {
-            @Override public String username() { return "demoUser"; }
-            @Override public String password() { return "demoPass"; }
+        Credentials creds = new Credentials() {
+            @Override public String username() { return USERNAME; }
+            @Override public String password() { return PASSWORD; }
         };
-
         assertAll(
-                () -> assertEquals("demoUser", creds.username()),
-                () -> assertEquals("demoPass", creds.password())
+                () -> assertEquals(USERNAME, creds.username()),
+                () -> assertEquals(PASSWORD, creds.password())
         );
     }
 }

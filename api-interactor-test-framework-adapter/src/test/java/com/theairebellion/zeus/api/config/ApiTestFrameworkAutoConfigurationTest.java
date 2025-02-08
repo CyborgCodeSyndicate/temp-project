@@ -14,7 +14,6 @@ class ApiTestFrameworkAutoConfigurationTest {
         try (var context = new AnnotationConfigApplicationContext()) {
             context.register(ApiTestFrameworkAutoConfiguration.class);
             context.refresh();
-
             assertAll(
                     () -> assertNotNull(context.getBean(RestClient.class), "RestClient bean should not be null"),
                     () -> assertNotNull(context.getBean(RestResponseValidator.class), "RestResponseValidator bean should not be null")

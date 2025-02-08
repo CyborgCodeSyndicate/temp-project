@@ -12,6 +12,14 @@ import static org.mockito.Mockito.*;
 
 class RestClientAllureImplTest {
 
+    private static final String GET_METHOD = "GET";
+    private static final String SAMPLE_URL = "https://example.com";
+    private static final String SAMPLE_BODY = "{\"key\":\"value\"}";
+    private static final String SAMPLE_BODY_JSON = "{ \"some\": \"json\" }";
+    private static final String EMPTY = "";
+    private static final String WHITESPACE = "   ";
+    private static final String HEADER = "X-Header: val";
+
     private RestClientAllureImpl restClientAllure;
     private Response mockResponse;
     private ResponseBody<?> mockBody;
@@ -22,7 +30,7 @@ class RestClientAllureImplTest {
         mockResponse = mock(Response.class);
         mockBody = mock(ResponseBody.class);
 
-        when(mockBody.prettyPrint()).thenReturn("{ \"some\": \"json\" }");
+        when(mockBody.prettyPrint()).thenReturn(SAMPLE_BODY_JSON);
         when(mockResponse.getBody()).thenReturn(mockBody);
         when(mockResponse.getHeaders()).thenReturn(new Headers(Collections.emptyList()));
         when(mockResponse.getStatusCode()).thenReturn(200);
@@ -30,16 +38,16 @@ class RestClientAllureImplTest {
 
     @Test
     void testPrintRequest_Normal() {
-        restClientAllure.printRequest("GET", "https://example.com", "{\"key\":\"value\"}", "X-Header: val");
+        restClientAllure.printRequest(GET_METHOD, SAMPLE_URL, SAMPLE_BODY, HEADER);
     }
 
     @Test
     void testPrintRequest_EmptyData() {
-        restClientAllure.printRequest("GET", "", null, "   ");
+        restClientAllure.printRequest(GET_METHOD, EMPTY, null, WHITESPACE);
     }
 
     @Test
     void testPrintResponse() {
-        restClientAllure.printResponse("GET", "https://example.com", mockResponse, 123);
+        restClientAllure.printResponse(GET_METHOD, SAMPLE_URL, mockResponse, 123);
     }
 }

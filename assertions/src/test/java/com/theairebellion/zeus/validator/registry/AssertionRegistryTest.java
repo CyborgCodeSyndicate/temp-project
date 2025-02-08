@@ -4,7 +4,6 @@ import com.theairebellion.zeus.validator.core.AssertionType;
 import com.theairebellion.zeus.validator.core.AssertionTypes;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,8 +29,7 @@ class AssertionRegistryTest {
             @Override public Enum<?> type() { return null; }
             @Override public Class<?> getSupportedType() { return Object.class; }
         };
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionRegistry.getValidator(unknownType));
+        assertThrows(IllegalArgumentException.class, () -> AssertionRegistry.getValidator(unknownType));
     }
 
     @Test
@@ -40,18 +38,17 @@ class AssertionRegistryTest {
             @Override public Enum<?> type() { return null; }
             @Override public Class<?> getSupportedType() { return Object.class; }
         };
+        BiFunction<Object, Object, Boolean> customFunc = (a, e) -> true;
 
-        var customFunc = (BiFunction<Object, Object, Boolean>) (a, e) -> true;
         AssertionRegistry.registerCustomAssertion(customType, customFunc);
-
         var retrieved = AssertionRegistry.getValidator(customType);
         assertSame(customFunc, retrieved);
 
         assertAll(
-                () -> assertThrows(NullPointerException.class, () ->
-                        AssertionRegistry.registerCustomAssertion(null, customFunc)),
-                () -> assertThrows(NullPointerException.class, () ->
-                        AssertionRegistry.registerCustomAssertion(customType, null))
+                () -> assertThrows(NullPointerException.class,
+                        () -> AssertionRegistry.registerCustomAssertion(null, customFunc)),
+                () -> assertThrows(NullPointerException.class,
+                        () -> AssertionRegistry.registerCustomAssertion(customType, null))
         );
     }
 
@@ -68,7 +65,8 @@ class AssertionRegistryTest {
         assertAll(
                 () -> assertTrue(validator.apply(5, 3)),
                 () -> assertFalse(validator.apply(3, 5)),
-                () -> assertThrows(IllegalArgumentException.class, () -> validator.apply("string", 3))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> validator.apply("string", 3))
         );
     }
 
@@ -78,7 +76,8 @@ class AssertionRegistryTest {
         assertAll(
                 () -> assertTrue(validator.apply(3, 5)),
                 () -> assertFalse(validator.apply(5, 3)),
-                () -> assertThrows(IllegalArgumentException.class, () -> validator.apply(3, "string"))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> validator.apply(3, "string"))
         );
     }
 
@@ -116,7 +115,8 @@ class AssertionRegistryTest {
         assertAll(
                 () -> assertTrue(validator.apply("abc", 3)),
                 () -> assertFalse(validator.apply("abc", 4)),
-                () -> assertThrows(IllegalArgumentException.class, () -> validator.apply("abc", "not-a-number"))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> validator.apply("abc", "not-a-number"))
         );
     }
 
@@ -126,7 +126,8 @@ class AssertionRegistryTest {
         assertAll(
                 () -> assertTrue(validator.apply("hello123", "\\w+\\d+")),
                 () -> assertFalse(validator.apply("hello", "\\d+")),
-                () -> assertThrows(IllegalArgumentException.class, () -> validator.apply("hello", 123))
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> validator.apply("hello", 123))
         );
     }
 
@@ -134,9 +135,10 @@ class AssertionRegistryTest {
     void testBetweenValidator() {
         var validator = AssertionRegistry.getValidator(AssertionTypes.BETWEEN);
         assertAll(
-                () -> assertTrue(validator.apply(5, Arrays.asList(3, 7))),
-                () -> assertFalse(validator.apply(10, Arrays.asList(3, 7))),
-                () -> assertThrows(IllegalArgumentException.class, () -> validator.apply(5, "not-a-list"))
+                () -> assertTrue(validator.apply(5, java.util.Arrays.asList(3, 7))),
+                () -> assertFalse(validator.apply(10, java.util.Arrays.asList(3, 7))),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> validator.apply(5, "not-a-list"))
         );
     }
 
@@ -147,7 +149,7 @@ class AssertionRegistryTest {
             @Override public Class<?> getSupportedType() { return Object.class; }
         };
 
-        AssertionRegistry.registerCustomAssertion(customType, (actual, expected) -> actual.equals("custom"));
+        AssertionRegistry.registerCustomAssertion(customType, (actual, expected) -> "custom".equals(actual));
         var validator = AssertionRegistry.getValidator(customType);
 
         assertAll(

@@ -13,17 +13,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LogZeusTest {
 
-    public static final String MARKERS = "MARKERS";
-    public static final String TEST_MARKER = "TEST_MARKER";
-    public static final String EXISTING_MARKER = "EXISTING_MARKER";
-    public static final String NON_EXISTENT_MARKER = "NON_EXISTENT_MARKER";
-    public static final String TEST_LOGGER = "TestLogger";
+    private static final String MARKERS_FIELD = "MARKERS";
+    private static final String TEST_MARKER = "TEST_MARKER";
+    private static final String EXISTING_MARKER = "EXISTING_MARKER";
+    private static final String NON_EXISTENT_MARKER = "NON_EXISTENT_MARKER";
+    private static final String TEST_LOGGER = "TestLogger";
 
-    private static ConcurrentHashMap<String, Marker> markers;
+    private ConcurrentHashMap<String, Marker> markers;
 
     @BeforeEach
     void setUp() throws Exception {
-        Field field = LogZeus.class.getDeclaredField(MARKERS);
+        Field field = LogZeus.class.getDeclaredField(MARKERS_FIELD);
         field.setAccessible(true);
         markers = (ConcurrentHashMap<String, Marker>) field.get(null);
         markers.clear();
@@ -32,7 +32,6 @@ class LogZeusTest {
     @Test
     void registerMarker_shouldCreateNewMarker_whenNotExists() {
         Marker marker = LogZeus.registerMarker(TEST_MARKER);
-
         assertAll(
                 () -> assertNotNull(marker),
                 () -> assertEquals(TEST_MARKER, marker.getName()),
@@ -46,7 +45,6 @@ class LogZeusTest {
         markers.put(EXISTING_MARKER, existingMarker);
 
         Marker result = LogZeus.registerMarker(EXISTING_MARKER);
-
         assertSame(existingMarker, result);
     }
 
@@ -56,7 +54,6 @@ class LogZeusTest {
         markers.put(EXISTING_MARKER, expected);
 
         Marker result = LogZeus.getMarker(EXISTING_MARKER);
-
         assertSame(expected, result);
     }
 

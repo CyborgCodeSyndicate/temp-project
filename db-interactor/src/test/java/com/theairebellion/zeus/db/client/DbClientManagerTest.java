@@ -11,12 +11,11 @@ import static org.mockito.Mockito.*;
 
 class DbClientManagerTest {
 
-    private BaseDbConnectorService connector;
     private DbClientManager manager;
 
     @BeforeEach
     void setUp() {
-        connector = mock(BaseDbConnectorService.class);
+        BaseDbConnectorService connector = mock(BaseDbConnectorService.class);
         manager = new DbClientManager(connector);
     }
 
@@ -44,6 +43,6 @@ class DbClientManagerTest {
         DbClient client = manager.initializeDbClient(dbConfig);
 
         assertNotNull(client, "Expected a non-null client to be created");
-        assertTrue(client instanceof RelationalDbClient, "Expected client to be an instance of RelationalDbClient");
+        assertInstanceOf(RelationalDbClient.class, client, "Expected client to be an instance of RelationalDbClient");
     }
 }

@@ -27,7 +27,7 @@ class RestResponseValidatorImplTest {
 
     @Test
     void testValidateResponse_STATUS() {
-        @SuppressWarnings("unchecked") var statusAssertion = mock(Assertion.class);
+        var statusAssertion = mock(Assertion.class);
         when(statusAssertion.getTarget()).thenReturn(RestAssertionTarget.STATUS);
         when(statusAssertion.getKey()).thenReturn("status");
         when(statusAssertion.getType()).thenReturn(AssertionTypes.IS);
@@ -44,7 +44,7 @@ class RestResponseValidatorImplTest {
         when(bodyAssertion.getType()).thenReturn(AssertionTypes.IS);
         when(responseMock.jsonPath()).thenReturn(new JsonPath("{\"some\":{\"json\":{\"path\":\"val\"}}}"));
 
-        @SuppressWarnings("unchecked") var assertionsArr = new Assertion[]{bodyAssertion};
+        var assertionsArr = new Assertion[]{bodyAssertion};
 
         assertNotNull(validator.validateResponse(responseMock, assertionsArr));
     }
@@ -55,7 +55,7 @@ class RestResponseValidatorImplTest {
         when(bodyAssertion.getTarget()).thenReturn(RestAssertionTarget.BODY);
         when(bodyAssertion.getKey()).thenReturn(null);
 
-        @SuppressWarnings("unchecked") var arr = new Assertion[]{bodyAssertion};
+        var arr = new Assertion[]{bodyAssertion};
 
         assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
     }
@@ -67,7 +67,7 @@ class RestResponseValidatorImplTest {
         when(bodyAssertion.getKey()).thenReturn("not.existing");
         when(responseMock.jsonPath()).thenReturn(new JsonPath("{}"));
 
-        @SuppressWarnings("unchecked") var arr = new Assertion[]{bodyAssertion};
+        var arr = new Assertion[]{bodyAssertion};
 
         assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
     }
@@ -80,7 +80,7 @@ class RestResponseValidatorImplTest {
         when(headerAssertion.getType()).thenReturn(AssertionTypes.IS);
         when(responseMock.getHeader("X-Something")).thenReturn("Value");
 
-        @SuppressWarnings("unchecked") var arr = new Assertion[]{headerAssertion};
+        var arr = new Assertion[]{headerAssertion};
 
         assertNotNull(validator.validateResponse(responseMock, arr));
     }
@@ -91,7 +91,7 @@ class RestResponseValidatorImplTest {
         when(headerAssertion.getTarget()).thenReturn(RestAssertionTarget.HEADER);
         when(headerAssertion.getKey()).thenReturn(null);
 
-        @SuppressWarnings("unchecked") var arr = new Assertion[]{headerAssertion};
+        var arr = new Assertion[]{headerAssertion};
 
         assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
     }
@@ -103,7 +103,7 @@ class RestResponseValidatorImplTest {
         when(headerAssertion.getKey()).thenReturn("X-NotThere");
         when(responseMock.getHeader("X-NotThere")).thenReturn(null);
 
-        @SuppressWarnings("unchecked") var arr = new Assertion[]{headerAssertion};
+        var arr = new Assertion[]{headerAssertion};
 
         assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
     }

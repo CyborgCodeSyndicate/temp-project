@@ -11,25 +11,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AssertionUtilTest {
 
+    private static final String NAME_KEY = "name";
+    private static final String AGE_KEY = "age";
+    private static final String SCORE_KEY = "score";
+    private static final String ZEUS = "Zeus";
+
     @Test
     void validate_throwsIfDataIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionUtil.validate(null, Assertion.builder(String.class).build()));
+        assertThrows(IllegalArgumentException.class,
+                () -> AssertionUtil.validate(null, Assertion.builder(String.class).build()));
     }
 
     @Test
     void validate_throwsIfNoAssertions() {
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionUtil.validate(Map.of("key", "value")));
+        assertThrows(IllegalArgumentException.class,
+                () -> AssertionUtil.validate(Map.of("key", "value")));
     }
 
     @Test
     void validate_singleAssertionSuccess() {
-        var data = Map.of("name", "Zeus");
+        var data = Map.of(NAME_KEY, ZEUS);
         var assertion = Assertion.builder(String.class)
-                .key("name")
+                .key(NAME_KEY)
                 .type(AssertionTypes.IS)
-                .expected("Zeus")
+                .expected(ZEUS)
                 .soft(false)
                 .build();
 
@@ -42,9 +47,9 @@ class AssertionUtilTest {
 
     @Test
     void validate_singleAssertionFail() {
-        var data = Map.of("age", 25);
+        var data = Map.of(AGE_KEY, 25);
         var assertion = Assertion.builder(Integer.class)
-                .key("age")
+                .key(AGE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected(30)
                 .soft(false)
@@ -56,73 +61,73 @@ class AssertionUtilTest {
 
     @Test
     void validate_throwsIfKeyNotExist() {
-        var data = Map.of("age", 25);
+        var data = Map.of(AGE_KEY, 25);
         var assertion = Assertion.builder(Integer.class)
                 .key("missingKey")
                 .type(AssertionTypes.IS)
                 .expected(25)
                 .soft(false)
                 .build();
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionUtil.validate(data, assertion));
+        assertThrows(IllegalArgumentException.class,
+                () -> AssertionUtil.validate(data, assertion));
     }
 
     @Test
     void validate_throwsIfAssertionNull() {
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionUtil.validate(Map.of(), (Assertion<?>) null));
+        assertThrows(IllegalArgumentException.class,
+                () -> AssertionUtil.validate(Map.of(), (Assertion<?>) null));
     }
 
     @Test
     void validate_throwsIfAssertionHasNoKey() {
-        var data = Map.of("name", "Zeus");
+        var data = Map.of(NAME_KEY, ZEUS);
         var assertion = Assertion.builder(String.class)
                 .type(AssertionTypes.IS)
-                .expected("Zeus")
+                .expected(ZEUS)
                 .soft(false)
                 .build();
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionUtil.validate(data, assertion));
+        assertThrows(IllegalArgumentException.class,
+                () -> AssertionUtil.validate(data, assertion));
     }
 
     @Test
     void validate_throwsIfAssertionHasNoType() {
-        var data = Map.of("name", "Zeus");
+        var data = Map.of(NAME_KEY, ZEUS);
         var assertion = Assertion.builder(String.class)
-                .key("name")
-                .expected("Zeus")
+                .key(NAME_KEY)
+                .expected(ZEUS)
                 .soft(false)
                 .build();
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionUtil.validate(data, assertion));
+        assertThrows(IllegalArgumentException.class,
+                () -> AssertionUtil.validate(data, assertion));
     }
 
     @Test
     void validate_supportedTypeMismatch() {
-        var data = Map.of("age", "Not a number");
+        var data = Map.of(AGE_KEY, "Not a number");
         var assertion = Assertion.builder(String.class)
-                .key("age")
+                .key(AGE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected("anything")
                 .soft(false)
                 .build();
-        assertThrows(IllegalArgumentException.class, () ->
-                AssertionUtil.validate(data, assertion));
+        assertThrows(IllegalArgumentException.class,
+                () -> AssertionUtil.validate(data, assertion));
     }
 
     @Test
     void validate_multipleAssertionsSuccess() {
-        var data = Map.of("name", "Zeus", "age", 1000);
+        var data = Map.of(NAME_KEY, ZEUS, AGE_KEY, 1000);
 
         var assertion1 = Assertion.builder(String.class)
-                .key("name")
+                .key(NAME_KEY)
                 .type(AssertionTypes.IS)
-                .expected("Zeus")
+                .expected(ZEUS)
                 .soft(false)
                 .build();
 
         var assertion2 = Assertion.builder(Integer.class)
-                .key("age")
+                .key(AGE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected(500)
                 .soft(true)
@@ -136,9 +141,9 @@ class AssertionUtilTest {
 
     @Test
     void validate_softAssertionFail() {
-        var data = Map.of("score", 50);
+        var data = Map.of(SCORE_KEY, 50);
         var assertion = Assertion.builder(Integer.class)
-                .key("score")
+                .key(SCORE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected(100)
                 .soft(true)
