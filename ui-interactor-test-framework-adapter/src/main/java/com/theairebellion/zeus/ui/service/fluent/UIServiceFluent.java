@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.annotation.WorldName;
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.components.accordion.AccordionServiceImpl;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
@@ -28,12 +29,14 @@ import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import com.theairebellion.zeus.ui.service.tables.TableServiceFluent;
+import manifold.ext.rt.api.Jailbreak;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.HTML;
 import java.util.function.Consumer;
 
 @WorldName("UI")
@@ -55,6 +58,7 @@ public class UIServiceFluent extends FluentService {
     private ModalServiceFluent modalField;
     private AccordionServiceFluent accordionField;
     private TableServiceFluent table;
+    private ValidationServiceFluent validation;
     private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
@@ -68,7 +72,6 @@ public class UIServiceFluent extends FluentService {
     }
 
 
-
     public UIServiceFluent validate(Runnable assertion) {
         return (UIServiceFluent) super.validate(assertion);
     }
@@ -76,6 +79,22 @@ public class UIServiceFluent extends FluentService {
 
     public UIServiceFluent validate(Consumer<SoftAssertions> assertion) {
         return (UIServiceFluent) super.validate(assertion);
+    }
+
+
+    public UIServiceFluent validateTextInField(HTML.Tag tag, String text, boolean soft) {
+        return validation.validateTextInField(tag, text, soft);
+    }
+
+
+    public UIServiceFluent validateTextInField(HTML.Tag tag, String text) {
+        return validation.validateTextInField(tag, text, false);
+    }
+
+
+    public UIServiceFluent validateTextInField(String text) {
+        HTML.Tag tag = HTML.Tag.I;
+        return validation.validateTextInField(tag, text, false);
     }
 
 
@@ -104,6 +123,7 @@ public class UIServiceFluent extends FluentService {
         insertionService = new InsertionServiceFluent(
             new InsertionServiceElementImpl(serviceRegistry, driver), this,
             quest.getStorage());
+        validation = new ValidationServiceFluent(this, driver);
     }
 
 
@@ -138,5 +158,4 @@ public class UIServiceFluent extends FluentService {
         getDriver().navigate().back();
         return this;
     }
-
 }

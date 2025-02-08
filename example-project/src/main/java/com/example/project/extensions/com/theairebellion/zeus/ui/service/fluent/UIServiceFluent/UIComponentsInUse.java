@@ -90,6 +90,11 @@ public class UIComponentsInUse {
         return ReflectionUtil.getAttributeOfClass(Features.DATA_INSERTION.getFieldName(), uiServiceFluent,
                 InsertionServiceFluent.class);
     }
+//
+//    public static ValidationServiceFluent validation(@This UIServiceFluent uiServiceFluent) {
+//        return ReflectionUtil.getAttributeOfClass(Features.VALIDATION.getFieldName(), uiServiceFluent,
+//                ValidationServiceFluent.class);
+//    }
 
 
 }
