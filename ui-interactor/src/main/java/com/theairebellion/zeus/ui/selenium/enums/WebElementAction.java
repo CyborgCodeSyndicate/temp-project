@@ -99,6 +99,9 @@ public enum WebElementAction {
 
     public abstract Object performActionWebElement(WebDriver driver, WebElement element, Object... args);
     public abstract Object performActionWebDriver(WebDriver driver, Object... args);
+    public static Object performAction(WebDriver driver, WebElement element, WebElementAction action, Object... args) {
+        return action.performActionWebElement(driver, element, args);
+    }
 
     private final String methodName;
 

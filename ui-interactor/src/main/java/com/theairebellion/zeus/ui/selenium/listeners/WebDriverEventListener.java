@@ -59,18 +59,18 @@ public class WebDriverEventListener implements WebDriverListener {
                 .filter(log -> matchesLogCriteria(log, target, method, args, cause)).findFirst();
 
         matched.ifPresent(exceptionLogging -> {
-            WebElementAction action = exceptionLogging.getWebElementAction();
+            WebElementAction action = exceptionLogging.getAction();
             exceptionLogging.getExceptionLoggingMap().get(cause.getClass()).accept(target, action, args, e);
         });
     }
 
     private static boolean matchesLogCriteria(final ExceptionLogging log, final Object target, final Method method,
                                               final Object[] args, final Throwable cause) {
-        if (!log.getObjectClass().isAssignableFrom(target.getClass())) {
+        if (!log.getTargetClass().isAssignableFrom(target.getClass())) {
             return false;
         }
 
-        if (!log.getWebElementAction().getMethodName().equals(method.getName())) {
+        if (!log.getAction().getMethodName().equals(method.getName())) {
             return false;
         }
 

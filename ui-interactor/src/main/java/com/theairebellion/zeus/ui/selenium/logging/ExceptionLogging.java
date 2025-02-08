@@ -39,17 +39,15 @@ public enum ExceptionLogging {
             Map.of(NoSuchElementException.class, LoggingFunctions::logNoSuchElementException,
                     ElementNotInteractableException.class, LoggingFunctions::logElementNotInteractableException));
 
-
-    private final Class<?> objectClass;
-    private final WebElementAction webElementAction;
+    private final Class<?> targetClass;
+    private final WebElementAction action;
     private final Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[], InvocationTargetException>>
             exceptionLoggingMap;
 
-
-    ExceptionLogging(final Class<?> objectClass, final WebElementAction webElementAction,
+    ExceptionLogging(final Class<?> targetClass, final WebElementAction action,
                      Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[], InvocationTargetException>> exceptionLoggingMap) {
-        this.objectClass = objectClass;
-        this.webElementAction = webElementAction;
+        this.targetClass = targetClass;
+        this.action = action;
         this.exceptionLoggingMap = exceptionLoggingMap;
     }
 }

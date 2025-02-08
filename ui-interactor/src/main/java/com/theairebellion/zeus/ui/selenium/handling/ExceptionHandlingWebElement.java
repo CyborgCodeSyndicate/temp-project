@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.util.FourFunction;
 import lombok.Getter;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.ElementNotInteractableException;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 
@@ -17,9 +16,7 @@ public enum ExceptionHandlingWebElement {
 
     FIND_ELEMENT("findElement",
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.FIND_ELEMENT, objects[0]),
-                    NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.FIND_ELEMENT, objects[0])
+                            ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.FIND_ELEMENT, objects[0])
             )),
 
 
@@ -29,9 +26,7 @@ public enum ExceptionHandlingWebElement {
                     ElementClickInterceptedException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(driver, smartWebElement, WebElementAction.CLICK, exception),
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.CLICK),
-                    NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.CLICK, objects[0])
+                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.CLICK)
             )),
 
     SEND_KEYS("sendKeys",
@@ -40,27 +35,21 @@ public enum ExceptionHandlingWebElement {
                     ElementClickInterceptedException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(driver, smartWebElement, WebElementAction.SEND_KEYS, exception, objects[0]),
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.SEND_KEYS, objects[0]),
-                    NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.SEND_KEYS, objects[0])
+                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.SEND_KEYS, objects[0])
             )),
 
     SUBMIT("submit",
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.SUBMIT),
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.SUBMIT),
-                    NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.SUBMIT, objects[0])
+                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.SUBMIT)
             )),
 
     CLEAR("clear",
             Map.of(StaleElementReferenceException.class, (driver, smartWebElement, exception, objects) ->
                             ExceptionHandlingWebElementFunctions.handleStaleElement(driver, smartWebElement, WebElementAction.CLEAR),
                     ElementNotInteractableException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.CLEAR),
-                    NoSuchElementException.class, (driver, smartWebElement, exception, objects) ->
-                            ExceptionHandlingWebElementFunctions.handleNoSuchElement(driver, WebElementAction.CLEAR, objects[0])
+                            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(driver, smartWebElement, WebElementAction.CLEAR)
             ));
 
 
