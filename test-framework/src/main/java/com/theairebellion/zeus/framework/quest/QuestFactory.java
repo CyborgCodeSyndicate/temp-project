@@ -1,9 +1,10 @@
 package com.theairebellion.zeus.framework.quest;
 
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.framework.chain.FluentServiceDecorator;
+import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.log.LogTest;
 import lombok.Getter;
-import manifold.ext.rt.api.Jailbreak;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -17,6 +18,9 @@ import java.util.Collection;
 @Scope("prototype")
 public class QuestFactory {
 
+    @Autowired
+    private DecoratorsFactory decoratorsFactory;
+
     private final Collection<FluentService> fluentServices;
 
 
@@ -29,18 +33,18 @@ public class QuestFactory {
     public Quest createQuest() {
         Quest quest = new Quest();
         registerServices(quest);
-        QuestHolder.set(quest);
+        QuestHolder.set(new SuperQuest(quest));
         return quest;
     }
 
 
-    private void registerServices(final @Jailbreak Quest quest) {
+    private void registerServices(final Quest quest) {
         for (FluentService provider : fluentServices) {
-            @Jailbreak FluentService fluentService = provider;
-            fluentService.setQuest(quest);
-            fluentService.postQuestSetupInitialization();
-            quest.registerWorld(fluentService.getClass(), fluentService);
-            LogTest.extended("Service: '{}' has been registered for the quest", fluentService.getClass().getName());
+            FluentServiceDecorator fluentServiceDecorator = decoratorsFactory.decorate(provider, FluentServiceDecorator.class);
+            fluentServiceDecorator.setQuest(decoratorsFactory.decorate(quest, SuperQuest.class));
+            fluentServiceDecorator.postQuestSetupInitialization();
+            quest.registerWorld(provider.getClass(), provider);
+            LogTest.extended("Service: '{}' has been registered for the quest", fluentServiceDecorator.getClass().getName());
         }
     }
 

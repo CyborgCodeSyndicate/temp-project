@@ -1,17 +1,14 @@
 package com.theairebellion.zeus.framework.extension;
 
 import com.theairebellion.zeus.framework.annotation.TestStaticData;
+import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestFactory;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
-import manifold.ext.rt.api.Jailbreak;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -34,7 +31,7 @@ public class Oracle implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
-        throws ParameterResolutionException {
+            throws ParameterResolutionException {
         var parameterType = parameterContext.getParameter().getType();
         return Quest.class.isAssignableFrom(parameterType);
     }
@@ -42,22 +39,24 @@ public class Oracle implements ParameterResolver {
 
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
-        throws ParameterResolutionException {
+            throws ParameterResolutionException {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
         QuestFactory questFactory = appCtx.getBean(QuestFactory.class);
+        DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
-
-        @Jailbreak Quest quest = questFactory.createQuest();
+        Quest quest = questFactory.createQuest();
+        SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
         Map<String, Object> staticTestData = getStaticTestData(extensionContext);
-        quest.getStorage().put(STATIC_DATA, staticTestData);
+        superQuest.getStorage().put(STATIC_DATA, staticTestData);
 
 
         LogTest.info("Quest crafted for scenario: '{}'.", extensionContext.getDisplayName());
         ExtensionContext.Store store = extensionContext.getStore(GLOBAL);
         @SuppressWarnings("unchecked")
-        List<Consumer<Quest>> consumers = (List<Consumer<Quest>>) store.get(StoreKeys.QUEST_CONSUMERS);
+        List<Consumer<SuperQuest>> consumers = (List<Consumer<SuperQuest>>) store.get(StoreKeys.QUEST_CONSUMERS);
         if (Objects.nonNull(consumers)) {
-            consumers.forEach(questConsumer -> questConsumer.accept(quest));
+            consumers.forEach(
+                    questConsumer -> questConsumer.accept(decoratorsFactory.decorate(quest, SuperQuest.class)));
         }
         store.put(QUEST, quest);
         return quest;
@@ -71,7 +70,7 @@ public class Oracle implements ParameterResolver {
             if (staticDataAnnotation != null) {
                 try {
                     return staticDataAnnotation.value().getDeclaredConstructor()
-                               .newInstance().testStaticData();
+                            .newInstance().testStaticData();
 
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
