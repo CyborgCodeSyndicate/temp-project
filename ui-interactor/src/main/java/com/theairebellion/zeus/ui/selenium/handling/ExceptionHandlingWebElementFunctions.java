@@ -2,9 +2,11 @@ package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
+import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
 import com.theairebellion.zeus.ui.selenium.helper.LocatorParser;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,9 +23,24 @@ public class ExceptionHandlingWebElementFunctions {
         return WebElementAction.performAction(driver, element.getOriginal(), webElementAction, args);
     }
 
+    public static Object handleNoSuchElement(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
+        if (args.length == 0 || !(args[0] instanceof By)) {
+            LogUI.error("Invalid or missing locator argument for FIND_ELEMENT.");
+            throw new IllegalArgumentException("FIND_ELEMENT action requires a By locator.");
+        }
+
+        WebElement foundElement = FrameHelper.findElementInIFrames(driver, element.getOriginal());
+        if (foundElement != null) {
+            return webElementAction.performActionWebElement(driver, foundElement, args);
+        }
+
+        LogUI.error("Element not found in the main DOM or any iframe.");
+        throw new NoSuchElementException("Element not found in any iframe.");
+    }
+
     public static Object handleElementClickIntercepted(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Exception exception, Object... args) {
         By blocker = By.xpath(LocatorParser.extractBlockingElementLocator(exception.getMessage()));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
         try {
             wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
         } catch (TimeoutException e) {
@@ -35,7 +52,7 @@ public class ExceptionHandlingWebElementFunctions {
 
     public static Object handleElementNotInteractable(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
         element = LocatorParser.updateWebElement(driver, element);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
         Actions actions = new Actions(driver);
         actions.moveToElement(element.getOriginal());
         WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));

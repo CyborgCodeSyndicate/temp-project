@@ -18,7 +18,7 @@ public class ExceptionHandlingWebDriverFunctions {
 
         WebElement foundElement = FrameHelper.findElementInIFrames(driver, (By) args[0]);
         if (foundElement != null) {
-            return webElementAction.performActionWebDriver(driver, args);
+            return webElementAction.performActionWebDriver(driver, foundElement);
         }
 
         LogUI.error("Element not found in the main DOM or any iframe.");

@@ -6,6 +6,7 @@ import com.theairebellion.zeus.ui.selenium.decorators.WebDriverDecorator;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebDriver;
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
@@ -45,7 +47,6 @@ public class SmartWebDriver extends WebDriverDecorator {
     @HandleUIException
     public List<SmartWebElement> findSmartElements(By by) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
-            // Bypass all custom logic
             return SmartFinder.findElementsNoWrap(getOriginal(), by);
         }
 
@@ -62,7 +63,8 @@ public class SmartWebDriver extends WebDriverDecorator {
     }
 
     @Override
-    public WebElement findElement(By by) {
+    @NonNull
+    public WebElement findElement(@NonNull By by) {
         Consumer<Function<WebDriver, ?>> waitFn =
                 condition -> {
                     try {
@@ -78,22 +80,30 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
-//    @Override
-//    public List<WebElement> findElements(By by) {
-//        Consumer<Function<WebDriver, ?>> waitFn =
-//                condition -> {
-//                    try {
-//                        WebDriverWait customWait = new WebDriverWait(getOriginal(), Duration.ofMillis(10));
-//                        customWait.until(condition);
-//                    } catch (Exception ignored) {
-//                    }
-//                };
-//        if (getUiConfig().useShadowRoot()) {
-//            return SmartFinder.findElementsWithShadowRootDriver(this, by, waitFn);
-//        } else {
-//            return SmartFinder.findElementsNormally(getOriginal(), by, waitFn);
-//        }
-//    }
+    @Override
+    @NonNull
+    public List<WebElement> findElements(@NonNull By by) {
+        Consumer<Function<WebDriver, ?>> waitFn =
+                condition -> {
+                    try {
+                        WebDriverWait customWait = new WebDriverWait(getOriginal(), Duration.ofMillis(10));
+                        customWait.until(condition);
+                    } catch (Exception ignored) {
+                    }
+                };
+        if (getUiConfig().useShadowRoot()) {
+            List<SmartWebElement> elementsWithShadowRootDriver = SmartFinder.findElementsWithShadowRootDriver(this, by, waitFn);
+            return elementsWithShadowRootDriver.stream()
+                    .map(element -> (WebElement) element)
+                    .collect(Collectors.toList());
+        } else {
+            List<SmartWebElement> elementsNormally = SmartFinder.findElementsNormally(getOriginal(), by, waitFn);
+            return elementsNormally.stream()
+                    .map(element -> (WebElement) element)
+                    .collect(Collectors.toList());
+        }
+    }
+
 
     private SmartWebElement findSmartElementInternal(By by, Long waitInMillis) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {

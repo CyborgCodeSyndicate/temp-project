@@ -14,18 +14,12 @@ public enum WebElementAction {
     FIND_ELEMENT("findElement") {
         @Override
         public Object performActionWebElement(WebDriver driver, WebElement element, Object... args) {
-            if (args.length == 0 || !(args[0] instanceof By)) {
-                throw new IllegalArgumentException("FIND_ELEMENT requires a By locator.");
-            }
-            return new SmartWebElement(element.findElement((By) args[0]), driver);
+            return new SmartWebElement(element, driver);
         }
 
         @Override
         public Object performActionWebDriver(WebDriver driver, Object... args) {
-            if (args.length == 0 || !(args[0] instanceof By)) {
-                throw new IllegalArgumentException("FIND_ELEMENT requires a By locator.");
-            }
-            return new SmartWebElement(driver.findElement((By) args[0]), driver);
+            return new SmartWebElement((WebElement) args[0], driver);
         }
     },
 
@@ -98,7 +92,9 @@ public enum WebElementAction {
     };
 
     public abstract Object performActionWebElement(WebDriver driver, WebElement element, Object... args);
+
     public abstract Object performActionWebDriver(WebDriver driver, Object... args);
+
     public static Object performAction(WebDriver driver, WebElement element, WebElementAction action, Object... args) {
         return action.performActionWebElement(driver, element, args);
     }
