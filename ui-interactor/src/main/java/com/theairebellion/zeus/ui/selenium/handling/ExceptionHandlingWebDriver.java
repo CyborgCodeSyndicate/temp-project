@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
-import com.theairebellion.zeus.ui.util.TwoFunction;
+import com.theairebellion.zeus.ui.util.BiFunction;
 import lombok.Getter;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -27,12 +27,12 @@ public enum ExceptionHandlingWebDriver {
 
 
     private final String methodName;
-    private final Map<Class<? extends Throwable>, TwoFunction<WebDriver, Object[], Object>>
+    private final Map<Class<? extends Throwable>, BiFunction<WebDriver, Object[], Object>>
             exceptionHandlingMap;
 
 
     ExceptionHandlingWebDriver(final String methodName,
-                               Map<Class<? extends Throwable>, TwoFunction<WebDriver, Object[], Object>> exceptionHandlingMap) {
+                               Map<Class<? extends Throwable>, BiFunction<WebDriver, Object[], Object>> exceptionHandlingMap) {
         this.methodName = methodName;
         this.exceptionHandlingMap = exceptionHandlingMap;
     }
