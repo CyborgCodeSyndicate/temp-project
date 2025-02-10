@@ -1,39 +1,33 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-import com.theairebellion.zeus.framework.annotation.WorldName;
+import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
 import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
 import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
-import com.theairebellion.zeus.ui.components.table.service.TableServiceImpl;
 import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
+import com.theairebellion.zeus.ui.components.table.service.TableServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import com.theairebellion.zeus.ui.service.tables.TableServiceFluent;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 import java.util.function.Consumer;
 
-@WorldName("UI")
-@Service
-@Scope("prototype")
-@Lazy
-public class UIServiceFluent extends FluentService {
+@TestService("UI")
+public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService {
 
-    private InputServiceFluent inputField;
-    private TableServiceFluent table;
-    private SmartWebDriver driver;
-    private InterceptorServiceFluent interceptor;
+    protected InputServiceFluent<T> inputField;
+    protected TableServiceFluent<T> table;
+    protected SmartWebDriver driver;
+    protected InterceptorServiceFluent<T> interceptor;
     private InsertionServiceRegistry serviceRegistry;
     private TableServiceRegistry tableServiceRegistry;
-    private InsertionServiceFluent insertionService;
+    protected InsertionServiceFluent<T> insertionService;
 
 
     @Autowired
@@ -42,13 +36,13 @@ public class UIServiceFluent extends FluentService {
     }
 
 
-    public UIServiceFluent validate(Runnable assertion) {
-        return (UIServiceFluent) super.validate(assertion);
+    public T validate(Runnable assertion) {
+        return (T) super.validate(assertion);
     }
 
 
-    public UIServiceFluent validate(Consumer<SoftAssertions> assertion) {
-        return (UIServiceFluent) super.validate(assertion);
+    public T validate(Consumer<SoftAssertions> assertion) {
+        return (T) super.validate(assertion);
     }
 
 
@@ -62,15 +56,10 @@ public class UIServiceFluent extends FluentService {
         tableServiceRegistry = new TableServiceRegistry();
         registerTableServices(inputService);
         table = new TableServiceFluent(this, quest.getStorage(), new TableServiceImpl(driver, tableServiceRegistry),
-            driver);
+                driver);
         insertionService = new InsertionServiceFluent(
-            new InsertionServiceElementImpl(serviceRegistry, driver), this,
-            quest.getStorage());
-    }
-
-
-    private SmartWebDriver getDriver() {
-        return driver;
+                new InsertionServiceElementImpl(serviceRegistry, driver), this,
+                quest.getStorage());
     }
 
 
@@ -84,5 +73,27 @@ public class UIServiceFluent extends FluentService {
         tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputService);
 
     }
+
+    protected SmartWebDriver getDriver() {
+        return driver;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected UIServiceFluent<T> clone() {
+        UIServiceFluent<T> cloned = new UIServiceFluent<>(this.driver);
+
+        cloned.quest = this.quest; // quest is 'protected' in FluentService
+
+        cloned.inputField = this.inputField;
+        cloned.table = this.table;
+        cloned.interceptor = this.interceptor;
+        cloned.serviceRegistry = this.serviceRegistry;
+        cloned.tableServiceRegistry = this.tableServiceRegistry;
+        cloned.insertionService = this.insertionService;
+
+        return cloned;
+    }
+
 
 }

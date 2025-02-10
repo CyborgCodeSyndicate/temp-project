@@ -7,18 +7,19 @@ import com.theairebellion.zeus.ui.selenium.InputUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
-public class InputServiceFluent {
+public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     private final InputService inputService;
-    private final UIServiceFluent uiServiceFluent;
+    private final T uiServiceFluent;
     private final Storage storage;
     private final SmartWebDriver driver;
 
 
-    public InputServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, InputService inputService,
+    public InputServiceFluent(T uiServiceFluent, Storage storage, InputService inputService,
                               SmartWebDriver webDriver) {
         this.inputService = inputService;
         this.uiServiceFluent = uiServiceFluent;
@@ -27,9 +28,9 @@ public class InputServiceFluent {
     }
 
 
-    public UIServiceFluent insert(final InputUIElement element, final String value) {
+    public T insert(final InputUIElement element, final String value) {
         Allure.step(String.format("Inserting value: '%s' into input component of type: '%s'.", value,
-            element.componentType().toString()));
+                element.componentType().toString()));
         element.before().accept(driver);
         inputService.insert(element.locator(), value, element.componentType());
         element.after().accept(driver);
@@ -37,7 +38,7 @@ public class InputServiceFluent {
     }
 
 
-    public UIServiceFluent clear(final InputUIElement element) {
+    public T clear(final InputUIElement element) {
         element.before().accept(driver);
         inputService.clear(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -45,7 +46,7 @@ public class InputServiceFluent {
     }
 
 
-    public UIServiceFluent getValue(final InputUIElement element) {
+    public T getValue(final InputUIElement element) {
         element.before().accept(driver);
         String value = inputService.getValue(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -54,29 +55,29 @@ public class InputServiceFluent {
     }
 
 
-    public UIServiceFluent validateValue(final InputUIElement element, String expectedValue) {
+    public T validateValue(final InputUIElement element, String expectedValue) {
         return validateValue(element, expectedValue, false);
     }
 
 
-    public UIServiceFluent validateValue(final InputUIElement element, String expectedValue, boolean soft) {
+    public T validateValue(final InputUIElement element, String expectedValue, boolean soft) {
         element.before().accept(driver);
         String value = inputService.getValue(element.locator(), element.componentType());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), value);
         if (soft) {
-            return uiServiceFluent.validate(
-                softAssertions -> softAssertions.assertThat(value).as("Validating Input value")
-                                      .isEqualTo(expectedValue));
+            return (T) uiServiceFluent.validate(
+                    softAssertions -> softAssertions.assertThat(value).as("Validating Input value")
+                            .isEqualTo(expectedValue));
         } else {
-            return uiServiceFluent.validate(
-                () -> Assertions.assertThat(value).as("Validating Input value")
-                          .isEqualTo(expectedValue));
+            return (T) uiServiceFluent.validate(
+                    () -> Assertions.assertThat(value).as("Validating Input value")
+                            .isEqualTo(expectedValue));
         }
     }
 
 
-    public UIServiceFluent isEnabled(final InputUIElement element) {
+    public T isEnabled(final InputUIElement element) {
         element.before().accept(driver);
         boolean enabled = inputService.isEnabled(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -85,61 +86,61 @@ public class InputServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsEnabled(final InputUIElement element) {
+    public T validateIsEnabled(final InputUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsEnabled(final InputUIElement element, boolean soft) {
+    public T validateIsEnabled(final InputUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final InputUIElement element) {
+    public T validateIsDisabled(final InputUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final InputUIElement element, boolean soft) {
+    public T validateIsDisabled(final InputUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsEnabled(final InputUIElement element, boolean shouldBeEnabled, boolean soft) {
+    private T validateIsEnabled(final InputUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
         boolean enabled = inputService.isEnabled(element.locator(), element.componentType());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), enabled);
 
         String assertionMessage = shouldBeEnabled
-                                      ? "Validating Input is enabled"
-                                      : "Validating Input is disabled";
+                ? "Validating Input is enabled"
+                : "Validating Input is disabled";
 
         if (soft) {
-            return uiServiceFluent.validate(
-                softAssertions -> {
-                    if (shouldBeEnabled) {
-                        softAssertions.assertThat(enabled).as(assertionMessage).isTrue();
-                    } else {
-                        softAssertions.assertThat(enabled).as(assertionMessage).isFalse();
+            return (T) uiServiceFluent.validate(
+                    softAssertions -> {
+                        if (shouldBeEnabled) {
+                            softAssertions.assertThat(enabled).as(assertionMessage).isTrue();
+                        } else {
+                            softAssertions.assertThat(enabled).as(assertionMessage).isFalse();
+                        }
                     }
-                }
             );
         } else {
-            return uiServiceFluent.validate(
-                () -> {
-                    if (shouldBeEnabled) {
-                        Assertions.assertThat(enabled).as(assertionMessage).isTrue();
-                    } else {
-                        Assertions.assertThat(enabled).as(assertionMessage).isFalse();
+            return (T) uiServiceFluent.validate(
+                    () -> {
+                        if (shouldBeEnabled) {
+                            Assertions.assertThat(enabled).as(assertionMessage).isTrue();
+                        } else {
+                            Assertions.assertThat(enabled).as(assertionMessage).isFalse();
+                        }
                     }
-                }
             );
         }
     }
 
 
-    public UIServiceFluent getErrorMessage(final InputUIElement element) {
+    public T getErrorMessage(final InputUIElement element) {
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.locator(), element.componentType());
         element.after().accept(driver);
@@ -148,24 +149,25 @@ public class InputServiceFluent {
     }
 
 
-    public UIServiceFluent validateErrorMessage(final InputUIElement element, String expectedMessage) {
+    public T validateErrorMessage(final InputUIElement element, String expectedMessage) {
         return validateErrorMessage(element, expectedMessage, false);
     }
 
 
-    public UIServiceFluent validateErrorMessage(final InputUIElement element, String expectedMessage, boolean soft) {
+    public T validateErrorMessage(final InputUIElement element, String expectedMessage, boolean soft) {
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.locator(), element.componentType());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), errorMessage);
         if (soft) {
-            return uiServiceFluent.validate(
-                softAssertions -> softAssertions.assertThat(errorMessage).as("Validating UI Message")
-                                      .isEqualTo(expectedMessage));
+            return (T) uiServiceFluent.validate(
+                    softAssertions -> softAssertions.assertThat(errorMessage)
+                            .as("Validating UI Message")
+                            .isEqualTo(expectedMessage));
         } else {
-            return uiServiceFluent.validate(
-                () -> Assertions.assertThat(errorMessage).as("Validating UI Message")
-                          .isEqualTo(expectedMessage));
+            return (T) uiServiceFluent.validate(
+                    () -> Assertions.assertThat(errorMessage).as("Validating UI Message")
+                            .isEqualTo(expectedMessage));
         }
     }
 
