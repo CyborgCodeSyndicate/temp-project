@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.enums;
 
 import lombok.Getter;
 
+@Getter
 public enum Features {
 
     INPUT_FIELDS("inputField"),
@@ -9,7 +10,6 @@ public enum Features {
     REQUESTS_INTERCEPTOR("interceptor"),
     DATA_INSERTION("insertionService");
 
-    @Getter
     private final String fieldName;
 
 

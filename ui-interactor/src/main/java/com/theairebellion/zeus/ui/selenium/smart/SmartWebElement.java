@@ -8,6 +8,7 @@ import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.jspecify.annotations.NullMarked;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
@@ -79,46 +81,54 @@ public class SmartWebElement extends WebElementDecorator {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
             super.click();
         }
-        try {
-            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
-            super.click();
-        } catch (Exception e) {
-            handleException("click", e, new Object[0]);
-        }
+        performActionWithWait(element -> super.click());
     }
 
 
     @Override
+    @HandleUIException
     public void clear() {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
             super.clear();
         }
-        try {
-            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
-            super.clear();
-        } catch (Exception e) {
-            handleException("clear", e, new Object[0]);
-        }
+        performActionWithWait(element -> super.clear());
     }
 
 
     @Override
+    @NullMarked
     public void sendKeys(CharSequence... keysToSend) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
             super.sendKeys(keysToSend);
         }
-        try {
-            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
-            super.sendKeys(keysToSend);
-        } catch (Exception e) {
-            handleException("clear", e, keysToSend);
-        }
+        performActionWithWait(element -> super.sendKeys(keysToSend));
     }
 
+    @Override
+    public void submit() {
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
+            super.submit();
+        }
+        performActionWithWait(element -> super.submit());
+    }
 
     public void clearAndSendKeys(CharSequence... keysToSend) {
         clear();
         sendKeys(keysToSend);
+    }
+
+    public void doubleClick() {
+        click();
+        wait.until(ExpectedConditions.elementToBeClickable(this));
+        click();
+    }
+
+    public boolean isEnabledAndVisible() {
+        waitWithoutFailure(ExpectedConditions.and(
+                ExpectedConditions.visibilityOf(this),
+                ExpectedConditions.elementToBeClickable(this)
+        ));
+        return true;
     }
 
 
@@ -128,18 +138,18 @@ public class SmartWebElement extends WebElementDecorator {
         Throwable cause = exception.getCause() != null ? exception.getCause() : exception;
 
         Optional<ExceptionHandlingWebElement> exceptionHandlingOptional =
-            Arrays.stream(ExceptionHandlingWebElement.values())
-                .filter(enumVal ->
-                            enumVal.getMethodName().equals(methodName)
-                                && Objects.nonNull(enumVal.getExceptionHandlingMap().get(cause.getClass()))
-                )
-                .findFirst();
+                Arrays.stream(ExceptionHandlingWebElement.values())
+                        .filter(enumVal ->
+                                enumVal.getMethodName().equals(methodName)
+                                        && Objects.nonNull(enumVal.getExceptionHandlingMap().get(cause.getClass()))
+                        )
+                        .findFirst();
 
         if (exceptionHandlingOptional.isPresent()) {
             return (T) exceptionHandlingOptional.get()
-                           .getExceptionHandlingMap()
-                           .get(cause.getClass())
-                           .apply(driver, this, params);
+                    .getExceptionHandlingMap()
+                    .get(cause.getClass())
+                    .apply(driver, this, exception, params);
         } else {
             LogUI.error("No exception handling for this specific exception.");
             throw exception;
@@ -160,5 +170,13 @@ public class SmartWebElement extends WebElementDecorator {
         }
     }
 
+    private void performActionWithWait(Consumer<SmartWebElement> action) {
+        try {
+            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
+            action.accept(this);
+        } catch (Exception e) {
+            handleException(action.toString(), e, new Object[0]);
+        }
+    }
 
 }

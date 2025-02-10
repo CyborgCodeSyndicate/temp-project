@@ -425,7 +425,7 @@ public interface InputService extends Insertion, TableInsertion, TableFilter {
     String getErrorMessage(By inputFieldContainerLocator, InputComponentType componentType);
 
 
-    public static InputComponentType getDefaultType() {
+    private static InputComponentType getDefaultType() {
         return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
             getUiConfig().inputDefaultType(),
             getUiConfig().projectPackage());
