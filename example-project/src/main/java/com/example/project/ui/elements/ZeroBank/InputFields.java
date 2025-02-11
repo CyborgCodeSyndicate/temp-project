@@ -24,9 +24,6 @@ public enum InputFields implements InputUIElement {
     SP_DESCRIPTION_FIELD(By.id("sp_description"), InputFieldTypes.BOOTSTRAP_INPUT_TYPE),
     ;
 
-    public static final String USERNAME = "USERNAME_FIELD";
-    public static final String PASSWORD = "PASSWORD_FIELD";
-
 
     private final By locator;
     private final InputComponentType componentType;

@@ -3,10 +3,10 @@ package com.example.project.ui.elements.ZeroBank;
 import com.example.project.ui.types.ButtonFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.ButtonUIElement;
 import org.openqa.selenium.By;
 
-public enum ButtonFields implements UIElement {
+public enum ButtonFields implements ButtonUIElement {
 
     SIGN_IN_BUTTON(By.id("signin_button"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
     SIGN_IN_FORM_BUTTON(By.cssSelector("input[value='Sign in']"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),

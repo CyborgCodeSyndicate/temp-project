@@ -3,10 +3,10 @@ package com.example.project.ui.elements.ZeroBank;
 import com.example.project.ui.types.SelectFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.SelectUIElement;
 import org.openqa.selenium.By;
 
-public enum SelectFields implements UIElement {
+public enum SelectFields implements SelectUIElement {
 
     TF_FROM_ACCOUNT_DDL(By.id("tf_fromAccountId"), SelectFieldTypes.BOOTSTRAP_SELECT_TYPE),
     TF_TO_ACCOUNT_DDL(By.id("tf_toAccountId"), SelectFieldTypes.BOOTSTRAP_SELECT_TYPE),

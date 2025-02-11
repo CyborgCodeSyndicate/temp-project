@@ -3,10 +3,10 @@ package com.example.project.ui.elements.ZeroBank;
 import com.example.project.ui.types.LinkFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.link.LinkComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.LinkUIElement;
 import org.openqa.selenium.By;
 
-public enum LinkFields implements UIElement {
+public enum LinkFields implements LinkUIElement {
 
     TRANSFER_FUNDS_LINK(By.id("transfer_funds_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),
     ACCOUNT_ACTIVITY_LINK(By.id("account_activity_link"), LinkFieldTypes.BOOTSTRAP_LINK_TYPE),

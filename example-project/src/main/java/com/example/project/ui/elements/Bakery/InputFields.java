@@ -4,7 +4,6 @@ import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.selenium.InputUIElement;
-import com.theairebellion.zeus.ui.selenium.UIElement;
 import org.openqa.selenium.By;
 
 public enum InputFields implements InputUIElement {
@@ -12,9 +11,6 @@ public enum InputFields implements InputUIElement {
     USERNAME_FIELD(By.id("vaadinLoginUsername"), InputFieldTypes.VA_INPUT_TYPE),
     PASSWORD_FIELD(By.id("vaadinLoginPassword"), InputFieldTypes.VA_INPUT_TYPE),
     ;
-
-    public static final String USERNAME = "USERNAME_FIELD";
-    public static final String PASSWORD = "PASSWORD_FIELD";
 
 
     private final By locator;
