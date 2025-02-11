@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.api.client;
 
-import com.theairebellion.zeus.api.client.RestClientImpl;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.FilterableRequestSpecification;

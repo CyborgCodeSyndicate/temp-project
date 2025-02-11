@@ -5,9 +5,13 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DummyQuest extends Quest {
+public class DummySuperQuest extends SuperQuest {
 
     private final AtomicBoolean completeCalled = new AtomicBoolean(false);
+
+    public DummySuperQuest(Quest quest) {
+        super(quest);
+    }
 
     @Override
     public void complete() {

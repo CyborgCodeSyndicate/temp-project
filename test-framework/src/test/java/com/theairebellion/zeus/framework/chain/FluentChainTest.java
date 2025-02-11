@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.framework.chain;
 
 import com.theairebellion.zeus.framework.chain.mock.DummyFluentChain;
-import com.theairebellion.zeus.framework.chain.mock.DummyQuest;
+import com.theairebellion.zeus.framework.chain.mock.DummySuperQuest;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,7 +50,7 @@ public class FluentChainTest {
     void testComplete() {
         DummyFluentChain chain = new DummyFluentChain();
         // Before calling complete(), completeCalled should be false.
-        DummyQuest quest = (DummyQuest) chain.then();
+        DummySuperQuest quest = (DummySuperQuest) chain.then();
         assertFalse(quest.isCompleteCalled(), "Before complete() is called, completeCalled should be false");
         chain.complete();
         assertTrue(quest.isCompleteCalled(), "Quest.complete() should have been called");

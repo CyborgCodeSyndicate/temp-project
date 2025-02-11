@@ -19,6 +19,8 @@ class BaseAuthenticationClientTest {
     private static final String NULL_SERVICE_MESSAGE = "RestService must not be null";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    public static final String USER = "user";
+    public static final String PASS = "pass";
 
     @Mock
     private Header header;
@@ -64,7 +66,7 @@ class BaseAuthenticationClientTest {
 
     @Test
     void testGetAuthentication_RetrievesFromCache() {
-        AuthenticationKey key = new AuthenticationKey("user", "pass", TestAuthenticationClient.class);
+        AuthenticationKey key = new AuthenticationKey(USER, PASS, TestAuthenticationClient.class);
         BaseAuthenticationClient.userAuthenticationHeaderMap.put(key, header);
 
         Header retrieved = client.getAuthentication(key);
@@ -75,7 +77,7 @@ class BaseAuthenticationClientTest {
 
     @Test
     void testGetAuthentication_ReturnsNullIfNotInCache() {
-        AuthenticationKey key = new AuthenticationKey("user", "pass", TestAuthenticationClient.class);
+        AuthenticationKey key = new AuthenticationKey(USER, PASS, TestAuthenticationClient.class);
         Header retrieved = client.getAuthentication(key);
         assertNull(retrieved);
     }

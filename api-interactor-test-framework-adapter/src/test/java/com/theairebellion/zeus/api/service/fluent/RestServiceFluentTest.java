@@ -6,7 +6,7 @@ import com.theairebellion.zeus.api.core.Endpoint;
 import com.theairebellion.zeus.api.service.RestService;
 import com.theairebellion.zeus.api.service.fluent.mock.StorageDouble;
 import com.theairebellion.zeus.framework.quest.Quest;
-import com.theairebellion.zeus.framework.storage.Storage;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import io.restassured.response.Response;
@@ -24,6 +24,7 @@ class RestServiceFluentTest {
 
     private RestService restServiceMock;
     private RestServiceFluent restFluent;
+    private StorageDouble storageDouble;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -31,13 +32,16 @@ class RestServiceFluentTest {
         restFluent = new RestServiceFluent(restServiceMock);
 
         var realQuest = new Quest();
+        var realSuperQuest = new SuperQuest(realQuest);
+        storageDouble = new StorageDouble();
+
         var questField = RestServiceFluent.class.getSuperclass().getDeclaredField("quest");
         questField.setAccessible(true);
-        questField.set(restFluent, realQuest);
+        questField.set(restFluent, realSuperQuest);
 
         var storageField = Quest.class.getDeclaredField("storage");
         storageField.setAccessible(true);
-        storageField.set(realQuest, new StorageDouble());
+        storageField.set(realQuest, storageDouble);
     }
 
     @Test
@@ -51,8 +55,7 @@ class RestServiceFluentTest {
         restFluent.request(endpoint);
 
         verify(restServiceMock).request(endpoint);
-        var storage = (StorageDouble) getStorageFromFluent();
-        assertEquals(mockResponse, storage.subStorage.get(TestEnum.MOCK_ENDPOINT));
+        assertEquals(mockResponse, storageDouble.subStorage.get(TestEnum.MOCK_ENDPOINT));
     }
 
     @Test
@@ -66,8 +69,7 @@ class RestServiceFluentTest {
         restFluent.request(endpoint, "someBody");
 
         verify(restServiceMock).request(endpoint, "someBody");
-        var storage = (StorageDouble) getStorageFromFluent();
-        assertEquals(mockResponse, storage.subStorage.get(TestEnum.MOCK_ENDPOINT));
+        assertEquals(mockResponse, storageDouble.subStorage.get(TestEnum.MOCK_ENDPOINT));
     }
 
     @Test
@@ -86,7 +88,6 @@ class RestServiceFluentTest {
     void testRequestAndValidate_WithoutBody() {
         var mockResponse = mock(Response.class);
         when(restServiceMock.request(any(Endpoint.class))).thenReturn(mockResponse);
-
         var mockAssertionResults = new ArrayList<AssertionResult<Object>>();
         when(restServiceMock.validate(eq(mockResponse), any(Assertion[].class))).thenReturn(mockAssertionResults);
 
@@ -99,8 +100,7 @@ class RestServiceFluentTest {
         verify(restServiceMock).validate(eq(mockResponse), any(Assertion[].class));
         verifyNoMoreInteractions(restServiceMock);
 
-        var storage = (StorageDouble) getStorageFromFluent();
-        assertEquals(mockResponse, storage.subStorage.get(TestEnum.MOCK_ENDPOINT));
+        assertEquals(mockResponse, storageDouble.subStorage.get(TestEnum.MOCK_ENDPOINT));
     }
 
     @Test
@@ -136,20 +136,5 @@ class RestServiceFluentTest {
         var consumer = mock(Consumer.class);
         var result = restFluent.validate(consumer);
         assertSame(restFluent, result);
-    }
-
-    private Storage getStorageFromFluent() {
-        try {
-            var questField = RestServiceFluent.class.getSuperclass().getDeclaredField("quest");
-            questField.setAccessible(true);
-            var q = (Quest) questField.get(restFluent);
-
-            var storageField = Quest.class.getDeclaredField("storage");
-            storageField.setAccessible(true);
-            return (Storage) storageField.get(q);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

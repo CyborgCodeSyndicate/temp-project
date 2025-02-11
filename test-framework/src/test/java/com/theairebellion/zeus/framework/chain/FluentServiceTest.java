@@ -2,6 +2,8 @@ package com.theairebellion.zeus.framework.chain;
 
 import com.theairebellion.zeus.framework.chain.mock.DummyFluentService;
 import com.theairebellion.zeus.framework.chain.mock.DummyQuest;
+import com.theairebellion.zeus.framework.chain.mock.DummySuperQuest;
+import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
@@ -18,23 +20,26 @@ public class FluentServiceTest {
     void testThenReturnsQuest() {
         DummyFluentService service = new DummyFluentService();
         DummyQuest dummyQuest = new DummyQuest();
-        service.setQuest(dummyQuest);
-        assertSame(dummyQuest, service.then(), "then() should return the quest that was set");
+        DummySuperQuest dummySuperQuest = new DummySuperQuest(dummyQuest);
+        service.setQuest(dummySuperQuest);
+        assertSame(dummySuperQuest, service.then(), "then() should return the quest that was set");
     }
 
     @Test
     void testSetQuest() {
         DummyFluentService service = new DummyFluentService();
         DummyQuest dummyQuest = new DummyQuest();
-        service.setQuest(dummyQuest);
-        assertSame(dummyQuest, service.then(), "setQuest() should store the quest");
+        DummySuperQuest dummySuperQuest = new DummySuperQuest(dummyQuest);
+        service.setQuest(dummySuperQuest);
+        assertSame(dummySuperQuest, service.then(), "setQuest() should store the quest");
     }
 
     @Test
     void testValidationHardSuccess() {
         DummyFluentService service = new DummyFluentService();
         DummyQuest dummyQuest = new DummyQuest();
-        service.setQuest(dummyQuest);
+        DummySuperQuest dummySuperQuest = new DummySuperQuest(dummyQuest);
+        service.setQuest(dummySuperQuest);
         // Hard (non‑soft) assertion result that passes.
         AssertionResult<Object> ar = new AssertionResult<>(true, "Hard success test", "expected", "actual", false);
         List<AssertionResult<Object>> results = Collections.singletonList(ar);
@@ -45,7 +50,8 @@ public class FluentServiceTest {
     void testValidationHardFailure() {
         DummyFluentService service = new DummyFluentService();
         DummyQuest dummyQuest = new DummyQuest();
-        service.setQuest(dummyQuest);
+        DummySuperQuest dummySuperQuest = new DummySuperQuest(dummyQuest);
+        service.setQuest(dummySuperQuest);
         // Hard assertion result that fails.
         AssertionResult<Object> ar = new AssertionResult<>(false, "Hard failure test", "expected", "actual", false);
         List<AssertionResult<Object>> results = Collections.singletonList(ar);
@@ -58,15 +64,16 @@ public class FluentServiceTest {
     void testValidationSoftSuccess() throws Exception {
         DummyFluentService service = new DummyFluentService();
         DummyQuest dummyQuest = new DummyQuest();
-        service.setQuest(dummyQuest);
+        DummySuperQuest dummySuperQuest = new DummySuperQuest(dummyQuest);
+        service.setQuest(dummySuperQuest);
         // Soft assertion result that passes.
         AssertionResult<Object> ar = new AssertionResult<>(true, "Soft success test", "expected", "actual", true);
         List<AssertionResult<Object>> results = Collections.singletonList(ar);
         assertDoesNotThrow(() -> service.callValidation(results));
         // Use reflection to call the private getSoftAssertions() method in Quest.
-        Method getSoftAssertions = dummyQuest.getClass().getSuperclass().getDeclaredMethod("getSoftAssertions");
+        Method getSoftAssertions = dummySuperQuest.getClass().getSuperclass().getDeclaredMethod("getSoftAssertions");
         getSoftAssertions.setAccessible(true);
-        Object softObj = getSoftAssertions.invoke(dummyQuest);
+        Object softObj = getSoftAssertions.invoke(dummySuperQuest);
         assertNotNull(softObj, "SoftAssertions object should not be null");
         SoftAssertions soft = (SoftAssertions) softObj;
         // For a passing soft assertion, assertAll() should not throw.
@@ -77,7 +84,8 @@ public class FluentServiceTest {
     void testValidationSoftFailure() throws Exception {
         DummyFluentService service = new DummyFluentService();
         DummyQuest dummyQuest = new DummyQuest();
-        service.setQuest(dummyQuest);
+        DummySuperQuest dummySuperQuest = new DummySuperQuest(dummyQuest);
+        service.setQuest(dummySuperQuest);
 
         // Create a soft assertion result that fails (passed = false, soft = true)
         AssertionResult<Object> ar = new AssertionResult<>(false, "Soft failure test", "expected", "actual", true);
@@ -87,9 +95,9 @@ public class FluentServiceTest {
         assertDoesNotThrow(() -> service.callValidation(results));
 
         // Retrieve the SoftAssertions object via reflection
-        Method m = dummyQuest.getClass().getSuperclass().getDeclaredMethod("getSoftAssertions");
+        Method m = dummySuperQuest.getClass().getSuperclass().getDeclaredMethod("getSoftAssertions");
         m.setAccessible(true);
-        Object softObj = m.invoke(dummyQuest);
+        Object softObj = m.invoke(dummySuperQuest);
         assertNotNull(softObj, "SoftAssertions object should not be null");
         SoftAssertions soft = (SoftAssertions) softObj;
 

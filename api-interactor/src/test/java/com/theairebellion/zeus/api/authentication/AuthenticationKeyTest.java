@@ -12,7 +12,6 @@ class AuthenticationKeyTest {
     private static final String USER2 = "user2";
     private static final String PASS2 = "pass2";
 
-    // Casting here to be consistent across the test
     private static final Class<? extends BaseAuthenticationClient> CLIENT_CLASS =
             BaseAuthenticationClient.class;
 
