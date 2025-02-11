@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.radio.RadioService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.RadioUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
@@ -33,7 +33,7 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent select(final UIElement element) {
+    public UIServiceFluent select(final RadioUIElement element) {
         Allure.step(String.format("Selecting Radio Input with locator: '%s' from radio component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
@@ -44,7 +44,7 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isEnabled(final UIElement element) {
+    public UIServiceFluent isEnabled(final RadioUIElement element) {
         element.before().accept(driver);
         boolean enabled = radioService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -53,27 +53,27 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element) {
+    public UIServiceFluent validateIsEnabled(final RadioUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsEnabled(final RadioUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element) {
+    public UIServiceFluent validateIsDisabled(final RadioUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsDisabled(final RadioUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsEnabled(final UIElement element, boolean shouldBeEnabled, boolean soft) {
+    private UIServiceFluent validateIsEnabled(final RadioUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
         boolean enabled = radioService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -107,7 +107,7 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isSelected(final UIElement element) {
+    public UIServiceFluent isSelected(final RadioUIElement element) {
         element.before().accept(driver);
         boolean selected = radioService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -116,27 +116,27 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsSelected(final UIElement element) {
+    public UIServiceFluent validateIsSelected(final RadioUIElement element) {
         return validateIsSelected(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsSelected(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsSelected(final RadioUIElement element, boolean soft) {
         return validateIsSelected(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsNotSelected(final UIElement element) {
+    public UIServiceFluent validateIsNotSelected(final RadioUIElement element) {
         return validateIsSelected(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsNotSelected(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsNotSelected(final RadioUIElement element, boolean soft) {
         return validateIsSelected(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsSelected(final UIElement element, boolean shouldBeSelected, boolean soft) {
+    private UIServiceFluent validateIsSelected(final RadioUIElement element, boolean shouldBeSelected, boolean soft) {
         element.before().accept(driver);
         boolean selected = radioService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -170,7 +170,7 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isVisible(final UIElement element) {
+    public UIServiceFluent isVisible(final RadioUIElement element) {
         element.before().accept(driver);
         boolean visible = radioService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -179,27 +179,27 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element) {
+    public UIServiceFluent validateIsVisible(final RadioUIElement element) {
         return validateIsVisible(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsVisible(final RadioUIElement element, boolean soft) {
         return validateIsVisible(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element) {
+    public UIServiceFluent validateIsHidden(final RadioUIElement element) {
         return validateIsVisible(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsHidden(final RadioUIElement element, boolean soft) {
         return validateIsVisible(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsVisible(final UIElement element, boolean shouldBeVisible, boolean soft) {
+    private UIServiceFluent validateIsVisible(final RadioUIElement element, boolean shouldBeVisible, boolean soft) {
         element.before().accept(driver);
         boolean visible = radioService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -233,7 +233,7 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent getSelected(final UIElement element) {
+    public UIServiceFluent getSelected(final RadioUIElement element) {
         element.before().accept(driver);
         String selectedValue = radioService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -242,12 +242,12 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateSelected(final UIElement element, String expected) {
-        return validateSelected(element, expected,false);
+    public UIServiceFluent validateSelected(final RadioUIElement element, String expected) {
+        return validateSelected(element, expected, false);
     }
 
 
-    public UIServiceFluent validateSelected(final UIElement element, String expected, boolean soft) {
+    public UIServiceFluent validateSelected(final RadioUIElement element, String expected, boolean soft) {
         element.before().accept(driver);
         String selectedRadioInput = radioService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -267,7 +267,7 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent getAll(final UIElement element) {
+    public UIServiceFluent getAll(final RadioUIElement element) {
         element.before().accept(driver);
         radioService.getAll(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -275,12 +275,12 @@ public class RadioServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateAllRadioInputs(final UIElement element, final String... expectedValues) {
+    public UIServiceFluent validateAllRadioInputs(final RadioUIElement element, final String... expectedValues) {
         return validateAllRadioInputs(element, false, expectedValues);
     }
 
 
-    public UIServiceFluent validateAllRadioInputs(final UIElement element, boolean soft,
+    public UIServiceFluent validateAllRadioInputs(final RadioUIElement element, boolean soft,
                                                   final String... expectedValues) {
         element.before().accept(driver);
         List<String> selectedRadioInputs = radioService.getAll(element.componentType(), element.locator());

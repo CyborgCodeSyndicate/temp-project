@@ -21,12 +21,12 @@ public class ZeroBankTest extends BaseTest {
     public void alertTest(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("http://zero.webappsecurity.com/")
+                .browser().navigate("http://zero.webappsecurity.com/")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .back()
+                .browser().back()
                 .link().click(LinkFields.TRANSFER_FUNDS_LINK)
                 .select().selectOption(SelectFields.TF_FROM_ACCOUNT_DDL, "Credit Card(Avail. balance = $ -265)")
                 .select().selectOption(SelectFields.TF_TO_ACCOUNT_DDL, "Loan(Avail. balance = $ 780)")
@@ -43,12 +43,12 @@ public class ZeroBankTest extends BaseTest {
     public void validatePurchaseCheckRadioButtons(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("http://zero.webappsecurity.com/")
+                .browser().navigate("http://zero.webappsecurity.com/")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .back()
+                .browser().back()
                 .link().click(LinkFields.TRANSFER_FUNDS_LINK)
                 .list().select(ListFields.NAVIGATION_TABS, "Pay Bills")
                 .list().select(ListFields.PAY_BILLS_TABS, "Purchase Foreign Currency")
@@ -66,12 +66,12 @@ public class ZeroBankTest extends BaseTest {
     public void paragraphTextValueTestSoftAssertionsFailedTest(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("http://zero.webappsecurity.com/")
+                .browser().navigate("http://zero.webappsecurity.com/")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .back()
+                .browser().back()
                 .link().click(LinkFields.TRANSFER_FUNDS_LINK)
                 .list().select(ListFields.NAVIGATION_TABS, "Pay Bills")
                 .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
@@ -105,12 +105,12 @@ public class ZeroBankTest extends BaseTest {
     public void paragraphTextValueTestAssertionsSuccess(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("http://zero.webappsecurity.com/")
+                .browser().navigate("http://zero.webappsecurity.com/")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .back()
+                .browser().back()
                 .link().click(LinkFields.TRANSFER_FUNDS_LINK)
                 .list().select(ListFields.NAVIGATION_TABS, "Pay Bills")
                 .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
@@ -134,12 +134,12 @@ public class ZeroBankTest extends BaseTest {
     public void paragraphTextValueTestHardAssertionsFailedTest(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("http://zero.webappsecurity.com/")
+                .browser().navigate("http://zero.webappsecurity.com/")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .back()
+                .browser().back()
                 .link().click(LinkFields.TRANSFER_FUNDS_LINK)
                 .list().select(ListFields.NAVIGATION_TABS, "Pay Bills")
                 .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
@@ -167,12 +167,12 @@ public class ZeroBankTest extends BaseTest {
     public void paragraphTextValueTestMixedAssertionsFailedTest(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("http://zero.webappsecurity.com/")
+                .browser().navigate("http://zero.webappsecurity.com/")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .back()
+                .browser().back()
                 .link().click(LinkFields.TRANSFER_FUNDS_LINK)
                 .list().select(ListFields.NAVIGATION_TABS, "Pay Bills")
                 .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
@@ -199,12 +199,12 @@ public class ZeroBankTest extends BaseTest {
     public void tableAssert(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("http://zero.webappsecurity.com/")
+                .browser().navigate("http://zero.webappsecurity.com/")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
                 .input().insert(InputFields.USERNAME_FIELD, "username")
                 .input().insert(InputFields.PASSWORD_FIELD, "password")
                 .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .back()
+                .browser().back()
                 .button().click(ButtonFields.MORE_SERVICES_BUTTON)
                 .link().click(LinkFields.ACCOUNT_ACTIVITY_LINK)
                 .list().select(ListFields.ACCOUNT_ACTIVITY_TABS, "Find Transactions")

@@ -47,7 +47,7 @@ public class UIServiceFluent extends FluentService {
     private RadioServiceFluent radioField;
     private CheckboxServiceFluent checkboxField;
     private SelectServiceFluent selectField;
-    private ItemListServiceFluent listField;
+    private ListServiceFluent listField;
     private LoaderServiceFluent loaderField;
     private LinkServiceFluent linkField;
     private AlertServiceFluent alertField;
@@ -56,6 +56,7 @@ public class UIServiceFluent extends FluentService {
     private AccordionServiceFluent accordionField;
     private TableServiceFluent table;
     private ValidationServiceFluent validation;
+    private NavigationServiceFluent navigation;
     private SmartWebDriver driver;
     private InterceptorServiceFluent interceptor;
     private InsertionServiceRegistry serviceRegistry;
@@ -85,7 +86,7 @@ public class UIServiceFluent extends FluentService {
         radioField = new RadioServiceFluent(this, quest.getStorage(), new RadioServiceImpl(driver), driver);
         checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(driver));
         selectField = new SelectServiceFluent(this, quest.getStorage(), new SelectServiceImpl(driver), driver);
-        listField = new ItemListServiceFluent(this, quest.getStorage(), new ItemListServiceImpl(driver), driver);
+        listField = new ListServiceFluent(this, quest.getStorage(), new ItemListServiceImpl(driver), driver);
         loaderField = new LoaderServiceFluent(this, quest.getStorage(), new LoaderServiceImpl(driver), driver);
         linkField = new LinkServiceFluent(this, quest.getStorage(), new LinkServiceImpl(driver), driver);
         alertField = new AlertServiceFluent(this, quest.getStorage(), new AlertServiceImpl(driver), driver);
@@ -95,6 +96,7 @@ public class UIServiceFluent extends FluentService {
         InputService inputService = new InputServiceImpl(driver);
         inputField = new InputServiceFluent(this, quest.getStorage(), inputService, driver);
         validation = new ValidationServiceFluent(this, driver);
+        navigation = new NavigationServiceFluent(this, driver);
         interceptor = new InterceptorServiceFluent(this, quest.getStorage());
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices(inputService);
@@ -127,16 +129,5 @@ public class UIServiceFluent extends FluentService {
         tableServiceRegistry.registerService(InputComponentType.class, (TableFilter) inputService);
         tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputService);
 
-    }
-
-    public UIServiceFluent navigate(String url) {
-        getDriver().manage().window().maximize();
-        getDriver().get(url);
-        return this;
-    }
-
-    public UIServiceFluent back() {
-        getDriver().navigate().back();
-        return this;
     }
 }

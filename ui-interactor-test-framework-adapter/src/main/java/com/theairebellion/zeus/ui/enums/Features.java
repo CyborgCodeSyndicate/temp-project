@@ -18,6 +18,7 @@ public enum Features {
     TAB_FIELDS("tabField"),
     REQUESTS_INTERCEPTOR("interceptor"),
     VALIDATION("validation"),
+    NAVIGATION("navigation"),
     DATA_INSERTION("insertionService");
 
     @Getter

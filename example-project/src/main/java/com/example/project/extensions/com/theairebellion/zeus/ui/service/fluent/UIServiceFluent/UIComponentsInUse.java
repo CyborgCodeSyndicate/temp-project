@@ -44,9 +44,9 @@ public class UIComponentsInUse {
     }
 
 
-    public static ItemListServiceFluent list(@This UIServiceFluent uiServiceFluent) {
+    public static ListServiceFluent list(@This UIServiceFluent uiServiceFluent) {
         return ReflectionUtil.getAttributeOfClass(Features.LIST_FIELDS.getFieldName(), uiServiceFluent,
-                ItemListServiceFluent.class);
+                ListServiceFluent.class);
     }
 
 
@@ -96,5 +96,9 @@ public class UIComponentsInUse {
                 ValidationServiceFluent.class);
     }
 
+    public static NavigationServiceFluent browser(@This UIServiceFluent uiServiceFluent) {
+        return ReflectionUtil.getAttributeOfClass(Features.NAVIGATION.getFieldName(), uiServiceFluent,
+                NavigationServiceFluent.class);
+    }
 
 }

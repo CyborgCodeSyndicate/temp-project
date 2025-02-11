@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.ButtonUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
@@ -27,7 +27,7 @@ public class ButtonServiceFluent {
     }
 
 
-    public UIServiceFluent click(final UIElement element) {
+    public UIServiceFluent click(final ButtonUIElement element) {
         Allure.step(String.format("Clicking button with locator: '%s' from button component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
@@ -38,7 +38,7 @@ public class ButtonServiceFluent {
     }
 
 
-    public UIServiceFluent isEnabled(final UIElement element) {
+    public UIServiceFluent isEnabled(final ButtonUIElement element) {
         element.before().accept(driver);
         boolean enabled = buttonService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -47,27 +47,27 @@ public class ButtonServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element) {
+    public UIServiceFluent validateIsEnabled(final ButtonUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsEnabled(final ButtonUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element) {
+    public UIServiceFluent validateIsDisabled(final ButtonUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsDisabled(final ButtonUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsEnabled(final UIElement element, boolean shouldBeEnabled, boolean soft) {
+    private UIServiceFluent validateIsEnabled(final ButtonUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
         boolean enabled = buttonService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -101,7 +101,7 @@ public class ButtonServiceFluent {
     }
 
 
-    public UIServiceFluent isVisible(final UIElement element) {
+    public UIServiceFluent isVisible(final ButtonUIElement element) {
         element.before().accept(driver);
         boolean visible = buttonService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -110,27 +110,27 @@ public class ButtonServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element) {
+    public UIServiceFluent validateIsVisible(final ButtonUIElement element) {
         return validateIsVisible(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsVisible(final ButtonUIElement element, boolean soft) {
         return validateIsVisible(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element) {
+    public UIServiceFluent validateIsHidden(final ButtonUIElement element) {
         return validateIsVisible(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsHidden(final ButtonUIElement element, boolean soft) {
         return validateIsVisible(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsVisible(final UIElement element, boolean shouldBeVisible, boolean soft) {
+    private UIServiceFluent validateIsVisible(final ButtonUIElement element, boolean shouldBeVisible, boolean soft) {
         element.before().accept(driver);
         boolean visible = buttonService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);

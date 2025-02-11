@@ -18,7 +18,7 @@ public class NewUITest extends BaseTest {
     public void scenario_some(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("https://bakery-flow.demo.vaadin.com/")
+                .browser().navigate("https://bakery-flow.demo.vaadin.com/")
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
