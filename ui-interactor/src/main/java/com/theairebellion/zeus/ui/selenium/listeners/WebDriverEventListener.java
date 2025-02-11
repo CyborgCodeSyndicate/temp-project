@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.listeners;
 
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.logging.ExceptionLogging;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElementInspector;
 import org.openqa.selenium.WebElement;
@@ -58,17 +59,18 @@ public class WebDriverEventListener implements WebDriverListener {
                 .filter(log -> matchesLogCriteria(log, target, method, args, cause)).findFirst();
 
         matched.ifPresent(exceptionLogging -> {
-            exceptionLogging.getExceptionLoggingMap().get(cause.getClass()).accept(target, method.getName(), args, e);
+            WebElementAction action = exceptionLogging.getAction();
+            exceptionLogging.getExceptionLoggingMap().get(cause.getClass()).accept(target, action, args, e);
         });
     }
 
     private static boolean matchesLogCriteria(final ExceptionLogging log, final Object target, final Method method,
                                               final Object[] args, final Throwable cause) {
-        if (!log.getObjectClass().isAssignableFrom(target.getClass())) {
+        if (!log.getTargetClass().isAssignableFrom(target.getClass())) {
             return false;
         }
 
-        if (!log.getMethodName().equals(method.getName())) {
+        if (!log.getAction().getMethodName().equals(method.getName())) {
             return false;
         }
 

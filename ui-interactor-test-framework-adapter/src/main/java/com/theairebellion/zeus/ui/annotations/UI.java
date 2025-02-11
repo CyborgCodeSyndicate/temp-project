@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 @ExtendWith(UiTestExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE})
 @FrameworkAdapter(basePackages = {"com.theairebellion.zeus.ui"})
 public @interface UI {
 

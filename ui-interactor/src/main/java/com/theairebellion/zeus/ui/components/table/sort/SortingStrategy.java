@@ -5,7 +5,7 @@ public enum SortingStrategy {
 
     ASC,
     DESC,
-    NO_SORT;
+    NO_SORT
 
 
 }

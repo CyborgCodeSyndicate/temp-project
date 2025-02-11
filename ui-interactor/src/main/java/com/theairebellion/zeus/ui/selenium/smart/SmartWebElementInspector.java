@@ -10,6 +10,7 @@ import java.util.Set;
 public final class SmartWebElementInspector {
 
     private static final String SMART_WEB_ELEMENT_CLASS = SmartWebElement.class.getName();
+    private static final String SMART_WEB_DRIVER_CLASS = SmartWebDriver.class.getName();
     private static final Set<String> ANNOTATED_METHODS = new HashSet<>();
 
     static {
@@ -36,6 +37,15 @@ public final class SmartWebElementInspector {
                 comingFromWait = true;
             }
             if (SMART_WEB_ELEMENT_CLASS.equals(element.getClassName())) {
+                String methodName = element.getMethodName();
+                if (ANNOTATED_METHODS.contains(methodName)) {
+                    foundAnnotatedMethod = true;
+                }
+                if ("handleException".equals(methodName)) {
+                    foundHandleException = true;
+                }
+            }
+            if (SMART_WEB_DRIVER_CLASS.equals(element.getClassName())) {
                 String methodName = element.getMethodName();
                 if (ANNOTATED_METHODS.contains(methodName)) {
                     foundAnnotatedMethod = true;

@@ -3,15 +3,18 @@ package com.theairebellion.zeus.framework.extension;
 import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
+import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import manifold.ext.rt.api.Jailbreak;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -42,7 +45,10 @@ public class Initiator implements InvocationInterceptor {
 
             List<Journey> sortedPreQuestAnnotations = getSortedJourneys(testMethod.get());
 
-            sortedPreQuestAnnotations.forEach(preQuest -> processPreQuest(preQuest, quest));
+            ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
+            DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
+            SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
+            sortedPreQuestAnnotations.forEach(preQuest -> processPreQuest(preQuest, superQuest));
         }
 
         invocation.proceed();
@@ -51,27 +57,27 @@ public class Initiator implements InvocationInterceptor {
 
     private List<Journey> getSortedJourneys(Method method) {
         return Arrays.stream(method.getAnnotationsByType(Journey.class))
-                   .sorted(Comparator.comparing(Journey::order))
-                   .collect(Collectors.toList());
+                .sorted(Comparator.comparing(Journey::order))
+                .collect(Collectors.toList());
     }
 
 
-    private void processPreQuest(Journey preQuest, Quest quest) {
+    private void processPreQuest(Journey preQuest, SuperQuest superQuest) {
         String journey = preQuest.value();
         JourneyData[] journeyData = preQuest.journeyData();
 
         PreQuestJourney preQuestJourney = ReflectionUtil.findEnumImplementationsOfInterface(
-            PreQuestJourney.class, journey, getFrameworkConfig().projectPackage());
+                PreQuestJourney.class, journey, getFrameworkConfig().projectPackage());
 
-        preQuestJourney.journey().accept(quest, Arrays.stream(journeyData)
-                                                    .map(dataEnumStr -> processJourneyData(dataEnumStr, quest))
-                                                    .toArray());
+        preQuestJourney.journey().accept(superQuest, Arrays.stream(journeyData)
+                .map(dataEnumStr -> processJourneyData(dataEnumStr, superQuest))
+                .toArray());
     }
 
 
-    private Object processJourneyData(JourneyData journeyData, @Jailbreak Quest quest) {
+    private Object processJourneyData(JourneyData journeyData, SuperQuest quest) {
         DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
-            DataForge.class, journeyData.value(), getFrameworkConfig().projectPackage());
+                DataForge.class, journeyData.value(), getFrameworkConfig().projectPackage());
 
         Object argument = journeyData.late() ? dataForge.dataCreator() : dataForge.dataCreator().join();
         quest.getStorage().sub(PRE_ARGUMENTS).put(dataForge.enumImpl(), argument);
