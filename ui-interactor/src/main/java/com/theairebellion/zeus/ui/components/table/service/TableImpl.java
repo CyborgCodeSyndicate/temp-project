@@ -26,6 +26,7 @@ import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import io.qameta.allure.Step;
 import lombok.Setter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
@@ -79,12 +80,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Reading entire table as class '{clazz}'")
     @Override
     public final <T> List<T> readTable(final Class<T> clazz) {
         return readTableInternal(clazz, null, null, null);
     }
 
 
+    @Step("[UI - Table] Reading table as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> List<T> readTable(final Class<T> clazz, final TableField<T>... fields) {
@@ -92,12 +95,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Reading table rows from {start} to {end} as class '{clazz}'")
     @Override
     public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz) {
         return readTableInternal(clazz, null, start, end);
     }
 
 
+    @Step("[UI - Table] Reading table rows from {start} to {end} as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> List<T> readTable(final int start,
@@ -108,18 +113,21 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Reading row number {row} as class '{clazz}'")
     @Override
     public final <T> T readRow(final int row, final Class<T> clazz) {
         return readRowInternal(row - 1, clazz, null);
     }
 
 
+    @Step("[UI - Table] Reading row matching criteria {searchCriteria} as class '{clazz}'")
     @Override
     public final <T> T readRow(final List<String> searchCriteria, final Class<T> clazz) {
         return readRowInternal(searchCriteria, clazz, null);
     }
 
 
+    @Step("[UI - Table] Reading row number {row} as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> T readRow(final int row, final Class<T> clazz, final TableField<T>... fields) {
@@ -127,6 +135,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Reading row matching criteria {searchCriteria} as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> T readRow(final List<String> searchCriteria,
@@ -136,6 +145,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Inserting cell value in row matching criteria {searchCriteria} for class '{rowClass}', field '{field}', cell index {cellIndex}")
     @Override
     public final <T> void insertCellValue(final List<String> searchCriteria,
                                           final Class<T> rowClass,
@@ -146,6 +156,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Inserting cell value in row {row} for class '{rowClass}', field '{field}', cell index {cellIndex}")
     @Override
     public final <T> void insertCellValue(final int row,
                                           final Class<T> rowClass,
@@ -156,6 +167,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Inserting cell value(s) using data for row matching criteria {searchCriteria} for class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final T data) {
         processInsertCellValue((fieldInvoker, strings) -> {
@@ -170,6 +182,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Inserting cell value(s) into field '{field}' for row matching criteria {searchCriteria} for class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass,
                                           final TableField<T> field,
@@ -178,6 +191,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Inserting cell value(s) into field '{field}' for row {row} for class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field,
                                           final String... values) {
@@ -185,6 +199,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Inserting cell value(s) using data for row {row} for class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final int row, final Class<T> tClass, final T data) {
         processInsertCellValue((fieldInvoker, strings) -> {
@@ -199,6 +214,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Filtering table for class '{tclass}' on column '{column}' using strategy '{filterStrategy}' with values {values}")
     @Override
     public final <T> void filterTable(final Class<T> tclass, final TableField<T> column,
                                       final FilterStrategy filterStrategy,
@@ -221,6 +237,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     }
 
 
+    @Step("[UI - Table] Sorting table for class '{tclass}' on column '{column}' using sorting strategy '{sortingStrategy}'")
     @Override
     public final <T> void sortTable(final Class<T> tclass, final TableField<T> column,
                                     final SortingStrategy sortingStrategy) {

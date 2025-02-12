@@ -8,6 +8,7 @@ import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Step;
 
 import java.util.List;
 
@@ -31,12 +32,14 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Reading table for component type '{tableComponentType}' as class '{clazz}'")
     @Override
     public final <T> List<T> readTable(final TableComponentType tableComponentType, final Class<T> clazz) {
         return getOrCreateComponent(tableComponentType).readTable(clazz);
     }
 
 
+    @Step("[UI - Table] Reading table for component type '{tableComponentType}' as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> List<T> readTable(final TableComponentType tableComponentType, final Class<T> clazz,
@@ -45,6 +48,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Reading table rows {start} to {end} for component type '{tableComponentType}' as class '{clazz}'")
     @Override
     public final <T> List<T> readTable(final TableComponentType tableComponentType, final int start, final int end,
                                        final Class<T> clazz) {
@@ -52,6 +56,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Reading table rows {start} to {end} for component type '{tableComponentType}' as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> List<T> readTable(final TableComponentType tableComponentType, final int start, final int end,
@@ -61,12 +66,14 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Reading row {row} for component type '{tableComponentType}' as class '{clazz}'")
     @Override
     public final <T> T readRow(final TableComponentType tableComponentType, final int row, final Class<T> clazz) {
         return getOrCreateComponent(tableComponentType).readRow(row, clazz);
     }
 
 
+    @Step("[UI - Table] Reading row matching criteria {searchCriteria} for component type '{tableComponentType}' as class '{clazz}'")
     @Override
     public final <T> T readRow(final TableComponentType tableComponentType, final List<String> searchCriteria,
                                final Class<T> clazz) {
@@ -74,6 +81,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Reading row {row} for component type '{tableComponentType}' as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> T readRow(final TableComponentType tableComponentType, final int row, final Class<T> clazz,
@@ -82,6 +90,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Reading row matching criteria {searchCriteria} for component type '{tableComponentType}' as class '{clazz}' with fields {fields}")
     @Override
     @SafeVarargs
     public final <T> T readRow(final TableComponentType tableComponentType, final List<String> searchCriteria,
@@ -91,6 +100,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Inserting cell value for row {row} for component type '{tableComponentType}' with data as class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final TableComponentType tableComponentType, final int row,
                                           final Class<T> tClass,
@@ -99,6 +109,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Inserting cell value for row {row} for component type '{tableComponentType}', field '{field}', index {index}")
     @Override
     public final <T> void insertCellValue(final TableComponentType tableComponentType, final int row,
                                           final Class<T> tClass,
@@ -107,6 +118,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Inserting cell value for row matching criteria {searchCriteria} for component type '{tableComponentType}', field '{field}', index {index}")
     @Override
     public final <T> void insertCellValue(final TableComponentType tableComponentType,
                                           final List<String> searchCriteria,
@@ -116,6 +128,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Inserting cell value for row matching criteria {searchCriteria} for component type '{tableComponentType}' with data as class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final TableComponentType tableComponentType,
                                           final List<String> searchCriteria,
@@ -125,6 +138,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Filtering table for component type '{tableComponentType}', class '{tclass}', column '{column}', using strategy '{filterStrategy}' with values {values}")
     @Override
     public final <T> void filterTable(final TableComponentType tableComponentType, final Class<T> tclass,
                                       final TableField<T> column,
@@ -133,6 +147,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     }
 
 
+    @Step("[UI - Table] Sorting table for component type '{tableComponentType}', class '{tclass}', column '{column}', using sorting strategy '{sortingStrategy}'")
     @Override
     final public <T> void sortTable(final TableComponentType tableComponentType, final Class<T> tclass,
                                     final TableField<T> column,

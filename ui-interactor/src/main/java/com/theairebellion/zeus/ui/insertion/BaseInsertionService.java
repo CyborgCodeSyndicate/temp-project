@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.insertion;
 
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import java.lang.reflect.Field;
@@ -18,6 +19,7 @@ public abstract class BaseInsertionService implements InsertionService {
 
 
     @Override
+    @Step("Inserting data: {data}")
     public void insertData(final Object data) {
         Field[] fields = data.getClass().getDeclaredFields();
         List<Field> targetedFields = filterAndSortFields(fields);
