@@ -22,7 +22,7 @@ public class BakeryTest extends BaseTest {
     public void scenario_one(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("https://bakery-flow.demo.vaadin.com/")
+                .browser().navigate("https://bakery-flow.demo.vaadin.com/")
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
                 .button().validateIsEnabled(ButtonFields.SIGN_IN_BUTTON)
@@ -41,7 +41,7 @@ public class BakeryTest extends BaseTest {
     public void scenario_two(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("https://bakery-flow.demo.vaadin.com/")
+                .browser().navigate("https://bakery-flow.demo.vaadin.com/")
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
@@ -64,7 +64,7 @@ public class BakeryTest extends BaseTest {
     public void scenario_three(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("https://bakery-flow.demo.vaadin.com/")
+                .browser().navigate("https://bakery-flow.demo.vaadin.com/")
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)
@@ -82,7 +82,7 @@ public class BakeryTest extends BaseTest {
     public void scenario_four(Quest quest) {
         quest
                 .enters(World.EARTH)
-                .navigate("https://bakery-flow.demo.vaadin.com/")
+                .browser().navigate("https://bakery-flow.demo.vaadin.com/")
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
                 .button().click(ButtonFields.SIGN_IN_BUTTON)

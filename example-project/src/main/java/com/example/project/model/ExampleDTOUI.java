@@ -4,8 +4,12 @@ import com.example.project.ui.elements.InputFields;
 import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.annotations.InsertionField;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
+import lombok.Builder;
+import lombok.Data;
 import org.openqa.selenium.support.FindBy;
 
+@Data
+@Builder
 public class ExampleDTOUI {
 
     @InsertionField(locator = @FindBy(css = "locator"), type = InputComponentType.class,

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public enum ButtonFields implements ButtonUIElement {
 
     SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE),
-    NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE),
+    NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE, SharedUI.WAIT_FOR_LOADING),
     REVIEW_ORDER_BUTTON(By.cssSelector("vaadin-button#review"), ButtonFieldTypes.VA_BUTTON_TYPE),
     PLACE_ORDER_BUTTON(By.cssSelector("vaadin-button#save"), ButtonFieldTypes.VA_BUTTON_TYPE,
             smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 5000)),
