@@ -7,7 +7,9 @@ import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
 import com.theairebellion.zeus.ui.components.checkbox.CheckboxService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import java.util.List;
@@ -19,19 +21,22 @@ public class CheckboxServiceFluent implements Insertion {
     private final CheckboxService checkboxService;
     private final UIServiceFluent uiServiceFluent;
     private final Storage storage;
+    private final SmartWebDriver driver;
 
 
-    public CheckboxServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, CheckboxService checkboxService) {
+    public CheckboxServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, CheckboxService checkboxService,
+                                 SmartWebDriver smartWebDriver) {
         this.checkboxService = checkboxService;
         this.uiServiceFluent = uiServiceFluent;
         this.storage = storage;
+        this.driver = smartWebDriver;
     }
 
     public UIServiceFluent select(final UIElement element) {
         Allure.step(String.format("Selecting checkbox with locator: '%s' from checkbox component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
-        checkboxService.select((CheckboxComponentType) element.componentType(), element.locator()); //todo: Check why cast is needed here
+        checkboxService.select((CheckboxComponentType) element.componentType(), element.locator()); //todo: Check casting here
         return uiServiceFluent;
     }
 
@@ -49,6 +54,29 @@ public class CheckboxServiceFluent implements Insertion {
         return uiServiceFluent;
     }
 
+    public UIServiceFluent validateIsSelected(final UIElement element) {
+        return validateIsSelected(element, false);
+    }
+
+    public UIServiceFluent validateIsSelected(final UIElement element, boolean soft) {
+        element.before().accept(driver);
+        boolean selected = checkboxService.isSelected(element.componentType(), element.locator());
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), selected);
+
+        if (soft) {
+            return uiServiceFluent.validate(
+                    softAssertions -> softAssertions.assertThat(selected)
+                            .as("Validating Checkbox Selected").isTrue()
+            );
+        } else {
+            return uiServiceFluent.validate(
+                    () -> Assertions.assertThat(selected)
+                            .as("Validating Checkbox Selected").isTrue()
+            );
+        }
+    }
+
     public UIServiceFluent areSelected(final UIElement element) {
         boolean selected = checkboxService.areSelected((CheckboxComponentType) element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
@@ -56,14 +84,37 @@ public class CheckboxServiceFluent implements Insertion {
     }
 
     public UIServiceFluent isEnabled(final UIElement element) {
-        boolean selected = checkboxService.isEnabled(element.componentType(), element.locator());
-        storage.sub(UI).put(element.enumImpl(), selected);
+        boolean enabled = checkboxService.isEnabled(element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
     }
 
+    public UIServiceFluent validateIsEnabled(final UIElement element) {
+        return validateIsEnabled(element, false);
+    }
+
+    public UIServiceFluent validateIsEnabled(final UIElement element, boolean soft) {
+        element.before().accept(driver);
+        boolean enabled = checkboxService.isEnabled(element.componentType(), element.locator());
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), enabled);
+
+        if (soft) {
+            return uiServiceFluent.validate(
+                    softAssertions -> softAssertions.assertThat(enabled)
+                            .as("Validating Checkbox Enabled").isTrue()
+            );
+        } else {
+            return uiServiceFluent.validate(
+                    () -> Assertions.assertThat(enabled)
+                            .as("Validating Checkbox Enabled").isTrue()
+            );
+        }
+    }
+
     public UIServiceFluent areEnabled(final UIElement element) {
-        boolean selected = checkboxService.areEnabled((CheckboxComponentType) element.componentType(), element.locator());
-        storage.sub(UI).put(element.enumImpl(), selected);
+        boolean enabled = checkboxService.areEnabled((CheckboxComponentType) element.componentType(), element.locator());
+        storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
     }
 

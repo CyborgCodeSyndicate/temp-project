@@ -83,7 +83,7 @@ public class UIServiceFluent extends FluentService {
     protected void postQuestSetupInitialization() {
         buttonField = new ButtonServiceFluent(this, quest.getStorage(), new ButtonServiceImpl(driver), driver);
         radioField = new RadioServiceFluent(this, quest.getStorage(), new RadioServiceImpl(driver), driver);
-        checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(driver));
+        checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(driver), driver);
         selectField = new SelectServiceFluent(this, quest.getStorage(), new SelectServiceImpl(driver), driver);
         listField = new ItemListServiceFluent(this, quest.getStorage(), new ItemListServiceImpl(driver), driver);
         loaderField = new LoaderServiceFluent(this, quest.getStorage(), new LoaderServiceImpl(driver), driver);

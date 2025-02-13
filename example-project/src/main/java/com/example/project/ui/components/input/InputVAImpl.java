@@ -16,14 +16,13 @@ import java.util.Objects;
 @ImplementationOfType(InputFieldTypes.Data.VA_INPUT)
 public class InputVAImpl extends BaseComponent implements Input {
 
-    private static final By INPUT_FIELD_CONTAINER = By.tagName("mat-form-field");
+    private static final By INPUT_FIELD_CONTAINER = By.tagName("vaadin-text-field");
     private static final By INPUT_LOCATOR = By.tagName("input");
 
-    private static final By INPUT_FIELD_ERROR_MESSAGE_LOCATOR = By.tagName("mat-error");
-    private static final By INPUT_FIELD_LABEL_LOCATOR = By.tagName("mat-label");
+    private static final By INPUT_FIELD_ERROR_MESSAGE_LOCATOR = By.cssSelector("div[part='error-message']");
+    private static final By INPUT_FIELD_LABEL_LOCATOR = By.cssSelector("div[part='label']");
     public static final String ELEMENT_VALUE_ATTRIBUTE = "value";
-    public static final String FIELD_DISABLE_CLASS_INDICATOR = "mat-form-field-disabled";
-    public static final String FIELD_READONLY_CLASS_INDICATOR = "readonly-style";
+    public static final String FIELD_DISABLE_CLASS_INDICATOR = "disabled";
 
 
     public InputVAImpl(SmartWebDriver driver) {
@@ -226,9 +225,8 @@ public class InputVAImpl extends BaseComponent implements Input {
 
 
     private boolean isInputFieldEnabled(SmartWebElement fieldElement) {
-        String classAttribute = fieldElement.getAttribute("class");
-        return !classAttribute.contains(FIELD_DISABLE_CLASS_INDICATOR) && !classAttribute.contains(
-            FIELD_READONLY_CLASS_INDICATOR);
+        String classAttribute = fieldElement.getAttribute(FIELD_DISABLE_CLASS_INDICATOR);
+        return classAttribute == null;
     }
 
 }

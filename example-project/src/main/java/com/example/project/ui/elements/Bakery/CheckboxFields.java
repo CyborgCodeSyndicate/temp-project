@@ -1,58 +1,62 @@
 package com.example.project.ui.elements.Bakery;
 
-import com.example.project.ui.functions.SharedUI;
-import com.example.project.ui.types.SelectFieldTypes;
+import com.example.project.ui.types.CheckboxFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.components.select.SelectComponentType;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
 
 import java.util.function.Consumer;
 
+public enum CheckboxFields implements UIElement {
 
-public enum SelectFields implements UIElement {
-
-    LOCATION_DDL(By.cssSelector("vaadin-combo-box#pickupLocation"), SelectFieldTypes.VA_SELECT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
-    PRODUCTS_DDL(By.cssSelector("vaadin-combo-box#products"), SelectFieldTypes.VA_SELECT_TYPE, SharedUI.WAIT_FOR_PRESENCE);
+    PAST_ORDERS_CHECKBOX(By.tagName("vaadin-checkbox"), CheckboxFieldTypes.VA_CHECKBOX_TYPE),
+    /*NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), CheckboxFieldTypes.VA_BUTTON_TYPE),
+    REVIEW_ORDER_BUTTON(By.cssSelector("vaadin-button#review"), CheckboxFieldTypes.VA_BUTTON_TYPE),
+    PLACE_ORDER_BUTTON(By.cssSelector("vaadin-button#save"), CheckboxFieldTypes.VA_BUTTON_TYPE,
+            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 5000)),*/
+    ;
 
 
     private final By locator;
-    private final SelectComponentType componentType;
+    private final CheckboxComponentType componentType;
     private final Consumer<SmartWebDriver> before;
     private final Consumer<SmartWebDriver> after;
 
 
-    SelectFields(By locator) {
+    CheckboxFields(By locator) {
         this(locator, null, smartWebDriver -> {
         }, smartWebDriver -> {
         });
     }
 
-    SelectFields(By locator, SelectComponentType componentType) {
+
+    CheckboxFields(By locator, CheckboxComponentType componentType) {
         this(locator, componentType, smartWebDriver -> {
         }, smartWebDriver -> {
         });
     }
 
 
-    SelectFields(By locator,
-                 SelectComponentType componentType,
-                Consumer<SmartWebDriver> before) {
+    CheckboxFields(By locator,
+                   CheckboxComponentType componentType,
+                   Consumer<SmartWebDriver> before) {
         this(locator, componentType, before, smartWebDriver -> {
         });
     }
 
 
-    SelectFields(By locator,
-                 SelectComponentType componentType,
-                Consumer<SmartWebDriver> before,
-                Consumer<SmartWebDriver> after) {
+    CheckboxFields(By locator,
+                   CheckboxComponentType componentType,
+                   Consumer<SmartWebDriver> before,
+                   Consumer<SmartWebDriver> after) {
         this.locator = locator;
         this.componentType = componentType;
         this.before = before;
         this.after = after;
     }
+
 
     @Override
     public By locator() {

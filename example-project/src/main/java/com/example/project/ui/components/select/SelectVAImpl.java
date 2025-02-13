@@ -10,23 +10,29 @@ import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import com.theairebellion.zeus.ui.util.strategy.StrategyGenerator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 
 @ImplementationOfType(SelectFieldTypes.VA_SELECT)
 public class SelectVAImpl extends BaseComponent implements Select {
 
     public static final By OPTIONS_CONTAINER_LOCATOR = By.cssSelector("vaadin-combo-box-overlay#overlay");
     public static final By OPTIONS_ROOT_LOCATOR = By.cssSelector("iron-list#selector vaadin-combo-box-item");
-    public static final By OPEN_DDL_BUTTON_LOCATOR = By.id("pickupLocation");
+    public static final By OPEN_DDL_BUTTON_LOCATOR = By.id("toggleButton");
     public static final By OPTION_LOCATOR = By.cssSelector("vaadin-combo-box-item");
     public static final By OPTION_TEXT_LOCATOR = By.cssSelector("div#content");
 
 
-    public static final String DISABLED_CLASS_INDICATOR = "mat-radio-disabled"; //todo
+    public static final String DISABLED_CLASS_INDICATOR = "disabled";
 
     public SelectVAImpl(SmartWebDriver driver) {
         super(driver);
@@ -41,7 +47,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
             selectIfNotChecked(option);
         }
         closeDdl(container);
-        waitForDropDownToBeClosed();
+        //waitForDropDownToBeClosed();
     }
 
     @Override
@@ -64,9 +70,11 @@ public class SelectVAImpl extends BaseComponent implements Select {
     public List<String> getAvailableOptions(SmartWebElement container) {
         openDdl(container);
         List<SmartWebElement> options = getAllOptionsElements();
+        System.out.println("All Options: " + options.size());
         List<String> availableOptions = options.stream()
                 .map(option -> option.findSmartElement(OPTION_TEXT_LOCATOR).getText().trim())
                 .collect(Collectors.toList());
+        System.out.println("All Text Options: " + availableOptions.size());
         closeDdl(container);
         return availableOptions;
     }
@@ -80,18 +88,37 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public List<String> getSelectedOptions(SmartWebElement container) {
         openDdl(container);
-        List<String> checkedOptions = getAllOptionsElements().stream()
+        List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
+        System.out.println("All Options: " + options.size());
+        List<String> checkedOptions = options.stream()
                 .filter(this::checkIfOptionIsSelected)
                 .map(SmartWebElement::getText)
                 .collect(Collectors.toList());
+        System.out.println("Checked Options: " + checkedOptions.size());
         closeDdl(container);
         return checkedOptions;
     }
 
     @Override
     public List<String> getSelectedOptions(By containerLocator) {
-        SmartWebElement container = driver.findSmartElement(containerLocator);
-        return getSelectedOptions(container);
+        //todo: fix StaleElement for shadowRoot
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.stalenessOf(driver.findSmartElement(containerLocator)));
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
+        List<SmartWebElement> containers = driver.findSmartElements(containerLocator);
+        if (containers.size() == 1) {
+            return getSelectedOptions(containers.get(0));
+        } else {
+            SmartWebElement container = containers.stream()
+                    .filter(c -> c.getAttribute("has-value") != null)
+                    .findFirst().get();
+            return getSelectedOptions(container);
+        }
     }
 
     @Override
@@ -127,30 +154,28 @@ public class SelectVAImpl extends BaseComponent implements Select {
     }
 
     protected void openDdl(SmartWebElement ddlButton) {
-        //SmartWebElement ddlButton = findDdlButton(container);
-        if (!Objects.requireNonNull(ddlButton.getAttribute("class")).contains("opened")) {
-            ddlButton.click();
+        if (!"true".equals(ddlButton.getAttribute("opened"))) {
+            SmartWebElement toggleButton = findDdlButton(ddlButton);
+            toggleButton.click();
         }
     }
 
     protected void closeDdl(SmartWebElement ddlButton) {
-        //SmartWebElement ddlButton = findDdlButton(container);
-        if (Objects.requireNonNull(ddlButton.getAttribute("class")).contains("opened")) {
-            ddlButton.click();
+        if ("true".equals(ddlButton.getAttribute("opened"))) {
+            SmartWebElement toggleButton = findDdlButton(ddlButton);
+            System.out.println("here: close");
+            toggleButton.click();
         }
     }
 
-    /*protected SmartWebElement findDdlButton(SmartWebElement ddlRoot) {
-        return smartSelenium.smartFindElement(ddlRoot, OPEN_DDL_BUTTON_LOCATOR);
-    }*/
+    protected SmartWebElement findDdlButton(SmartWebElement ddlRoot) {
+        return ddlRoot.findSmartElement(OPEN_DDL_BUTTON_LOCATOR);
+    }
 
     protected List<SmartWebElement> getAllOptionsElements() {
-        /*SmartWebElement optionsContainer = smartSelenium.smartFindElement(OPTIONS_ROOT_LOCATOR);
-        List<SmartWebElement> options = smartSelenium.smartFindElements(optionsContainer,
-                OPTION_LOCATOR);*/
         List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
         return options.stream()
-                .filter(element -> !Objects.requireNonNull(element.getAttribute("class")).contains("hidden"))
+                .filter(element -> element.getAttribute("hidden") == null) //todo: not needed
                 .collect(Collectors.toList());
     }
 
@@ -159,7 +184,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
     }
 
     protected boolean checkIfOptionIsSelected(SmartWebElement option) {
-        return Objects.requireNonNull(option.getAttribute("class")).contains("selected");
+        return option.getAttribute("selected") != null;
     }
 
     protected void waitForDropDownToBeClosed() {
@@ -167,7 +192,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
     }
 
     protected boolean isOptionEnabled(SmartWebElement option) {
-        return !Objects.requireNonNull(option.getAttribute("class")).contains(DISABLED_CLASS_INDICATOR); //todo
+        return option.getAttribute(DISABLED_CLASS_INDICATOR) == null; //todo: check
     }
 
 

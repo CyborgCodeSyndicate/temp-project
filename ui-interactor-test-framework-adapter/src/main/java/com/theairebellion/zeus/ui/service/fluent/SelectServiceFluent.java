@@ -7,6 +7,7 @@ import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
@@ -25,11 +26,11 @@ public class SelectServiceFluent implements Insertion {
 
 
     public SelectServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, SelectService selectService,
-                               SmartWebDriver webDriver) {
+                               SmartWebDriver smartWebDriver) {
         this.selectService = selectService;
         this.uiServiceFluent = uiServiceFluent;
         this.storage = storage;
-        driver = webDriver;
+        driver = smartWebDriver;
     }
 
 
@@ -48,6 +49,16 @@ public class SelectServiceFluent implements Insertion {
                 element.componentType().toString()));
         element.before().accept(driver);
         selectService.selectOption(element.componentType(), element.locator(), value);
+        element.after().accept(driver);
+        return uiServiceFluent;
+    }
+
+
+    public UIServiceFluent selectOptions(final UIElement element, final Strategy strategy) {
+        Allure.step(String.format("Selecting option with strategy: '%s' from select component of type: '%s'.", strategy.toString(),
+                element.componentType().toString()));
+        element.before().accept(driver);
+        selectService.selectOptions(element.componentType(), element.locator(), strategy);
         element.after().accept(driver);
         return uiServiceFluent;
     }
@@ -87,6 +98,31 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
+    public UIServiceFluent validateAvailableOptions(final UIElement element, final int expectedValuesCount) {
+        return validateAvailableOptions(element, false, expectedValuesCount);
+    }
+
+
+    public UIServiceFluent validateAvailableOptions(final UIElement element, boolean soft, final int expectedValuesCount) {
+        element.before().accept(driver);
+        List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
+        element.after().accept(driver);
+        storage.sub(UI).put(element.enumImpl(), availableOptions);
+
+        if (soft) {
+            return uiServiceFluent.validate(
+                    softAssertions -> softAssertions.assertThat(availableOptions.size())
+                            .as("Validating Available Options").isEqualTo(expectedValuesCount)
+            );
+        } else {
+            return uiServiceFluent.validate(
+                    () -> Assertions.assertThat(availableOptions.size())
+                            .as("Validating Available Options").isEqualTo(expectedValuesCount)
+            );
+        }
+    }
+
+
     public UIServiceFluent getSelectedOptions(final UIElement element) {
         element.before().accept(driver);
         List<String> selectedOptions = selectService.getSelectedOptions(element.componentType(), element.locator());
@@ -103,18 +139,18 @@ public class SelectServiceFluent implements Insertion {
 
     public UIServiceFluent validateSelectedOptions(final UIElement element, boolean soft, final String... expectedValues) {
         element.before().accept(driver);
-        List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
+        List<String> selectedOptions = selectService.getSelectedOptions(element.componentType(), element.locator());
         element.after().accept(driver);
-        storage.sub(UI).put(element.enumImpl(), availableOptions);
+        storage.sub(UI).put(element.enumImpl(), selectedOptions);
 
         if (soft) {
             return uiServiceFluent.validate(
-                    softAssertions -> softAssertions.assertThat(availableOptions)
+                    softAssertions -> softAssertions.assertThat(selectedOptions)
                             .as("Validating Selected Options").containsAll(Arrays.asList(expectedValues))
             );
         } else {
             return uiServiceFluent.validate(
-                    () -> Assertions.assertThat(availableOptions)
+                    () -> Assertions.assertThat(selectedOptions)
                             .as("Validating Selected Options").containsAll(Arrays.asList(expectedValues))
             );
         }
