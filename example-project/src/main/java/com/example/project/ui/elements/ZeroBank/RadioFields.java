@@ -3,10 +3,10 @@ package com.example.project.ui.elements.ZeroBank;
 import com.example.project.ui.types.RadioFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.RadioUIElement;
 import org.openqa.selenium.By;
 
-public enum RadioFields implements UIElement {
+public enum RadioFields implements RadioUIElement {
 
     DOLLARS_RADIO_FIELD(By.id("pc_inDollars_true"), RadioFieldTypes.BOOTSTRAP_RADIO_TYPE),
     ;

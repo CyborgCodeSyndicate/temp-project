@@ -4,14 +4,13 @@ import com.example.project.ui.functions.SharedUI;
 import com.example.project.ui.types.SelectFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.SelectUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
 
 import java.util.function.Consumer;
 
-
-public enum SelectFields implements UIElement {
+public enum SelectFields implements SelectUIElement {
 
     LOCATION_DDL(By.cssSelector("vaadin-combo-box#pickupLocation"), SelectFieldTypes.VA_SELECT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
     PRODUCTS_DDL(By.cssSelector("vaadin-combo-box#products"), SelectFieldTypes.VA_SELECT_TYPE, SharedUI.WAIT_FOR_PRESENCE);

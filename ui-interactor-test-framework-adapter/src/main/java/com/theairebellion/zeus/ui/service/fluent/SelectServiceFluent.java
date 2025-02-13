@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.SelectUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import io.qameta.allure.Allure;
@@ -34,7 +34,7 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent selectOptions(final UIElement element, final String... values) {
+    public UIServiceFluent selectOptions(final SelectUIElement element, final String... values) {
         Allure.step(String.format("Selecting options: '%s' from select component of type: '%s'.", Arrays.toString(values),
                 element.componentType().toString()));
         element.before().accept(driver);
@@ -44,7 +44,7 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent selectOption(final UIElement element, final String value) {
+    public UIServiceFluent selectOption(final SelectUIElement element, final String value) {
         Allure.step(String.format("Selecting option: '%s' from select component of type: '%s'.", value,
                 element.componentType().toString()));
         element.before().accept(driver);
@@ -54,7 +54,7 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent selectOptions(final UIElement element, final Strategy strategy) {
+    public UIServiceFluent selectOptions(final SelectUIElement element, final Strategy strategy) {
         Allure.step(String.format("Selecting option with strategy: '%s' from select component of type: '%s'.", strategy.toString(),
                 element.componentType().toString()));
         element.before().accept(driver);
@@ -64,7 +64,7 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent getAvailableOptions(final UIElement element) {
+    public UIServiceFluent getAvailableOptions(final SelectUIElement element) {
         element.before().accept(driver);
         List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -73,12 +73,12 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateAvailableOptions(final UIElement element, final String... expectedValues) {
+    public UIServiceFluent validateAvailableOptions(final SelectUIElement element, final String... expectedValues) {
         return validateAvailableOptions(element, false, expectedValues);
     }
 
 
-    public UIServiceFluent validateAvailableOptions(final UIElement element, boolean soft, final String... expectedValues) {
+    public UIServiceFluent validateAvailableOptions(final SelectUIElement element, boolean soft, final String... expectedValues) {
         element.before().accept(driver);
         List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -98,12 +98,12 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateAvailableOptions(final UIElement element, final int expectedValuesCount) {
+    public UIServiceFluent validateAvailableOptions(final SelectUIElement element, final int expectedValuesCount) {
         return validateAvailableOptions(element, false, expectedValuesCount);
     }
 
 
-    public UIServiceFluent validateAvailableOptions(final UIElement element, boolean soft, final int expectedValuesCount) {
+    public UIServiceFluent validateAvailableOptions(final SelectUIElement element, boolean soft, final int expectedValuesCount) {
         element.before().accept(driver);
         List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -123,7 +123,7 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent getSelectedOptions(final UIElement element) {
+    public UIServiceFluent getSelectedOptions(final SelectUIElement element) {
         element.before().accept(driver);
         List<String> selectedOptions = selectService.getSelectedOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -132,12 +132,12 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateSelectedOptions(final UIElement element, final String... expectedValues) {
+    public UIServiceFluent validateSelectedOptions(final SelectUIElement element, final String... expectedValues) {
         return validateSelectedOptions(element, false, expectedValues);
     }
 
 
-    public UIServiceFluent validateSelectedOptions(final UIElement element, boolean soft, final String... expectedValues) {
+    public UIServiceFluent validateSelectedOptions(final SelectUIElement element, boolean soft, final String... expectedValues) {
         element.before().accept(driver);
         List<String> selectedOptions = selectService.getSelectedOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -157,7 +157,7 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isOptionVisible(final UIElement element, final String value) {
+    public UIServiceFluent isOptionVisible(final SelectUIElement element, final String value) {
         element.before().accept(driver);
         boolean visibleOption = selectService.isOptionVisible(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -166,27 +166,27 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsOptionVisible(final UIElement element, final String value) {
+    public UIServiceFluent validateIsOptionVisible(final SelectUIElement element, final String value) {
         return validateIsVisible(element, true, value, false);
     }
 
 
-    public UIServiceFluent validateIsOptionVisible(final UIElement element, final String value, boolean soft) {
+    public UIServiceFluent validateIsOptionVisible(final SelectUIElement element, final String value, boolean soft) {
         return validateIsVisible(element, true, value, soft);
     }
 
 
-    public UIServiceFluent validateIsOptionHidden(final UIElement element, final String value) {
+    public UIServiceFluent validateIsOptionHidden(final SelectUIElement element, final String value) {
         return validateIsVisible(element, false, value, false);
     }
 
 
-    public UIServiceFluent validateIsOptionHidden(final UIElement element, final String value, boolean soft) {
+    public UIServiceFluent validateIsOptionHidden(final SelectUIElement element, final String value, boolean soft) {
         return validateIsVisible(element, false, value, soft);
     }
 
 
-    private UIServiceFluent validateIsVisible(final UIElement element, boolean shouldBeVisible, String value,
+    private UIServiceFluent validateIsVisible(final SelectUIElement element, boolean shouldBeVisible, String value,
                                               boolean soft) {
         element.before().accept(driver);
         boolean visible = selectService.isOptionVisible(element.componentType(), element.locator(), value);
@@ -221,7 +221,7 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isOptionEnabled(final UIElement element, final String value) {
+    public UIServiceFluent isOptionEnabled(final SelectUIElement element, final String value) {
         element.before().accept(driver);
         boolean enabledOption = selectService.isOptionEnabled(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -230,27 +230,27 @@ public class SelectServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsOptionEnabled(final UIElement element, final String value) {
+    public UIServiceFluent validateIsOptionEnabled(final SelectUIElement element, final String value) {
         return validateIsEnabled(element, true, value, false);
     }
 
 
-    public UIServiceFluent validateIsOptionEnabled(final UIElement element, final String value, boolean soft) {
+    public UIServiceFluent validateIsOptionEnabled(final SelectUIElement element, final String value, boolean soft) {
         return validateIsEnabled(element, true, value, soft);
     }
 
 
-    public UIServiceFluent validateIsOptionDisabled(final UIElement element, final String value) {
+    public UIServiceFluent validateIsOptionDisabled(final SelectUIElement element, final String value) {
         return validateIsEnabled(element, false, value, false);
     }
 
 
-    public UIServiceFluent validateIsOptionDisabled(final UIElement element, final String value, boolean soft) {
+    public UIServiceFluent validateIsOptionDisabled(final SelectUIElement element, final String value, boolean soft) {
         return validateIsEnabled(element, false, value, soft);
     }
 
 
-    private UIServiceFluent validateIsEnabled(final UIElement element, boolean shouldBeEnabled, String value,
+    private UIServiceFluent validateIsEnabled(final SelectUIElement element, boolean shouldBeEnabled, String value,
                                               boolean soft) {
         element.before().accept(driver);
         boolean enabled = selectService.isOptionVisible(element.componentType(), element.locator(), value);

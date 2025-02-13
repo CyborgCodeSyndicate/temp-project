@@ -4,13 +4,13 @@ import com.example.project.ui.functions.SharedUI;
 import com.example.project.ui.types.ButtonFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.ButtonUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
 
 import java.util.function.Consumer;
 
-public enum ButtonFields implements UIElement {
+public enum ButtonFields implements ButtonUIElement {
 
     SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE),
     NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE),

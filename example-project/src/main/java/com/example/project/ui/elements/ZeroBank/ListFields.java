@@ -3,10 +3,10 @@ package com.example.project.ui.elements.ZeroBank;
 import com.example.project.ui.types.ListFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.ListUIElement;
 import org.openqa.selenium.By;
 
-public enum ListFields implements UIElement {
+public enum ListFields implements ListUIElement {
 
     NAVIGATION_TABS(By.className("nav-tabs"), ListFieldTypes.BOOTSTRAP_LIST_TYPE),
     PAY_BILLS_TABS(By.className("ui-tabs-nav"), ListFieldTypes.BOOTSTRAP_LIST_TYPE),

@@ -4,7 +4,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
 import com.theairebellion.zeus.ui.components.accordion.AccordionService;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.AccordionUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 
@@ -29,7 +29,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent expand(final UIElement element) {
+    public UIServiceFluent expand(final AccordionUIElement element) {
         Allure.step(String.format("Expanding panel with locator: '%s' from accordion component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
@@ -40,7 +40,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent collapse(final UIElement element) {
+    public UIServiceFluent collapse(final AccordionUIElement element) {
         Allure.step(String.format("Collapsing panel with locator: '%s' from accordion component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
@@ -51,7 +51,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent areEnabled(final UIElement element) {
+    public UIServiceFluent areEnabled(final AccordionUIElement element) {
         element.before().accept(driver);
         boolean enabled = accordionService.areEnabled((AccordionComponentType) element.componentType(), element.locator());
         element.after().accept(driver);
@@ -60,7 +60,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent getExpanded(final UIElement element) {
+    public UIServiceFluent getExpanded(final AccordionUIElement element) {
         element.before().accept(driver);
         List<String> expanded = accordionService.getExpanded(element.componentType()); //todo
         element.after().accept(driver);
@@ -69,7 +69,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent getCollapsed(final UIElement element) {
+    public UIServiceFluent getCollapsed(final AccordionUIElement element) {
         element.before().accept(driver);
         List<String> collapsed = accordionService.getCollapsed(element.componentType()); //todo
         element.after().accept(driver);
@@ -78,7 +78,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent getAll(final UIElement element) {
+    public UIServiceFluent getAll(final AccordionUIElement element) {
         element.before().accept(driver);
         List<String> all = accordionService.getAll(element.componentType()); //todo
         element.after().accept(driver);
@@ -87,7 +87,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent getTitle(final UIElement element) {
+    public UIServiceFluent getTitle(final AccordionUIElement element) {
         element.before().accept(driver);
         String title = accordionService.getTitle(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -96,7 +96,7 @@ public class AccordionServiceFluent {
     }
 
 
-    public UIServiceFluent getText(final UIElement element) {
+    public UIServiceFluent getText(final AccordionUIElement element) {
         element.before().accept(driver);
         String text = accordionService.getText(element.componentType(), element.locator());
         element.after().accept(driver);

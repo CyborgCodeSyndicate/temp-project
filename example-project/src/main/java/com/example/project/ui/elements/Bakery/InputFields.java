@@ -20,9 +20,6 @@ public enum InputFields implements InputUIElement {
     NUMBER_FIELD(By.id("customerNumber"), InputFieldTypes.VA_INPUT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
     ;
 
-    public static final String USERNAME = "USERNAME_FIELD";
-    public static final String PASSWORD = "PASSWORD_FIELD";
-
 
     private final By locator;
     private final InputComponentType componentType;

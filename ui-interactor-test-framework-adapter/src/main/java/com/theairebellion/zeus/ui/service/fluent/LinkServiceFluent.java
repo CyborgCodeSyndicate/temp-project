@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.link.LinkService;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.LinkUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
@@ -27,7 +27,7 @@ public class LinkServiceFluent {
     }
 
 
-    public UIServiceFluent click(final UIElement element) {
+    public UIServiceFluent click(final LinkUIElement element) {
         Allure.step(String.format("Clicking link with locator: '%s' from link component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
@@ -38,7 +38,7 @@ public class LinkServiceFluent {
     }
 
 
-    public UIServiceFluent doubleClick(final UIElement element) {
+    public UIServiceFluent doubleClick(final LinkUIElement element) {
         element.before().accept(driver);
         linkService.doubleClick(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -46,7 +46,7 @@ public class LinkServiceFluent {
     }
 
 
-    public UIServiceFluent isEnabled(final UIElement element) {
+    public UIServiceFluent isEnabled(final LinkUIElement element) {
         element.before().accept(driver);
         boolean enabled = linkService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -55,27 +55,27 @@ public class LinkServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element) {
+    public UIServiceFluent validateIsEnabled(final LinkUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsEnabled(final LinkUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element) {
+    public UIServiceFluent validateIsDisabled(final LinkUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsDisabled(final LinkUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsEnabled(final UIElement element, boolean shouldBeEnabled, boolean soft) {
+    private UIServiceFluent validateIsEnabled(final LinkUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
         boolean enabled = linkService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -109,7 +109,7 @@ public class LinkServiceFluent {
     }
 
 
-    public UIServiceFluent isVisible(final UIElement element) {
+    public UIServiceFluent isVisible(final LinkUIElement element) {
         element.before().accept(driver);
         boolean visible = linkService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -118,27 +118,27 @@ public class LinkServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element) {
+    public UIServiceFluent validateIsVisible(final LinkUIElement element) {
         return validateIsVisible(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsVisible(final LinkUIElement element, boolean soft) {
         return validateIsVisible(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element) {
+    public UIServiceFluent validateIsHidden(final LinkUIElement element) {
         return validateIsVisible(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsHidden(final LinkUIElement element, boolean soft) {
         return validateIsVisible(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsVisible(final UIElement element, boolean shouldBeVisible, boolean soft) {
+    private UIServiceFluent validateIsVisible(final LinkUIElement element, boolean shouldBeVisible, boolean soft) {
         element.before().accept(driver);
         boolean visible = linkService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);

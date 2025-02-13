@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.tab.TabService;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.TabUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
@@ -27,7 +27,7 @@ public class TabServiceFluent {
     }
 
 
-    public UIServiceFluent click(final UIElement element) {
+    public UIServiceFluent click(final TabUIElement element) {
         Allure.step(String.format("Clicking tab with locator: '%s' from tab component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
@@ -38,7 +38,7 @@ public class TabServiceFluent {
     }
 
 
-    public UIServiceFluent isEnabled(final UIElement element) {
+    public UIServiceFluent isEnabled(final TabUIElement element) {
         element.before().accept(driver);
         boolean enabled = tabService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -47,27 +47,27 @@ public class TabServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element) {
+    public UIServiceFluent validateIsEnabled(final TabUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsEnabled(final TabUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element) {
+    public UIServiceFluent validateIsDisabled(final TabUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsDisabled(final TabUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsEnabled(final UIElement element, boolean shouldBeEnabled, boolean soft) {
+    private UIServiceFluent validateIsEnabled(final TabUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
         boolean enabled = tabService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -101,7 +101,7 @@ public class TabServiceFluent {
     }
 
 
-    public UIServiceFluent isVisible(final UIElement element) {
+    public UIServiceFluent isVisible(final TabUIElement element) {
         element.before().accept(driver);
         boolean visible = tabService.isVisible(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), visible);
@@ -110,27 +110,27 @@ public class TabServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element) {
+    public UIServiceFluent validateIsVisible(final TabUIElement element) {
         return validateIsVisible(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsVisible(final TabUIElement element, boolean soft) {
         return validateIsVisible(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element) {
+    public UIServiceFluent validateIsHidden(final TabUIElement element) {
         return validateIsVisible(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsHidden(final TabUIElement element, boolean soft) {
         return validateIsVisible(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsVisible(final UIElement element, boolean shouldBeVisible, boolean soft) {
+    private UIServiceFluent validateIsVisible(final TabUIElement element, boolean shouldBeVisible, boolean soft) {
         element.before().accept(driver);
         boolean visible = tabService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -164,7 +164,7 @@ public class TabServiceFluent {
     }
 
 
-    public UIServiceFluent isSelected(final UIElement element) {
+    public UIServiceFluent isSelected(final TabUIElement element) {
         element.before().accept(driver);
         boolean selected = tabService.isSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
@@ -173,27 +173,27 @@ public class TabServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsSelected(final UIElement element) {
+    public UIServiceFluent validateIsSelected(final TabUIElement element) {
         return validateIsSelected(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsSelected(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsSelected(final TabUIElement element, boolean soft) {
         return validateIsSelected(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsNotSelected(final UIElement element) {
+    public UIServiceFluent validateIsNotSelected(final TabUIElement element) {
         return validateIsSelected(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsNotSelected(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsNotSelected(final TabUIElement element, boolean soft) {
         return validateIsSelected(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsSelected(final UIElement element, boolean shouldBeSelected, boolean soft) {
+    private UIServiceFluent validateIsSelected(final TabUIElement element, boolean shouldBeSelected, boolean soft) {
         element.before().accept(driver);
         boolean selected = tabService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);

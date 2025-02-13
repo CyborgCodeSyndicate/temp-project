@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.loader.LoaderService;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.LoaderUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
@@ -27,7 +27,7 @@ public class LoaderServiceFluent {
     }
 
 
-    public UIServiceFluent isVisible(final UIElement element) {
+    public UIServiceFluent isVisible(final LoaderUIElement element) {
         Allure.step(String.format("Checking if loader is visible for loader component of type: '%s'.",
                 element.componentType().toString()));
         element.before().accept(driver);
@@ -38,27 +38,27 @@ public class LoaderServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element) {
+    public UIServiceFluent validateIsVisible(final LoaderUIElement element) {
         return validateIsVisible(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsVisible(final LoaderUIElement element, boolean soft) {
         return validateIsVisible(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element) {
+    public UIServiceFluent validateIsHidden(final LoaderUIElement element) {
         return validateIsVisible(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsHidden(final LoaderUIElement element, boolean soft) {
         return validateIsVisible(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsVisible(final UIElement element, boolean shouldBeVisible, boolean soft) {
+    private UIServiceFluent validateIsVisible(final LoaderUIElement element, boolean shouldBeVisible, boolean soft) {
         element.before().accept(driver);
         boolean visible = loaderService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -92,7 +92,7 @@ public class LoaderServiceFluent {
     }
 
 
-    public UIServiceFluent waitToBeShown(final UIElement element, int secondsShown) {
+    public UIServiceFluent waitToBeShown(final LoaderUIElement element, int secondsShown) {
         element.before().accept(driver);
         loaderService.waitToBeShown(element.componentType(), element.locator(), secondsShown);
         element.after().accept(driver);
@@ -100,7 +100,7 @@ public class LoaderServiceFluent {
     }
 
 
-    public UIServiceFluent waitToBeRemoved(final UIElement element, int secondsRemoved) {
+    public UIServiceFluent waitToBeRemoved(final LoaderUIElement element, int secondsRemoved) {
         element.before().accept(driver);
         loaderService.waitToBeRemoved(element.componentType(), element.locator(), secondsRemoved);
         element.after().accept(driver);
@@ -108,7 +108,7 @@ public class LoaderServiceFluent {
     }
 
 
-    public UIServiceFluent waitToBeShownAndRemoved(final UIElement element, int secondsShown, int secondsRemoved) {
+    public UIServiceFluent waitToBeShownAndRemoved(final LoaderUIElement element, int secondsShown, int secondsRemoved) {
         element.before().accept(driver);
         loaderService.waitToBeShownAndRemoved(element.componentType(), element.locator(), secondsShown, secondsRemoved);
         element.after().accept(driver);

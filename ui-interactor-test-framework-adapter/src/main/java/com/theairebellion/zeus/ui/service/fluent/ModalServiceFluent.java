@@ -3,10 +3,9 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.modal.ModalService;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.ModalUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
-import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
@@ -27,7 +26,7 @@ public class ModalServiceFluent {
     }
 
 
-    public UIServiceFluent click(final UIElement element) {
+    public UIServiceFluent click(final ModalUIElement element) {
         Allure.step(String.format("Clicking button with locator: '%s' from button component of type: '%s'.",
                 element.locator().toString(),
                 element.componentType().toString()));
@@ -38,7 +37,7 @@ public class ModalServiceFluent {
     }
 
 
-    public UIServiceFluent getTitle(final UIElement element) {
+    public UIServiceFluent getTitle(final ModalUIElement element) {
         element.before().accept(driver);
         String modalTitle = modalService.getTitle(element.componentType());
         element.after().accept(driver);
@@ -47,7 +46,7 @@ public class ModalServiceFluent {
     }
 
 
-    public UIServiceFluent getContentTitle(final UIElement element) {
+    public UIServiceFluent getContentTitle(final ModalUIElement element) {
         element.before().accept(driver);
         String modalContentTitle = modalService.getContentTitle(element.componentType());
         element.after().accept(driver);
@@ -56,7 +55,7 @@ public class ModalServiceFluent {
     }
 
 
-    public UIServiceFluent getBodyText(final UIElement element) {
+    public UIServiceFluent getBodyText(final ModalUIElement element) {
         element.before().accept(driver);
         String modalBodyText = modalService.getBodyText(element.componentType());
         element.after().accept(driver);
@@ -65,7 +64,7 @@ public class ModalServiceFluent {
     }
 
 
-    public UIServiceFluent close(final UIElement element) {
+    public UIServiceFluent close(final ModalUIElement element) {
         element.before().accept(driver);
         modalService.close(element.componentType());
         element.after().accept(driver);

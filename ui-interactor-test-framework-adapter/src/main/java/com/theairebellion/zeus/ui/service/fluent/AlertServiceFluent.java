@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.alert.AlertService;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.AlertUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.assertj.core.api.Assertions;
 
@@ -26,7 +26,7 @@ public class AlertServiceFluent {
     }
 
 
-    public UIServiceFluent getValue(final UIElement element) {
+    public UIServiceFluent getValue(final AlertUIElement element) {
         element.before().accept(driver);
         String value = alertService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -35,12 +35,12 @@ public class AlertServiceFluent {
     }
 
 
-    public UIServiceFluent validateValue(final UIElement element, String expectedValue) {
+    public UIServiceFluent validateValue(final AlertUIElement element, String expectedValue) {
         return validateValue(element, expectedValue, false);
     }
 
 
-    public UIServiceFluent validateValue(final UIElement element, String expectedValue, boolean soft) {
+    public UIServiceFluent validateValue(final AlertUIElement element, String expectedValue, boolean soft) {
         element.before().accept(driver);
         String value = alertService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -57,7 +57,7 @@ public class AlertServiceFluent {
     }
 
 
-    public UIServiceFluent isVisible(final UIElement element) {
+    public UIServiceFluent isVisible(final AlertUIElement element) {
         element.before().accept(driver);
         boolean enabled = alertService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -66,27 +66,27 @@ public class AlertServiceFluent {
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element) {
+    public UIServiceFluent validateIsVisible(final AlertUIElement element) {
         return validateIsVisible(element, true, false);
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsVisible(final AlertUIElement element, boolean soft) {
         return validateIsVisible(element, true, soft);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element) {
+    public UIServiceFluent validateIsHidden(final AlertUIElement element) {
         return validateIsVisible(element, false, false);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, boolean soft) {
+    public UIServiceFluent validateIsHidden(final AlertUIElement element, boolean soft) {
         return validateIsVisible(element, false, soft);
     }
 
 
-    private UIServiceFluent validateIsVisible(final UIElement element, boolean shouldBeVisible, boolean soft) {
+    private UIServiceFluent validateIsVisible(final AlertUIElement element, boolean shouldBeVisible, boolean soft) {
         element.before().accept(driver);
         boolean visible = alertService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);

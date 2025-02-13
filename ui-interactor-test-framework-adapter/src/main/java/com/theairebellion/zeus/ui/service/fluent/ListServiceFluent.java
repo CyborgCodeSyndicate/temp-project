@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemListService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
-import com.theairebellion.zeus.ui.selenium.UIElement;
+import com.theairebellion.zeus.ui.selenium.ListUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
@@ -16,7 +16,7 @@ import java.util.List;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
-public class ItemListServiceFluent implements Insertion {
+public class ListServiceFluent implements Insertion {
 
     private final ItemListService itemListService;
     private final UIServiceFluent uiServiceFluent;
@@ -24,8 +24,8 @@ public class ItemListServiceFluent implements Insertion {
     private final SmartWebDriver driver;
 
 
-    public ItemListServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, ItemListService itemListService,
-                                 SmartWebDriver webDriver) {
+    public ListServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, ItemListService itemListService,
+                             SmartWebDriver webDriver) {
         this.itemListService = itemListService;
         this.uiServiceFluent = uiServiceFluent;
         this.storage = storage;
@@ -33,7 +33,7 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent select(final UIElement element, final String... values) {
+    public UIServiceFluent select(final ListUIElement element, final String... values) {
         Allure.step(String.format("Selecting items: '%s' from list component of type: '%s'.", Arrays.toString(values),
                 element.componentType().toString()));
         element.before().accept(driver);
@@ -43,7 +43,7 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent deSelect(final UIElement element, final String... values) {
+    public UIServiceFluent deSelect(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         itemListService.deSelect(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -51,7 +51,7 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent areSelected(final UIElement element, final String... values) {
+    public UIServiceFluent areSelected(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         boolean selected = itemListService.areSelected(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -60,27 +60,27 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateAreSelected(final UIElement element, final String... values) {
+    public UIServiceFluent validateAreSelected(final ListUIElement element, final String... values) {
         return validateAreSelected(element, true, false, values);
     }
 
 
-    public UIServiceFluent validateAreSelected(final UIElement element, boolean soft, final String... values) {
+    public UIServiceFluent validateAreSelected(final ListUIElement element, boolean soft, final String... values) {
         return validateAreSelected(element, true, soft, values);
     }
 
 
-    public UIServiceFluent validateAreNotSelected(final UIElement element, final String... values) {
+    public UIServiceFluent validateAreNotSelected(final ListUIElement element, final String... values) {
         return validateAreSelected(element, false, false, values);
     }
 
 
-    public UIServiceFluent validateAreNotSelected(final UIElement element, boolean soft, final String... values) {
+    public UIServiceFluent validateAreNotSelected(final ListUIElement element, boolean soft, final String... values) {
         return validateAreSelected(element, false, soft, values);
     }
 
 
-    private UIServiceFluent validateAreSelected(final UIElement element, boolean shouldBeSelected, boolean soft,
+    private UIServiceFluent validateAreSelected(final ListUIElement element, boolean shouldBeSelected, boolean soft,
                                                 final String... values) {
         element.before().accept(driver);
         boolean selected = itemListService.areSelected(element.componentType(), element.locator(), values);
@@ -115,7 +115,7 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isSelected(final UIElement element, final String value) {
+    public UIServiceFluent isSelected(final ListUIElement element, final String value) {
         element.before().accept(driver);
         boolean selected = itemListService.isSelected(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -124,27 +124,27 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsSelected(final UIElement element, final String value) {
+    public UIServiceFluent validateIsSelected(final ListUIElement element, final String value) {
         return validateAreSelected(element, true, false, value);
     }
 
 
-    public UIServiceFluent validateIsSelected(final UIElement element, boolean soft, final String value) {
+    public UIServiceFluent validateIsSelected(final ListUIElement element, boolean soft, final String value) {
         return validateAreSelected(element, true, soft, value);
     }
 
 
-    public UIServiceFluent validateIsNotSelected(final UIElement element, final String value) {
+    public UIServiceFluent validateIsNotSelected(final ListUIElement element, final String value) {
         return validateAreSelected(element, false, false, value);
     }
 
 
-    public UIServiceFluent validateIsNotSelected(final UIElement element, boolean soft, final String value) {
+    public UIServiceFluent validateIsNotSelected(final ListUIElement element, boolean soft, final String value) {
         return validateAreSelected(element, false, soft, value);
     }
 
 
-    public UIServiceFluent areEnabled(final UIElement element, final String... values) {
+    public UIServiceFluent areEnabled(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         boolean enabled = itemListService.areEnabled(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -153,27 +153,27 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateAreEnabled(final UIElement element, final String... values) {
+    public UIServiceFluent validateAreEnabled(final ListUIElement element, final String... values) {
         return validateAreEnabled(element, true, false, values);
     }
 
 
-    public UIServiceFluent validateAreEnabled(final UIElement element, boolean soft, final String... values) {
+    public UIServiceFluent validateAreEnabled(final ListUIElement element, boolean soft, final String... values) {
         return validateAreEnabled(element, true, soft, values);
     }
 
 
-    public UIServiceFluent validateAreDisabled(final UIElement element, final String... values) {
+    public UIServiceFluent validateAreDisabled(final ListUIElement element, final String... values) {
         return validateAreEnabled(element, false, false, values);
     }
 
 
-    public UIServiceFluent validateAreDisabled(final UIElement element, boolean soft, final String... values) {
+    public UIServiceFluent validateAreDisabled(final ListUIElement element, boolean soft, final String... values) {
         return validateAreEnabled(element, false, soft, values);
     }
 
 
-    private UIServiceFluent validateAreEnabled(final UIElement element, boolean shouldBeEnabled, boolean soft,
+    private UIServiceFluent validateAreEnabled(final ListUIElement element, boolean shouldBeEnabled, boolean soft,
                                                final String... values) {
         element.before().accept(driver);
         boolean enabled = itemListService.areEnabled(element.componentType(), element.locator(), values);
@@ -208,7 +208,7 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isEnabled(final UIElement element, final String value) {
+    public UIServiceFluent isEnabled(final ListUIElement element, final String value) {
         element.before().accept(driver);
         boolean enabled = itemListService.isEnabled(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -217,27 +217,27 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element, final String value) {
+    public UIServiceFluent validateIsEnabled(final ListUIElement element, final String value) {
         return validateAreEnabled(element, true, false, value);
     }
 
 
-    public UIServiceFluent validateIsEnabled(final UIElement element, boolean soft, final String value) {
+    public UIServiceFluent validateIsEnabled(final ListUIElement element, boolean soft, final String value) {
         return validateAreEnabled(element, true, soft, value);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element, final String value) {
+    public UIServiceFluent validateIsDisabled(final ListUIElement element, final String value) {
         return validateAreEnabled(element, false, false, value);
     }
 
 
-    public UIServiceFluent validateIsDisabled(final UIElement element, boolean soft, final String value) {
+    public UIServiceFluent validateIsDisabled(final ListUIElement element, boolean soft, final String value) {
         return validateAreEnabled(element, false, soft, value);
     }
 
 
-    public UIServiceFluent areVisible(final UIElement element, final String... values) {
+    public UIServiceFluent areVisible(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         boolean visible = itemListService.areVisible(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -246,27 +246,27 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateAreVisible(final UIElement element, final String... values) {
+    public UIServiceFluent validateAreVisible(final ListUIElement element, final String... values) {
         return validateAreVisible(element, true, false, values);
     }
 
 
-    public UIServiceFluent validateAreVisible(final UIElement element, boolean soft, final String... values) {
+    public UIServiceFluent validateAreVisible(final ListUIElement element, boolean soft, final String... values) {
         return validateAreVisible(element, true, soft, values);
     }
 
 
-    public UIServiceFluent validateAreHidden(final UIElement element, final String... values) {
+    public UIServiceFluent validateAreHidden(final ListUIElement element, final String... values) {
         return validateAreVisible(element, false, false, values);
     }
 
 
-    public UIServiceFluent validateAreHidden(final UIElement element, boolean soft, final String... values) {
+    public UIServiceFluent validateAreHidden(final ListUIElement element, boolean soft, final String... values) {
         return validateAreVisible(element, false, soft, values);
     }
 
 
-    private UIServiceFluent validateAreVisible(final UIElement element, boolean shouldBeVisible, boolean soft,
+    private UIServiceFluent validateAreVisible(final ListUIElement element, boolean shouldBeVisible, boolean soft,
                                               final String... values) {
         element.before().accept(driver);
         boolean visible = itemListService.areVisible(element.componentType(), element.locator(), values);
@@ -301,7 +301,7 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent isVisible(final UIElement element, final String value) {
+    public UIServiceFluent isVisible(final ListUIElement element, final String value) {
         element.before().accept(driver);
         boolean visible = itemListService.isVisible(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -310,27 +310,27 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, final String value) {
+    public UIServiceFluent validateIsVisible(final ListUIElement element, final String value) {
         return validateAreVisible(element, true, false, value);
     }
 
 
-    public UIServiceFluent validateIsVisible(final UIElement element, boolean soft, final String value) {
+    public UIServiceFluent validateIsVisible(final ListUIElement element, boolean soft, final String value) {
         return validateAreVisible(element, true, soft, value);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, final String value) {
+    public UIServiceFluent validateIsHidden(final ListUIElement element, final String value) {
         return validateAreVisible(element, false, false, value);
     }
 
 
-    public UIServiceFluent validateIsHidden(final UIElement element, boolean soft, final String value) {
+    public UIServiceFluent validateIsHidden(final ListUIElement element, boolean soft, final String value) {
         return validateAreVisible(element, false, soft, value);
     }
 
 
-    public UIServiceFluent getSelected(final UIElement element) {
+    public UIServiceFluent getSelected(final ListUIElement element) {
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -339,27 +339,27 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateSelectedItems(final UIElement element, final String... expectedValues) {
+    public UIServiceFluent validateSelectedItems(final ListUIElement element, final String... expectedValues) {
         return validateSelectedItems(element, true, false, expectedValues);
     }
 
 
-    public UIServiceFluent validateSelectedItems(final UIElement element, boolean soft, final String... expectedValues) {
+    public UIServiceFluent validateSelectedItems(final ListUIElement element, boolean soft, final String... expectedValues) {
         return validateSelectedItems(element, true, soft, expectedValues);
     }
 
 
-    public UIServiceFluent validateNotSelectedItems(final UIElement element, final String... expectedValues) {
+    public UIServiceFluent validateNotSelectedItems(final ListUIElement element, final String... expectedValues) {
         return validateSelectedItems(element, false, false, expectedValues);
     }
 
 
-    public UIServiceFluent validateNotSelectedItems(final UIElement element, boolean soft, final String... expectedValues) {
+    public UIServiceFluent validateNotSelectedItems(final ListUIElement element, boolean soft, final String... expectedValues) {
         return validateSelectedItems(element, false, soft, expectedValues);
     }
 
 
-    private UIServiceFluent validateSelectedItems(final UIElement element, boolean shouldBeSelected, boolean soft,
+    private UIServiceFluent validateSelectedItems(final ListUIElement element, boolean shouldBeSelected, boolean soft,
                                                final String... expectedValues) {
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
@@ -394,7 +394,7 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent getAll(final UIElement element) {
+    public UIServiceFluent getAll(final ListUIElement element) {
         element.before().accept(driver);
         List<String> allItems = itemListService.getAll(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -403,12 +403,12 @@ public class ItemListServiceFluent implements Insertion {
     }
 
 
-    public UIServiceFluent validateAllItems(final UIElement element, final String... expectedValues) {
+    public UIServiceFluent validateAllItems(final ListUIElement element, final String... expectedValues) {
         return validateAllItems(element, false, expectedValues);
     }
 
 
-    public UIServiceFluent validateAllItems(final UIElement element, boolean soft, final String... expectedValues) {
+    public UIServiceFluent validateAllItems(final ListUIElement element, boolean soft, final String... expectedValues) {
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
