@@ -1,8 +1,7 @@
 package com.example.project.data.cleaner;
 
 import com.theairebellion.zeus.framework.parameters.DataRipper;
-import com.theairebellion.zeus.framework.quest.Quest;
-import manifold.ext.rt.api.Jailbreak;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.function.Consumer;
 
@@ -17,16 +16,16 @@ public enum TestDataCleaner implements DataRipper {
     }
 
 
-    private final Consumer<@Jailbreak Quest> cleanUpFunction;
+    private final Consumer<SuperQuest> cleanUpFunction;
 
 
-    TestDataCleaner(final Consumer<@Jailbreak Quest> cleanUpFunction) {
+    TestDataCleaner(final Consumer<SuperQuest> cleanUpFunction) {
         this.cleanUpFunction = cleanUpFunction;
     }
 
 
     @Override
-    public Consumer<@Jailbreak Quest> eliminate() {
+    public Consumer<SuperQuest> eliminate() {
         return cleanUpFunction;
     }
 

@@ -3,8 +3,7 @@ package com.example.project.preconditions;
 import com.example.project.model.Student;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
-import com.theairebellion.zeus.framework.quest.Quest;
-import manifold.ext.rt.api.Jailbreak;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.function.BiConsumer;
 
@@ -14,10 +13,10 @@ import static com.example.project.preconditions.QuestPreconditionFunctions.valid
 public enum QuestPreconditions implements PreQuestJourney {
 
     STUDENT_PRECONDITION(
-        (quest, objects) -> validStudentsSetup(quest, (Student) objects[0])),
+            (quest, objects) -> validStudentsSetup(quest, (Student) objects[0])),
     STUDENT_PRECONDITION_LATE(
-        (quest, objects) -> validStudentsSetup(quest,
-            (Late<Student>) objects[0])),
+            (quest, objects) -> validStudentsSetup(quest,
+                    (Late<Student>) objects[0])),
     LOGIN((quest, objects) -> login(quest, (String) objects[0], (String) objects[1]));
 
 
@@ -34,16 +33,16 @@ public enum QuestPreconditions implements PreQuestJourney {
     }
 
 
-    private final BiConsumer<@Jailbreak Quest, Object[]> function;
+    private final BiConsumer<SuperQuest, Object[]> function;
 
 
-    QuestPreconditions(final BiConsumer<@Jailbreak Quest, Object[]> function) {
+    QuestPreconditions(final BiConsumer<SuperQuest, Object[]> function) {
         this.function = function;
     }
 
 
     @Override
-    public BiConsumer<@Jailbreak Quest, Object[]> journey() {
+    public BiConsumer<SuperQuest, Object[]> journey() {
         return function;
     }
 

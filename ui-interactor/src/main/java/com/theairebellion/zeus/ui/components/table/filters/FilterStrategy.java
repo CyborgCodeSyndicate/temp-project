@@ -7,6 +7,6 @@ public enum FilterStrategy {
     SELECT,
     SELECT_ALL,
     UNSELECT,
-    UNSELECT_ALL;
+    UNSELECT_ALL
 
 }

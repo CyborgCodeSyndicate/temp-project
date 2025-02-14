@@ -3,10 +3,9 @@ package com.theairebellion.zeus.framework.base;
 import com.theairebellion.zeus.framework.annotation.Odyssey;
 import com.theairebellion.zeus.framework.config.TestConfig;
 import com.theairebellion.zeus.framework.log.LogTest;
-import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
-import manifold.ext.rt.api.Jailbreak;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,8 +21,8 @@ import java.util.List;
 
 @Odyssey
 @SpringBootTest(
-    classes = {TestConfig.class},
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
+        classes = {TestConfig.class},
+        webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 public class BaseTest {
 
@@ -37,30 +36,30 @@ public class BaseTest {
 
 
     protected <T> T retrieve(Enum<?> key, Class<T> clazz) {
-        @Jailbreak Quest quest = QuestHolder.get();
+        SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
         return quest.getStorage().get(key, clazz);
     }
 
 
     protected <T> T retrieve(Enum<?> subKey, Enum<?> key, Class<T> clazz) {
-        @Jailbreak Quest quest = QuestHolder.get();
+        SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
         return quest.getStorage().sub(subKey).get(key, clazz);
     }
 
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
-        @Jailbreak Quest quest = QuestHolder.get();
+        SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-            clazz.getName());
+                clazz.getName());
         return quest.getStorage().get(extractor, clazz);
     }
 
 
     protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
-        @Jailbreak Quest quest = QuestHolder.get();
+        SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-            clazz.getName());
+                clazz.getName());
         return quest.getStorage().get(extractor, clazz, index);
     }
 
@@ -86,13 +85,13 @@ public class BaseTest {
     public static final class DefaultStorage {
 
         public static <T> T retrieve(Enum<?> key, Class<T> clazz) {
-            @Jailbreak Quest quest = QuestHolder.get();
+            SuperQuest quest = QuestHolder.get();
             return quest.getStorage().sub().get(key, clazz);
         }
 
 
         public static <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
-            @Jailbreak Quest quest = QuestHolder.get();
+            SuperQuest quest = QuestHolder.get();
             return quest.getStorage().sub().get(extractor, clazz);
         }
 
