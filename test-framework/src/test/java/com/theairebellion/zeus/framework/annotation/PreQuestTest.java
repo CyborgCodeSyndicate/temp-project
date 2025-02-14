@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.framework.annotation;
 
-import com.theairebellion.zeus.framework.annotation.mock.PreQuestTestDummy;
+import com.theairebellion.zeus.framework.annotation.mock.MockPreQuestTest;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +9,7 @@ public class PreQuestTest {
 
     @Test
     void testPreQuestAnnotation() throws Exception {
-        Method m = PreQuestTestDummy.class.getMethod("dummyPreQuestMethod");
+        Method m = MockPreQuestTest.class.getMethod("mockPreQuestMethod");
         PreQuest preQuest = m.getAnnotation(PreQuest.class);
         assertNotNull(preQuest, "Method should be annotated with @PreQuest");
         Journey[] journeys = preQuest.value();

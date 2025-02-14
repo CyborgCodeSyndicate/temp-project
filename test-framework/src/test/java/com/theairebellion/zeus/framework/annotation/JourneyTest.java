@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.framework.annotation;
 
-import com.theairebellion.zeus.framework.annotation.mock.JourneyTestDummy;
+import com.theairebellion.zeus.framework.annotation.mock.MockJourneyTest;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +9,7 @@ public class JourneyTest {
 
     @Test
     void testJourneyAnnotations() throws Exception {
-        Method m = JourneyTestDummy.class.getMethod("dummyJourneyMethod");
+        Method m = MockJourneyTest.class.getMethod("mockJourneyMethod");
         Journey[] journeys = m.getAnnotationsByType(Journey.class);
         assertEquals(2, journeys.length, "Should have two Journey annotations");
         // Assuming declaration order is preserved:
