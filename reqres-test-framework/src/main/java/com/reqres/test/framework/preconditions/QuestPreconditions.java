@@ -1,8 +1,7 @@
 package com.reqres.test.framework.preconditions;
 
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
-import com.theairebellion.zeus.framework.quest.Quest;
-import manifold.ext.rt.api.Jailbreak;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.function.BiConsumer;
 
@@ -12,14 +11,14 @@ public enum QuestPreconditions implements PreQuestJourney {
 
     public static final String CREATE_NEW_USER = "CREATE_NEW_USER_FLOW";
 
-    private final BiConsumer<@Jailbreak Quest, Object[]> function;
+    private final BiConsumer<SuperQuest, Object[]> function;
 
-    QuestPreconditions(final BiConsumer<@Jailbreak Quest, Object[]> function) {
+    QuestPreconditions(final BiConsumer<SuperQuest, Object[]> function) {
         this.function = function;
     }
 
     @Override
-    public BiConsumer<@Jailbreak Quest, Object[]> journey() {
+    public BiConsumer<SuperQuest, Object[]> journey() {
         return function;
     }
 

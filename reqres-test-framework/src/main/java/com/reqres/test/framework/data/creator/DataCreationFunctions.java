@@ -6,11 +6,10 @@ import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.DataResponse;
 import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
-import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import io.restassured.response.Response;
-import manifold.ext.rt.api.Jailbreak;
 
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER_FLOW;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
@@ -32,7 +31,7 @@ public class DataCreationFunctions {
     }
 
     public static User createJuniorUser() {
-        @Jailbreak Quest quest = QuestHolder.get();
+        SuperQuest quest = QuestHolder.get();
 
         DataResponse dataResponse = quest.getStorage()
                 .sub(StorageKeysApi.API)
@@ -48,7 +47,7 @@ public class DataCreationFunctions {
     }
 
     public static User createSeniorUser() {
-        @Jailbreak Quest quest = QuestHolder.get();
+        SuperQuest quest = QuestHolder.get();
         User userLeader = quest.getStorage()
                 .sub(StorageKeysTest.ARGUMENTS)
                 .get(USER_LEADER_FLOW, User.class);
@@ -60,7 +59,7 @@ public class DataCreationFunctions {
     }
 
     public static User createIntermediateUser() {
-        @Jailbreak Quest quest = QuestHolder.get();
+        SuperQuest quest = QuestHolder.get();
         User userLeader = quest.getStorage()
                 .sub(StorageKeysTest.PRE_ARGUMENTS)
                 .get(USER_LEADER_FLOW, User.class);

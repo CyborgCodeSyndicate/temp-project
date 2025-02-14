@@ -1,49 +1,146 @@
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:01,654 INFO  [] - Starting ReqresApiNewTest using Java 17.0.14 with PID 15252 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:01,995 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:02,687 INFO  [] - Started ReqresApiNewTest in 1.551 seconds (process running for 5.11)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,745 [scenario=ReqresApiNewTest.testGetAllUsers] INFO  [TEST] - The quest: 'testGetAllUsers(Quest)' has begun.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,745 [scenario=ReqresApiNewTest.testLoginUser] INFO  [TEST] - The quest: 'testLoginUser(Quest, LoginUser)' has begun.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,745 [scenario=ReqresApiNewTest.testCreateUser] INFO  [TEST] - The quest: 'testCreateUser(Quest, User)' has begun.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,745 [scenario=ReqresApiNewTest.testGetUser] INFO  [TEST] - The quest: 'testGetUser(Quest)' has begun.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,857 [scenario=ReqresApiNewTest.testLoginUser] INFO  [TEST] - Quest crafted for scenario: 'testLoginUser(Quest, LoginUser)'.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,857 [scenario=ReqresApiNewTest.testGetUser] INFO  [TEST] - Quest crafted for scenario: 'testGetUser(Quest)'.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,857 [scenario=ReqresApiNewTest.testGetAllUsers] INFO  [TEST] - Quest crafted for scenario: 'testGetAllUsers(Quest)'.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,857 [scenario=ReqresApiNewTest.testCreateUser] INFO  [TEST] - Quest crafted for scenario: 'testCreateUser(Quest, User)'.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,887 [scenario=ReqresApiNewTest.testGetAllUsers] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:03,887 [scenario=ReqresApiNewTest.testGetUser] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:04,110 [scenario=ReqresApiNewTest.testLoginUser] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:04,110 [scenario=ReqresApiNewTest.testCreateUser] INFO  [TEST] - The quest has undertaken a journey through: 'API'
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:05,063 [scenario=ReqresApiNewTest.testGetAllUsers] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:05,067 [scenario=ReqresApiNewTest.testGetUser] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/3.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:05,464 [scenario=ReqresApiNewTest.testCreateUser] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:05,464 [scenario=ReqresApiNewTest.testLoginUser] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/login.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,525 [scenario=ReqresApiNewTest.testGetAllUsers] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 1928ms.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,525 [scenario=ReqresApiNewTest.testGetUser] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/3 in 1928ms.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,596 [scenario=ReqresApiNewTest.testLoginUser] STEP  [API] - Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 1312ms.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,598 [scenario=ReqresApiNewTest.testGetUser] INFO  [API] - Starting response validation with 3 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,604 [scenario=ReqresApiNewTest.testGetAllUsers] INFO  [API] - Starting response validation with 4 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,623 [scenario=ReqresApiNewTest.testLoginUser] INFO  [API] - Starting response validation with 1 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,649 [scenario=ReqresApiNewTest.testCreateUser] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 1365ms.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,652 [scenario=ReqresApiNewTest.testLoginUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,687 [scenario=ReqresApiNewTest.testCreateUser] INFO  [API] - Starting response validation with 2 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,861 [scenario=ReqresApiNewTest.testLoginUser] INFO  [TEST] - The quest has left the journey.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,872 [scenario=ReqresApiNewTest.testLoginUser] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:06,891 [scenario=ReqresApiNewTest.testLoginUser] INFO  [TEST] - The quest of 'testLoginUser(Quest, LoginUser)' has concluded with glory. Status: SUCCESS. Duration: 3 seconds.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,806 [scenario=ReqresApiNewTest.testCreateUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,821 [scenario=ReqresApiNewTest.testCreateUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Morpheus, Actual: Morpheus)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,845 [scenario=ReqresApiNewTest.testGetUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,952 [scenario=ReqresApiNewTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,962 [scenario=ReqresApiNewTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 2, Actual: 2)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,972 [scenario=ReqresApiNewTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 7, Actual: 7)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,982 [scenario=ReqresApiNewTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: lindsay.ferguson@reqres.in, Actual: lindsay.ferguson@reqres.in)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:07,991 [scenario=ReqresApiNewTest.testGetAllUsers] INFO  [TEST] - The quest has left the journey.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,000 [scenario=ReqresApiNewTest.testGetAllUsers] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,011 [scenario=ReqresApiNewTest.testGetAllUsers] INFO  [TEST] - The quest of 'testGetAllUsers(Quest)' has concluded with glory. Status: SUCCESS. Duration: 4 seconds.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,341 [scenario=ReqresApiNewTest.testGetUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: emma.wong@reqres.in, Actual: emma.wong@reqres.in)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,341 [scenario=ReqresApiNewTest.testCreateUser] INFO  [TEST] - The quest has left the journey.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,354 [scenario=ReqresApiNewTest.testCreateUser] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,353 [scenario=ReqresApiNewTest.testGetUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral, Actual: https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral)
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,361 [scenario=ReqresApiNewTest.testCreateUser] INFO  [TEST] - The quest of 'testCreateUser(Quest, User)' has concluded with glory. Status: SUCCESS. Duration: 4 seconds.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,362 [scenario=ReqresApiNewTest.testGetUser] INFO  [TEST] - The quest has left the journey.
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,371 [scenario=ReqresApiNewTest.testGetUser] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-02-08T15:51:08,388 [scenario=ReqresApiNewTest.testGetUser] INFO  [TEST] - The quest of 'testGetUser(Quest)' has concluded with glory. Status: SUCCESS. Duration: 4 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:07,283 WARN  [] - Support for convention-based stereotype names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:07,660 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 14232 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:07,677 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:08,394 INFO  [] - Started ReqresApiTest in 1.62 seconds (process running for 5.121)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testUserNotFound] INFO  [TEST] - The quest: 'testUserNotFound(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest: 'testGetUserFromListOfUsersByName(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest: 'testPreconditionsExample(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testGetUser] INFO  [TEST] - The quest: 'testGetUser(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - The quest: 'testGetAllUsers(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest: 'testCustomService(Quest, LoginUser)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testGetUserFromListOfUsers] INFO  [TEST] - The quest: 'testGetUserFromListOfUsers(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,697 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] INFO  [TEST] - The quest: 'testGetUsersJUnitAssertions(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,885 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - Quest crafted for scenario: 'testGetAllUsers(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,885 [scenario=ReqresApiTest.testGetUser] INFO  [TEST] - Quest crafted for scenario: 'testGetUser(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,885 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - Quest crafted for scenario: 'testGetUserFromListOfUsersByName(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,885 [scenario=ReqresApiTest.testUserNotFound] INFO  [TEST] - Quest crafted for scenario: 'testUserNotFound(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,885 [scenario=ReqresApiTest.testGetUserFromListOfUsers] INFO  [TEST] - Quest crafted for scenario: 'testGetUserFromListOfUsers(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,885 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - Quest crafted for scenario: 'testCustomService(Quest, LoginUser)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,886 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] INFO  [TEST] - Quest crafted for scenario: 'testGetUsersJUnitAssertions(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,914 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - Quest crafted for scenario: 'testPreconditionsExample(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,927 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,927 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,927 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,927 [scenario=ReqresApiTest.testGetUserFromListOfUsers] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,927 [scenario=ReqresApiTest.testUserNotFound] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,927 [scenario=ReqresApiTest.testGetUser] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,945 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,971 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The ripper has arrived
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:09,984 [scenario=ReqresApiTest.testPreconditionsExample] INFO  [TEST] - The quest of 'testPreconditionsExample(Quest)' has ended in defeat. Status: FAILED. Duration: 0 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:10,171 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has undertaken a journey through: 'Rivendell'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:10,186 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:10,234 [scenario=ReqresApiTest.testLoginUserAndAddHeader] INFO  [TEST] - The quest: 'testLoginUserAndAddHeader(Quest, LoginUser)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:10,253 [scenario=ReqresApiTest.testLoginUserAndAddHeader] INFO  [TEST] - Quest crafted for scenario: 'testLoginUserAndAddHeader(Quest, LoginUser)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:10,297 [scenario=ReqresApiTest.testLoginUserAndAddHeader] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,331 [scenario=ReqresApiTest.testGetAllUsers] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,331 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,331 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,331 [scenario=ReqresApiTest.testGetUserFromListOfUsers] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,352 [scenario=ReqresApiTest.testGetUser] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/3.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,355 [scenario=ReqresApiTest.testUserNotFound] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/23.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,667 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/login.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:11,667 [scenario=ReqresApiTest.testLoginUserAndAddHeader] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/login.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,813 [scenario=ReqresApiTest.testGetUser] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/3 in 2090ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,815 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 2092ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,815 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 2092ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,815 [scenario=ReqresApiTest.testGetUserFromListOfUsers] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 2092ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,815 [scenario=ReqresApiTest.testGetAllUsers] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 2092ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,883 [scenario=ReqresApiTest.testLoginUserAndAddHeader] STEP  [API] - Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 1390ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,883 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 1390ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,900 [scenario=ReqresApiTest.testUserNotFound] STEP  [API] - Response with status: 404 received from endpoint: GET-https://reqres.in/api/users/23 in 2176ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,923 [scenario=ReqresApiTest.testGetUser] INFO  [API] - Starting response validation with 3 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,916 [scenario=ReqresApiTest.testGetAllUsers] INFO  [API] - Starting response validation with 18 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,931 [scenario=ReqresApiTest.testUserNotFound] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,951 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:12,989 [scenario=ReqresApiTest.testUserNotFound] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 404, Actual: 404)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,084 [scenario=ReqresApiTest.testGetUserFromListOfUsers] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/7.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,086 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/9.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,090 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,152 [scenario=ReqresApiTest.testGetUsersJUnitAssertions] INFO  [TEST] - The quest of 'testGetUsersJUnitAssertions(Quest)' has concluded with glory. Status: SUCCESS. Duration: 3 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,207 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The quest: 'testCreateUser(Quest, User)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,226 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - Quest crafted for scenario: 'testCreateUser(Quest, User)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,295 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,317 [scenario=ReqresApiTest.testCreateUser] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,334 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/9 in 248ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,364 [scenario=ReqresApiTest.testGetUserFromListOfUsers] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/7 in 280ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,364 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,367 [scenario=ReqresApiTest.testUserNotFound] INFO  [TEST] - The quest of 'testUserNotFound(Quest)' has concluded with glory. Status: SUCCESS. Duration: 3 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,379 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,392 [scenario=ReqresApiTest.testGetUserFromListOfUsers] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,417 [scenario=ReqresApiTest.testGetUserFromListOfUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,424 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The quest: 'testCreateTwoUsers(Quest, User, Late)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,436 [scenario=ReqresApiTest.testGetUserFromListOfUsers] INFO  [TEST] - The quest of 'testGetUserFromListOfUsers(Quest)' has concluded with glory. Status: SUCCESS. Duration: 3 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,445 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - Quest crafted for scenario: 'testCreateTwoUsers(Quest, User, Late)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,494 [scenario=ReqresApiTest.testCreateJuniorUser] INFO  [TEST] - The quest: 'testCreateJuniorUser(Quest, Late)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,550 [scenario=ReqresApiTest.testCreateJuniorUser] INFO  [TEST] - Quest crafted for scenario: 'testCreateJuniorUser(Quest, Late)'.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,632 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,636 [scenario=ReqresApiTest.testCreateJuniorUser] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,641 [scenario=ReqresApiTest.testCreateUser] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 325ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,659 [scenario=ReqresApiTest.testCreateJuniorUser] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,651 [scenario=ReqresApiTest.testCreateTwoUsers] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,665 [scenario=ReqresApiTest.testCreateUser] INFO  [API] - Starting response validation with 2 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,861 [scenario=ReqresApiTest.testCreateJuniorUser] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 203ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,883 [scenario=ReqresApiTest.testCreateJuniorUser] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,893 [scenario=ReqresApiTest.testCreateJuniorUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,917 [scenario=ReqresApiTest.testCreateJuniorUser] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:13,992 [scenario=ReqresApiTest.testCreateTwoUsers] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 344ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,014 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [API] - Starting response validation with 3 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,182 [scenario=ReqresApiTest.testCreateJuniorUser] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 266ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,216 [scenario=ReqresApiTest.testCreateJuniorUser] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,235 [scenario=ReqresApiTest.testCreateJuniorUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,257 [scenario=ReqresApiTest.testCreateJuniorUser] INFO  [TEST] - The quest of 'testCreateJuniorUser(Quest, Late)' has concluded with glory. Status: SUCCESS. Duration: 0 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,777 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,783 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,794 [scenario=ReqresApiTest.testGetUserFromListOfUsersByName] INFO  [TEST] - The quest of 'testGetUserFromListOfUsersByName(Quest)' has concluded with glory. Status: SUCCESS. Duration: 5 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,927 [scenario=ReqresApiTest.testCreateUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,933 [scenario=ReqresApiTest.testLoginUserAndAddHeader] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/3.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,932 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users/3.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,942 [scenario=ReqresApiTest.testCreateUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Morpheus, Actual: Morpheus)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,972 [scenario=ReqresApiTest.testGetUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,988 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:14,999 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Morpheus, Actual: Morpheus)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,121 [scenario=ReqresApiTest.testLoginUserAndAddHeader] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/3 in 188ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,145 [scenario=ReqresApiTest.testLoginUserAndAddHeader] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,158 [scenario=ReqresApiTest.testLoginUserAndAddHeader] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,166 [scenario=ReqresApiTest.testCreateUser] INFO  [TEST] - The quest of 'testCreateUser(Quest, User)' has concluded with glory. Status: SUCCESS. Duration: 1 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,168 [scenario=ReqresApiTest.testLoginUserAndAddHeader] INFO  [TEST] - The quest of 'testLoginUserAndAddHeader(Quest, LoginUser)' has concluded with glory. Status: SUCCESS. Duration: 4 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,181 [scenario=ReqresApiTest.testGetUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: emma.wong@reqres.in, Actual: emma.wong@reqres.in)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,193 [scenario=ReqresApiTest.testGetUser] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral, Actual: https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,207 [scenario=ReqresApiTest.testGetUser] INFO  [TEST] - The quest of 'testGetUser(Quest)' has concluded with glory. Status: SUCCESS. Duration: 5 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,222 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Leader, Actual: Leader)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,236 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users/3 in 304ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,239 [scenario=ReqresApiTest.testCreateTwoUsers] STEP  [API] - Sending request to endpoint POST-https://reqres.in/api/users.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,262 [scenario=ReqresApiTest.testCustomService] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,276 [scenario=ReqresApiTest.testCustomService] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,284 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,292 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,303 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,411 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,418 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: CONTAINS (Expected: application/json, Actual: application/json; charset=utf-8)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,425 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: NOT (Expected: 1, Actual: 12)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,432 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: GREATER_THAN (Expected: 1, Actual: 2)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,435 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: LESS_THAN (Expected: 10, Actual: 6)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,439 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: CONTAINS (Expected: reqres, Actual: https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,443 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: STARTS_WITH (Expected: Tired of writing, Actual: Tired of writing endless social media content? Let Content Caddy generate it for you.)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,448 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: ENDS_WITH (Expected: .jpg, Actual: https://reqres.in/img/faces/7-image.jpg)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,452 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: NOT_NULL (Expected: null, Actual: 7)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,456 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: ALL_NOT_NULL (Expected: null, Actual: [{id=7, email=michael.lawson@reqres.in, first_name=Michael, last_name=Lawson, avatar=https://reqres.in/img/faces/7-image.jpg}, {id=8, email=lindsay.ferguson@reqres.in, first_name=Lindsay, last_name=Ferguson, avatar=https://reqres.in/img/faces/8-image.jpg}, {id=9, email=tobias.funke@reqres.in, first_name=Tobias, last_name=Funke, avatar=https://reqres.in/img/faces/9-image.jpg}, {id=10, email=byron.fields@reqres.in, first_name=Byron, last_name=Fields, avatar=https://reqres.in/img/faces/10-image.jpg}, {id=11, email=george.edwards@reqres.in, first_name=George, last_name=Edwards, avatar=https://reqres.in/img/faces/11-image.jpg}, {id=12, email=rachel.howell@reqres.in, first_name=Rachel, last_name=Howell, avatar=https://reqres.in/img/faces/12-image.jpg}])
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,460 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: NOT_EMPTY (Expected: null, Actual: [{id=7, email=michael.lawson@reqres.in, first_name=Michael, last_name=Lawson, avatar=https://reqres.in/img/faces/7-image.jpg}, {id=8, email=lindsay.ferguson@reqres.in, first_name=Lindsay, last_name=Ferguson, avatar=https://reqres.in/img/faces/8-image.jpg}, {id=9, email=tobias.funke@reqres.in, first_name=Tobias, last_name=Funke, avatar=https://reqres.in/img/faces/9-image.jpg}, {id=10, email=byron.fields@reqres.in, first_name=Byron, last_name=Fields, avatar=https://reqres.in/img/faces/10-image.jpg}, {id=11, email=george.edwards@reqres.in, first_name=George, last_name=Edwards, avatar=https://reqres.in/img/faces/11-image.jpg}, {id=12, email=rachel.howell@reqres.in, first_name=Rachel, last_name=Howell, avatar=https://reqres.in/img/faces/12-image.jpg}])
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,464 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: LENGTH (Expected: 7, Actual: Michael)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,468 [scenario=ReqresApiTest.testCustomService] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 164ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,473 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: LENGTH (Expected: 6, Actual: [{id=7, email=michael.lawson@reqres.in, first_name=Michael, last_name=Lawson, avatar=https://reqres.in/img/faces/7-image.jpg}, {id=8, email=lindsay.ferguson@reqres.in, first_name=Lindsay, last_name=Ferguson, avatar=https://reqres.in/img/faces/8-image.jpg}, {id=9, email=tobias.funke@reqres.in, first_name=Tobias, last_name=Funke, avatar=https://reqres.in/img/faces/9-image.jpg}, {id=10, email=byron.fields@reqres.in, first_name=Byron, last_name=Fields, avatar=https://reqres.in/img/faces/10-image.jpg}, {id=11, email=george.edwards@reqres.in, first_name=George, last_name=Edwards, avatar=https://reqres.in/img/faces/11-image.jpg}, {id=12, email=rachel.howell@reqres.in, first_name=Rachel, last_name=Howell, avatar=https://reqres.in/img/faces/12-image.jpg}])
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,478 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: MATCHES_REGEX (Expected: https:\/\/contentcaddy\.io\?utm_source=reqres&utm_medium=json&utm_campaign=referral, Actual: https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,485 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: EQUALS_IGNORE_CASE (Expected: michael, Actual: Michael)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,492 [scenario=ReqresApiTest.testCustomService] INFO  [API] - Starting response validation with 1 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,492 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: BETWEEN (Expected: [5, 15], Actual: 12)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,499 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: CONTAINS_ALL (Expected: [{email=michael.lawson@reqres.in, avatar=https://reqres.in/img/faces/7-image.jpg, id=7, first_name=Michael, last_name=Lawson}, {email=lindsay.ferguson@reqres.in, avatar=https://reqres.in/img/faces/8-image.jpg, id=8, first_name=Lindsay, last_name=Ferguson}, {email=tobias.funke@reqres.in, avatar=https://reqres.in/img/faces/9-image.jpg, id=9, first_name=Tobias, last_name=Funke}, {email=byron.fields@reqres.in, avatar=https://reqres.in/img/faces/10-image.jpg, id=10, first_name=Byron, last_name=Fields}, {email=george.edwards@reqres.in, avatar=https://reqres.in/img/faces/11-image.jpg, id=11, first_name=George, last_name=Edwards}, {email=rachel.howell@reqres.in, avatar=https://reqres.in/img/faces/12-image.jpg, id=12, first_name=Rachel, last_name=Howell}], Actual: [{id=7, email=michael.lawson@reqres.in, first_name=Michael, last_name=Lawson, avatar=https://reqres.in/img/faces/7-image.jpg}, {id=8, email=lindsay.ferguson@reqres.in, first_name=Lindsay, last_name=Ferguson, avatar=https://reqres.in/img/faces/8-image.jpg}, {id=9, email=tobias.funke@reqres.in, first_name=Tobias, last_name=Funke, avatar=https://reqres.in/img/faces/9-image.jpg}, {id=10, email=byron.fields@reqres.in, first_name=Byron, last_name=Fields, avatar=https://reqres.in/img/faces/10-image.jpg}, {id=11, email=george.edwards@reqres.in, first_name=George, last_name=Edwards, avatar=https://reqres.in/img/faces/11-image.jpg}, {id=12, email=rachel.howell@reqres.in, first_name=Rachel, last_name=Howell, avatar=https://reqres.in/img/faces/12-image.jpg}])
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,500 [scenario=ReqresApiTest.testCustomService] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 200, Actual: 200)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,506 [scenario=ReqresApiTest.testGetAllUsers] VALIDATION [TEST] - ✔ Validation passed: CONTAINS_ANY (Expected: [{email=michael.lawson@reqres.in, avatar=https://reqres.in/img/faces/7-image.jpg, id=7, first_name=Michael, last_name=Lawson}, {email=invalid.user, avatar=invalidUrls, id=22, first_name=Invalid, last_name=User}], Actual: [{id=7, email=michael.lawson@reqres.in, first_name=Michael, last_name=Lawson, avatar=https://reqres.in/img/faces/7-image.jpg}, {id=8, email=lindsay.ferguson@reqres.in, first_name=Lindsay, last_name=Ferguson, avatar=https://reqres.in/img/faces/8-image.jpg}, {id=9, email=tobias.funke@reqres.in, first_name=Tobias, last_name=Funke, avatar=https://reqres.in/img/faces/9-image.jpg}, {id=10, email=byron.fields@reqres.in, first_name=Byron, last_name=Fields, avatar=https://reqres.in/img/faces/10-image.jpg}, {id=11, email=george.edwards@reqres.in, first_name=George, last_name=Edwards, avatar=https://reqres.in/img/faces/11-image.jpg}, {id=12, email=rachel.howell@reqres.in, first_name=Rachel, last_name=Howell, avatar=https://reqres.in/img/faces/12-image.jpg}])
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,507 [scenario=ReqresApiTest.testCustomService] INFO  [TEST] - The quest of 'testCustomService(Quest, LoginUser)' has concluded with glory. Status: SUCCESS. Duration: 5 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,513 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - The quest of 'testGetAllUsers(Quest)' has concluded with glory. Status: SUCCESS. Duration: 5 seconds.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,519 [scenario=ReqresApiTest.testCreateTwoUsers] STEP  [API] - Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 280ms.
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,541 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [API] - Starting response validation with 3 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,579 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: 201, Actual: 201)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,584 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Mr. Morpheus, Actual: Mr. Morpheus)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,588 [scenario=ReqresApiTest.testCreateTwoUsers] VALIDATION [TEST] - ✔ Validation passed: IS (Expected: Senior Leader, Actual: Senior Leader)
+⚡️ ZEUS ⚡️ 2025-02-14T20:03:15,592 [scenario=ReqresApiTest.testCreateTwoUsers] INFO  [TEST] - The quest of 'testCreateTwoUsers(Quest, User, Late)' has concluded with glory. Status: SUCCESS. Duration: 2 seconds.
