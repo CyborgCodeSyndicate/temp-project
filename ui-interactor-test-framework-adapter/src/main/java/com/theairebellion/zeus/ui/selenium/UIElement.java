@@ -19,6 +19,7 @@ public interface UIElement {
     default Consumer<SmartWebDriver> before(){
         return smartWebDriver -> {};
     }
+
     default Consumer<SmartWebDriver> after(){
         return smartWebDriver -> {};
     }
