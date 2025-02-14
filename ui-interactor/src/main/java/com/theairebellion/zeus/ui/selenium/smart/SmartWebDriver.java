@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -130,6 +131,57 @@ public class SmartWebDriver extends WebDriverDecorator {
             return handleException("findElement", e, new Object[]{by});
         }
     }
+
+
+    public boolean checkNoException(Runnable runnable) {
+        try {
+            runnable.run();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public void waitUntilElementIsShown(SmartWebElement element, int seconds) {
+        WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+        try {
+            wait.until(ExpectedConditions.visibilityOf(element));
+        } catch (Exception e) {
+            LogUI.error("Element wasn't displayed after: " + seconds + " seconds");
+        }
+    }
+
+
+    public void waitUntilElementIsShown(By by, int seconds) {
+        WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(by));
+        } catch (Exception e) {
+            LogUI.error("Element wasn't displayed after: " + seconds + " seconds");
+        }
+    }
+
+
+    public void waitUntilElementIsRemoved(SmartWebElement element, int seconds) {
+        WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+        try {
+            wait.until(ExpectedConditions.invisibilityOf(element));
+        } catch (Exception e) {
+            LogUI.error("Element wasn't removed after: " + seconds + " seconds");
+        }
+    }
+
+
+    public void waitUntilElementIsRemoved(By by, int seconds) {
+        WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+        try {
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
+        } catch (Exception e) {
+            LogUI.error("Element wasn't removed after: " + seconds + " seconds");
+        }
+    }
+
 
     private <T> void waitWithoutFailure(Function<WebDriver, T> condition) {
         try {

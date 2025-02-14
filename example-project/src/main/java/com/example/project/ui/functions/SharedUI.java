@@ -1,32 +1,32 @@
 package com.example.project.ui.functions;
 
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import lombok.Getter;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public enum SharedUI implements Consumer<SmartWebDriver> {
+public enum SharedUI implements ContextConsumer {
+    WAIT_FOR_LOADING((driver, by) -> SharedUIFunctions.waitForLoading(driver)),
+    WAIT_FOR_PRESENCE(SharedUIFunctions::waitForPresence);
 
-    WAIT_FOR_LOADING(SharedUI::waitForLoading);
+    private final BiConsumer<SmartWebDriver, By> function;
 
-    private final Consumer<SmartWebDriver> function;
-
-
-    SharedUI(final Consumer<SmartWebDriver> function) {
+    SharedUI(BiConsumer<SmartWebDriver, By> function) {
         this.function = function;
     }
 
+    @Override
+    public Consumer<SmartWebDriver> asConsumer(By locator) {
+        return driver -> function.accept(driver, locator);
+    }
 
     @Override
-    public void accept(final SmartWebDriver smartWebDriver) {
-        function.accept(smartWebDriver);
+    public void accept(SmartWebDriver driver) {
+        accept(driver, null);
     }
 
-
-    public static void waitForLoading(SmartWebDriver smartWebDriver) {
-        smartWebDriver.getWait().until(ExpectedConditions.invisibilityOfElementLocated(By.className("loader")));
+    public void accept(SmartWebDriver driver, By locator) {
+        function.accept(driver, locator);
     }
-
 }

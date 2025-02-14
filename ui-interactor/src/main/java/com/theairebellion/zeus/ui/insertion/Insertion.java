@@ -5,7 +5,7 @@ import org.openqa.selenium.By;
 
 public interface Insertion {
 
-    void insertion(By locator, ComponentType componentType, Object... values);
+    void insertion(ComponentType componentType, By locator, Object... values);
 
 
 }

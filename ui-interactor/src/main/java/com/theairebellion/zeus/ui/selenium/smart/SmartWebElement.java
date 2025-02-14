@@ -12,6 +12,8 @@ import org.jspecify.annotations.NullMarked;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -85,6 +87,21 @@ public class SmartWebElement extends WebElementDecorator {
     }
 
 
+    @HandleUIException
+    public void doubleClick() {
+        Actions actions = new Actions(driver);
+        if (!getUiConfig().useWrappedSeleniumFunctions()) {
+            actions.doubleClick();
+        }
+        try {
+            waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
+            actions.doubleClick();
+        } catch (Exception e) {
+            handleException("doubleClick", e, new Object[0]);
+        }
+    }
+
+
     @Override
     @HandleUIException
     public void clear() {
@@ -117,11 +134,6 @@ public class SmartWebElement extends WebElementDecorator {
         sendKeys(keysToSend);
     }
 
-    public void doubleClick() {
-        click();
-        wait.until(ExpectedConditions.elementToBeClickable(this));
-        click();
-    }
 
     public boolean isEnabledAndVisible() {
         waitWithoutFailure(ExpectedConditions.and(
@@ -170,6 +182,7 @@ public class SmartWebElement extends WebElementDecorator {
         }
     }
 
+
     private void performActionWithWait(Consumer<SmartWebElement> action) {
         try {
             waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
@@ -177,6 +190,22 @@ public class SmartWebElement extends WebElementDecorator {
         } catch (Exception e) {
             handleException(action.toString(), e, new Object[0]);
         }
+    }
+
+    public void waitUntilAttributeValueIsChanged(String attributeName, String initialAttributeValue) {
+        WebDriverWait customWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        try {
+            customWait.until(attributeValueChanged(attributeName, initialAttributeValue));
+        } catch (Exception ignore) {
+        }
+    }
+
+
+    private ExpectedCondition<Boolean> attributeValueChanged(final String attributeName, final String initialValue) {
+        return driver -> {
+            String currentValue = getAttribute(attributeName);
+            return !initialValue.equals(currentValue);
+        };
     }
 
 }
