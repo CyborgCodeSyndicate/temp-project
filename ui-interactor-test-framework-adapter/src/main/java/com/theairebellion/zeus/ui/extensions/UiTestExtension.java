@@ -37,16 +37,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.PASSWORD;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.RESPONSES;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.USERNAME;
+import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
-                                            TestExecutionExceptionHandler {
+        TestExecutionExceptionHandler {
     static {
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.VALUES_PRESENT_IN_ALL_ROWS,
-            TableAssertionFunctions::valuesPresentInAllRows);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_NOT_EMPTY, TableAssertionFunctions::validateTableNotEmpty);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_ROW_COUNT, TableAssertionFunctions::validateTableRowCount);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_COLUMN_COUNT, TableAssertionFunctions::validateTableColumnCount);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_ROWS_CONTAIN_VALUES, TableAssertionFunctions::validateAllRowsContainValues);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.VALUES_PRESENT_IN_ALL_ROWS, TableAssertionFunctions::valuesPresentInAllRows);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_CONTAINS_ROW, TableAssertionFunctions::validateTableContainsRow);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DOES_NOT_CONTAIN_ROW, TableAssertionFunctions::validateTableDoesNotContainRow);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.UNIQUE_ROWS, TableAssertionFunctions::validateUniqueRows);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.NO_EMPTY_CELLS, TableAssertionFunctions::validateNoEmptyCells);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.COLUMN_VALUE_UNIQUENESS, TableAssertionFunctions::validateColumnValueUniqueness);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DATA_MATCHES_EXPECTED, TableAssertionFunctions::validateTableDataMatchesExpected);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_NOT_EMPTY, TableAssertionFunctions::validateRowNotEmpty);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_CONTAIN_VALUES, TableAssertionFunctions::validateRowContainsValues);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_DATA_MATCHES_EXPECTED, TableAssertionFunctions::validateRowDataMatchesExpected);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ENABLED, TableAssertionFunctions::validateAllCellsEnabled);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.CELL_HAS_ATTRIBUTE, TableAssertionFunctions::validateCellHasAttribute);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.CELL_IS_CLICKABLE, TableAssertionFunctions::validateCellIsClickable);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ARE_CLICKABLE, TableAssertionFunctions::validateAllCellsAreClickable);
     }
 
     @Override
@@ -63,27 +76,27 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
     private void processInterceptRequestsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(InterceptRequests.class))
-            .ifPresent(intercept -> {
-                String[] urlsForIntercepting = intercept.requestUrlSubStrings();
-                Consumer<Quest> questConsumer = quest -> postQuestCreationIntercept(quest, urlsForIntercepting);
-                addQuestConsumer(context, questConsumer);
-            });
+                .ifPresent(intercept -> {
+                    String[] urlsForIntercepting = intercept.requestUrlSubStrings();
+                    Consumer<Quest> questConsumer = quest -> postQuestCreationIntercept(quest, urlsForIntercepting);
+                    addQuestConsumer(context, questConsumer);
+                });
     }
 
 
     private void processAuthenticateViaUiAsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(AuthenticateViaUiAs.class))
-            .ifPresent(login -> {
-                try {
-                    LoginCredentials credentials = login.credentials().getDeclaredConstructor().newInstance();
-                    Consumer<Quest> questConsumer = quest -> postQuestCreationLogin(quest, credentials.username(),
-                        credentials.password(), login.type(), login.cacheCredentials());
-                    addQuestConsumer(context, questConsumer);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException("Failed to instantiate login credentials", e);
-                }
-            });
+                .ifPresent(login -> {
+                    try {
+                        LoginCredentials credentials = login.credentials().getDeclaredConstructor().newInstance();
+                        Consumer<Quest> questConsumer = quest -> postQuestCreationLogin(quest, credentials.username(),
+                                credentials.password(), login.type(), login.cacheCredentials());
+                        addQuestConsumer(context, questConsumer);
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException("Failed to instantiate login credentials", e);
+                    }
+                });
     }
 
 
@@ -102,7 +115,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     @SuppressWarnings("unchecked")
     private List<Consumer<Quest>> getOrCreateQuestConsumers(ExtensionContext context) {
         return (List<Consumer<Quest>>) context.getStore(ExtensionContext.Namespace.GLOBAL)
-                                           .getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, key -> new ArrayList<>());
+                .getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, key -> new ArrayList<>());
     }
 
 
@@ -185,11 +198,11 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         quest.getSoftAssertions().registerObjectForPostErrorHandling(SmartWebDriver.class, smartWebDriver);
 
         CustomSoftAssertion.registerCustomAssertion(
-            SmartWebDriver.class,
-            (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
-                "soft_assert_failure_" + testName),
-            stackTrace -> Arrays.stream(stackTrace)
-                              .anyMatch(element -> element.getClassName().contains("org.openqa.selenium"))
+                SmartWebDriver.class,
+                (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
+                        "soft_assert_failure_" + testName),
+                stackTrace -> Arrays.stream(stackTrace)
+                        .anyMatch(element -> element.getClassName().contains("org.openqa.selenium"))
         );
     }
 

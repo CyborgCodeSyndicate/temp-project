@@ -1,2 +1,35 @@
-⚡️ ZEUS ⚡️ 2025-02-06T17:35:29,296 INFO  [UI] - Driver of type: CHROME has been registered
-⚡️ ZEUS ⚡️ 2025-02-06T17:35:29,558 INFO  [UI] - Driver of type: EDGE has been registered
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:29,398 INFO  [] - Starting ExampleTest using Java 17.0.14 with PID 14492 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\example-project)
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:30,233 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:32,523 INFO  [] - Started ExampleTest in 4.201 seconds (process running for 10.127)
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:35,106 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest: 'testExample1(Quest, Student, Late)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:35,499 [scenario=ExampleTest.testExample1] INFO  [UI] - Driver of type: CHROME has been registered
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:35,520 [scenario=ExampleTest.testExample1] INFO  [UI] - Driver of type: EDGE has been registered
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:37,433 [scenario=ExampleTest.testExample1] INFO  [] - Using chromedriver 133.0.6943.53 (resolved driver for Chrome 133)
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:37,605 [scenario=ExampleTest.testExample1] INFO  [] - Exporting webdriver.chrome.driver as C:\Users\stefa\.cache\selenium\chromedriver\win64\133.0.6943.53\chromedriver.exe
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:37,643 [scenario=ExampleTest.testExample1] INFO  [UI] - Chrome driver is downloaded with compatible version for the installed browser
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:37,778 [scenario=ExampleTest.testExample1] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:40,177 [scenario=ExampleTest.testExample1] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,018 [scenario=ExampleTest.testExample1] INFO  [TEST] - Quest crafted for scenario: 'testExample1(Quest, Student, Late)'.
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,032 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'UI'
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,218 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'UI'
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,242 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'UI'
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,397 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest has undertaken a journey through: 'UI'
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,639 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:984) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:939) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:939) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,925 [scenario=ExampleTest.testExample1] INFO  [TEST] - The ripper has arrived
+⚡️ ZEUS ⚡️ 2025-02-11T13:38:41,999 [scenario=ExampleTest.testExample1] INFO  [TEST] - The quest of 'testExample1(Quest, Student, Late)' has ended in defeat. Status: FAILED. Duration: 6 seconds.

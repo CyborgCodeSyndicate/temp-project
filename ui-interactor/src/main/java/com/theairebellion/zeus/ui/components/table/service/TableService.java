@@ -6,6 +6,8 @@ import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
+import com.theairebellion.zeus.validator.core.Assertion;
+import com.theairebellion.zeus.validator.core.AssertionResult;
 
 import java.util.List;
 
@@ -150,8 +152,8 @@ public interface TableService {
                 getUiConfig().tableDefaultType(),
                 "com.theairebellion.zeus");
         }
-
-
     }
+
+    <T> List<AssertionResult<T>> validate(Object table, Assertion<?>... assertions);
 
 }

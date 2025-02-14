@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.validator;
 
 import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import com.theairebellion.zeus.validator.util.AssertionUtil;
@@ -26,7 +27,6 @@ public class UiTableValidatorImpl implements UiTableValidator {
         LogUI.extended("Validation target: [{}]", data.toString());
     }
 
-
     @Override
     public <T> List<AssertionResult<T>> validateTable(final Object object, final Assertion<?>... assertions) {
         LogUI.info("Starting response validation with {} assertion(s).", assertions.length);
@@ -35,15 +35,25 @@ public class UiTableValidatorImpl implements UiTableValidator {
 
         for (Assertion<?> assertion : assertions) {
             switch ((UiTablesAssertionTarget) assertion.getTarget()) {
-                case ROW -> {
-                    data.put("row", (T) getRowValues(object));
-                    assertion.setKey("row");
+                case ROW_VALUES -> {
+                    data.put("rowValues", (T) getRowValues(object));
+                    assertion.setKey("rowValues");
                 }
-                case TABLE -> {
+                case ROW_ELEMENTS -> {
+                    data.put("rowElements", (T) getRowElements(object));
+                    assertion.setKey("rowElements");
+                }
+                case TABLE_VALUES -> {
                     List<?> rows = (List<?>) object;
                     List<List<String>> rowList = rows.stream().map(UiTableValidatorImpl::getRowValues).toList();
-                    data.put("table", (T) rowList);
-                    assertion.setKey("table");
+                    data.put("tableValues", (T) rowList);
+                    assertion.setKey("tableValues");
+                }
+                case TABLE_ELEMENTS -> {
+                    List<?> rows = (List<?>) object;
+                    List<List<SmartWebElement>> rowList = rows.stream().map(UiTableValidatorImpl::getRowElements).toList();
+                    data.put("tableElements", (T) rowList);
+                    assertion.setKey("tableElements");
                 }
             }
         }
@@ -78,6 +88,33 @@ public class UiTableValidatorImpl implements UiTableValidator {
                    })
                    .flatMap(List::stream)
                    .collect(Collectors.toList());
+    }
+
+
+    private static List<SmartWebElement> getRowElements(Object row) {
+        return Arrays.stream(row.getClass().getDeclaredFields())
+                .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
+                .map(field -> {
+                    field.setAccessible(true);
+                    try {
+                        Object value = field.get(row);
+                        if (value instanceof TableCell cell) {
+                            return Collections.singletonList(cell.getElement());
+                        } else if (value instanceof List<?> list) {
+                            List<SmartWebElement> result = list.stream()
+                                    .filter(TableCell.class::isInstance)
+                                    .map(TableCell.class::cast)
+                                    .map(TableCell::getElement)
+                                    .collect(Collectors.toList());
+                            return result;
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Failed to access field value", e);
+                    }
+                    return Collections.<SmartWebElement>emptyList();
+                })
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
 
