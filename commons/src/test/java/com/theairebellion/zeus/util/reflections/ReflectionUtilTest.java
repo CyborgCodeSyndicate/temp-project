@@ -12,10 +12,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 class ReflectionUtilTest {
 
@@ -195,6 +199,37 @@ class ReflectionUtilTest {
                 )
         );
         assertTrue(ex.getMessage().contains("No Enum implementing interface"));
+    }
+
+    @Test
+    void testFindClassThatExtendsClass_noSubclass() {
+        @SuppressWarnings("unchecked")
+        Class<Integer> result = (Class<Integer>) ReflectionUtil.findClassThatExtendsClass(Integer.class, "java.lang");
+        assertNull(result);
+    }
+
+    @Test
+    void testFindClassThatExtendsClass_withSubclass() {
+        class Parent {}
+        class Child extends Parent {}
+        String packageName = this.getClass().getPackageName();
+        Class<? extends Parent> result = ReflectionUtil.findClassThatExtendsClass(Parent.class, packageName);
+        assertNotNull(result);
+        assertTrue(Child.class.isAssignableFrom(result));
+    }
+
+    @Test
+    void testGetAttributeOfClass_illegalAccess() {
+        assertThrows(ReflectionException.class, () -> {
+            ReflectionUtil.getAttributeOfClass("nonExistentField", new Object(), String.class);
+        });
+    }
+
+    @Test
+    void testGetFieldValue_illegalAccess() {
+        assertThrows(ReflectionException.class, () -> {
+            ReflectionUtil.getFieldValue(new Object(), String.class);
+        });
     }
 
     static Stream<Arguments> fieldAccessScenarios() {
