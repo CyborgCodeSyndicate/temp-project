@@ -7,20 +7,16 @@ import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import com.theairebellion.zeus.validator.util.AssertionUtil;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 //todo check spring somehow as the others to add allure
-@Service
+@Component
 @NoArgsConstructor
 public class UiTableValidatorImpl implements UiTableValidator {
 
@@ -68,28 +64,28 @@ public class UiTableValidatorImpl implements UiTableValidator {
     //todo handle duplicate code
     private static List<String> getRowValues(Object row) {
         return Arrays.stream(row.getClass().getDeclaredFields())
-                   .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
-                   .map(field -> {
-                       field.setAccessible(true);
-                       try {
-                           Object value = field.get(row);
-                           if (value instanceof TableCell cell) {
-                               return Collections.singletonList(cell.getText());
-                           } else if (value instanceof List<?> list) {
-                               List<String> result = list.stream()
-                                                         .filter(TableCell.class::isInstance)
-                                                         .map(TableCell.class::cast)
-                                                         .map(TableCell::getText)
-                                                         .collect(Collectors.toList());
-                               return result;
-                           }
-                       } catch (IllegalAccessException e) {
-                           throw new RuntimeException("Failed to access field value", e);
-                       }
-                       return Collections.<String>emptyList();
-                   })
-                   .flatMap(List::stream)
-                   .collect(Collectors.toList());
+                .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
+                .map(field -> {
+                    field.setAccessible(true);
+                    try {
+                        Object value = field.get(row);
+                        if (value instanceof TableCell cell) {
+                            return Collections.singletonList(cell.getText());
+                        } else if (value instanceof List<?> list) {
+                            List<String> result = list.stream()
+                                    .filter(TableCell.class::isInstance)
+                                    .map(TableCell.class::cast)
+                                    .map(TableCell::getText)
+                                    .collect(Collectors.toList());
+                            return result;
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Failed to access field value", e);
+                    }
+                    return Collections.<String>emptyList();
+                })
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
 
@@ -136,8 +132,8 @@ public class UiTableValidatorImpl implements UiTableValidator {
 
     private static List<String> lowerCaseAndTrimListOfStrings(List<String> list) {
         return list.stream()
-                   .map(s -> s.trim().toLowerCase())
-                   .toList();
+                .map(s -> s.trim().toLowerCase())
+                .toList();
     }
 
 }

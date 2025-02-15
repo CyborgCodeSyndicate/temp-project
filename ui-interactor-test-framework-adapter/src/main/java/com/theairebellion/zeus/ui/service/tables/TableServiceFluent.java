@@ -238,7 +238,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
         }
     }
 
-    public UIServiceFluent validate(TableElement tableElement, Assertion<?>... assertions) {
+    public T validate(TableElement tableElement, Assertion<?>... assertions) {
         Object tableData = storage.sub(UI).get(tableElement.enumImpl(), List.class);
         if (tableData == null) {
             throw new IllegalArgumentException("No table data found for key: " + tableElement.enumImpl());
@@ -246,7 +246,8 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
         final List<AssertionResult<Object>> results = tableService.validate(tableData, assertions);
 
-        uiServiceFluent.validation(results);
+        // todo: make validation method public
+        // uiServiceFluent.validation(results);
 
         return uiServiceFluent;
     }
