@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PreQuestTest {
+class PreQuestTest {
 
     @Test
     void testPreQuestAnnotation() throws Exception {

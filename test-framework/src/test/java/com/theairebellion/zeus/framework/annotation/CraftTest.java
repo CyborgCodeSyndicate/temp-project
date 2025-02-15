@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class CraftTest {
+class CraftTest {
 
     @Test
     void testCraftAnnotation() throws Exception {

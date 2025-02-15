@@ -11,15 +11,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.lang.reflect.Method;
+import java.util.Properties;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 @ExtendWith(MockitoExtension.class)
-class BaseTestTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+class BaseTestUnitTest {
+
+    public static final String DUMMY_VALUE = "dummyValue";
+    public static final String DEFAULT_VALUE = "defaultValue";
+    public static final String TEST_VALUE = "testValue";
+    public static final String DUMMY_PROP = "dummy.prop";
+    public static final String ADD_SYSTEM_PROPERTIES = "addSystemProperties";
 
     @Mock
     SuperQuest superQuest;
@@ -44,15 +59,16 @@ class BaseTestTest {
     @AfterEach
     void tearDown() {
         QuestHolder.clear();
+        System.clearProperty(DUMMY_PROP);
     }
 
     @Test
     void retrievesDataByEnumAndClass() {
         MockEnum key = MockEnum.KEY1;
         Class<String> clazz = String.class;
-        when(storage.get(key, clazz)).thenReturn("testValue");
+        when(storage.get(key, clazz)).thenReturn(TEST_VALUE);
         String result = new BaseTest().retrieve(key, clazz);
-        assertEquals("testValue", result);
+        assertEquals(TEST_VALUE, result);
     }
 
     @Test
@@ -91,9 +107,9 @@ class BaseTestTest {
         MockEnum key = MockEnum.KEY1;
         Class<String> clazz = String.class;
         when(storage.sub()).thenReturn(subStorage);
-        when(subStorage.get(key, clazz)).thenReturn("defaultValue");
+        when(subStorage.get(key, clazz)).thenReturn(DEFAULT_VALUE);
         String result = BaseTest.DefaultStorage.retrieve(key, clazz);
-        assertEquals("defaultValue", result);
+        assertEquals(DEFAULT_VALUE, result);
     }
 
     @Test
@@ -104,5 +120,42 @@ class BaseTestTest {
         when(subStorage.get(extractor, clazz)).thenReturn(123);
         Integer result = BaseTest.DefaultStorage.retrieve(extractor, clazz);
         assertEquals(123, result);
+    }
+
+    @Test
+    void testAddSystemPropertiesResourceNotExists() throws Exception {
+        try (MockedConstruction<ClassPathResource> ignored =
+                     mockConstruction(ClassPathResource.class, (mock, context) -> {
+                         when(mock.exists()).thenReturn(false);
+                     })) {
+            System.clearProperty(DUMMY_PROP);
+
+            Method method = BaseTest.class.getDeclaredMethod(ADD_SYSTEM_PROPERTIES);
+            method.setAccessible(true);
+            method.invoke(null);
+            assertNull(System.getProperty(DUMMY_PROP));
+        }
+    }
+
+    @Test
+    void testAddSystemPropertiesResourceExists() throws Exception {
+        try (MockedConstruction<ClassPathResource> ignored =
+                     mockConstruction(ClassPathResource.class, (mock, context) -> {
+                         when(mock.exists()).thenReturn(true);
+                     });
+             MockedStatic<PropertiesLoaderUtils> propsMock =
+                     mockStatic(PropertiesLoaderUtils.class)) {
+
+            Properties props = new Properties();
+            props.setProperty(DUMMY_PROP, DUMMY_VALUE);
+            propsMock.when(() -> PropertiesLoaderUtils.loadProperties(any(ClassPathResource.class)))
+                    .thenReturn(props);
+            System.clearProperty(DUMMY_PROP);
+
+            Method method = BaseTest.class.getDeclaredMethod(ADD_SYSTEM_PROPERTIES);
+            method.setAccessible(true);
+            method.invoke(null);
+            assertEquals(DUMMY_VALUE, System.getProperty(DUMMY_PROP));
+        }
     }
 }
