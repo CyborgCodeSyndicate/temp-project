@@ -1,9 +1,33 @@
 package com.theairebellion.zeus.ui.components.factory;
 
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
+import com.theairebellion.zeus.ui.components.accordion.Accordion;
+import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
+import com.theairebellion.zeus.ui.components.alert.Alert;
+import com.theairebellion.zeus.ui.components.alert.AlertComponentType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.components.button.Button;
+import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
+import com.theairebellion.zeus.ui.components.checkbox.Checkbox;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
 import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
+import com.theairebellion.zeus.ui.components.link.Link;
+import com.theairebellion.zeus.ui.components.link.LinkComponentType;
+import com.theairebellion.zeus.ui.components.list.ItemList;
+import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
+import com.theairebellion.zeus.ui.components.loader.Loader;
+import com.theairebellion.zeus.ui.components.loader.LoaderComponentType;
+import com.theairebellion.zeus.ui.components.modal.Modal;
+import com.theairebellion.zeus.ui.components.modal.ModalComponentType;
+import com.theairebellion.zeus.ui.components.radio.Radio;
+import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
+import com.theairebellion.zeus.ui.components.select.Select;
+import com.theairebellion.zeus.ui.components.select.SelectComponentType;
+import com.theairebellion.zeus.ui.components.tab.Tab;
+import com.theairebellion.zeus.ui.components.tab.TabComponentType;
+import com.theairebellion.zeus.ui.components.toggle.Toggle;
+import com.theairebellion.zeus.ui.components.toggle.ToggleComponentType;
 import com.theairebellion.zeus.ui.components.table.service.Table;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.log.LogUI;
@@ -30,6 +54,53 @@ public class ComponentFactory {
         return getComponent(Input.class, type, getUiConfig().projectPackage(), smartWebDriver);
     }
 
+    public static Button getButtonComponent(ButtonComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Button.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Radio getRadioComponent(RadioComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Radio.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Select getSelectComponent(SelectComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Select.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static ItemList getListComponent(ItemListComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(ItemList.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Loader getLoaderComponent(LoaderComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Loader.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Link getLinkComponent(LinkComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Link.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Alert getAlertComponent(AlertComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Alert.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Tab getTabComponent(TabComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Tab.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Checkbox getCheckBoxComponent(CheckboxComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Checkbox.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Toggle getToggleComponent(ToggleComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Toggle.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Modal getModalComponent(ModalComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Modal.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
+
+    public static Accordion getAccordionComponent(AccordionComponentType type, SmartWebDriver smartWebDriver) {
+        return getComponent(Accordion.class, type, getUiConfig().projectPackage(), smartWebDriver);
+    }
 
     public static Table getTableComponent(TableComponentType type, SmartWebDriver smartWebDriver) {
         return getComponent(Table.class, type, getUiConfig().projectPackage(), smartWebDriver);

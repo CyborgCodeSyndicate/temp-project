@@ -2,16 +2,18 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 
 import com.theairebellion.zeus.framework.storage.Storage;
+import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.selenium.InputUIElement;
+import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.By;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
-public class InputServiceFluent<T extends UIServiceFluent<?>> {
+public class InputServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
 
     private final InputService inputService;
     private final T uiServiceFluent;
@@ -32,7 +34,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
         Allure.step(String.format("Inserting value: '%s' into input component of type: '%s'.", value,
                 element.componentType().toString()));
         element.before().accept(driver);
-        inputService.insert(element.locator(), value, element.componentType());
+        inputService.insert(element.componentType(), element.locator(), value);
         element.after().accept(driver);
         return uiServiceFluent;
     }
@@ -40,7 +42,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     public T clear(final InputUIElement element) {
         element.before().accept(driver);
-        inputService.clear(element.locator(), element.componentType());
+        inputService.clear(element.componentType(), element.locator());
         element.after().accept(driver);
         return uiServiceFluent;
     }
@@ -48,7 +50,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     public T getValue(final InputUIElement element) {
         element.before().accept(driver);
-        String value = inputService.getValue(element.locator(), element.componentType());
+        String value = inputService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), value);
         return uiServiceFluent;
@@ -62,7 +64,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     public T validateValue(final InputUIElement element, String expectedValue, boolean soft) {
         element.before().accept(driver);
-        String value = inputService.getValue(element.locator(), element.componentType());
+        String value = inputService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), value);
         if (soft) {
@@ -79,7 +81,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     public T isEnabled(final InputUIElement element) {
         element.before().accept(driver);
-        boolean enabled = inputService.isEnabled(element.locator(), element.componentType());
+        boolean enabled = inputService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
@@ -108,7 +110,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     private T validateIsEnabled(final InputUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
-        boolean enabled = inputService.isEnabled(element.locator(), element.componentType());
+        boolean enabled = inputService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), enabled);
 
@@ -142,7 +144,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     public T getErrorMessage(final InputUIElement element) {
         element.before().accept(driver);
-        String errorMessage = inputService.getErrorMessage(element.locator(), element.componentType());
+        String errorMessage = inputService.getErrorMessage(element.componentType(), element.locator());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), errorMessage);
         return uiServiceFluent;
@@ -156,7 +158,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
 
     public T validateErrorMessage(final InputUIElement element, String expectedMessage, boolean soft) {
         element.before().accept(driver);
-        String errorMessage = inputService.getErrorMessage(element.locator(), element.componentType());
+        String errorMessage = inputService.getErrorMessage(element.componentType(), element.locator());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), errorMessage);
         if (soft) {
@@ -171,4 +173,9 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> {
         }
     }
 
+
+    @Override
+    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        inputService.insertion(componentType, locator, values);
+    }
 }

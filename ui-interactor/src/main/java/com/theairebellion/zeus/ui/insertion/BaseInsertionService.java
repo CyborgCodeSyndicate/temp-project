@@ -44,7 +44,7 @@ public abstract class BaseInsertionService implements InsertionService {
 
                 if (valueForField != null) {
                     beforeInsertion(annotation);
-                    service.insertion(locator, (ComponentType) enumValue, valueForField);
+                    service.insertion((ComponentType) enumValue, locator, valueForField);
                     afterInsertion(annotation);
                 }
 
