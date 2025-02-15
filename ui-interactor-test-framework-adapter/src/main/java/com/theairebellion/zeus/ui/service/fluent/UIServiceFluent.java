@@ -37,9 +37,6 @@ public class UIServiceFluent extends FluentService {
     private InsertionServiceFluent insertionService;
 
     @Autowired
-    private UiTableValidator uiTableValidator;
-
-    @Autowired
     public UIServiceFluent(SmartWebDriver driver) {
         this.driver = driver;
     }
@@ -64,7 +61,7 @@ public class UIServiceFluent extends FluentService {
         registerInsertionServices(inputService);
         tableServiceRegistry = new TableServiceRegistry();
         registerTableServices(inputService);
-        table = new TableServiceFluent(this, quest.getStorage(), new TableServiceImpl(driver, tableServiceRegistry, uiTableValidator),
+        table = new TableServiceFluent(this, quest.getStorage(), new TableServiceImpl(driver, tableServiceRegistry),
             driver);
         insertionService = new InsertionServiceFluent(
             new InsertionServiceElementImpl(serviceRegistry, driver), this,
