@@ -9,7 +9,7 @@ import java.util.Objects;
 public abstract class AbstractComponentService<T extends ComponentType, C> {
 
     protected final SmartWebDriver driver;
-    private final Map<T, C> components;
+    protected final Map<T, C> components;
 
 
     protected AbstractComponentService(SmartWebDriver driver) {

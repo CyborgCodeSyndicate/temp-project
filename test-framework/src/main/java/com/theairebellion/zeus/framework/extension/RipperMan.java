@@ -1,14 +1,17 @@
 package com.theairebellion.zeus.framework.extension;
 
 import com.theairebellion.zeus.framework.annotation.Ripper;
+import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.parameters.DataRipper;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import manifold.ext.rt.api.Jailbreak;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 
@@ -32,18 +35,21 @@ public class RipperMan implements AfterTestExecutionCallback {
     private void executeRipperLogic(ExtensionContext context, String[] targets) {
         LogTest.info("The ripper has arrived");
 
-        @Jailbreak Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST);
+        ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
+        DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
+        Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST);
+        SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
         if (quest == null) {
             throw new IllegalStateException("Quest not found in the global store");
         }
 
-        quest.getStorage().sub(StorageKeysTest.ARGUMENTS).joinLateArguments();
+        superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).joinLateArguments();
 
         Arrays.stream(targets).forEach(target -> {
             DataRipper dataRipper = ReflectionUtil.findEnumImplementationsOfInterface(
-                DataRipper.class, target, getFrameworkConfig().projectPackage());
+                    DataRipper.class, target, getFrameworkConfig().projectPackage());
 
-            dataRipper.eliminate().accept(quest);
+            dataRipper.eliminate().accept(superQuest);
             LogTest.info("DataRipper processed target: '{}'.", target);
         });
     }

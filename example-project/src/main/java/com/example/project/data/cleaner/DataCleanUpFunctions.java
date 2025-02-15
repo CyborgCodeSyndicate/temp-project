@@ -3,8 +3,7 @@ package com.example.project.data.cleaner;
 import com.example.project.base.World;
 import com.example.project.model.Student;
 import com.theairebellion.zeus.db.service.fluent.DatabaseServiceFluent;
-import com.theairebellion.zeus.framework.quest.Quest;
-import manifold.ext.rt.api.Jailbreak;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ import static com.theairebellion.zeus.framework.storage.StorageKeysTest.ARGUMENT
 
 public class DataCleanUpFunctions {
 
-    public static void cleanAllStudents(@Jailbreak Quest quest) {
+    public static void cleanAllStudents(SuperQuest quest) {
         var storage = quest.getStorage().sub(ARGUMENTS);
         List<Student> allStudents = storage.getAllByClass(VALID_STUDENT, Student.class);
 

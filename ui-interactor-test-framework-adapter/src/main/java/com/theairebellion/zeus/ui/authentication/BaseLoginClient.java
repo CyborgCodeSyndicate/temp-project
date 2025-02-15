@@ -1,8 +1,8 @@
 package com.theairebellion.zeus.ui.authentication;
 
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
-import manifold.ext.rt.api.Jailbreak;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
@@ -24,7 +24,7 @@ public abstract class BaseLoginClient implements LoginClient {
 
 
     @Override
-    public void login(final @Jailbreak UIServiceFluent uiService, final String username, final String password,
+    public void login(final SuperUIServiceFluent<?> uiService, final String username, final String password,
                       final boolean cache) {
         LoginKey loginKey = new LoginKey(username, password, this.getClass());
 
@@ -47,7 +47,7 @@ public abstract class BaseLoginClient implements LoginClient {
     }
 
 
-    private void performLoginAndCache(@Jailbreak UIServiceFluent uiService, LoginKey loginKey, String username,
+    private void performLoginAndCache(SuperUIServiceFluent<?> uiService, LoginKey loginKey, String username,
                                       String password) {
         loginImpl(uiService, username, password);
         SmartWebDriver smartWebDriver = uiService.getDriver();
@@ -71,7 +71,7 @@ public abstract class BaseLoginClient implements LoginClient {
     }
 
 
-    private void restoreSession(@Jailbreak UIServiceFluent uiService, SessionInfo sessionInfo) {
+    private void restoreSession(SuperUIServiceFluent<?> uiService, SessionInfo sessionInfo) {
         SmartWebDriver smartWebDriver = uiService.getDriver();
         WebDriver driver = smartWebDriver.getOriginal();
 
@@ -101,7 +101,7 @@ public abstract class BaseLoginClient implements LoginClient {
     }
 
 
-    protected abstract void loginImpl(UIServiceFluent uiService, String username, String password);
+    protected abstract <T extends UIServiceFluent<?>> void loginImpl(T uiService, String username, String password);
 
 
     protected abstract By successfulLoginElementLocator();

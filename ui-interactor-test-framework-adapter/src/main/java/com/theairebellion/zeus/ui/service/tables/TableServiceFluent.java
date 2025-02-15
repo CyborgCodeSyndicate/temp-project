@@ -10,21 +10,20 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
-import manifold.ext.rt.api.Jailbreak;
 
 import java.util.List;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
-public class TableServiceFluent {
+public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
     private final TableService tableService;
-    private final @Jailbreak UIServiceFluent uiServiceFluent;
+    private final T uiServiceFluent;
     private final Storage storage;
     private final SmartWebDriver driver;
 
 
-    public TableServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, TableService tableService,
+    public TableServiceFluent(T uiServiceFluent, Storage storage, TableService tableService,
                               SmartWebDriver webDriver) {
         this.tableService = tableService;
         this.uiServiceFluent = uiServiceFluent;
@@ -33,9 +32,9 @@ public class TableServiceFluent {
     }
 
 
-    public final <T> UIServiceFluent readTable(TableElement tableElement) {
+    public final <K> T readTable(TableElement tableElement) {
         tableElement.before().accept(driver);
-        List<T> rows = tableService.readTable(tableElement.tableType(), tableElement.rowsRepresentationClass());
+        List<K> rows = tableService.readTable(tableElement.tableType(), tableElement.rowsRepresentationClass());
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rows);
         return uiServiceFluent;
@@ -43,20 +42,20 @@ public class TableServiceFluent {
 
 
     @SafeVarargs
-    public final <T> UIServiceFluent readTable(TableElement tableElement, TableField<T>... fields) {
+    public final <K> T readTable(TableElement tableElement, TableField<K>... fields) {
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
-        List<T> rows = tableService.readTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), fields);
+        List<K> rows = tableService.readTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), fields);
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rows);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent readTable(TableElement tableElement, int start, int end) {
+    public final <K> T readTable(TableElement tableElement, int start, int end) {
         tableElement.before().accept(driver);
-        List<T> rows = tableService.readTable(tableElement.tableType(), start, end,
-            tableElement.rowsRepresentationClass());
+        List<K> rows = tableService.readTable(tableElement.tableType(), start, end,
+                tableElement.rowsRepresentationClass());
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rows);
         return uiServiceFluent;
@@ -76,12 +75,12 @@ public class TableServiceFluent {
 
 
     @SafeVarargs
-    public final <T> UIServiceFluent readTable(TableElement tableElement, int start, int end,
-                                               TableField<T>... fields) {
+    public final <K> T readTable(TableElement tableElement, int start, int end,
+                                               TableField<K>... fields) {
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
-        List<T> rows = tableService.readTable(tableElement.tableType(), start, end,
-            tableElement.rowsRepresentationClass(), fields);
+        List<K> rows = tableService.readTable(tableElement.tableType(), start, end,
+                tableElement.rowsRepresentationClass(), fields);
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rows);
         return uiServiceFluent;
@@ -89,20 +88,20 @@ public class TableServiceFluent {
     }
 
 
-    public final <T> UIServiceFluent readRow(TableElement tableElement, int row) {
+    public final <K> T readRow(TableElement tableElement, int row) {
         tableElement.before().accept(driver);
-        T rowEntry = tableService.readRow(tableElement.tableType(), row,
-            tableElement.rowsRepresentationClass());
+        K rowEntry = tableService.readRow(tableElement.tableType(), row,
+                tableElement.rowsRepresentationClass());
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rowEntry);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent readRow(TableElement tableElement, List<String> searchCriteria) {
+    public final <K> T readRow(TableElement tableElement, List<String> searchCriteria) {
         tableElement.before().accept(driver);
-        T row = tableService.readRow(tableElement.tableType(), searchCriteria,
-            tableElement.rowsRepresentationClass());
+        K row = tableService.readRow(tableElement.tableType(), searchCriteria,
+                tableElement.rowsRepresentationClass());
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), row);
         return uiServiceFluent;
@@ -110,11 +109,11 @@ public class TableServiceFluent {
 
 
     @SafeVarargs
-    public final <T> UIServiceFluent readRow(TableElement tableElement, int row,
-                                             TableField<T>... fields) {
+    public final <K> T readRow(TableElement tableElement, int row,
+                                             TableField<K>... fields) {
         tableElement.before().accept(driver);
-        T rowEntry = tableService.readRow(tableElement.tableType(), row,
-            tableElement.rowsRepresentationClass(), fields);
+        K rowEntry = tableService.readRow(tableElement.tableType(), row,
+                tableElement.rowsRepresentationClass(), fields);
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rowEntry);
         return uiServiceFluent;
@@ -122,70 +121,70 @@ public class TableServiceFluent {
 
 
     @SafeVarargs
-    public final <T> UIServiceFluent readRow(TableElement tableElement, List<String> searchCriteria,
-                                             TableField<T>... fields) {
+    public final <K> T readRow(TableElement tableElement, List<String> searchCriteria,
+                                             TableField<K>... fields) {
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
-        T rowEntry = tableService.readRow(tableElement.tableType(), searchCriteria,
-            tableElement.rowsRepresentationClass(), fields);
+        K rowEntry = tableService.readRow(tableElement.tableType(), searchCriteria,
+                tableElement.rowsRepresentationClass(), fields);
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rowEntry);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent insertCellValue(TableElement tableElement, int row,
-                                                     TableField<T> field, String... values) {
+    public final <K> T insertCellValue(TableElement tableElement, int row,
+                                                     TableField<K> field, String... values) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), field, 1,
-            values);
+                values);
         tableElement.after().accept(driver);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent insertCellValue(TableElement tableElement, int row,
-                                                     TableField<T> field,
+    public final <K> T insertCellValue(TableElement tableElement, int row,
+                                                     TableField<K> field,
                                                      int index, String... value) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), field,
-            index, value);
+                index, value);
         tableElement.after().accept(driver);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent insertCellValue(TableElement tableElement, List<String> searchCriteria,
-                                                     TableField<T> field,
+    public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria,
+                                                     TableField<K> field,
                                                      String... values) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
-            field, 1, values);
+                field, 1, values);
         tableElement.after().accept(driver);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent insertCellValue(TableElement tableElement, List<String> searchCriteria,
-                                                     TableField<T> field,
+    public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria,
+                                                     TableField<K> field,
                                                      int index, String... values) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
-            field, index, values);
+                field, index, values);
         tableElement.after().accept(driver);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent insertCellValue(TableElement tableElement, int row,
-                                                     T data) {
+    public final <K> T insertCellValue(TableElement tableElement, int row,
+                                                     K data) {
         if (!tableElement.rowsRepresentationClass().equals(data.getClass())) {
             throw new IllegalArgumentException(
-                "The Data object must be from class: " + tableElement.rowsRepresentationClass());
+                    "The Data object must be from class: " + tableElement.rowsRepresentationClass());
         }
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), data);
@@ -194,45 +193,45 @@ public class TableServiceFluent {
     }
 
 
-    public final <T> UIServiceFluent insertCellValue(TableElement tableElement, List<String> searchCriteria, T data) {
+    public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria, K data) {
         if (!tableElement.rowsRepresentationClass().equals(data.getClass())) {
             throw new IllegalArgumentException(
-                "The Data object must be from class: " + tableElement.rowsRepresentationClass());
+                    "The Data object must be from class: " + tableElement.rowsRepresentationClass());
         }
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
-            data);
+                data);
         tableElement.after().accept(driver);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent filterTable(TableElement tableElement,
-                                                 TableField<T> column,
+    public final <K> T filterTable(TableElement tableElement,
+                                                 TableField<K> column,
                                                  FilterStrategy filterStrategy, String... values) {
         validateArguments(column, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.filterTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), column,
-            filterStrategy, values);
+                filterStrategy, values);
         tableElement.after().accept(driver);
         return uiServiceFluent;
     }
 
 
-    public final <T> UIServiceFluent sortTable(TableElement tableElement, TableField<T> column,
+    public final <K> T sortTable(TableElement tableElement, TableField<K> column,
                                                SortingStrategy sortingStrategy) {
         validateArguments(column, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.sortTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), column,
-            sortingStrategy);
+                sortingStrategy);
         tableElement.after().accept(driver);
         return uiServiceFluent;
     }
 
 
-    private <T> void validateArguments(TableField<T> field, Class<T> expectedClass) {
+    private <K> void validateArguments(TableField<K> field, Class<K> expectedClass) {
         try {
-            T instance = expectedClass.getDeclaredConstructor().newInstance();
+            K instance = expectedClass.getDeclaredConstructor().newInstance();
             field.invoke(instance, null);
         } catch (Exception e) {
             throw new IllegalArgumentException("The TableField objects should be from class: " + expectedClass);

@@ -1,9 +1,9 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
-import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.core.ParameterizedTypeReference;
@@ -11,40 +11,40 @@ import org.springframework.core.ParameterizedTypeReference;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class InterceptorServiceFluent extends FluentService {
+public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends FluentService {
 
-    private final UIServiceFluent uiServiceFluent;
+    private final T uiServiceFluent;
     private final Storage storage;
 
 
-    public InterceptorServiceFluent(UIServiceFluent uiServiceFluent, Storage storage) {
+    public InterceptorServiceFluent(T uiServiceFluent, Storage storage) {
         this.uiServiceFluent = uiServiceFluent;
         this.storage = storage;
     }
 
 
-    public <T> UIServiceFluent validateResponseHaveStatus(final String requestUrlSubString, int statusPrefix) {
+    public T validateResponseHaveStatus(final String requestUrlSubString, int statusPrefix) {
         return validateResponseHaveStatus(requestUrlSubString, statusPrefix, false);
     }
 
 
-    public <T> UIServiceFluent validateResponseHaveStatus(final String requestUrlSubString, int statusPrefix,
-                                                          boolean soft) {
+    public T validateResponseHaveStatus(final String requestUrlSubString, int statusPrefix,
+                                        boolean soft) {
         List<ApiResponse> apiResponses = storage.sub(StorageKeysUi.UI)
-                                             .get(StorageKeysUi.RESPONSES, new ParameterizedTypeReference<>() {
-                                             });
+                .get(StorageKeysUi.RESPONSES, new ParameterizedTypeReference<>() {
+                });
 
         List<ApiResponse> filteredResponses = apiResponses.stream()
-                                                  .filter(
-                                                      apiResponse -> apiResponse.getUrl().contains(requestUrlSubString))
-                                                  .toList();
+                .filter(
+                        apiResponse -> apiResponse.getUrl().contains(requestUrlSubString))
+                .toList();
 
         boolean isPassed = filteredResponses.stream()
-                               .allMatch(apiResponse -> validateStatus(statusPrefix, apiResponse.getStatus()));
+                .allMatch(apiResponse -> validateStatus(statusPrefix, apiResponse.getStatus()));
 
         AssertionResult<?> result = new AssertionResult<>(isPassed,
-            String.format("Validating api requests containing: %s has correct status: %d", requestUrlSubString,
-                statusPrefix), true, isPassed, soft);
+                String.format("Validating api requests containing: %s has correct status: %d", requestUrlSubString,
+                        statusPrefix), true, isPassed, soft);
         List<AssertionResult<Object>> validationResults = List.of((AssertionResult<Object>) result);
         validation(validationResults);
         return uiServiceFluent;
@@ -58,13 +58,13 @@ public class InterceptorServiceFluent extends FluentService {
     }
 
 
-    public UIServiceFluent validate(Runnable assertion) {
-        return (UIServiceFluent) super.validate(assertion);
+    public T validate(Runnable assertion) {
+        return (T) super.validate(assertion);
     }
 
 
-    public UIServiceFluent validate(Consumer<SoftAssertions> assertion) {
-        return (UIServiceFluent) super.validate(assertion);
+    public T validate(Consumer<SoftAssertions> assertion) {
+        return (T) super.validate(assertion);
     }
 
 

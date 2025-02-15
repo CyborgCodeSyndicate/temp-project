@@ -2,7 +2,7 @@ package com.theairebellion.zeus.framework.chain;
 
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
-import manifold.ext.rt.api.Jailbreak;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import org.assertj.core.api.SoftAssertions;
 
 import java.util.function.Consumer;
@@ -12,9 +12,9 @@ public interface FluentChain {
     Quest then();
 
     default FluentChain validate(Consumer<SoftAssertions> assertion) {
-        @Jailbreak Quest quest = then();
+        Quest quest = then();
         LogTest.validation("Starting soft validation.");
-        assertion.accept(quest.getSoftAssertions());
+        assertion.accept(new SuperQuest(quest).getSoftAssertions());
         return this;
     }
 

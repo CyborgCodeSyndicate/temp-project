@@ -8,11 +8,7 @@ import com.example.project.preconditions.QuestPreconditions;
 import com.example.project.rest.authentication.AdminAuth;
 import com.example.project.rest.authentication.PortalAuthentication;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
-import com.theairebellion.zeus.framework.annotation.Craft;
-import com.theairebellion.zeus.framework.annotation.Journey;
-import com.theairebellion.zeus.framework.annotation.JourneyData;
-import com.theairebellion.zeus.framework.annotation.PreQuest;
-import com.theairebellion.zeus.framework.annotation.Ripper;
+import com.theairebellion.zeus.framework.annotation.*;
 import com.theairebellion.zeus.framework.base.BaseTestSequential;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
@@ -76,37 +72,39 @@ public class ExampleTest extends BaseTestSequential {
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
     @PreQuest({
-        @Journey(value = QuestPreconditions.Data.STUDENT_PRECONDITION, journeyData = {@JourneyData(Data.VALID_STUDENT)})
+            @Journey(value = QuestPreconditions.Data.STUDENT_PRECONDITION, journeyData = {@JourneyData(Data.VALID_STUDENT)})
     })
     @Ripper(targets = {TestDataCleaner.Data.ALL_CREATED_STUDENTS})
     public void testExample1(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student1,
                              @Craft(model = Data.VALID_STUDENT) Late<Student> student2) {
         ;
         quest
-            .enters(World.EARTH)
-            .table().readTable(CAMPAIGNS, TableField.of(TableEntry::setStudentName),
-                TableField.of(TableEntry::setStudentSurname))
-            .validate(() -> Assertions.assertEquals(
-                "SomeName",
-                retrieve(tableRowExtractor(CAMPAIGNS, "123", "User"), TableEntry.class).getStudentName().getText(),
-                "Error Message")
-            )
+                .enters(World.EARTH)
+                .table().readTable(CAMPAIGNS, TableField.of(TableEntry::setStudentName),
+                        TableField.of(TableEntry::setStudentSurname))
+                .validate(() -> Assertions.assertEquals(
+                        "SomeName",
+                        retrieve(tableRowExtractor(CAMPAIGNS, "123", "User"), TableEntry.class).getStudentName()
+                                .getText(),
+                        "Error Message")
+                )
 
-            .validate(() -> Assertions.assertEquals(
-                "SomeName",
-                DefaultStorage.retrieve(CAMPAIGNS, TableEntry.class).getStudentName().getText(),
-                "Error Message")
-            )
+                .validate(() -> Assertions.assertEquals(
+                        "SomeName",
+                        DefaultStorage.retrieve(CAMPAIGNS, TableEntry.class).getStudentName().getText(),
+                        "Error Message")
+                )
 
 
-            .validate(() -> Assertions.assertTrue(
-                DefaultStorage.retrieve(CAMPAIGNS, TableEntry.class).getStudentName().getElement().isDisplayed(),
-                "Error Message")
-            )
+                .validate(() -> Assertions.assertTrue(
+                        DefaultStorage.retrieve(CAMPAIGNS, TableEntry.class).getStudentName().getElement()
+                                .isDisplayed(),
+                        "Error Message")
+                )
 
-            .table().readRow(CAMPAIGNS, List.of("123"), TableField.of(TableEntry::setStudentName),
-                TableField.of(TableEntry::setStudentSurname))
-            .complete();
+                .table().readRow(CAMPAIGNS, List.of("123"), TableField.of(TableEntry::setStudentName),
+                        TableField.of(TableEntry::setStudentSurname))
+                .complete();
 
         System.out.println("dsa");
     }
@@ -115,13 +113,13 @@ public class ExampleTest extends BaseTestSequential {
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = PortalAuthentication.class)
     @PreQuest({
-        @Journey(value = QuestPreconditions.Data.STUDENT_PRECONDITION, journeyData = {@JourneyData(Data.VALID_STUDENT)})
+            @Journey(value = QuestPreconditions.Data.STUDENT_PRECONDITION, journeyData = {@JourneyData(Data.VALID_STUDENT)})
     })
     @Ripper(targets = {TestDataCleaner.Data.ALL_CREATED_STUDENTS})
     public void testExample2(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student1,
                              @Craft(model = Data.VALID_STUDENT) Late<Student> student2) {
-
         System.out.println("dsa");
+
     }
 
     //

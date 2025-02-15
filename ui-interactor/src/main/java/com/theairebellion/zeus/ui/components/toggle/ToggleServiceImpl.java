@@ -1,0 +1,87 @@
+package com.theairebellion.zeus.ui.components.toggle;
+
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
+import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import org.openqa.selenium.By;
+
+import java.util.Map;
+
+public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentType, Toggle> implements ToggleService {
+
+    private static Map<ToggleComponentType, Toggle> components;
+
+    public ToggleServiceImpl(SmartWebDriver driver) {
+        super(driver);
+    }
+
+    @Override
+    protected Toggle createComponent(ToggleComponentType componentType) {
+        return ComponentFactory.getToggleComponent(componentType, driver);
+    }
+
+    @Override
+    public void activate(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
+        toggleComponent(componentType).activate(container, toggleText);
+    }
+
+    @Override
+    public void activate(final ToggleComponentType componentType, final String toggleText) {
+        toggleComponent(componentType).activate(toggleText);
+    }
+
+    @Override
+    public void activate(final ToggleComponentType componentType, final By toggleLocator) {
+        toggleComponent(componentType).activate(toggleLocator);
+    }
+
+    @Override
+    public void deactivate(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
+        toggleComponent(componentType).deactivate(container, toggleText);
+    }
+
+    @Override
+    public void deactivate(final ToggleComponentType componentType, final String toggleText) {
+        toggleComponent(componentType).deactivate(toggleText);
+    }
+
+    @Override
+    public void deactivate(final ToggleComponentType componentType, final By toggleLocator) {
+        toggleComponent(componentType).deactivate(toggleLocator);
+    }
+
+    @Override
+    public boolean isEnabled(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
+        return toggleComponent(componentType).isEnabled(container, toggleText);
+    }
+
+    @Override
+    public boolean isEnabled(final ToggleComponentType componentType, final String toggleText) {
+        return toggleComponent(componentType).isEnabled(toggleText);
+    }
+
+    @Override
+    public boolean isEnabled(final ToggleComponentType componentType, final By toggleLocator) {
+        return toggleComponent(componentType).isEnabled(toggleLocator);
+    }
+
+    @Override
+    public boolean isActivated(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
+        return toggleComponent(componentType).isActivated(container, toggleText);
+    }
+
+    @Override
+    public boolean isActivated(final ToggleComponentType componentType, final String toggleText) {
+        return toggleComponent(componentType).isActivated(toggleText);
+    }
+
+    @Override
+    public boolean isActivated(final ToggleComponentType componentType, final By toggleLocator) {
+        return toggleComponent(componentType).isActivated(toggleLocator);
+    }
+
+    private Toggle toggleComponent(final ToggleComponentType componentType) {
+        return getOrCreateComponent(componentType);
+    }
+}
