@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TableAssertionFunctions {
 
@@ -61,31 +62,6 @@ public class TableAssertionFunctions {
                 .allMatch(row -> row instanceof List<?> && new HashSet<>((List<?>) row).containsAll(expectedValues));
     }
 
-    public static boolean valuesPresentInAllRows(Object actual, Object expected) {
-        if (!(actual instanceof List<?> && expected instanceof List<?>)) {
-            return false;
-        }
-
-        List<?> table = (List<?>) actual;
-        List<?> rowIndicators = (List<?>) expected;
-
-        if (table.isEmpty() || rowIndicators.isEmpty()) {
-            return false;
-        }
-
-        for (Object row : table) {
-            if (!(row instanceof List<?>)) {
-                return false;
-            }
-            List<?> rowList = (List<?>) row;
-            if (!rowList.containsAll(rowIndicators)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public static boolean validateTableContainsRow(Object actual, Object expected) {
         if (!(actual instanceof List<?> && expected instanceof List<?>)) {
             return false;
@@ -138,13 +114,10 @@ public class TableAssertionFunctions {
         if (!(actual instanceof List<?>)) {
             return false;
         }
-
         List<?> table = (List<?>) actual;
-
         if (table.isEmpty()) {
             return false;
         }
-
         Set<List<?>> uniqueRows = new HashSet<>();
         for (Object row : table) {
             if (!(row instanceof List<?>)) {
@@ -152,8 +125,11 @@ public class TableAssertionFunctions {
             }
             uniqueRows.add((List<?>) row);
         }
-
-        return uniqueRows.size() == table.size();
+        boolean unique = uniqueRows.size() == table.size();
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return unique == (boolean) expected;
     }
 
     public static boolean validateNoEmptyCells(Object actual, Object expected) {
@@ -167,18 +143,27 @@ public class TableAssertionFunctions {
             return false;
         }
 
+        boolean noEmptyCells = true;
+
         for (Object row : table) {
             if (!(row instanceof List<?>)) {
-                return false;
+                noEmptyCells = false;
+                break;
             }
 
             List<?> rowList = (List<?>) row;
-            if (rowList.isEmpty() || rowList.stream().anyMatch(cell -> !(cell instanceof String) || ((String) cell).trim().isEmpty())) {
-                return false;
+            if (rowList.isEmpty() || rowList.stream().anyMatch(cell ->
+                    !(cell instanceof String) || ((String) cell).trim().isEmpty())) {
+                noEmptyCells = false;
+                break;
             }
         }
 
-        return true;
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+
+        return noEmptyCells == (Boolean) expected;
     }
 
     public static boolean validateColumnValueUniqueness(Object actual, Object expected) {

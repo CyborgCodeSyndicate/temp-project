@@ -2,14 +2,12 @@ package com.example.project;
 
 
 import com.example.project.base.World;
-import com.example.project.model.TableEntry;
 import com.example.project.model.TransactionsTableEntry;
 import com.example.project.ui.elements.ZeroBank.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.ui.validator.TableAssertionTypes;
-import com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Assertions;
@@ -17,9 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.example.project.ui.elements.Tables.CAMPAIGNS;
 import static com.example.project.ui.elements.Tables.TRANSACTIONS;
 import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.tableRowExtractor;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.*;
+import static com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget.*;
 import static javax.swing.text.html.HTML.Tag;
 
 
@@ -236,11 +235,14 @@ public class ZeroBankTest extends BaseTest {
                 })
                 .table().validate(
                         TRANSACTIONS,
-                        Assertion.builder(String.class)
-                                .target(UiTablesAssertionTarget.TABLE_VALUES)
-                                .type(TableAssertionTypes.TABLE_NOT_EMPTY)
-                                .expected("asd")
-                                .build()
+                        Assertion.builder(Boolean.class).target(TABLE_ELEMENTS).type(TABLE_NOT_EMPTY).expected(true).soft(true).build(),
+                        Assertion.builder(Integer.class).target(TABLE_VALUES).type(TABLE_ROW_COUNT).expected(2).soft(true).build(),
+                        Assertion.builder(Integer.class).target(TABLE_VALUES).type(TABLE_COLUMN_COUNT).expected(4).soft(true).build(),
+                        Assertion.builder(List.class).target(TABLE_VALUES).type(ALL_ROWS_CONTAIN_VALUES).expected(List.of("ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build(),
+                        Assertion.builder(List.class).target(TABLE_VALUES).type(TABLE_CONTAINS_ROW).expected(List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L", "984.3", "")).soft(true).build(),
+                        Assertion.builder(List.class).target(TABLE_VALUES).type(TABLE_DOES_NOT_CONTAIN_ROW).expected(List.of("random", "TEST", "222.2", "")).soft(true).build(),
+                        Assertion.builder(Boolean.class).target(TABLE_VALUES).type(UNIQUE_ROWS).expected(true).soft(true).build(),
+                        Assertion.builder(Boolean.class).target(TABLE_VALUES).type(NO_EMPTY_CELLS).expected(false).soft(true).build()
                 )
                 .complete();
     }
