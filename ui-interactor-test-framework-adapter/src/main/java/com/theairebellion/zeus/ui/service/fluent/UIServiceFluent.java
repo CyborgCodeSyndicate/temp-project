@@ -28,6 +28,8 @@ import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import com.theairebellion.zeus.ui.service.tables.TableServiceFluent;
+import com.theairebellion.zeus.ui.validator.UiTableValidator;
+import com.theairebellion.zeus.ui.validator.UiTableValidatorImpl;
 import lombok.Getter;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +100,8 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
         registerInsertionServices(inputService);
         tableServiceRegistry = new TableServiceRegistry();
         registerTableServices(inputService);
-        table = new TableServiceFluent(this, quest.getStorage(), new TableServiceImpl(driver, tableServiceRegistry),
+        UiTableValidator uiTableValidator = new UiTableValidatorImpl();
+        table = new TableServiceFluent(this, quest.getStorage(), new TableServiceImpl(driver, tableServiceRegistry, uiTableValidator),
                 driver);
         insertionService = new InsertionServiceFluent(
                 new InsertionServiceElementImpl(serviceRegistry, driver), this,

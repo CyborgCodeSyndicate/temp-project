@@ -37,7 +37,7 @@ public class FluentService implements FluentChain {
     }
 
 
-    protected void validation(List<AssertionResult<Object>> assertionResults) {
+    public void validation(List<AssertionResult<Object>> assertionResults) {
         assertionResults.forEach(assertionResult -> {
             String message = assertionResult.toString();
             LogTest.validation(message);

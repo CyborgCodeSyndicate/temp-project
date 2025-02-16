@@ -246,8 +246,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
         final List<AssertionResult<Object>> results = tableService.validate(tableData, assertions);
 
-        // todo: make validation method public
-        // uiServiceFluent.validation(results);
+        uiServiceFluent.validation(results);
 
         return uiServiceFluent;
     }

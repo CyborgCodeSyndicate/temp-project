@@ -13,9 +13,14 @@ public class TableAssertionFunctions {
         if (!(actual instanceof List)) {
             return false;
         }
-
         List<?> table = (List<?>) actual;
-        return !table.isEmpty();
+        boolean notEmpty = !table.isEmpty();
+
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+
+        return notEmpty == (boolean) expected;
     }
 
     public static boolean validateTableRowCount(Object actual, Object expected) {

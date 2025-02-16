@@ -2,13 +2,24 @@ package com.example.project;
 
 
 import com.example.project.base.World;
+import com.example.project.model.TableEntry;
+import com.example.project.model.TransactionsTableEntry;
 import com.example.project.ui.elements.ZeroBank.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.UI;
+import com.theairebellion.zeus.ui.validator.TableAssertionTypes;
+import com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget;
+import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static com.example.project.ui.elements.Tables.CAMPAIGNS;
+import static com.example.project.ui.elements.Tables.TRANSACTIONS;
+import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.tableRowExtractor;
 import static javax.swing.text.html.HTML.Tag;
 
 
@@ -215,8 +226,22 @@ public class ZeroBankTest extends BaseTest {
                 .input().insert(InputFields.AA_TO_AMOUNT_FIELD, "1000")
                 .select().selectOption(SelectFields.AA_TYPE_DDL, "Deposit")
                 .button().click(ButtonFields.FIND_SUBMIT_BUTTON)
-// TODO: test table impl
-//                .table().getValue()
+                .table().readTable(TRANSACTIONS)
+                .validate(() -> {
+                    Assertions.assertEquals(
+                            "1000",
+                            retrieve(tableRowExtractor(TRANSACTIONS, "2012-09-01"), TransactionsTableEntry.class).getDeposit()
+                                    .getText(),
+                            "Error Message");
+                })
+                .table().validate(
+                        TRANSACTIONS,
+                        Assertion.builder(String.class)
+                                .target(UiTablesAssertionTarget.TABLE_VALUES)
+                                .type(TableAssertionTypes.TABLE_NOT_EMPTY)
+                                .expected("asd")
+                                .build()
+                )
                 .complete();
     }
 

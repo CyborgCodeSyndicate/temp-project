@@ -11,20 +11,18 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.validator.UiTableValidator;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class TableServiceImpl extends AbstractComponentService<TableComponentType, Table> implements TableService {
 
     private final TableServiceRegistry tableServiceRegistry;
+    private final UiTableValidator uiTableValidator;
 
-    @Autowired
-    private UiTableValidator uiTableValidator;
-
-    public TableServiceImpl(final SmartWebDriver driver, final TableServiceRegistry tableServiceRegistry) {
+    public TableServiceImpl(final SmartWebDriver driver, final TableServiceRegistry tableServiceRegistry, UiTableValidator uiTableValidator) {
         super(driver);
         this.tableServiceRegistry = tableServiceRegistry;
+        this.uiTableValidator = uiTableValidator;
     }
 
 
