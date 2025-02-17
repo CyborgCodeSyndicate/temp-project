@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.validator;
 
-import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.validator.core.AssertionType;
 
 import java.util.List;
@@ -19,11 +18,8 @@ public enum TableAssertionTypes implements AssertionType {
     TABLE_DATA_MATCHES_EXPECTED(List.class),
     ROW_NOT_EMPTY(List.class),
     ROW_CONTAIN_VALUES(List.class),
-    ROW_DATA_MATCHES_EXPECTED(List.class),
     ALL_CELLS_ENABLED(List.class),
-    CELL_HAS_ATTRIBUTE(SmartWebElement.class),
-    CELL_IS_CLICKABLE(SmartWebElement.class),
-    ALL_CELLS_ARE_CLICKABLE(List.class);
+    ALL_CELLS_CLICKABLE(List.class);
 
     private final Class<?> supportedType;
 

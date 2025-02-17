@@ -65,11 +65,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DATA_MATCHES_EXPECTED, TableAssertionFunctions::validateTableDataMatchesExpected);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_NOT_EMPTY, TableAssertionFunctions::validateRowNotEmpty);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_CONTAIN_VALUES, TableAssertionFunctions::validateRowContainsValues);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_DATA_MATCHES_EXPECTED, TableAssertionFunctions::validateRowDataMatchesExpected);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ENABLED, TableAssertionFunctions::validateAllCellsEnabled);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.CELL_HAS_ATTRIBUTE, TableAssertionFunctions::validateCellHasAttribute);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.CELL_IS_CLICKABLE, TableAssertionFunctions::validateCellIsClickable);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ARE_CLICKABLE, TableAssertionFunctions::validateAllCellsAreClickable);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_CLICKABLE, TableAssertionFunctions::validateAllCellsAreClickable);
     }
 
 

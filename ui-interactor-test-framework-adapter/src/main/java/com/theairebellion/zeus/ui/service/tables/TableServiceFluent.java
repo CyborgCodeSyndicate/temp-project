@@ -239,7 +239,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     public T validate(TableElement tableElement, Assertion<?>... assertions) {
-        Object tableData = storage.sub(UI).get(tableElement.enumImpl(), List.class);
+        Object tableData = storage.sub(UI).get(tableElement.enumImpl(), Object.class);
         if (tableData == null) {
             throw new IllegalArgumentException("No table data found for key: " + tableElement.enumImpl());
         }

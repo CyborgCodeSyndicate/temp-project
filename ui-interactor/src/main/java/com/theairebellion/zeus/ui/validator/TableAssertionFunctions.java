@@ -2,10 +2,7 @@ package com.theairebellion.zeus.ui.validator;
 
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TableAssertionFunctions {
@@ -163,7 +160,7 @@ public class TableAssertionFunctions {
             return false;
         }
 
-        return noEmptyCells == (Boolean) expected;
+        return noEmptyCells == (boolean) expected;
     }
 
     public static boolean validateColumnValueUniqueness(Object actual, Object expected) {
@@ -172,7 +169,8 @@ public class TableAssertionFunctions {
         }
 
         List<?> table = (List<?>) actual;
-        int columnIndex = (Integer) expected;
+        int userColumnIndex = (Integer) expected;
+        int columnIndex = userColumnIndex - 1;
 
         if (table.isEmpty() || columnIndex < 0) {
             return false;
@@ -229,14 +227,16 @@ public class TableAssertionFunctions {
         if (!(actual instanceof List<?>)) {
             return false;
         }
-
         List<?> row = (List<?>) actual;
 
-        if (row.isEmpty()) {
+        boolean rowNotEmpty = !row.isEmpty() && row.stream()
+                .anyMatch(cell -> cell instanceof String && !((String) cell).trim().isEmpty());
+
+        if (!(expected instanceof Boolean)) {
             return false;
         }
 
-        return row.stream().allMatch(cell -> cell instanceof String && !((String) cell).trim().isEmpty());
+        return rowNotEmpty == (boolean) expected;
     }
 
     public static boolean validateRowContainsValues(Object actual, Object expected) {
@@ -244,89 +244,61 @@ public class TableAssertionFunctions {
             return false;
         }
 
-        List<?> row = (List<?>) actual;
-        List<?> expectedValues = (List<?>) expected;
+        List<?> rawRow = (List<?>) actual;
+        List<?> rawExpected = (List<?>) expected;
 
-        if (row.isEmpty() || expectedValues.isEmpty()) {
+        if (rawRow.isEmpty() || rawExpected.isEmpty()) {
             return false;
         }
 
-        if (!row.stream().allMatch(cell -> cell instanceof String) ||
-                !expectedValues.stream().allMatch(value -> value instanceof String)) {
-            return false;
-        }
+        List<String> rowValues = rawRow.stream()
+                .filter(Objects::nonNull)
+                .map(cell -> String.valueOf(cell).trim().toLowerCase())
+                .toList();
 
-        return new HashSet<>(row).containsAll(expectedValues);
-    }
+        List<String> expectedValues = rawExpected.stream()
+                .filter(Objects::nonNull)
+                .map(val -> String.valueOf(val).trim().toLowerCase())
+                .toList();
 
-    public static boolean validateRowDataMatchesExpected(Object actual, Object expected) {
-        if (!(actual instanceof List<?>) || !(expected instanceof List<?>)) {
-            return false;
-        }
-
-        List<?> row = (List<?>) actual;
-        List<?> expectedRow = (List<?>) expected;
-
-        if (row.isEmpty() || expectedRow.isEmpty()) {
-            return false;
-        }
-
-        if (!row.stream().allMatch(cell -> cell instanceof String) ||
-                !expectedRow.stream().allMatch(cell -> cell instanceof String)) {
-            return false;
-        }
-
-        return row.equals(expectedRow);
+        return new HashSet<>(rowValues).containsAll(expectedValues);
     }
 
     public static boolean validateAllCellsEnabled(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
         }
-
         List<?> table = (List<?>) actual;
 
-        return table.stream().allMatch(row ->
+        boolean allCellsEnabled = table.stream().allMatch(row ->
                 row instanceof List<?> && ((List<?>) row).stream().allMatch(cell ->
                         cell instanceof SmartWebElement && ((SmartWebElement) cell).isEnabled()
                 )
         );
-    }
 
-    public static boolean validateCellHasAttribute(Object actual, Object expected) {
-        if (!(actual instanceof SmartWebElement) || !(expected instanceof Map<?, ?>)) {
+        if (!(expected instanceof Boolean)) {
             return false;
         }
 
-        SmartWebElement element = (SmartWebElement) actual;
-        Map<String, String> expectedAttributes = (Map<String, String>) expected;
-
-        return expectedAttributes.entrySet().stream()
-                .allMatch(entry -> entry.getValue().equals(element.getAttribute(entry.getKey())));
-    }
-
-    public static boolean validateCellIsClickable(Object actual, Object expected) {
-        if (!(actual instanceof SmartWebElement)) {
-            return false;
-        }
-
-        SmartWebElement element = (SmartWebElement) actual;
-        return element.isDisplayed() && element.isEnabled();
+        return allCellsEnabled == (boolean) expected;
     }
 
     public static boolean validateAllCellsAreClickable(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
         }
-
         List<?> table = (List<?>) actual;
-
-        return table.stream().allMatch(row ->
+        boolean allClickable = table.stream().allMatch(row ->
                 row instanceof List<?> && ((List<?>) row).stream().allMatch(cell ->
-                        cell instanceof SmartWebElement && ((SmartWebElement) cell).isDisplayed()
-                                && ((SmartWebElement) cell).isEnabled()
+                        cell instanceof SmartWebElement &&
+                                ((SmartWebElement) cell).isDisplayed() &&
+                                ((SmartWebElement) cell).isEnabled()
                 )
         );
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return allClickable == (Boolean) expected;
     }
 
 }
