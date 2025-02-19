@@ -9,39 +9,31 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>api-interactor</artifactId>
+    <artifactId>reqres-test-framework</artifactId>
 
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <api.config.file>config</api.config.file>
+        <test.data.file>test_data</test.data.file>
+        <framework.config.file>config</framework.config.file>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <groupId>com.theairebellion.zeus</groupId>
+            <artifactId>api-interactor-test-framework-adapter</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.theairebellion.zeus</groupId>
-            <artifactId>assertions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.theairebellion.zeus</groupId>
-            <artifactId>commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aeonbits.owner</groupId>
-            <artifactId>owner</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>2.18.2</version>
         </dependency>
     </dependencies>
 
@@ -60,5 +52,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

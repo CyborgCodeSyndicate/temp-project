@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Builder(builderMethodName = "hiddenBuilder")
+@Builder
 public class Assertion<T> {
 
     private final AssertionTarget target;
@@ -15,10 +15,5 @@ public class Assertion<T> {
     private final AssertionType type;
     private final T expected;
     private final boolean soft;
-
-
-    public static <T> AssertionBuilder<T> builder(Class<T> expectedType) {
-        return hiddenBuilder();
-    }
 
 }
