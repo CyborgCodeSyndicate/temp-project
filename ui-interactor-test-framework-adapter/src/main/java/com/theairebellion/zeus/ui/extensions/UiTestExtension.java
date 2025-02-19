@@ -55,9 +55,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     static {
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_NOT_EMPTY, TableAssertionFunctions::validateTableNotEmpty);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_ROW_COUNT, TableAssertionFunctions::validateTableRowCount);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_COLUMN_COUNT, TableAssertionFunctions::validateTableColumnCount);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_ROWS_CONTAIN_VALUES, TableAssertionFunctions::validateAllRowsContainValues);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_CONTAINS_ROW, TableAssertionFunctions::validateTableContainsRow);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DOES_NOT_CONTAIN_ROW, TableAssertionFunctions::validateTableDoesNotContainRow);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.UNIQUE_ROWS, TableAssertionFunctions::validateUniqueRows);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.NO_EMPTY_CELLS, TableAssertionFunctions::validateNoEmptyCells);

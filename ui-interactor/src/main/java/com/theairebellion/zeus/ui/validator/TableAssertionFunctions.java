@@ -32,17 +32,6 @@ public class TableAssertionFunctions {
         return table.size() == expectedRowCount;
     }
 
-    public static boolean validateTableColumnCount(Object actual, Object expected) {
-        if (!(actual instanceof List) || !(expected instanceof Integer)) {
-            return false;
-        }
-
-        List<?> table = (List<?>) actual;
-        int expectedColumnCount = (Integer) expected;
-
-        return table.stream().allMatch(row -> row instanceof List<?> && ((List<?>) row).size() == expectedColumnCount);
-    }
-
     public static boolean validateAllRowsContainValues(Object actual, Object expected) {
         if (!(actual instanceof List) || !(expected instanceof List)) {
             return false;
@@ -57,30 +46,6 @@ public class TableAssertionFunctions {
 
         return table.stream()
                 .allMatch(row -> row instanceof List<?> && new HashSet<>((List<?>) row).containsAll(expectedValues));
-    }
-
-    public static boolean validateTableContainsRow(Object actual, Object expected) {
-        if (!(actual instanceof List<?> && expected instanceof List<?>)) {
-            return false;
-        }
-
-        List<?> table = (List<?>) actual;
-        List<?> expectedRow = (List<?>) expected;
-
-        if (table.isEmpty() || expectedRow.isEmpty()) {
-            return false;
-        }
-
-        for (Object row : table) {
-            if (!(row instanceof List<?>)) {
-                return false;
-            }
-            if (row.equals(expectedRow)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static boolean validateTableDoesNotContainRow(Object actual, Object expected) {

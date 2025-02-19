@@ -8,9 +8,7 @@ public enum TableAssertionTypes implements AssertionType {
 
     TABLE_NOT_EMPTY(List.class),
     TABLE_ROW_COUNT(List.class),
-    TABLE_COLUMN_COUNT(List.class),
     ALL_ROWS_CONTAIN_VALUES(List.class),
-    TABLE_CONTAINS_ROW(List.class),
     TABLE_DOES_NOT_CONTAIN_ROW(List.class),
     UNIQUE_ROWS(List.class),
     NO_EMPTY_CELLS(List.class),

@@ -1,15 +1,18 @@
 package com.theairebellion.zeus.ui.service.tables;
 
 
+import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.service.TableService;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -21,6 +24,9 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     private final T uiServiceFluent;
     private final Storage storage;
     private final SmartWebDriver driver;
+
+    @Autowired
+    private DecoratorsFactory decoratorsFactory;
 
 
     public TableServiceFluent(T uiServiceFluent, Storage storage, TableService tableService,
@@ -245,6 +251,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
         }
 
         final List<AssertionResult<Object>> results = tableService.validate(tableData, assertions);
+        // SuperUIServiceFluent decorate = decoratorsFactory.decorate(uiServiceFluent, SuperUIServiceFluent.class);
 
         uiServiceFluent.validation(results);
 
