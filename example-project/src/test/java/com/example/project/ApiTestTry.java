@@ -33,7 +33,7 @@ public class ApiTestTry extends BaseTest {
     public void testPet(Quest quest, @Craft(model = Data.DOG_PET) Pet pet) {
         quest.enters(World.OLYMPYS)
             .requestAndValidate(CREATE_PET, pet,
-                Assertion.builder(Integer.class).target(STATUS).type(IS).expected(200).build())
+                Assertion.builder().target(STATUS).type(IS).expected(200).build())
             .complete();
     }
 
@@ -60,7 +60,7 @@ public class ApiTestTry extends BaseTest {
 
             .requestAndValidate(CREATE_PET.withQueryParam("name", "john").withQueryParam("surname", "smith"),
                 pet.join(),
-                Assertion.builder(Integer.class).target(STATUS).type(IS).expected(200).build())
+                Assertion.builder().target(STATUS).type(IS).expected(200).build())
             .complete();
     }
 

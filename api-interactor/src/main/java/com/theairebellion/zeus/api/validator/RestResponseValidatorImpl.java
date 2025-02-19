@@ -26,8 +26,10 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
         for (Assertion<?> assertion : assertions) {
             switch ((RestAssertionTarget) assertion.getTarget()) {
                 case STATUS -> {
-                    data.put("status", (T) Integer.valueOf(response.getStatusCode()));
-                    assertion.setKey("status");
+                    // todo: check if it can be improved
+                    final String ASSERTION_KEY_FOR_STATUS = "AssertionKeyForStatus";
+                    data.put(ASSERTION_KEY_FOR_STATUS, (T) Integer.valueOf(response.getStatusCode()));
+                    assertion.setKey(ASSERTION_KEY_FOR_STATUS);
                 }
                 case BODY -> {
                     String key = assertion.getKey();

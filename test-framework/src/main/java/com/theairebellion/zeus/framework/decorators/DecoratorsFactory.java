@@ -15,7 +15,7 @@ public class DecoratorsFactory {
             return null;
         }
 
-        if (cache.containsKey(target)) {
+        if (cache.containsKey(target) && cache.get(target).getClass().equals(decoratorClass)) {
             return (K) cache.get(target);
         }
 

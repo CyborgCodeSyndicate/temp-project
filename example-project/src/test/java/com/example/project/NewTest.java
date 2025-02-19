@@ -51,15 +51,15 @@ public class NewTest extends BaseTest {
             .request(ENDPOINT_EXAMPLE.withPathParam("campaignId", 17).withQueryParam("page", 1), student)
             .validateResponse(
                 retrieve(ENDPOINT_EXAMPLE, Response.class),
-                Assertion.builder(Integer.class).target(STATUS).type(IS).expected(200).build(),
-                Assertion.builder(Long.class).target(BODY).key("id").type(NOT_NULL).build(),
-                Assertion.builder(String.class).target(BODY).key("list").type(CONTAINS).expected("Ssfsdf").build())
+                Assertion.builder().target(STATUS).type(IS).expected(200).build(),
+                Assertion.builder().target(BODY).key("id").type(NOT_NULL).build(),
+                Assertion.builder().target(BODY).key("list").type(CONTAINS).expected("Ssfsdf").build())
             .then()
             .enters(World.UNDERWORLD)
             .query(Queries.EXAMPLE.withParam("id",
                 retrieve(responseBodyExtraction(ENDPOINT_EXAMPLE, "$.id"), Long.class)))
             .validate(retrieve(Queries.EXAMPLE, QueryResponse.class),
-                Assertion.builder(Integer.class).target(NUMBER_ROWS).type(IS).expected(3).soft(true)
+                Assertion.builder().target(NUMBER_ROWS).type(IS).expected(3).soft(true)
                     .build())
             .then()
             .enters(World.EARTH)
