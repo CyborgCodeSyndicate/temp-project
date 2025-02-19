@@ -239,21 +239,21 @@ public class ZeroBankTest extends BaseTest {
                 })
                 .table().validate(
                         TRANSACTIONS,
-                        Assertion.builder(Boolean.class).target(TABLE_VALUES).type(TABLE_NOT_EMPTY).expected(true).soft(true).build(),
-                        Assertion.builder(Integer.class).target(TABLE_VALUES).type(TABLE_ROW_COUNT).expected(2).soft(true).build(),
-                        Assertion.builder(List.class).target(TABLE_VALUES).type(ALL_ROWS_CONTAIN_VALUES).expected(List.of("ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build(),
-                        Assertion.builder(List.class).target(TABLE_VALUES).type(TABLE_DOES_NOT_CONTAIN_ROW).expected(List.of("random", "TEST", "222.2", "")).soft(true).build(),
-                        Assertion.builder(Boolean.class).target(TABLE_VALUES).type(UNIQUE_ROWS).expected(true).soft(true).build(),
-                        Assertion.builder(Boolean.class).target(TABLE_VALUES).type(NO_EMPTY_CELLS).expected(false).soft(true).build(),
-                        Assertion.builder(Integer.class).target(TABLE_VALUES).type(COLUMN_VALUE_UNIQUENESS).expected(1).soft(true).build(),
-                        Assertion.builder(List.class).target(TABLE_VALUES).type(TABLE_DATA_MATCHES_EXPECTED).expected(expectedTable).soft(true).build(),
-                        Assertion.builder(Boolean.class).target(TABLE_ELEMENTS).type(ALL_CELLS_ENABLED).expected(true).soft(true).build(),
-                        Assertion.builder(Boolean.class).target(TABLE_ELEMENTS).type(ALL_CELLS_CLICKABLE).expected(true).soft(true).build())
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_NOT_EMPTY).expected(true).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_ROW_COUNT).expected(2).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(ALL_ROWS_CONTAIN_VALUES).expected(List.of("ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_DOES_NOT_CONTAIN_ROW).expected(List.of("random", "TEST", "222.2", "")).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(UNIQUE_ROWS).expected(true).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(NO_EMPTY_CELLS).expected(false).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(COLUMN_VALUE_UNIQUENESS).expected(1).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_DATA_MATCHES_EXPECTED).expected(expectedTable).soft(true).build(),
+                        Assertion.builder().target(TABLE_ELEMENTS).type(ALL_CELLS_ENABLED).expected(true).soft(true).build(),
+                        Assertion.builder().target(TABLE_ELEMENTS).type(ALL_CELLS_CLICKABLE).expected(true).soft(true).build())
                 .table().readRow(TRANSACTIONS, 1)
                 .table().validate(
                         TRANSACTIONS,
-                        Assertion.builder(Boolean.class).target(ROW_VALUES).type(ROW_NOT_EMPTY).expected(true).soft(true).build(),
-                        Assertion.builder(List.class).target(ROW_VALUES).type(ROW_CONTAIN_VALUES).expected(List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build())
+                        Assertion.builder().target(ROW_VALUES).type(ROW_NOT_EMPTY).expected(true).soft(true).build(),
+                        Assertion.builder().target(ROW_VALUES).type(ROW_CONTAIN_VALUES).expected(List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build())
                 .complete();
     }
 
