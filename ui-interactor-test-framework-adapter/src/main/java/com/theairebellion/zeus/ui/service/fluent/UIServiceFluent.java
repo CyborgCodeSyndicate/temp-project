@@ -5,6 +5,8 @@ import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.ui.components.accordion.AccordionServiceImpl;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
@@ -15,8 +17,6 @@ import com.theairebellion.zeus.ui.components.loader.LoaderServiceImpl;
 import com.theairebellion.zeus.ui.components.modal.ModalServiceImpl;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.radio.RadioServiceImpl;
-import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
-import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
 import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
@@ -30,10 +30,12 @@ import com.theairebellion.zeus.ui.service.InsertionServiceElementImpl;
 import com.theairebellion.zeus.ui.service.tables.TableServiceFluent;
 import com.theairebellion.zeus.ui.validator.UiTableValidator;
 import com.theairebellion.zeus.ui.validator.UiTableValidatorImpl;
+import com.theairebellion.zeus.validator.core.AssertionResult;
 import lombok.Getter;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @TestService("UI")
@@ -129,21 +131,7 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected UIServiceFluent<T> clone() {
-        UIServiceFluent<T> cloned = new UIServiceFluent<>(this.driver);
-
-        cloned.quest = this.quest; // quest is 'protected' in FluentService
-
-        cloned.inputField = this.inputField;
-        cloned.table = this.table;
-        cloned.interceptor = this.interceptor;
-        cloned.serviceRegistry = this.serviceRegistry;
-        cloned.tableServiceRegistry = this.tableServiceRegistry;
-        cloned.insertionService = this.insertionService;
-
-        return cloned;
+    protected void validation(List<AssertionResult<Object>> assertionResults) {
+        super.validation(assertionResults);
     }
-
-
 }

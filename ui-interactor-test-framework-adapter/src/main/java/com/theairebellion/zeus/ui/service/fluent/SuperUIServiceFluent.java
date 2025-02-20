@@ -22,6 +22,6 @@ public class SuperUIServiceFluent<T extends UIServiceFluent<?>> extends UIServic
 
     @Override
     public void validation(List<AssertionResult<Object>> assertionResults) {
-        super.validation(assertionResults);
+        original.validation(assertionResults);
     }
 }
