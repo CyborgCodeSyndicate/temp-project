@@ -18,7 +18,7 @@ public class TableAssertionFunctions {
             return false;
         }
 
-        return notEmpty == (boolean) expected;
+        return notEmpty == (Boolean) expected;
     }
 
     public static boolean validateTableRowCount(Object actual, Object expected) {
@@ -91,7 +91,7 @@ public class TableAssertionFunctions {
         if (!(expected instanceof Boolean)) {
             return false;
         }
-        return unique == (boolean) expected;
+        return unique == (Boolean) expected;
     }
 
     public static boolean validateNoEmptyCells(Object actual, Object expected) {
@@ -125,7 +125,7 @@ public class TableAssertionFunctions {
             return false;
         }
 
-        return noEmptyCells == (boolean) expected;
+        return noEmptyCells == (Boolean) expected;
     }
 
     public static boolean validateColumnValueUniqueness(Object actual, Object expected) {
@@ -201,7 +201,7 @@ public class TableAssertionFunctions {
             return false;
         }
 
-        return rowNotEmpty == (boolean) expected;
+        return rowNotEmpty == (Boolean) expected;
     }
 
     public static boolean validateRowContainsValues(Object actual, Object expected) {
@@ -245,7 +245,7 @@ public class TableAssertionFunctions {
             return false;
         }
 
-        return allCellsEnabled == (boolean) expected;
+        return allCellsEnabled == (Boolean) expected;
     }
 
     public static boolean validateAllCellsAreClickable(Object actual, Object expected) {
