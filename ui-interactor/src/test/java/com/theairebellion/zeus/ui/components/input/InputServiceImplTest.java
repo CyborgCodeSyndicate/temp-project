@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.components.input;
 
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
+import com.theairebellion.zeus.ui.components.input.mock.MockInputComponentType;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-public class InputServiceImplTest {
+class InputServiceImplTest {
 
     static {
         System.setProperty("project.package", "com.theairebellion.zeus");
@@ -27,20 +28,12 @@ public class InputServiceImplTest {
     private InputServiceImpl service;
     private SmartWebElement container;
     private Input inputMock;
-    private DummyInputComponentType dummyType;
+    private MockInputComponentType mockInputComponentType;
     private By locator;
     private SmartWebElement cell;
     private SmartWebElement headerCell;
     private FilterStrategy filterStrategy;
     private MockedStatic<ComponentFactory> factoryMock;
-
-    private enum DummyInputComponentType implements InputComponentType {
-        DUMMY;
-        @Override
-        public Enum<?> getType() {
-            return this;
-        }
-    }
 
     @BeforeEach
     public void setUp() {
@@ -48,13 +41,13 @@ public class InputServiceImplTest {
         service = new InputServiceImpl(driver);
         container = mock(SmartWebElement.class);
         inputMock = mock(Input.class);
-        dummyType = DummyInputComponentType.DUMMY;
+        mockInputComponentType = MockInputComponentType.DUMMY;
         locator = By.id("input");
         cell = mock(SmartWebElement.class);
         headerCell = mock(SmartWebElement.class);
         filterStrategy = mock(FilterStrategy.class);
         factoryMock = Mockito.mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getInputComponent(eq(dummyType), eq(driver)))
+        factoryMock.when(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)))
                 .thenReturn(inputMock);
     }
 
@@ -67,56 +60,56 @@ public class InputServiceImplTest {
 
     @Test
     public void testInsertContainer() {
-        service.insert(dummyType, container, "value");
+        service.insert(mockInputComponentType, container, "value");
         verify(inputMock).insert(container, "value");
     }
 
     @Test
     public void testInsertContainerLabel() {
-        service.insert(dummyType, container, "label", "value");
+        service.insert(mockInputComponentType, container, "label", "value");
         verify(inputMock).insert(container, "label", "value");
     }
 
     @Test
     public void testInsertLabel() {
-        service.insert(dummyType, "label", "value");
+        service.insert(mockInputComponentType, "label", "value");
         verify(inputMock).insert("label", "value");
     }
 
     @Test
     public void testInsertBy() {
-        service.insert(dummyType, locator, "value");
+        service.insert(mockInputComponentType, locator, "value");
         verify(inputMock).insert(locator, "value");
     }
 
     @Test
     public void testClearContainer() {
-        service.clear(dummyType, container);
+        service.clear(mockInputComponentType, container);
         verify(inputMock).clear(container);
     }
 
     @Test
     public void testClearContainerLabel() {
-        service.clear(dummyType, container, "label");
+        service.clear(mockInputComponentType, container, "label");
         verify(inputMock).clear(container, "label");
     }
 
     @Test
     public void testClearLabel() {
-        service.clear(dummyType, "label");
+        service.clear(mockInputComponentType, "label");
         verify(inputMock).clear("label");
     }
 
     @Test
     public void testClearBy() {
-        service.clear(dummyType, locator);
+        service.clear(mockInputComponentType, locator);
         verify(inputMock).clear(locator);
     }
 
     @Test
     public void testGetValueContainer() {
         when(inputMock.getValue(container)).thenReturn("val");
-        String result = service.getValue(dummyType, container);
+        String result = service.getValue(mockInputComponentType, container);
         assertEquals("val", result);
         verify(inputMock).getValue(container);
     }
@@ -124,7 +117,7 @@ public class InputServiceImplTest {
     @Test
     public void testGetValueContainerLabel() {
         when(inputMock.getValue(container)).thenReturn("val");
-        String result = service.getValue(dummyType, container, "label");
+        String result = service.getValue(mockInputComponentType, container, "label");
         assertEquals("val", result);
         verify(inputMock).getValue(container);
     }
@@ -132,7 +125,7 @@ public class InputServiceImplTest {
     @Test
     public void testGetValueLabel() {
         when(inputMock.getValue("label")).thenReturn("val");
-        String result = service.getValue(dummyType, "label");
+        String result = service.getValue(mockInputComponentType, "label");
         assertEquals("val", result);
         verify(inputMock).getValue("label");
     }
@@ -140,7 +133,7 @@ public class InputServiceImplTest {
     @Test
     public void testGetValueBy() {
         when(inputMock.getValue(locator)).thenReturn("val");
-        String result = service.getValue(dummyType, locator);
+        String result = service.getValue(mockInputComponentType, locator);
         assertEquals("val", result);
         verify(inputMock).getValue(locator);
     }
@@ -148,7 +141,7 @@ public class InputServiceImplTest {
     @Test
     public void testIsEnabledContainer() {
         when(inputMock.isEnabled(container)).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, container);
+        boolean result = service.isEnabled(mockInputComponentType, container);
         assertTrue(result);
         verify(inputMock).isEnabled(container);
     }
@@ -156,7 +149,7 @@ public class InputServiceImplTest {
     @Test
     public void testIsEnabledContainerLabel() {
         when(inputMock.isEnabled(container, "label")).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, container, "label");
+        boolean result = service.isEnabled(mockInputComponentType, container, "label");
         assertTrue(result);
         verify(inputMock).isEnabled(container, "label");
     }
@@ -164,7 +157,7 @@ public class InputServiceImplTest {
     @Test
     public void testIsEnabledLabel() {
         when(inputMock.isEnabled("label")).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, "label");
+        boolean result = service.isEnabled(mockInputComponentType, "label");
         assertTrue(result);
         verify(inputMock).isEnabled("label");
     }
@@ -172,7 +165,7 @@ public class InputServiceImplTest {
     @Test
     public void testIsEnabledBy() {
         when(inputMock.isEnabled(locator)).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, locator);
+        boolean result = service.isEnabled(mockInputComponentType, locator);
         assertTrue(result);
         verify(inputMock).isEnabled(locator);
     }
@@ -180,7 +173,7 @@ public class InputServiceImplTest {
     @Test
     public void testGetErrorMessageContainer() {
         when(inputMock.getErrorMessage(container)).thenReturn("err");
-        String result = service.getErrorMessage(dummyType, container);
+        String result = service.getErrorMessage(mockInputComponentType, container);
         assertEquals("err", result);
         verify(inputMock).getErrorMessage(container);
     }
@@ -188,7 +181,7 @@ public class InputServiceImplTest {
     @Test
     public void testGetErrorMessageContainerLabel() {
         when(inputMock.getErrorMessage(container, "label")).thenReturn("err");
-        String result = service.getErrorMessage(dummyType, container, "label");
+        String result = service.getErrorMessage(mockInputComponentType, container, "label");
         assertEquals("err", result);
         verify(inputMock).getErrorMessage(container, "label");
     }
@@ -196,7 +189,7 @@ public class InputServiceImplTest {
     @Test
     public void testGetErrorMessageLabel() {
         when(inputMock.getErrorMessage("label")).thenReturn("err");
-        String result = service.getErrorMessage(dummyType, "label");
+        String result = service.getErrorMessage(mockInputComponentType, "label");
         assertEquals("err", result);
         verify(inputMock).getErrorMessage("label");
     }
@@ -204,26 +197,26 @@ public class InputServiceImplTest {
     @Test
     public void testGetErrorMessageBy() {
         when(inputMock.getErrorMessage(locator)).thenReturn("err");
-        String result = service.getErrorMessage(dummyType, locator);
+        String result = service.getErrorMessage(mockInputComponentType, locator);
         assertEquals("err", result);
         verify(inputMock).getErrorMessage(locator);
     }
 
     @Test
     public void testTableInsertion() {
-        service.tableInsertion(cell, dummyType, "val1", "val2");
+        service.tableInsertion(cell, mockInputComponentType, "val1", "val2");
         verify(inputMock).tableInsertion(cell, "val1", "val2");
     }
 
     @Test
     public void testTableFilter() {
-        service.tableFilter(headerCell, dummyType, filterStrategy, "val1");
+        service.tableFilter(headerCell, mockInputComponentType, filterStrategy, "val1");
         verify(inputMock).tableFilter(headerCell, filterStrategy, "val1");
     }
 
     @Test
     public void testInsertionMethod() {
-        service.insertion(dummyType, locator, "insertionVal");
+        service.insertion(mockInputComponentType, locator, "insertionVal");
         verify(inputMock).insert(locator, "insertionVal");
     }
 }

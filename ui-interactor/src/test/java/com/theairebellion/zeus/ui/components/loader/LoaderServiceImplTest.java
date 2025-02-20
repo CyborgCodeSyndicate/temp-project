@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
+import com.theairebellion.zeus.ui.components.loader.mock.MockLoaderComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.junit.jupiter.api.AfterEach;
@@ -14,23 +15,15 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-public class LoaderServiceImplTest {
+class LoaderServiceImplTest {
 
     private SmartWebDriver driver;
     private LoaderServiceImpl service;
     private SmartWebElement container;
     private By locator;
     private Loader loaderMock;
-    private DummyLoaderComponentType dummyType;
+    private MockLoaderComponentType mockLoaderComponentType;
     private MockedStatic<ComponentFactory> factoryMock;
-
-    public enum DummyLoaderComponentType implements LoaderComponentType {
-        DUMMY;
-        @Override
-        public Enum<?> getType() {
-            return this;
-        }
-    }
 
     @BeforeEach
     public void setUp() {
@@ -41,9 +34,9 @@ public class LoaderServiceImplTest {
         container = mock(SmartWebElement.class);
         locator = By.id("loader");
         loaderMock = mock(Loader.class);
-        dummyType = DummyLoaderComponentType.DUMMY;
+        mockLoaderComponentType = MockLoaderComponentType.DUMMY;
         factoryMock = Mockito.mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getLoaderComponent(eq(dummyType), eq(driver)))
+        factoryMock.when(() -> ComponentFactory.getLoaderComponent(eq(mockLoaderComponentType), eq(driver)))
                 .thenReturn(loaderMock);
     }
 
@@ -55,57 +48,57 @@ public class LoaderServiceImplTest {
     @Test
     public void testIsVisibleContainer() {
         when(loaderMock.isVisible(container)).thenReturn(true);
-        assertTrue(service.isVisible(dummyType, container));
+        assertTrue(service.isVisible(mockLoaderComponentType, container));
         verify(loaderMock).isVisible(container);
     }
 
     @Test
     public void testIsVisibleLocator() {
         when(loaderMock.isVisible(locator)).thenReturn(true);
-        assertTrue(service.isVisible(dummyType, locator));
+        assertTrue(service.isVisible(mockLoaderComponentType, locator));
         verify(loaderMock).isVisible(locator);
     }
 
     @Test
     public void testWaitToBeShownContainer() {
-        service.waitToBeShown(dummyType, container, 5);
+        service.waitToBeShown(mockLoaderComponentType, container, 5);
         verify(loaderMock).waitToBeShown(container, 5);
     }
 
     @Test
     public void testWaitToBeShownInt() {
-        service.waitToBeShown(dummyType, 5);
+        service.waitToBeShown(mockLoaderComponentType, 5);
         verify(loaderMock).waitToBeShown(5);
     }
 
     @Test
     public void testWaitToBeShownLocator() {
-        service.waitToBeShown(dummyType, locator, 5);
+        service.waitToBeShown(mockLoaderComponentType, locator, 5);
         verify(loaderMock).waitToBeShown(locator, 5);
     }
 
     @Test
     public void testWaitToBeRemovedContainer() {
-        service.waitToBeRemoved(dummyType, container, 10);
+        service.waitToBeRemoved(mockLoaderComponentType, container, 10);
         verify(loaderMock).waitToBeRemoved(container, 10);
     }
 
     @Test
     public void testWaitToBeRemovedInt() {
-        service.waitToBeRemoved(dummyType, 10);
+        service.waitToBeRemoved(mockLoaderComponentType, 10);
         verify(loaderMock).waitToBeRemoved(10);
     }
 
     @Test
     public void testWaitToBeRemovedLocator() {
-        service.waitToBeRemoved(dummyType, locator, 10);
+        service.waitToBeRemoved(mockLoaderComponentType, locator, 10);
         verify(loaderMock).waitToBeRemoved(locator, 10);
     }
 
     @Test
     public void testComponentCaching() {
-        service.isVisible(dummyType, container);
-        service.isVisible(dummyType, container);
-        factoryMock.verify(() -> ComponentFactory.getLoaderComponent(eq(dummyType), eq(driver)), times(1));
+        service.isVisible(mockLoaderComponentType, container);
+        service.isVisible(mockLoaderComponentType, container);
+        factoryMock.verify(() -> ComponentFactory.getLoaderComponent(eq(mockLoaderComponentType), eq(driver)), times(1));
     }
 }

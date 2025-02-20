@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.button;
 
+import com.theairebellion.zeus.ui.components.button.mock.MockButtonComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-public class ButtonServiceImplTest {
+class ButtonServiceImplTest {
 
     static {
         System.setProperty("project.package", "com.theairebellion.zeus");
@@ -25,17 +26,9 @@ public class ButtonServiceImplTest {
     private ButtonServiceImpl service;
     private SmartWebElement container;
     private Button buttonMock;
-    private DummyButtonComponentType dummyType;
+    private MockButtonComponentType mockButtonComponentType;
     private By locator;
     private MockedStatic<ComponentFactory> factoryMock;
-
-    public enum DummyButtonComponentType implements ButtonComponentType {
-        DUMMY;
-        @Override
-        public Enum<?> getType() {
-            return this;
-        }
-    }
 
     @BeforeEach
     public void setUp() {
@@ -43,10 +36,10 @@ public class ButtonServiceImplTest {
         service = new ButtonServiceImpl(driver);
         container = mock(SmartWebElement.class);
         buttonMock = mock(Button.class);
-        dummyType = DummyButtonComponentType.DUMMY;
+        mockButtonComponentType = MockButtonComponentType.DUMMY;
         locator = By.id("button");
         factoryMock = Mockito.mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getButtonComponent(eq(dummyType), eq(driver)))
+        factoryMock.when(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)))
                 .thenReturn(buttonMock);
     }
 
@@ -57,32 +50,32 @@ public class ButtonServiceImplTest {
 
     @Test
     public void testClickContainerAndText() {
-        service.click(dummyType, container, "ClickMe");
+        service.click(mockButtonComponentType, container, "ClickMe");
         verify(buttonMock).click(container, "ClickMe");
     }
 
     @Test
     public void testClickContainer() {
-        service.click(dummyType, container);
+        service.click(mockButtonComponentType, container);
         verify(buttonMock).click(container);
     }
 
     @Test
     public void testClickString() {
-        service.click(dummyType, "ClickMe");
+        service.click(mockButtonComponentType, "ClickMe");
         verify(buttonMock).click("ClickMe");
     }
 
     @Test
     public void testClickLocator() {
-        service.click(dummyType, locator);
+        service.click(mockButtonComponentType, locator);
         verify(buttonMock).click(locator);
     }
 
     @Test
     public void testIsEnabledContainerAndText() {
         when(buttonMock.isEnabled(container, "EnableMe")).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, container, "EnableMe");
+        boolean result = service.isEnabled(mockButtonComponentType, container, "EnableMe");
         assertTrue(result);
         verify(buttonMock).isEnabled(container, "EnableMe");
     }
@@ -90,7 +83,7 @@ public class ButtonServiceImplTest {
     @Test
     public void testIsEnabledContainer() {
         when(buttonMock.isEnabled(container)).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, container);
+        boolean result = service.isEnabled(mockButtonComponentType, container);
         assertTrue(result);
         verify(buttonMock).isEnabled(container);
     }
@@ -98,7 +91,7 @@ public class ButtonServiceImplTest {
     @Test
     public void testIsEnabledString() {
         when(buttonMock.isEnabled("EnableMe")).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, "EnableMe");
+        boolean result = service.isEnabled(mockButtonComponentType, "EnableMe");
         assertTrue(result);
         verify(buttonMock).isEnabled("EnableMe");
     }
@@ -106,7 +99,7 @@ public class ButtonServiceImplTest {
     @Test
     public void testIsEnabledLocator() {
         when(buttonMock.isEnabled(locator)).thenReturn(true);
-        boolean result = service.isEnabled(dummyType, locator);
+        boolean result = service.isEnabled(mockButtonComponentType, locator);
         assertTrue(result);
         verify(buttonMock).isEnabled(locator);
     }
@@ -114,7 +107,7 @@ public class ButtonServiceImplTest {
     @Test
     public void testIsVisibleContainerAndText() {
         when(buttonMock.isVisible(container, "VisibleMe")).thenReturn(true);
-        boolean result = service.isVisible(dummyType, container, "VisibleMe");
+        boolean result = service.isVisible(mockButtonComponentType, container, "VisibleMe");
         assertTrue(result);
         verify(buttonMock).isVisible(container, "VisibleMe");
     }
@@ -122,7 +115,7 @@ public class ButtonServiceImplTest {
     @Test
     public void testIsVisibleContainer() {
         when(buttonMock.isVisible(container)).thenReturn(true);
-        boolean result = service.isVisible(dummyType, container);
+        boolean result = service.isVisible(mockButtonComponentType, container);
         assertTrue(result);
         verify(buttonMock).isVisible(container);
     }
@@ -130,7 +123,7 @@ public class ButtonServiceImplTest {
     @Test
     public void testIsVisibleString() {
         when(buttonMock.isVisible("VisibleMe")).thenReturn(true);
-        boolean result = service.isVisible(dummyType, "VisibleMe");
+        boolean result = service.isVisible(mockButtonComponentType, "VisibleMe");
         assertTrue(result);
         verify(buttonMock).isVisible("VisibleMe");
     }
@@ -138,7 +131,7 @@ public class ButtonServiceImplTest {
     @Test
     public void testIsVisibleLocator() {
         when(buttonMock.isVisible(locator)).thenReturn(true);
-        boolean result = service.isVisible(dummyType, locator);
+        boolean result = service.isVisible(mockButtonComponentType, locator);
         assertTrue(result);
         verify(buttonMock).isVisible(locator);
     }
@@ -211,9 +204,9 @@ public class ButtonServiceImplTest {
 
     @Test
     public void testComponentCaching() {
-        service.click(dummyType, container, "ClickMe");
-        service.isEnabled(dummyType, container, "EnableMe");
-        service.isVisible(dummyType, container, "VisibleMe");
-        factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(dummyType), eq(driver)), times(1));
+        service.click(mockButtonComponentType, container, "ClickMe");
+        service.isEnabled(mockButtonComponentType, container, "EnableMe");
+        service.isVisible(mockButtonComponentType, container, "VisibleMe");
+        factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)), times(1));
     }
 }

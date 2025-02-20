@@ -19,7 +19,7 @@ class AssertionUtilTest {
     @Test
     void validate_throwsIfDataIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> AssertionUtil.validate(null, Assertion.builder(String.class).build()));
+                () -> AssertionUtil.validate(null, Assertion.builder().build()));
     }
 
     @Test
@@ -31,7 +31,7 @@ class AssertionUtilTest {
     @Test
     void validate_singleAssertionSuccess() {
         var data = Map.of(NAME_KEY, ZEUS);
-        var assertion = Assertion.builder(String.class)
+        var assertion = Assertion.builder()
                 .key(NAME_KEY)
                 .type(AssertionTypes.IS)
                 .expected(ZEUS)
@@ -48,7 +48,7 @@ class AssertionUtilTest {
     @Test
     void validate_singleAssertionFail() {
         var data = Map.of(AGE_KEY, 25);
-        var assertion = Assertion.builder(Integer.class)
+        var assertion = Assertion.builder()
                 .key(AGE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected(30)
@@ -62,7 +62,7 @@ class AssertionUtilTest {
     @Test
     void validate_throwsIfKeyNotExist() {
         var data = Map.of(AGE_KEY, 25);
-        var assertion = Assertion.builder(Integer.class)
+        var assertion = Assertion.builder()
                 .key("missingKey")
                 .type(AssertionTypes.IS)
                 .expected(25)
@@ -81,7 +81,7 @@ class AssertionUtilTest {
     @Test
     void validate_throwsIfAssertionHasNoKey() {
         var data = Map.of(NAME_KEY, ZEUS);
-        var assertion = Assertion.builder(String.class)
+        var assertion = Assertion.builder()
                 .type(AssertionTypes.IS)
                 .expected(ZEUS)
                 .soft(false)
@@ -93,7 +93,7 @@ class AssertionUtilTest {
     @Test
     void validate_throwsIfAssertionHasNoType() {
         var data = Map.of(NAME_KEY, ZEUS);
-        var assertion = Assertion.builder(String.class)
+        var assertion = Assertion.builder()
                 .key(NAME_KEY)
                 .expected(ZEUS)
                 .soft(false)
@@ -105,7 +105,7 @@ class AssertionUtilTest {
     @Test
     void validate_supportedTypeMismatch() {
         var data = Map.of(AGE_KEY, "Not a number");
-        var assertion = Assertion.builder(String.class)
+        var assertion = Assertion.builder()
                 .key(AGE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected("anything")
@@ -119,14 +119,14 @@ class AssertionUtilTest {
     void validate_multipleAssertionsSuccess() {
         var data = Map.of(NAME_KEY, ZEUS, AGE_KEY, 1000);
 
-        var assertion1 = Assertion.builder(String.class)
+        var assertion1 = Assertion.builder()
                 .key(NAME_KEY)
                 .type(AssertionTypes.IS)
                 .expected(ZEUS)
                 .soft(false)
                 .build();
 
-        var assertion2 = Assertion.builder(Integer.class)
+        var assertion2 = Assertion.builder()
                 .key(AGE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected(500)
@@ -142,7 +142,7 @@ class AssertionUtilTest {
     @Test
     void validate_softAssertionFail() {
         var data = Map.of(SCORE_KEY, 50);
-        var assertion = Assertion.builder(Integer.class)
+        var assertion = Assertion.builder()
                 .key(SCORE_KEY)
                 .type(AssertionTypes.GREATER_THAN)
                 .expected(100)

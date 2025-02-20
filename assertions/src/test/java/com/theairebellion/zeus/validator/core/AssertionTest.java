@@ -12,7 +12,7 @@ class AssertionTest {
 
     @Test
     void testBuilderAllFields() {
-        var assertion = Assertion.builder(String.class)
+        var assertion = Assertion.builder()
                 .key(MY_KEY)
                 .type(AssertionTypes.IS)
                 .expected(MY_VAL)
@@ -29,7 +29,7 @@ class AssertionTest {
 
     @Test
     void testBuilderSoftSetter() {
-        var assertion = Assertion.builder(String.class)
+        var assertion = Assertion.builder()
                 .key("something")
                 .type(AssertionTypes.CONTAINS)
                 .expected("val")

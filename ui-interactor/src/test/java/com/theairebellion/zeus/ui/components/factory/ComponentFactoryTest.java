@@ -1,7 +1,9 @@
 package com.theairebellion.zeus.ui.components.factory;
 
-import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.components.factory.mock.MockComponentType;
+import com.theairebellion.zeus.ui.components.factory.mock.MockImpl;
+import com.theairebellion.zeus.ui.components.factory.mock.MockInterface;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,27 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-public class ComponentFactoryTest {
-
-    public interface DummyInterface extends ComponentType {
-    }
-
-    @ImplementationOfType("DUMMY")
-    public record DummyImpl(SmartWebDriver driver) implements DummyInterface {
-        @Override
-        public Enum<?> getType() {
-            return DummyComponentType.DUMMY;
-        }
-    }
-
-    public enum DummyComponentType implements DummyInterface {
-        DUMMY, FAIL, NON_EXISTENT;
-
-        @Override
-        public Enum<?> getType() {
-            return this;
-        }
-    }
+class ComponentFactoryTest {
 
     private SmartWebDriver driver;
     private String pkg;
@@ -43,6 +25,7 @@ public class ComponentFactoryTest {
     public void setUp() {
         System.setProperty("ui.config.file", "ui-config");
         System.setProperty("wait.duration.in.seconds", "2");
+
         WebDriver original = mock(WebDriver.class);
         driver = new SmartWebDriver(original);
         pkg = ComponentFactoryTest.class.getPackage().getName();
@@ -52,9 +35,9 @@ public class ComponentFactoryTest {
     public void testSuccessfulInstanceCreation() throws Exception {
         Method method = ComponentFactory.class.getDeclaredMethod("getComponent", Class.class, ComponentType.class, String.class, SmartWebDriver.class);
         method.setAccessible(true);
-        Object instance = method.invoke(null, DummyInterface.class, DummyComponentType.DUMMY, pkg, driver);
-        assertInstanceOf(DummyImpl.class, instance);
-        DummyImpl dummy = (DummyImpl) instance;
+        Object instance = method.invoke(null, MockInterface.class, MockComponentType.DUMMY, pkg, driver);
+        assertInstanceOf(MockImpl.class, instance);
+        MockImpl dummy = (MockImpl) instance;
         assertEquals(driver, dummy.driver());
     }
 
@@ -64,7 +47,7 @@ public class ComponentFactoryTest {
         assertThrows(InvocationTargetException.class, () -> {
             methodRef.set(ComponentFactory.class.getDeclaredMethod("getComponent", Class.class, ComponentType.class, String.class, SmartWebDriver.class));
             methodRef.get().setAccessible(true);
-            methodRef.get().invoke(null, DummyInterface.class, DummyComponentType.NON_EXISTENT, pkg, driver);
+            methodRef.get().invoke(null, MockInterface.class, MockComponentType.NON_EXISTENT, pkg, driver);
         });
     }
 
@@ -74,7 +57,7 @@ public class ComponentFactoryTest {
         assertThrows(InvocationTargetException.class, () -> {
             methodRef.set(ComponentFactory.class.getDeclaredMethod("getComponent", Class.class, ComponentType.class, String.class, SmartWebDriver.class));
             methodRef.get().setAccessible(true);
-            methodRef.get().invoke(null, DummyInterface.class, DummyComponentType.FAIL, pkg, driver);
+            methodRef.get().invoke(null, MockInterface.class, MockComponentType.FAIL, pkg, driver);
         });
     }
 }

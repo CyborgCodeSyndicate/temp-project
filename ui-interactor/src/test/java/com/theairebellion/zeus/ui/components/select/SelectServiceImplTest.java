@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
+import com.theairebellion.zeus.ui.components.select.mock.MockSelectComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
@@ -18,7 +19,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-public class SelectServiceImplTest {
+class SelectServiceImplTest {
 
     private SmartWebDriver driver;
     private SelectServiceImpl service;
@@ -26,16 +27,8 @@ public class SelectServiceImplTest {
     private By locator;
     private Strategy strategy;
     private Select selectMock;
-    private DummySelectComponentType dummyType;
+    private MockSelectComponentType mockSelectComponentType;
     private MockedStatic<ComponentFactory> factoryMock;
-
-    public enum DummySelectComponentType implements SelectComponentType {
-        DUMMY;
-        @Override
-        public Enum<?> getType() {
-            return this;
-        }
-    }
 
     @BeforeEach
     public void setUp() {
@@ -47,9 +40,9 @@ public class SelectServiceImplTest {
         locator = By.id("select");
         strategy = mock(Strategy.class);
         selectMock = mock(Select.class);
-        dummyType = DummySelectComponentType.DUMMY;
+        mockSelectComponentType = MockSelectComponentType.DUMMY;
         factoryMock = Mockito.mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getSelectComponent(eq(dummyType), eq(driver)))
+        factoryMock.when(() -> ComponentFactory.getSelectComponent(eq(mockSelectComponentType), eq(driver)))
                 .thenReturn(selectMock);
     }
 
@@ -60,25 +53,25 @@ public class SelectServiceImplTest {
 
     @Test
     public void testSelectOptionsContainerVarargs() {
-        service.selectOptions(dummyType, container, "val1", "val2");
+        service.selectOptions(mockSelectComponentType, container, "val1", "val2");
         verify(selectMock).selectOptions(container, "val1", "val2");
     }
 
     @Test
     public void testSelectOptionContainer() {
-        service.selectOption(dummyType, container, "val1");
+        service.selectOption(mockSelectComponentType, container, "val1");
         verify(selectMock).selectOptions(container, "val1");
     }
 
     @Test
     public void testSelectOptionsLocatorVarargs() {
-        service.selectOptions(dummyType, locator, "val1", "val2");
+        service.selectOptions(mockSelectComponentType, locator, "val1", "val2");
         verify(selectMock).selectOptions(locator, "val1", "val2");
     }
 
     @Test
     public void testSelectOptionLocator() {
-        service.selectOption(dummyType, locator, "val1");
+        service.selectOption(mockSelectComponentType, locator, "val1");
         verify(selectMock).selectOptions(locator, "val1");
     }
 
@@ -86,7 +79,7 @@ public class SelectServiceImplTest {
     public void testSelectOptionsContainerStrategy() {
         List<String> expected = Arrays.asList("val1", "val2");
         when(selectMock.selectOptions(container, strategy)).thenReturn(expected);
-        List<String> result = service.selectOptions(dummyType, container, strategy);
+        List<String> result = service.selectOptions(mockSelectComponentType, container, strategy);
         assertEquals(expected, result);
         verify(selectMock).selectOptions(container, strategy);
     }
@@ -95,7 +88,7 @@ public class SelectServiceImplTest {
     public void testSelectOptionsLocatorStrategy() {
         List<String> expected = Arrays.asList("val1", "val2");
         when(selectMock.selectOptions(locator, strategy)).thenReturn(expected);
-        List<String> result = service.selectOptions(dummyType, locator, strategy);
+        List<String> result = service.selectOptions(mockSelectComponentType, locator, strategy);
         assertEquals(expected, result);
         verify(selectMock).selectOptions(locator, strategy);
     }
@@ -104,7 +97,7 @@ public class SelectServiceImplTest {
     public void testGetAvailableOptionsContainer() {
         List<String> expected = Arrays.asList("opt1", "opt2");
         when(selectMock.getAvailableOptions(container)).thenReturn(expected);
-        List<String> result = service.getAvailableOptions(dummyType, container);
+        List<String> result = service.getAvailableOptions(mockSelectComponentType, container);
         assertEquals(expected, result);
         verify(selectMock).getAvailableOptions(container);
     }
@@ -113,7 +106,7 @@ public class SelectServiceImplTest {
     public void testGetAvailableOptionsLocator() {
         List<String> expected = Arrays.asList("opt1", "opt2");
         when(selectMock.getAvailableOptions(locator)).thenReturn(expected);
-        List<String> result = service.getAvailableOptions(dummyType, locator);
+        List<String> result = service.getAvailableOptions(mockSelectComponentType, locator);
         assertEquals(expected, result);
         verify(selectMock).getAvailableOptions(locator);
     }
@@ -122,7 +115,7 @@ public class SelectServiceImplTest {
     public void testGetSelectedOptionsContainer() {
         List<String> expected = Arrays.asList("sel1", "sel2");
         when(selectMock.getSelectedOptions(container)).thenReturn(expected);
-        List<String> result = service.getSelectedOptions(dummyType, container);
+        List<String> result = service.getSelectedOptions(mockSelectComponentType, container);
         assertEquals(expected, result);
         verify(selectMock).getSelectedOptions(container);
     }
@@ -131,7 +124,7 @@ public class SelectServiceImplTest {
     public void testGetSelectedOptionsLocator() {
         List<String> expected = Arrays.asList("sel1", "sel2");
         when(selectMock.getSelectedOptions(locator)).thenReturn(expected);
-        List<String> result = service.getSelectedOptions(dummyType, locator);
+        List<String> result = service.getSelectedOptions(mockSelectComponentType, locator);
         assertEquals(expected, result);
         verify(selectMock).getSelectedOptions(locator);
     }
@@ -139,28 +132,28 @@ public class SelectServiceImplTest {
     @Test
     public void testIsOptionVisibleContainer() {
         when(selectMock.isOptionVisible(container, "val1")).thenReturn(true);
-        assertTrue(service.isOptionVisible(dummyType, container, "val1"));
+        assertTrue(service.isOptionVisible(mockSelectComponentType, container, "val1"));
         verify(selectMock).isOptionVisible(container, "val1");
     }
 
     @Test
     public void testIsOptionVisibleLocator() {
         when(selectMock.isOptionVisible(locator, "val1")).thenReturn(true);
-        assertTrue(service.isOptionVisible(dummyType, locator, "val1"));
+        assertTrue(service.isOptionVisible(mockSelectComponentType, locator, "val1"));
         verify(selectMock).isOptionVisible(locator, "val1");
     }
 
     @Test
     public void testIsOptionEnabledContainer() {
         when(selectMock.isOptionEnabled(container, "val1")).thenReturn(true);
-        assertTrue(service.isOptionEnabled(dummyType, container, "val1"));
+        assertTrue(service.isOptionEnabled(mockSelectComponentType, container, "val1"));
         verify(selectMock).isOptionEnabled(container, "val1");
     }
 
     @Test
     public void testIsOptionEnabledLocator() {
         when(selectMock.isOptionEnabled(locator, "val1")).thenReturn(true);
-        assertTrue(service.isOptionEnabled(dummyType, locator, "val1"));
+        assertTrue(service.isOptionEnabled(mockSelectComponentType, locator, "val1"));
         verify(selectMock).isOptionEnabled(locator, "val1");
     }
 
@@ -250,7 +243,7 @@ public class SelectServiceImplTest {
 
     @Test
     public void testInsertion() {
-        service.insertion(dummyType, locator, "val1", "val2");
+        service.insertion(mockSelectComponentType, locator, "val1", "val2");
         verify(selectMock).selectOptions(locator, "val1", "val2");
     }
 }
