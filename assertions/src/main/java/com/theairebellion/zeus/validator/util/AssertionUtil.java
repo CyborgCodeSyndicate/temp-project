@@ -70,7 +70,7 @@ public class AssertionUtil {
         }
 
         if (assertion.getExpected() == null) {
-            throw new InvalidAssertionException("Assertion value must have a non-null expected.");
+            throw new InvalidAssertionException("Assertion must have a non-null expected.");
         }
     }
 

@@ -36,7 +36,7 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
                     String key = assertion.getKey();
                     if (key == null) {
                         throw new InvalidAssertionException(
-                                "Assertion value must have a non-null key.");
+                                "Assertion must have a non-null key. Key must contain a valid Jsonpath expression.");
                     }
 
                     T value = response.jsonPath().get(key);
@@ -50,7 +50,7 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
                     String key = assertion.getKey();
                     if (key == null) {
                         throw new InvalidAssertionException(
-                                "Assertion value must have a non-null key.");
+                                "Assertion must have a non-null key.");
                     }
 
                     String header = response.getHeader(key);
