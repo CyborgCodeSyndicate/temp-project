@@ -239,4 +239,11 @@ public class ReqresApiTest extends BaseTest {
                 );
     }
 
+    @Test
+    public void testValidateAllUsers(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
+        quest.enters(RIVENDELL)
+                .loginUserAndAddSpecificHeader(loginUser)
+                .requestAndValidateGetAllUsers();
+    }
+
 }
