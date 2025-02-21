@@ -43,6 +43,7 @@ class AccordionServiceImplTest {
         factoryMock = Mockito.mockStatic(ComponentFactory.class);
         factoryMock.when(() -> ComponentFactory.getAccordionComponent(eq(accordionMockComponentType), eq(driver)))
                 .thenReturn(accordionMock);
+
     }
 
     @AfterEach
