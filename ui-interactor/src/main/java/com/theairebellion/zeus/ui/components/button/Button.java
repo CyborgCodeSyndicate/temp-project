@@ -28,4 +28,9 @@ public interface Button {
     boolean isVisible(String buttonText);
 
     boolean isVisible(By buttonLocator);
+
+    default void clickInTable(SmartWebElement cell) {
+
+    }
+
 }

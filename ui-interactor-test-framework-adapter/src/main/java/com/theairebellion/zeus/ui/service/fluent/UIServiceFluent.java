@@ -4,6 +4,7 @@ import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.ui.components.accordion.AccordionServiceImpl;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
+import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
@@ -78,7 +79,8 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
 
     @Override
     protected void postQuestSetupInitialization() {
-        buttonField = new ButtonServiceFluent(this, quest.getStorage(), new ButtonServiceImpl(driver), driver);
+        ButtonServiceImpl buttonService = new ButtonServiceImpl(driver);
+        buttonField = new ButtonServiceFluent(this, quest.getStorage(), buttonService, driver);
         radioField = new RadioServiceFluent(this, quest.getStorage(), new RadioServiceImpl(driver), driver);
         checkboxField = new CheckboxServiceFluent(this, quest.getStorage(), new CheckboxServiceImpl(driver), driver);
         selectField = new SelectServiceFluent(this, quest.getStorage(), new SelectServiceImpl(driver), driver);
@@ -97,7 +99,7 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
         serviceRegistry = new InsertionServiceRegistry();
         registerInsertionServices(inputService);
         tableServiceRegistry = new TableServiceRegistry();
-        registerTableServices(inputService);
+        registerTableServices(inputService, buttonService);
         table = new TableServiceFluent(this, quest.getStorage(), new TableServiceImpl(driver, tableServiceRegistry),
                 driver);
         insertionService = new InsertionServiceFluent(
@@ -115,7 +117,8 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
     }
 
 
-    private void registerTableServices(InputService inputService) {
+    private void registerTableServices(InputService inputService, ButtonService buttonService) {
+        tableServiceRegistry.registerService(InputComponentType.class, buttonService);
         tableServiceRegistry.registerService(InputComponentType.class, (TableFilter) inputService);
         tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputService);
 

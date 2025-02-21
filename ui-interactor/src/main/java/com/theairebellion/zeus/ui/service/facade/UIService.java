@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.service.facade;
 
 import com.theairebellion.zeus.ui.components.alert.AlertService;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
+import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
@@ -88,6 +89,7 @@ public class UIService {
         serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
         serviceRegistry.registerService(SelectComponentType.class, selectField);
         serviceRegistry.registerService(ItemListComponentType.class, listField);
+        tableServiceRegistry.registerService(ButtonComponentType.class, buttonField);
         tableServiceRegistry.registerService(InputComponentType.class, (TableFilter) inputField);
         tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputField);
     }
