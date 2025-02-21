@@ -3,7 +3,6 @@ package com.theairebellion.zeus.ui.validator;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TableAssertionFunctions {
 
@@ -32,7 +31,7 @@ public class TableAssertionFunctions {
         return table.size() == expectedRowCount;
     }
 
-    public static boolean validateAllRowsContainValues(Object actual, Object expected) {
+    public static boolean validateEveryRowContainsValues(Object actual, Object expected) {
         if (!(actual instanceof List) || !(expected instanceof List)) {
             return false;
         }
@@ -72,7 +71,7 @@ public class TableAssertionFunctions {
         return true;
     }
 
-    public static boolean validateUniqueRows(Object actual, Object expected) {
+    public static boolean validateAllRowsAreUnique(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
         }
@@ -128,7 +127,7 @@ public class TableAssertionFunctions {
         return noEmptyCells == (Boolean) expected;
     }
 
-    public static boolean validateColumnValueUniqueness(Object actual, Object expected) {
+    public static boolean validateColumnValuesAreUnique(Object actual, Object expected) {
         if (!(actual instanceof List<?>) || !(expected instanceof Integer)) {
             return false;
         }
@@ -248,7 +247,7 @@ public class TableAssertionFunctions {
         return allCellsEnabled == (Boolean) expected;
     }
 
-    public static boolean validateAllCellsAreClickable(Object actual, Object expected) {
+    public static boolean validateAllCellsClickable(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
         }

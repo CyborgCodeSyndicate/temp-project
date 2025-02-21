@@ -3,6 +3,7 @@ package com.theairebellion.zeus.api.validator;
 import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
+import com.theairebellion.zeus.validator.exceptions.InvalidAssertionException;
 import com.theairebellion.zeus.validator.util.AssertionUtil;
 import io.restassured.response.Response;
 import lombok.NoArgsConstructor;
@@ -34,28 +35,28 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
                 case BODY -> {
                     String key = assertion.getKey();
                     if (key == null) {
-                        throw new IllegalArgumentException(
-                            "Key is not specified in the assertion: " + assertion);
+                        throw new InvalidAssertionException(
+                                "Assertion value must have a non-null key.");
                     }
 
                     T value = response.jsonPath().get(key);
                     if (value == null) {
                         throw new IllegalArgumentException(
-                            "Jsonpath expression: '" + key + "' not found in response body.");
+                                "Jsonpath expression: '" + key + "' not found in response body.");
                     }
                     data.put(key, value);
                 }
                 case HEADER -> {
                     String key = assertion.getKey();
                     if (key == null) {
-                        throw new IllegalArgumentException(
-                            "Key is not specified in the assertion: " + assertion);
+                        throw new InvalidAssertionException(
+                                "Assertion value must have a non-null key.");
                     }
 
                     String header = response.getHeader(key);
                     if (header == null) {
                         throw new IllegalArgumentException(
-                            "Header '" + key + "' not found in response.");
+                                "Header '" + key + "' not found in response.");
                     }
                     data.put(key, (T) header);
                 }
