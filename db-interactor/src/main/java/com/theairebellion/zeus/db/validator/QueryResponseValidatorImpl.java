@@ -5,6 +5,7 @@ import com.theairebellion.zeus.db.log.LogDb;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
+import com.theairebellion.zeus.validator.exceptions.InvalidAssertionException;
 import com.theairebellion.zeus.validator.util.AssertionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,10 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
             switch ((DbAssertionTarget) assertion.getTarget()) {
                 case NUMBER_ROWS -> data.put("numRows", (T) Integer.valueOf(queryResponse.getRows().size()));
                 case QUERY_RESULT -> {
+                    if (key == null) {
+                        throw new InvalidAssertionException(
+                                "Assertion value must have a non-null key. Key must contain a valid Jsonpath expression.");
+                    }
                     Object value = jsonPathExtractor.extract(queryResponse.getRows(), assertion.getKey(), Object.class);
                     if (value == null) {
                         throw new IllegalArgumentException("Jsonpath expression: '" + key + "' not found in query result.");
@@ -44,6 +49,10 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
                     data.put(assertion.getKey(), (T) value);
                 }
                 case COLUMNS -> {
+                    if (key == null) {
+                        throw new InvalidAssertionException(
+                                "Assertion value must have a non-null key. Key must contain a valid Jsonpath expression.");
+                    }
                     if (queryResponse.getRows().isEmpty()) {
                         throw new IllegalArgumentException("Query result is empty; cannot validate columns.");
                     }

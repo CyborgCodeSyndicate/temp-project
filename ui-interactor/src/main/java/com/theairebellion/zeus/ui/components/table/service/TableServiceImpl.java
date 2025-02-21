@@ -4,21 +4,25 @@ import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
-import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
+import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.validator.UiTableValidator;
+import com.theairebellion.zeus.validator.core.Assertion;
+import com.theairebellion.zeus.validator.core.AssertionResult;
 
 import java.util.List;
 
 public class TableServiceImpl extends AbstractComponentService<TableComponentType, Table> implements TableService {
 
     private final TableServiceRegistry tableServiceRegistry;
+    private final UiTableValidator uiTableValidator;
 
-
-    public TableServiceImpl(final SmartWebDriver driver, final TableServiceRegistry tableServiceRegistry) {
+    public TableServiceImpl(final SmartWebDriver driver, final TableServiceRegistry tableServiceRegistry, UiTableValidator uiTableValidator) {
         super(driver);
         this.tableServiceRegistry = tableServiceRegistry;
+        this.uiTableValidator = uiTableValidator;
     }
 
 
@@ -141,5 +145,15 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
 
     }
 
+    @Override
+    public <T> List<AssertionResult<T>> validate(final Object table, final Assertion<?>... assertions) {
+        if (table == null) {
+            throw new IllegalArgumentException("Table cannot be null for validation.");
+        }
+        if (assertions == null || assertions.length == 0) {
+            throw new IllegalArgumentException("At least one assertion must be provided.");
+        }
+        return uiTableValidator.validateTable(table, assertions);
+    }
 
 }
