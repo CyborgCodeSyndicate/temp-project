@@ -1,10 +1,13 @@
 package com.example.project.ui.elements;
 
+import com.example.project.model.CreditAccounts;
+import com.example.project.model.OutFlow;
 import com.example.project.model.TableEntry;
+import com.example.project.model.TransactionEntry;
 import com.example.project.ui.functions.SharedUI;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
-import com.theairebellion.zeus.ui.service.tables.TableElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.service.tables.TableElement;
 
 import java.util.function.Consumer;
 
@@ -13,6 +16,9 @@ import static com.example.project.ui.elements.TableTypes.SIMPLE;
 public enum Tables implements TableElement {
 
     CAMPAIGNS(TableEntry.class),
+    TRANSACTIONS(TransactionEntry.class),
+    CREDIT_ACCOUNTS(CreditAccounts.class),
+    OUTFLOW(OutFlow.class),
     ORDERS(TableEntry.class, SIMPLE);
 
 
@@ -25,7 +31,7 @@ public enum Tables implements TableElement {
     }
 
 
-   <T> Tables(final Class<T> rowRepresentationClass, TableComponentType tableType) {
+    <T> Tables(final Class<T> rowRepresentationClass, TableComponentType tableType) {
         this.rowRepresentationClass = rowRepresentationClass;
         this.tableType = tableType;
     }
@@ -39,8 +45,6 @@ public enum Tables implements TableElement {
             return TableElement.super.tableType();
         }
     }
-
-
 
 
     @Override

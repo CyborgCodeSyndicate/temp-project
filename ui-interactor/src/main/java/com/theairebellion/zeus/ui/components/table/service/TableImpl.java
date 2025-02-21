@@ -268,7 +268,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                           final Integer start,
                                           final Integer end) {
         TableLocators tableLocators = getTableLocators(rowClass);
-        SmartWebElement tableContainer = getTableContainer(tableLocators.getTableRowsLocator());
+        SmartWebElement tableContainer = getTableContainer(tableLocators.getTableContainerLocator());
 
         final Map<String, List<CellLocator>> tableSectionLocatorsMap =
             getTableSectionLocatorsMap(rowClass, fields);
