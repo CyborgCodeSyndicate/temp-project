@@ -2,12 +2,19 @@ package com.reqres.test.framework.service;
 
 import com.reqres.test.framework.rest.ApiResponsesJsonPaths;
 import com.reqres.test.framework.rest.dto.request.User;
+import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
+import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
 import static com.reqres.test.framework.rest.Endpoints.CREATE_USER;
@@ -15,6 +22,8 @@ import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestService("Gondor")
 public class EvolutionService extends FluentService {
@@ -62,6 +71,24 @@ public class EvolutionService extends FluentService {
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
                         Assertion.builder().target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build()
                 );
+        return this;
+    }
+
+    public EvolutionService validateCreatedUser() {
+        quest.enters(OLYMPYS)
+                .validate(() -> {
+                    CreatedUserResponse createdUserResponse = quest
+                            .getStorage()
+                            .sub(StorageKeysApi.API)
+                            .get(CREATE_USER, Response.class)
+                            .getBody()
+                            .as(CreatedUserResponse.class);
+                    assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
+                    assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
+                    assertTrue(createdUserResponse
+                            .getCreatedAt()
+                            .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                });
         return this;
     }
 }
