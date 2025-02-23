@@ -9,4 +9,7 @@ public interface TestData extends Config {
     @Key("username")
     String username();
 
+    @Key("password")
+    String password();
+
 }

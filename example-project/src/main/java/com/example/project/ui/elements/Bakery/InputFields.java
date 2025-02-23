@@ -16,12 +16,25 @@ public enum InputFields implements InputUIElement {
 
     USERNAME_FIELD(By.id("vaadinLoginUsername"), InputFieldTypes.VA_INPUT_TYPE),
     PASSWORD_FIELD(By.id("vaadinLoginPassword"), InputFieldTypes.VA_INPUT_TYPE),
-    SEARCH_BAR_FIELD(By.cssSelector("search-bar#search"), InputFieldTypes.VA_INPUT_TYPE),
+    SEARCH_BAR_FIELD(By.cssSelector("search-bar#search"), InputFieldTypes.VA_INPUT_TYPE, SharedUI.WAIT_TO_BE_CLICKABLE),
     CUSTOMER_FIELD(By.id("customerName"), InputFieldTypes.VA_INPUT_TYPE,
             driver -> SharedUIFunctions.waitForPresence(driver, By.cssSelector("vaadin-dialog-overlay#overlay"))),
     DETAILS_FIELD(By.id("customerDetails"), InputFieldTypes.VA_INPUT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
     NUMBER_FIELD(By.id("customerNumber"), InputFieldTypes.VA_INPUT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
     ;
+
+
+    public static final class Data {
+
+        public static final String USERNAME_FIELD = "USERNAME_FIELD";
+        public static final String PASSWORD_FIELD = "PASSWORD_FIELD";
+
+
+        private Data() {
+        }
+
+    }
+
 
 
     private final By locator;

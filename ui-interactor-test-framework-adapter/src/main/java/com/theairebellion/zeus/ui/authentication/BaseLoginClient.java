@@ -3,24 +3,20 @@ package com.theairebellion.zeus.ui.authentication;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public abstract class BaseLoginClient implements LoginClient {
 
     private static final Map<LoginKey, SessionInfo> userLoginMap = new ConcurrentHashMap<>();
+    public static final List<SmartWebDriver> driverToKeep = new ArrayList<>();
     private static final String GET_LOCAL_STORAGE = "return JSON.stringify(window.localStorage);";
     private static final String UPDATE_LOCAL_STORAGE = "let data = %s; for (let key in data) { window.localStorage.setItem(key, data[key]); }";
-    private String urlAfterLogging;
+    private static String urlAfterLogging;
 
 
     @Override
@@ -51,6 +47,8 @@ public abstract class BaseLoginClient implements LoginClient {
                                       String password) {
         loginImpl(uiService, username, password);
         SmartWebDriver smartWebDriver = uiService.getDriver();
+        smartWebDriver.setKeepDriverForSession(true);
+        driverToKeep.add(smartWebDriver);
 
         try {
             smartWebDriver.getWait()
@@ -74,6 +72,10 @@ public abstract class BaseLoginClient implements LoginClient {
     private void restoreSession(SuperUIServiceFluent<?> uiService, SessionInfo sessionInfo) {
         SmartWebDriver smartWebDriver = uiService.getDriver();
         WebDriver driver = smartWebDriver.getOriginal();
+
+        smartWebDriver.get(urlAfterLogging);
+
+        smartWebDriver.manage().deleteAllCookies();
 
         sessionInfo.getCookies().forEach(cookie -> driver.manage().addCookie(cookie));
 

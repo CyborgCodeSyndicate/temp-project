@@ -63,6 +63,9 @@ public interface UiConfig extends Config {
     @Key("accordion.default.type")
     String accordionDefaultType();
 
+    @Key("ui.base.url")
+    String baseUrl();
+
     @Key("table.default.type")
     String tableDefaultType();
 

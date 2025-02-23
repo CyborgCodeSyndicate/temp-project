@@ -7,6 +7,7 @@ import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebDriver;
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -30,6 +31,8 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 public class SmartWebDriver extends WebDriverDecorator {
 
     private final WebDriverWait wait;
+    @Setter
+    private boolean keepDriverForSession;
 
     public SmartWebDriver(WebDriver original) {
         super(original);

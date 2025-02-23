@@ -23,6 +23,8 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.platform.launcher.LauncherSession;
+import org.junit.platform.launcher.LauncherSessionListener;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -47,7 +49,7 @@ import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFra
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
-        TestExecutionExceptionHandler {
+        TestExecutionExceptionHandler, LauncherSessionListener {
 
     private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
     private static final String UI_MODULE_PACKAGE = "theairebellion.zeus.ui";
@@ -106,6 +108,24 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
 
+    private static void postQuestCreationLogin(SuperQuest quest, DecoratorsFactory decoratorsFactory,
+                                               final String username, final String password,
+                                               final Class<? extends BaseLoginClient> type, boolean cache) {
+        quest.getStorage().sub(UI).put(USERNAME, username);
+        quest.getStorage().sub(UI).put(PASSWORD, password);
+        UIServiceFluent uiServiceFluent = quest.enters(UIServiceFluent.class);
+
+        try {
+            BaseLoginClient baseLoginClient = type.getDeclaredConstructor().newInstance();
+            baseLoginClient.login(decoratorsFactory.decorate(uiServiceFluent, SuperUIServiceFluent.class), username,
+                    password, cache);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException("Failed to instantiate or execute login client", e);
+        }
+    }
+
+
     private void registerAssertionConsumer(ExtensionContext context) {
         Consumer<SuperQuest> questConsumer = quest -> postQuestCreationAssertion(quest, context.getDisplayName());
         addQuestConsumer(context, questConsumer);
@@ -146,12 +166,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     public void afterTestExecution(ExtensionContext context) {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
-        WebDriver driver = getWebDriver(decoratorsFactory, context);
+        SmartWebDriver smartWebDriver = getSmartWebDriver(decoratorsFactory, context);
+        WebDriver driver = unwrapDriver(smartWebDriver);
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
             takeScreenshot(driver, context.getDisplayName());
         }
-        driver.close();
-        driver.quit();
+        if (!smartWebDriver.isKeepDriverForSession()) {
+            driver.close();
+            driver.quit();
+        }
     }
 
 
@@ -161,9 +184,24 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
-        WebDriver driver = getWebDriver(decoratorsFactory, context);
+        SmartWebDriver smartWebDriver = getSmartWebDriver(decoratorsFactory, context);
+        WebDriver driver = unwrapDriver(smartWebDriver);
         takeScreenshot(driver, context.getDisplayName());
+        if (!smartWebDriver.isKeepDriverForSession()) {
+            driver.close();
+            driver.quit();
+        }
         throw throwable;
+    }
+
+    @Override
+    public void launcherSessionClosed(LauncherSession session) {
+        BaseLoginClient.driverToKeep.forEach(smartWebDriver -> {
+            WebDriver driver = unwrapDriver(smartWebDriver);
+            driver.close();
+            driver.quit();
+        });
+
     }
 
     private static void postQuestCreationRegisterCustomServices(SuperQuest quest) {
@@ -196,29 +234,12 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                 if (checkUrl(urlsForIntercepting, entry.getResponse().getUrl())) {
                     String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
                     response.setBody(body);
+                    addResponseInStorage(quest.getStorage(), response);
                 }
-                addResponseInStorage(quest.getStorage(), response);
+                //addResponseInStorage(quest.getStorage(), response);
             });
         } else {
             throw new IllegalArgumentException("Intercepting Backend Requests is only acceptable with Chrome browser");
-        }
-    }
-
-
-    private static void postQuestCreationLogin(SuperQuest quest, DecoratorsFactory decoratorsFactory,
-                                               final String username, final String password,
-                                               final Class<? extends BaseLoginClient> type, boolean cache) {
-        quest.getStorage().sub(UI).put(USERNAME, username);
-        quest.getStorage().sub(UI).put(PASSWORD, password);
-        UIServiceFluent uiServiceFluent = quest.enters(UIServiceFluent.class);
-
-        try {
-            BaseLoginClient baseLoginClient = type.getDeclaredConstructor().newInstance();
-            baseLoginClient.login(decoratorsFactory.decorate(uiServiceFluent, SuperUIServiceFluent.class), username,
-                    password, cache);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new RuntimeException("Failed to instantiate or execute login client", e);
         }
     }
 
@@ -251,10 +272,14 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
 
     private WebDriver getWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
+        SmartWebDriver artifact = getSmartWebDriver(decoratorsFactory, context);
+        return unwrapDriver(artifact.getOriginal());
+    }
+
+    private static SmartWebDriver getSmartWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
         Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(StoreKeys.QUEST);
         SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
-        SmartWebDriver artifact = superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
-        return unwrapDriver(artifact.getOriginal());
+        return superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
     }
 
 

@@ -41,6 +41,7 @@
         <selenium.version>4.27.0</selenium.version>
         <webdrivermanager.version>5.9.2</webdrivermanager.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <junit-platform-launcher.version>1.11.4</junit-platform-launcher.version>
     </properties>
 
 
@@ -161,6 +162,11 @@
                 <groupId>io.github.bonigarcia</groupId>
                 <artifactId>webdrivermanager</artifactId>
                 <version>${webdrivermanager.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${junit-platform-launcher.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

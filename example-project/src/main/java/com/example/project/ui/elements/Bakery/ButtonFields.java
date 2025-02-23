@@ -15,11 +15,24 @@ public enum ButtonFields implements ButtonUIElement {
 
     SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE, SharedUI.WAIT_FOR_LOADING) ,
     NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE),
-    REVIEW_ORDER_BUTTON(By.cssSelector("vaadin-button#review"), ButtonFieldTypes.VA_BUTTON_TYPE),
+    REVIEW_ORDER_BUTTON(By.cssSelector("vaadin-button#review"), ButtonFieldTypes.VA_BUTTON_TYPE/*,
+            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#review"), 3000)*/),
+    CANCEL_ORDER_BUTTON(By.cssSelector("vaadin-button#cancel"), ButtonFieldTypes.VA_BUTTON_TYPE, smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 1000)),
     PLACE_ORDER_BUTTON(By.cssSelector("vaadin-button#save"), ButtonFieldTypes.VA_BUTTON_TYPE,
-            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 5000)),
+            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 3000)/*SharedUI.WAIT_FOR_TIMEOUT,
+            SharedUI.WAIT_FOR_TIMEOUT*/),
     ;
 
+    public static final class Data {
+
+        public static final String SIGN_IN_BUTTON = "SIGN_IN_BUTTON";
+        public static final String NEW_ORDER_BUTTON = "NEW_ORDER_BUTTON";
+
+
+        private Data() {
+        }
+
+    }
 
     private final By locator;
     private final ButtonComponentType componentType;
@@ -73,6 +86,14 @@ public enum ButtonFields implements ButtonUIElement {
                  ContextConsumer before,
                  ContextConsumer after) {
         this(locator, componentType, before.asConsumer(locator), after.asConsumer(locator));
+    }
+
+
+    ButtonFields(By locator,
+                 ButtonComponentType componentType,
+                 Consumer<SmartWebDriver> before,
+                 ContextConsumer after) {
+        this(locator, componentType, before, after.asConsumer(locator));
     }
 
 

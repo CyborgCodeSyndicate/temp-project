@@ -7,8 +7,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public enum SharedUI implements ContextConsumer {
+    WAIT_FOR_TIMEOUT((driver, by) -> SharedUIFunctions.waitForTimeout(driver)),
     WAIT_FOR_LOADING((driver, by) -> SharedUIFunctions.waitForLoading(driver)),
-    WAIT_FOR_PRESENCE(SharedUIFunctions::waitForPresence);
+    WAIT_FOR_PRESENCE(SharedUIFunctions::waitForPresence),
+    WAIT_TO_BE_CLICKABLE(SharedUIFunctions::waitToBeClickable),
+    WAIT_TO_BE_REMOVED(SharedUIFunctions::waitToBeRemoved);
 
     private final BiConsumer<SmartWebDriver, By> function;
 
