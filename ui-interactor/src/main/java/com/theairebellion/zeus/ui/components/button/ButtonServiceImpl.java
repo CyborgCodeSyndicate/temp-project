@@ -95,14 +95,15 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     }
 
 
+    private Button buttonComponent(final ButtonComponentType componentType) {
+        return getOrCreateComponent(componentType);
+    }
+
+
     @Override
     public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
                                final String... values) {
         buttonComponent((ButtonComponentType) componentType).clickElementInCell(cellElement);
     }
 
-
-    private Button buttonComponent(final ButtonComponentType componentType) {
-        return getOrCreateComponent(componentType);
-    }
 }
