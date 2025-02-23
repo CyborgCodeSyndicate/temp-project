@@ -2,7 +2,6 @@ package com.reqres.test.framework.service;
 
 import com.reqres.test.framework.rest.ApiResponsesJsonPaths;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
-import com.theairebellion.zeus.api.service.fluent.RestServiceFluent;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.chain.FluentService;
@@ -38,8 +37,8 @@ public class CustomService extends FluentService {
         return this;
     }
 
-    public RestServiceFluent requestAndValidateGetAllUsers() {
-        return quest.enters(OLYMPYS)
+    public CustomService requestAndValidateGetAllUsers() {
+        quest.enters(OLYMPYS)
                 .requestAndValidate(
                         GET_ALL_USERS.withQueryParam("page", 2),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),
@@ -71,6 +70,7 @@ public class CustomService extends FluentService {
                                 Map.of("id", 22, "email", "invalid.user", "first_name", "Invalid", "last_name", "User", "avatar", "invalidUrls")
                         )).build()
                 );
+        return this;
     }
 
 }
