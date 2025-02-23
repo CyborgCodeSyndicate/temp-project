@@ -27,7 +27,7 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 
 @API
-public class ReqresCreateUserEvolutionTest extends BaseTestSequential {
+public class CreateUserEvolutionTest extends BaseTestSequential {
 
     @Test
     public void testCreateJuniorUserBasic(Quest quest) {
@@ -74,7 +74,7 @@ public class ReqresCreateUserEvolutionTest extends BaseTestSequential {
     }
 
     @Test
-    public void testCreateJuniorUserImproved2(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
+    public void testCreateJuniorUserImprovedWithCustomService(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
         quest.enters(GONDOR)
                 .getAllUsersAndValidateResponse()
                 .createJuniorUserAndValidateResponse(user.join());

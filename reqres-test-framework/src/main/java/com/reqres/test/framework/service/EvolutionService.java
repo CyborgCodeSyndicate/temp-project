@@ -40,4 +40,28 @@ public class EvolutionService extends FluentService {
                 );
         return this;
     }
+
+    public EvolutionService createLeaderUserAndValidateResponse(User leaderUser) {
+        quest.enters(OLYMPYS)
+                .requestAndValidate(
+                        CREATE_USER,
+                        leaderUser,
+                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
+                        Assertion.builder().target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build(),
+                        Assertion.builder().target(BODY).key("job").type(IS).expected("Leader").soft(true).build()
+                );
+        return this;
+    }
+
+    public EvolutionService createSeniorUserAndValidateResponse(User seniorUser) {
+        quest.enters(OLYMPYS)
+                .requestAndValidate(
+                        CREATE_USER,
+                        seniorUser,
+                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
+                        Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
+                        Assertion.builder().target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build()
+                );
+        return this;
+    }
 }
