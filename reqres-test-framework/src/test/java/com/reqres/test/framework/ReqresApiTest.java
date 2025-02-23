@@ -213,7 +213,7 @@ public class ReqresApiTest extends BaseTest {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
-    public void testPreconditionsExample(Quest quest) {
+    public void testUserLifecycle(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
