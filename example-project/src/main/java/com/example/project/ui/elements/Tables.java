@@ -1,9 +1,6 @@
 package com.example.project.ui.elements;
 
-import com.example.project.model.CreditAccounts;
-import com.example.project.model.OutFlow;
-import com.example.project.model.TableEntry;
-import com.example.project.model.TransactionEntry;
+import com.example.project.model.*;
 import com.example.project.ui.functions.SharedUI;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -16,9 +13,11 @@ import static com.example.project.ui.elements.TableTypes.SIMPLE;
 public enum Tables implements TableElement {
 
     CAMPAIGNS(TableEntry.class),
-    TRANSACTIONS(TransactionEntry.class),
+    FILTERED_TRANSACTIONS(FilteredTransactionEntry.class),
+    ALL_TRANSACTIONS(AllTransactionEntry.class),
     CREDIT_ACCOUNTS(CreditAccounts.class),
     OUTFLOW(OutFlow.class),
+    DETAILED_REPORT(DetailedReport.class),
     ORDERS(TableEntry.class, SIMPLE);
 
 

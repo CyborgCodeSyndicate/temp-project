@@ -12,7 +12,7 @@ import org.openqa.selenium.NoSuchElementException;
 import java.util.Objects;
 
 
-@ImplementationOfType(LinkFieldTypes.MD_LINK)
+@ImplementationOfType(LinkFieldTypes.Data.MD_LINK)
 public class LinkMDImpl extends BaseComponent implements Link {
 
     private static final By LINK_CLASS_NAME_SELECTOR = By.className("mat-link-base");

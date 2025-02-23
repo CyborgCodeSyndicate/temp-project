@@ -15,7 +15,7 @@ import org.openqa.selenium.support.FindBy;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TransactionEntry {
+public class FilteredTransactionEntry {
 
 
     @TableCellLocator(cellLocator = @FindBy(css = "td:nth-of-type(1)"),

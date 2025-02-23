@@ -31,11 +31,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.support.FindBy;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -740,7 +736,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                            final SmartWebElement targetCell,
                                            final String[] values) {
         try {
-            final CellInsertionFunction functionInstance = customFunction.getDeclaredConstructor().newInstance();
+            Constructor<? extends CellInsertionFunction> constructor = customFunction.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            final CellInsertionFunction functionInstance = constructor.newInstance();
             functionInstance.accept(targetCell, values);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(
