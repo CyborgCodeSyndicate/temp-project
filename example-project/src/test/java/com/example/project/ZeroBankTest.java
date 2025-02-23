@@ -347,10 +347,4 @@ public class ZeroBankTest extends BaseTest {
                 .complete();
     }
 
-
-    // TODO: Run all tests uncommented and handle org.openqa.selenium.NoSuchElementException: Element not found in any iframe.
-    //  with before()
-    //    public Consumer<SmartWebDriver> before() {
-    //        return SharedUI.WAIT_FOR_LOADING;
-    //    }
 }
