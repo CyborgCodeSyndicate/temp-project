@@ -38,10 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @API
-public class PreconditionsEvolutionTest extends BaseTestSequential {
+public class UserLifecycleEvolutionTest extends BaseTestSequential {
 
     @Test
-    public void testPreconditionsBasic(Quest quest) {
+    public void testUserLifecycleBasic(Quest quest) {
         final TestData testData = ConfigCache.getOrCreate(TestData.class);
         final String username = testData.username();
         final String password = testData.password();
@@ -96,7 +96,7 @@ public class PreconditionsEvolutionTest extends BaseTestSequential {
 
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
-    public void testPreconditionsImprovedAuthentication(Quest quest) {
+    public void testUserLifecycleWithAuth(Quest quest) {
         User userLeader = User.builder()
                 .name("Morpheus")
                 .job("Leader")
@@ -138,7 +138,7 @@ public class PreconditionsEvolutionTest extends BaseTestSequential {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
-    public void testPreconditionsImprovedAuthenticationAndPreQuest(Quest quest) {
+    public void testUserLifecycleWithPreQuest(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
@@ -163,7 +163,7 @@ public class PreconditionsEvolutionTest extends BaseTestSequential {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
-    public void testPreconditionsImprovedAuthenticationPreQuestAndRipper(Quest quest) {
+    public void testUserLifecycleWithRipper(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
@@ -184,7 +184,7 @@ public class PreconditionsEvolutionTest extends BaseTestSequential {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
-    public void testPreconditionsCustomService(Quest quest) {
+    public void testUserLifecycleWithCustomService(Quest quest) {
         quest.enters(GONDOR)
                 .validateCreatedUser();
     }
