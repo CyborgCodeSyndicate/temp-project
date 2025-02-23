@@ -38,6 +38,8 @@ import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.validator.UiTableValidator;
+import com.theairebellion.zeus.ui.validator.UiTableValidatorImpl;
 import lombok.Getter;
 
 @Getter
@@ -61,7 +63,7 @@ public class UIService {
 
     private final TableServiceRegistry tableServiceRegistry;
     private final TableService tableService;
-
+    private final UiTableValidator uiTableValidator;
 
     public UIService(SmartWebDriver driver) {
         this.driver = driver;
@@ -80,7 +82,8 @@ public class UIService {
         tableServiceRegistry = new TableServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);
-        tableService = new TableServiceImpl(driver, tableServiceRegistry);
+        uiTableValidator = new UiTableValidatorImpl();
+        tableService = new TableServiceImpl(driver, tableServiceRegistry, uiTableValidator);
     }
 
 

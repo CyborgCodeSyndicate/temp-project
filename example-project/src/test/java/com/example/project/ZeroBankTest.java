@@ -8,14 +8,18 @@ import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
+import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.text.html.HTML.Tag;
+import java.util.List;
 
 import static com.example.project.ui.elements.Tables.*;
 import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.tableRowExtractor;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.*;
+import static com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget.*;
 
 
 @UI
@@ -46,7 +50,7 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Select, Radio, Alert")
-    public void validatePurchaseCheckRadioButtons(Quest quest) {
+    public void radioButtonTest(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -69,7 +73,7 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Alert")
-    public void paragraphTextValueTestSoftAssertionsFailedTest(Quest quest) {
+    public void paragraphTextValueTestSoftAssertions(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -89,7 +93,7 @@ public class ZeroBankTest extends BaseTest {
                 .validate().validateTextInField(Tag.I, "For 47844181491040 Bank of America account", true)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate().validateTextInField(Tag.I, "For 48944145651315q Apple account", true)
+                .validate().validateTextInField(Tag.I, "For 48944145651315 Apple account", true)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Wells Fargo")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
                 .validate().validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account", true)
@@ -104,33 +108,7 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
-    public void paragraphTextValueTestAssertionsSuccess(Quest quest) {
-        quest
-                .enters(World.EARTH)
-                .browser().navigate("http://zero.webappsecurity.com/")
-                .button().click(ButtonFields.SIGN_IN_BUTTON)
-                .input().insert(InputFields.USERNAME_FIELD, "username")
-                .input().insert(InputFields.PASSWORD_FIELD, "password")
-                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .browser().back()
-                .link().click(LinkFields.TRANSFER_FUNDS_LINK)
-                .list().select(ListFields.NAVIGATION_TABS, "Pay Bills")
-                .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
-                .select().selectOption(SelectFields.SP_PAYEE_DDL, "Sprint")
-                .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate().validateTextInField(Tag.I, "For 12119415161214 Sprint account", true)
-                .select().selectOption(SelectFields.SP_PAYEE_DDL, "Bank of America")
-                .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate().validateTextInField(Tag.I, "For 47844181491040 Bank of America account")
-                .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
-                .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate().validateTextInField(Tag.I, "For 48944145651315 Apple account", false)
-                .complete();
-    }
-
-    @Test
-    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
-    public void paragraphTextValueTestHardAssertionsFailedTest(Quest quest) {
+    public void paragraphTextValueTestHardAssertions(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -150,7 +128,7 @@ public class ZeroBankTest extends BaseTest {
                 .validate().validateTextInField(Tag.I, "For 47844181491040 Bank of America account", false)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate().validateTextInField(Tag.I, "For 48944145651315q Apple account")
+                .validate().validateTextInField(Tag.I, "For 48944145651315 Apple account")
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Wells Fargo")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
                 .validate().validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account", false)
@@ -159,7 +137,7 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
-    public void paragraphTextValueTestMixedAssertionsFailedTest(Quest quest) {
+    public void paragraphTextValueTestMixedAssertions(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -179,7 +157,7 @@ public class ZeroBankTest extends BaseTest {
                 .validate().validateTextInField(Tag.I, "For 47844181491040 Bank of America account", false)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate().validateTextInField(Tag.I, "For 48944145651315q Apple account", true)
+                .validate().validateTextInField(Tag.I, "For 48944145651315 Apple account", true)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Wells Fargo")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
                 .validate().validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account")
@@ -189,6 +167,11 @@ public class ZeroBankTest extends BaseTest {
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
     public void tableAssert(Quest quest) {
+        List<List<String>> expectedTable = List.of(
+                List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L", "984.3", ""),
+                List.of("2012-09-01", "ONLINE TRANSFER REF #UKKSDRQG6L", "1000", "")
+        );
+
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -208,12 +191,30 @@ public class ZeroBankTest extends BaseTest {
                 .select().selectOption(SelectFields.AA_TYPE_DDL, "Deposit")
                 .button().click(ButtonFields.FIND_SUBMIT_BUTTON)
                 .table().readTable(FILTERED_TRANSACTIONS)
-                .validate(() -> Assertions.assertEquals(
-                        "1000",
-                        retrieve(tableRowExtractor(FILTERED_TRANSACTIONS, "2012-09-01"),
-                                FilteredTransactionEntry.class).getDeposit().getText(),
-                        "Wrong deposit value")
-                )
+                .validate(() -> {
+                    Assertions.assertEquals(
+                            "1000",
+                            retrieve(tableRowExtractor(FILTERED_TRANSACTIONS, "2012-09-01"), FilteredTransactionEntry.class).getDeposit()
+                                    .getText(),
+                            "Error Message");
+                })
+                .table().validate(
+                        FILTERED_TRANSACTIONS,
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_NOT_EMPTY).expected(true).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_ROW_COUNT).expected(2).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(EVERY_ROW_CONTAINS_VALUES).expected(List.of("ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_DOES_NOT_CONTAIN_ROW).expected(List.of("random", "TEST", "222.2", "")).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(ALL_ROWS_ARE_UNIQUE).expected(true).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(NO_EMPTY_CELLS).expected(false).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(COLUMN_VALUES_ARE_UNIQUE).expected(1).soft(true).build(),
+                        Assertion.builder().target(TABLE_VALUES).type(TABLE_DATA_MATCHES_EXPECTED).expected(expectedTable).soft(true).build(),
+                        Assertion.builder().target(TABLE_ELEMENTS).type(ALL_CELLS_ENABLED).expected(true).soft(true).build(),
+                        Assertion.builder().target(TABLE_ELEMENTS).type(ALL_CELLS_CLICKABLE).expected(true).soft(true).build())
+                .table().readRow(FILTERED_TRANSACTIONS, 1)
+                .table().validate(
+                        FILTERED_TRANSACTIONS,
+                        Assertion.builder().target(ROW_VALUES).type(ROW_NOT_EMPTY).expected(true).soft(true).build(),
+                        Assertion.builder().target(ROW_VALUES).type(ROW_CONTAINS_VALUES).expected(List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build())
                 .complete();
     }
 
@@ -298,7 +299,7 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
-    public void tableWithLinkAssert(Quest quest) {
+    public void tableWithLinkComponentAssert(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -323,7 +324,7 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
-    public void tableWithButtonAssert(Quest quest) {
+    public void tableWithButtonCustomServiceAssert(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")

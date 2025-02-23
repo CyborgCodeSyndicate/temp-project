@@ -6,16 +6,13 @@ import java.util.Objects;
 
 public class AssertionFunctions {
 
-
     public static boolean equals(Object actual, Object expected) {
         return Objects.equals(actual, expected);
     }
 
-
     public static boolean notEquals(Object actual, Object expected) {
         return !Objects.equals(actual, expected);
     }
-
 
     public static boolean contains(Object actual, Object expected) {
         if (actual == null || expected == null) {
@@ -24,32 +21,43 @@ public class AssertionFunctions {
         return actual.toString().contains(expected.toString());
     }
 
-
     public static boolean notNull(Object actual, Object expected) {
-        return Objects.nonNull(actual);
+        boolean condition = Objects.nonNull(actual);
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return condition == (Boolean) expected;
     }
 
     public static boolean isNull(Object actual, Object expected) {
-        return Objects.isNull(actual);
+        boolean condition = Objects.isNull(actual);
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return condition == (Boolean) expected;
     }
-
 
     public static boolean allNotNull(Object actual, Object expected) {
         if (!isCollection(actual)) {
             return false;
         }
-        return ((Collection<?>) actual).stream().allMatch(Objects::nonNull);
+        boolean condition = ((Collection<?>) actual).stream().allMatch(Objects::nonNull);
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return condition == (Boolean) expected;
     }
-
-
 
     public static boolean allNull(Object actual, Object expected) {
         if (!isCollection(actual)) {
             return false;
         }
-        return ((Collection<?>) actual).stream().allMatch(Objects::isNull);
+        boolean condition = ((Collection<?>) actual).stream().allMatch(Objects::isNull);
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return condition == (Boolean) expected;
     }
-
 
     public static boolean greaterThan(Object actual, Object expected) {
         if (!isNumber(actual) || !isNumber(expected)) {
@@ -58,7 +66,6 @@ public class AssertionFunctions {
         return ((Number) actual).doubleValue() > ((Number) expected).doubleValue();
     }
 
-
     public static boolean lessThan(Object actual, Object expected) {
         if (!isNumber(actual) || !isNumber(expected)) {
             throw new IllegalArgumentException("Both actual and expected must be numbers.");
@@ -66,14 +73,12 @@ public class AssertionFunctions {
         return ((Number) actual).doubleValue() < ((Number) expected).doubleValue();
     }
 
-
     public static boolean containsAll(Object actual, Object expected) {
         if (!isCollection(actual) || !isCollection(expected)) {
             return false;
         }
         return ((Collection<?>) actual).containsAll((Collection<?>) expected);
     }
-
 
     public static boolean containsAny(Object actual, Object expected) {
         if (!isCollection(actual) || !isCollection(expected)) {
@@ -123,11 +128,19 @@ public class AssertionFunctions {
     }
 
     public static boolean isEmpty(Object actual, Object expected) {
-        return actual instanceof Collection && ((Collection<?>) actual).isEmpty();
+        boolean condition = (actual instanceof Collection) && ((Collection<?>) actual).isEmpty();
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return condition == (Boolean) expected;
     }
 
     public static boolean isNotEmpty(Object actual, Object expected) {
-        return actual instanceof Collection && !((Collection<?>) actual).isEmpty();
+        boolean condition = (actual instanceof Collection) && !((Collection<?>) actual).isEmpty();
+        if (!(expected instanceof Boolean)) {
+            return false;
+        }
+        return condition == (Boolean) expected;
     }
 
     public static boolean between(Object actual, Object expected) {
@@ -152,7 +165,6 @@ public class AssertionFunctions {
         }
         return actual.toString().equalsIgnoreCase(expected.toString());
     }
-
 
     private static boolean isCollection(Object obj) {
         return obj instanceof Collection;
