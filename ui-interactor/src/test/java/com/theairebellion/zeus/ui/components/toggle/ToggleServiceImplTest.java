@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.toggle;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.toggle.mock.MockToggleComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class ToggleServiceImplTest {
+class ToggleServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private ToggleServiceImpl service;
@@ -26,15 +27,6 @@ class ToggleServiceImplTest {
     private Toggle toggleMock;
     private MockToggleComponentType mockToggleComponentType;
     private MockedStatic<ComponentFactory> factoryMock;
-
-    @BeforeAll
-    static void globalSetup() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("toggle.default.type", "DUMMY");
-        System.setProperty("wait.duration.in.seconds", "2");
-
-        ConfigCache.clear();
-    }
 
     @BeforeEach
     public void setUp() {

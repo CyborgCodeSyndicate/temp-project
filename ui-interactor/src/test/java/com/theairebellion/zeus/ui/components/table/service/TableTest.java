@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.service;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -7,7 +8,7 @@ import org.mockito.Mockito;
 import java.util.List;
 
 @SuppressWarnings("all")
-class TableTest {
+class TableTest extends BaseUnitUITest {
 
     @Test
     void insertCellValueWithRowDefaultIndex() {

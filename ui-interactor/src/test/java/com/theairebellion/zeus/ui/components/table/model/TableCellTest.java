@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.model;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.model.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,15 +11,13 @@ import org.openqa.selenium.WebElement;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class TableCellTest {
+public class TableCellTest extends BaseUnitUITest {
 
     WebElement webElement;
     WebDriver driver;
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("wait.duration.in.seconds", "15");
 
         webElement = mock(WebElement.class);
         driver = mock(WebDriver.class);

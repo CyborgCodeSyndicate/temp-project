@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.factory;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.mock.MockComponentType;
 import com.theairebellion.zeus.ui.components.factory.mock.MockImpl;
@@ -16,15 +17,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class ComponentFactoryTest {
+class ComponentFactoryTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private String pkg;
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("ui.config.file", "ui-config");
-        System.setProperty("wait.duration.in.seconds", "2");
 
         WebDriver original = mock(WebDriver.class);
         driver = new SmartWebDriver(original);

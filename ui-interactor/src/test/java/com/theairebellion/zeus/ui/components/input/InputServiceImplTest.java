@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.input;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.input.mock.MockInputComponentType;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
@@ -17,12 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class InputServiceImplTest {
+class InputServiceImplTest extends BaseUnitUITest {
 
-    static {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("input.default.type", "DUMMY");
-    }
 
     private SmartWebDriver driver;
     private InputServiceImpl service;

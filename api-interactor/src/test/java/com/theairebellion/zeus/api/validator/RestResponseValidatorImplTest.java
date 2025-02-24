@@ -29,11 +29,13 @@ class RestResponseValidatorImplTest {
     void testValidateResponse_STATUS() {
         var statusAssertion = mock(Assertion.class);
         when(statusAssertion.getTarget()).thenReturn(RestAssertionTarget.STATUS);
-        when(statusAssertion.getKey()).thenReturn("status");
+        when(statusAssertion.getKey()).thenReturn("AssertionKeyForStatus");
         when(statusAssertion.getType()).thenReturn(AssertionTypes.IS);
         when(responseMock.getStatusCode()).thenReturn(200);
 
-        assertNotNull(validator.validateResponse(responseMock, statusAssertion));
+        var assertionsArr = new Assertion[]{statusAssertion};
+
+        assertNotNull(validator.validateResponse(responseMock, assertionsArr));
     }
 
     @Test

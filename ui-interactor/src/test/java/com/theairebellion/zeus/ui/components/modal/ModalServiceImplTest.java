@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.modal.mock.MockModalComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -18,7 +19,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-class ModalServiceImplTest {
+class ModalServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private ModalServiceImpl service;
@@ -30,8 +31,6 @@ class ModalServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("modal.default.type", "DUMMY");
         driver = mock(SmartWebDriver.class);
         service = new ModalServiceImpl(driver);
         container = mock(SmartWebElement.class);

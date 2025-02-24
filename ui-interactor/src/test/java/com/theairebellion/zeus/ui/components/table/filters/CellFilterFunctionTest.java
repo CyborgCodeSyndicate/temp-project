@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.filters;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.table.filters.mock.TestCellFilterFunction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
@@ -13,13 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 @SuppressWarnings("all")
-public class CellFilterFunctionTest {
-
-    @BeforeEach
-    public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("wait.duration.in.seconds", "15");
-    }
+public class CellFilterFunctionTest extends BaseUnitUITest {
 
     @Test
     void testAcceptCallsCellFilterFunction() {

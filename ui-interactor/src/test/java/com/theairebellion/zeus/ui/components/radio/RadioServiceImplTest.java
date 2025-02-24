@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.radio.mock.MockRadioComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -21,7 +22,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-class RadioServiceImplTest {
+class RadioServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private RadioServiceImpl service;
@@ -36,8 +37,7 @@ class RadioServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("radio.default.type", "DUMMY");
+
         driver = mock(SmartWebDriver.class);
         service = new RadioServiceImpl(driver);
         container = mock(SmartWebElement.class);

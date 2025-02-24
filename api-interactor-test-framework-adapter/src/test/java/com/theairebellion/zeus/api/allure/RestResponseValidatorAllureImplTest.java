@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 
 class RestResponseValidatorAllureImplTest {
 
-    private static final String STATUS = "status";
+    private static final String STATUS = "AssertionKeyForStatus";
     private static final int STATUS_200 = 200;
 
     private RestResponseValidatorAllureImpl validator;

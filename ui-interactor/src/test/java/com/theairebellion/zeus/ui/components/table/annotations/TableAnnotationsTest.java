@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.annotations;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.annotations.mock.MockCellInsertionFunction;
 import com.theairebellion.zeus.ui.components.table.annotations.mock.MockComponentType;
 import com.theairebellion.zeus.ui.components.table.annotations.mock.MockCellFilterFunction;
@@ -11,7 +12,7 @@ import java.lang.reflect.Field;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SuppressWarnings("all")
-class TableAnnotationsTest {
+class TableAnnotationsTest extends BaseUnitUITest {
 
     @Test
     public void testCellFilterAnnotation() throws NoSuchFieldException {

@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.base;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.mock.MockComponent;
 import com.theairebellion.zeus.ui.components.base.mock.MockComponentService;
 import com.theairebellion.zeus.ui.components.base.mock.MockType;
@@ -11,14 +12,12 @@ import org.openqa.selenium.WebDriver;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AbstractComponentServiceTest {
+class AbstractComponentServiceTest extends BaseUnitUITest {
 
     private MockComponentService service;
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("ui.config.file", "ui-config");
-        System.setProperty("wait.duration.in.seconds", "2");
 
         WebDriver original = Mockito.mock(WebDriver.class);
         SmartWebDriver driver = new SmartWebDriver(original);

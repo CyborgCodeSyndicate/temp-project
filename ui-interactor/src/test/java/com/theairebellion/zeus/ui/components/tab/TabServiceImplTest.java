@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.tab;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.tab.mock.MockTabComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class TabServiceImplTest {
+class TabServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private TabServiceImpl service;
@@ -28,8 +29,6 @@ class TabServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("tab.default.type", "DUMMY");
         driver = mock(SmartWebDriver.class);
         service = new TabServiceImpl(driver);
         container = mock(SmartWebElement.class);

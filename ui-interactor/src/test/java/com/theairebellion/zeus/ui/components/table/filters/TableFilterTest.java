@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.filters;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.mock.MockComponentType;
 import com.theairebellion.zeus.ui.components.table.filters.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.table.filters.mock.TestTableFilter;
@@ -13,13 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
-public class TableFilterTest {
+public class TableFilterTest extends BaseUnitUITest {
 
-    @BeforeEach
-    public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("wait.duration.in.seconds", "15");
-    }
 
     @Test
     void testTableFilter() {

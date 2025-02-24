@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.accordion;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.AccordionMockComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -22,7 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class AccordionServiceImplTest {
+class AccordionServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private AccordionServiceImpl service;

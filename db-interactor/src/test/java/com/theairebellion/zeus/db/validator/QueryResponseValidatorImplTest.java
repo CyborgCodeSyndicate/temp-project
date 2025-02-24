@@ -36,7 +36,7 @@ class QueryResponseValidatorImplTest {
     void testValidateQueryResponse_NumberRowsValidation() {
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1), Map.of("id", 2)));
 
-        Assertion<Integer> assertion = Assertion.builder(Integer.class)
+        Assertion<?> assertion = Assertion.builder()
                 .key(KEY_NUM_ROWS)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.NUMBER_ROWS)
@@ -58,7 +58,7 @@ class QueryResponseValidatorImplTest {
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
         when(mockExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(VALUE_NAME);
 
-        Assertion<String> assertion = Assertion.builder(String.class)
+        Assertion<?> assertion = Assertion.builder()
                 .key(KEY_JSON_PATH_NAME)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.QUERY_RESULT)
@@ -80,7 +80,7 @@ class QueryResponseValidatorImplTest {
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1, "name", VALUE_NAME)));
         when(mockExtractor.extract(queryResponse.getRows().get(0).keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(KEY_COLUMN_NAME);
 
-        Assertion<String> assertion = Assertion.builder(String.class)
+        Assertion<?> assertion = Assertion.builder()
                 .key(KEY_COLUMN_NAME)
                 .target(DbAssertionTarget.COLUMNS)
                 .type(AssertionTypes.CONTAINS)

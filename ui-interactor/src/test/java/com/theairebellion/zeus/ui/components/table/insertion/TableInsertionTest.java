@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.insertion;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.insertion.mock.MockComponentType;
 import com.theairebellion.zeus.ui.components.table.insertion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.table.insertion.mock.TestTableInsertion;
@@ -14,13 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 @SuppressWarnings("all")
-public class TableInsertionTest {
-
-    @BeforeEach
-    public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("wait.duration.in.seconds", "15");
-    }
+public class TableInsertionTest extends BaseUnitUITest {
 
     @Test
     void testTableInsertion() {

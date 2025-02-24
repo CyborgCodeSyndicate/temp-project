@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.button;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.button.mock.MockButtonComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -15,12 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class ButtonServiceImplTest {
-
-    static {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("button.default.type", "DUMMY");
-    }
+class ButtonServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private ButtonServiceImpl service;

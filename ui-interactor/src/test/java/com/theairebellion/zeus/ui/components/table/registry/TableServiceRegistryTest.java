@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.registry;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
 import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
 import com.theairebellion.zeus.ui.components.table.registry.mock.MockComponentType;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class TableServiceRegistryTest {
+public class TableServiceRegistryTest extends BaseUnitUITest {
 
     private TableServiceRegistry registry;
 

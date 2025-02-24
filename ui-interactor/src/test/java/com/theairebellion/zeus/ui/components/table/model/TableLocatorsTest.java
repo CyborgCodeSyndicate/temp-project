@@ -2,10 +2,11 @@ package com.theairebellion.zeus.ui.components.table.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 
-public class TableLocatorsTest {
+public class TableLocatorsTest extends BaseUnitUITest {
 
     @Test
     void testConstructorAndGetters() {

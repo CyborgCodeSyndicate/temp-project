@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.list.mock.MockItemListComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -21,7 +22,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-class ItemListServiceImplTest {
+class ItemListServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private ItemListServiceImpl service;
@@ -36,8 +37,6 @@ class ItemListServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("list.default.type", "DUMMY");
         driver = mock(SmartWebDriver.class);
         service = new ItemListServiceImpl(driver);
         container = mock(SmartWebElement.class);

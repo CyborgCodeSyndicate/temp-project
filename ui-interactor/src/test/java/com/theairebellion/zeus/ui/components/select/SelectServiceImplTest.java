@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.select.mock.MockSelectComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -19,7 +20,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-class SelectServiceImplTest {
+class SelectServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private SelectServiceImpl service;
@@ -32,8 +33,6 @@ class SelectServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("select.default.type", "DUMMY");
         driver = mock(SmartWebDriver.class);
         service = new SelectServiceImpl(driver);
         container = mock(SmartWebElement.class);

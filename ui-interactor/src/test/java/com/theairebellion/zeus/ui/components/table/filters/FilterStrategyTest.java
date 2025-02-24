@@ -1,9 +1,11 @@
 package com.theairebellion.zeus.ui.components.table.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import org.junit.jupiter.api.Test;
 
-public class FilterStrategyTest {
+public class FilterStrategyTest extends BaseUnitUITest {
 
     @Test
     void testEnumValues() {

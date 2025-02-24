@@ -1,11 +1,12 @@
 package com.theairebellion.zeus.ui.components.table.insertion;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.insertion.mock.MockComponentType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CellInsertionComponentTest {
+public class CellInsertionComponentTest extends BaseUnitUITest {
 
     @Test
     void testGetters() {

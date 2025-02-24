@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.model;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterComponent;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterFunction;
 import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionComponent;
@@ -13,7 +14,7 @@ import org.openqa.selenium.By;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class CellLocatorTest {
+public class CellLocatorTest extends BaseUnitUITest {
 
     @Test
     void testAllArgsConstructorAndGetters() {

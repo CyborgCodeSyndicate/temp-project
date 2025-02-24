@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.link.mock.MockLinkComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -15,7 +16,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-class LinkServiceImplTest {
+class LinkServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private LinkServiceImpl service;
@@ -27,8 +28,6 @@ class LinkServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("link.default.type", "DUMMY");
 
         driver = mock(SmartWebDriver.class);
         service = new LinkServiceImpl(driver);

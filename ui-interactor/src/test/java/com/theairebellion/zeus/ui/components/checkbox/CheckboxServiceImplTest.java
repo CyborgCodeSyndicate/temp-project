@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.checkbox.mock.MockCheckboxComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -23,12 +24,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-class CheckboxServiceImplTest {
+class CheckboxServiceImplTest extends BaseUnitUITest {
 
-    static {
-        System.setProperty("project.package", "com.theairebellion.zeus");
-        System.setProperty("checkbox.default.type", "DUMMY");
-    }
 
     private SmartWebDriver driver;
     private CheckboxServiceImpl service;

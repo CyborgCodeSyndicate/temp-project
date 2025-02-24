@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.service;
 
+import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
@@ -20,12 +21,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("all")
-class TableServiceImplTest {
+class TableServiceImplTest extends BaseUnitUITest {
 
-    static {
-        System.setProperty("table.default.type", "DUMMY");
-        System.setProperty("project.package", "com.theairebellion.zeus");
-    }
 
     private TestTableServiceImpl testService;
     @Mock
