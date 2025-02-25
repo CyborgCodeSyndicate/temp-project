@@ -11,17 +11,15 @@ public class BaseUnitUITest {
         System.setProperty("button.default.type", "DUMMY");
         System.setProperty("checkbox.default.type", "DUMMY");
         System.setProperty("input.default.type", "DUMMY");
-        System.setProperty("tab.default.type", "DUMMY");
         System.setProperty("link.default.type", "DUMMY");
         System.setProperty("list.default.type", "DUMMY");
         System.setProperty("loader.default.type", "DUMMY");
         System.setProperty("modal.default.type", "DUMMY");
         System.setProperty("radio.default.type", "DUMMY");
         System.setProperty("select.default.type", "DUMMY");
+        System.setProperty("tab.default.type", "DUMMY");
         System.setProperty("table.default.type", "DUMMY");
         System.setProperty("toggle.default.type", "DUMMY");
-
-
 
     }
 }
