@@ -24,7 +24,7 @@ public class QuestPreconditionFunctions {
     public static void login(SuperQuest quest, String username, String password) {
         quest.enters(World.FORGE)
                 .login(username, password);
-        // .input().insert(InputFields.USERNAME_FIELD, username)
+         .input().insert(InputFields.USERNAME_FIELD, username)
         // .input().insert(InputFields.USERNAME_FIELD, password);
 
     }
