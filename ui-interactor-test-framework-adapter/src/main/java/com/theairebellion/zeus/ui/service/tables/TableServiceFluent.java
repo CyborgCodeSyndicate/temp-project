@@ -1,13 +1,17 @@
 package com.theairebellion.zeus.ui.service.tables;
 
 
+import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.service.TableService;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
+import com.theairebellion.zeus.validator.core.Assertion;
+import com.theairebellion.zeus.validator.core.AssertionResult;
 
 import java.util.List;
 
@@ -19,7 +23,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     private final T uiServiceFluent;
     private final Storage storage;
     private final SmartWebDriver driver;
-
+    private final DecoratorsFactory decoratorsFactory = new DecoratorsFactory();
 
     public TableServiceFluent(T uiServiceFluent, Storage storage, TableService tableService,
                               SmartWebDriver webDriver) {
@@ -74,7 +78,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
     @SafeVarargs
     public final <K> T readTable(TableElement tableElement, int start, int end,
-                                               TableField<K>... fields) {
+                                 TableField<K>... fields) {
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         List<K> rows = tableService.readTable(tableElement.tableType(), start, end,
@@ -108,7 +112,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
     @SafeVarargs
     public final <K> T readRow(TableElement tableElement, int row,
-                                             TableField<K>... fields) {
+                               TableField<K>... fields) {
         tableElement.before().accept(driver);
         K rowEntry = tableService.readRow(tableElement.tableType(), row,
                 tableElement.rowsRepresentationClass(), fields);
@@ -120,7 +124,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
     @SafeVarargs
     public final <K> T readRow(TableElement tableElement, List<String> searchCriteria,
-                                             TableField<K>... fields) {
+                               TableField<K>... fields) {
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         K rowEntry = tableService.readRow(tableElement.tableType(), searchCriteria,
@@ -132,7 +136,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public final <K> T insertCellValue(TableElement tableElement, int row,
-                                                     TableField<K> field, String... values) {
+                                       TableField<K> field, String... values) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), field, 1,
@@ -143,8 +147,8 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public final <K> T insertCellValue(TableElement tableElement, int row,
-                                                     TableField<K> field,
-                                                     int index, String... value) {
+                                       TableField<K> field,
+                                       int index, String... value) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), field,
@@ -155,8 +159,8 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria,
-                                                     TableField<K> field,
-                                                     String... values) {
+                                       TableField<K> field,
+                                       String... values) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
@@ -167,8 +171,8 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria,
-                                                     TableField<K> field,
-                                                     int index, String... values) {
+                                       TableField<K> field,
+                                       int index, String... values) {
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
@@ -179,7 +183,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public final <K> T insertCellValue(TableElement tableElement, int row,
-                                                     K data) {
+                                       K data) {
         if (!tableElement.rowsRepresentationClass().equals(data.getClass())) {
             throw new IllegalArgumentException(
                     "The Data object must be from class: " + tableElement.rowsRepresentationClass());
@@ -205,8 +209,8 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public final <K> T filterTable(TableElement tableElement,
-                                                 TableField<K> column,
-                                                 FilterStrategy filterStrategy, String... values) {
+                                   TableField<K> column,
+                                   FilterStrategy filterStrategy, String... values) {
         validateArguments(column, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.filterTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), column,
@@ -217,7 +221,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public final <K> T sortTable(TableElement tableElement, TableField<K> column,
-                                               SortingStrategy sortingStrategy) {
+                                 SortingStrategy sortingStrategy) {
         validateArguments(column, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.sortTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), column,
@@ -234,6 +238,20 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
         } catch (Exception e) {
             throw new IllegalArgumentException("The TableField objects should be from class: " + expectedClass);
         }
+    }
+
+    public T validate(TableElement tableElement, Assertion<?>... assertions) {
+        Object tableData = storage.sub(UI).get(tableElement.enumImpl(), Object.class);
+        if (tableData == null) {
+            throw new IllegalArgumentException("No table data found for key: " + tableElement.enumImpl());
+        }
+
+        final List<AssertionResult<Object>> results = tableService.validate(tableData, assertions);
+        SuperUIServiceFluent<?> decorate = decoratorsFactory.decorate(uiServiceFluent, SuperUIServiceFluent.class);
+
+        decorate.validation(results);
+
+        return uiServiceFluent;
     }
 
 }
