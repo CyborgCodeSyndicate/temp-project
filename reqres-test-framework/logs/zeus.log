@@ -1,0 +1,11 @@
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:15,163 WARN  [] - Support for convention-based stereotype names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:15,628 INFO  [] - Starting ReqresApiTest using Java 17.0.14 with PID 5656 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:15,646 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:16,632 INFO  [] - Started ReqresApiTest in 2.059 seconds (process running for 6.234)
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:17,999 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - The quest: 'testGetAllUsers(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:18,077 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - Quest crafted for scenario: 'testGetAllUsers(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:18,099 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - The quest has undertaken a journey through: 'API'
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:19,252 [scenario=ReqresApiTest.testGetAllUsers] STEP  [API] - Sending request to endpoint GET-https://reqres.in/api/users?page=2.
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:20,637 [scenario=ReqresApiTest.testGetAllUsers] STEP  [API] - Response with status: 200 received from endpoint: GET-https://reqres.in/api/users?page=2 in 1880ms.
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:20,829 [scenario=ReqresApiTest.testGetAllUsers] INFO  [API] - Starting response validation with 18 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-21T13:51:20,858 [scenario=ReqresApiTest.testGetAllUsers] INFO  [TEST] - The quest of 'testGetAllUsers(Quest)' has ended in defeat. Status: FAILED. Duration: 2 seconds.

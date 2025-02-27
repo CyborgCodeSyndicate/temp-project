@@ -1,6 +1,7 @@
 package com.example.project.ui.elements;
 
 import com.example.project.model.TableEntry;
+import com.example.project.model.TransactionsTableEntry;
 import com.example.project.ui.functions.SharedUI;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.service.tables.TableElement;
@@ -13,7 +14,8 @@ import static com.example.project.ui.elements.TableTypes.SIMPLE;
 public enum Tables implements TableElement {
 
     CAMPAIGNS(TableEntry.class),
-    ORDERS(TableEntry.class, SIMPLE);
+    ORDERS(TableEntry.class, SIMPLE),
+    TRANSACTIONS(TransactionsTableEntry.class);
 
 
     private final Class<?> rowRepresentationClass;

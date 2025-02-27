@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Properties;
 
+import java.util.List;
+
 @Odyssey
 @SpringBootTest(
         classes = {TestConfig.class},
@@ -45,7 +47,6 @@ public class BaseTest {
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
         return quest.getStorage().sub(subKey).get(key, clazz);
     }
-
 
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();

@@ -3,6 +3,7 @@ package com.theairebellion.zeus.validator.util;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import com.theairebellion.zeus.validator.core.AssertionType;
+import com.theairebellion.zeus.validator.exceptions.InvalidAssertionException;
 import com.theairebellion.zeus.validator.registry.AssertionRegistry;
 
 import java.util.Arrays;
@@ -53,15 +54,23 @@ public class AssertionUtil {
 
     private static void validateAssertion(Assertion<?> assertion) {
         if (assertion == null) {
-            throw new IllegalArgumentException("Assertion cannot be null.");
+            throw new InvalidAssertionException("Assertion cannot be null.");
         }
 
         if (assertion.getKey() == null || assertion.getKey().isEmpty()) {
-            throw new IllegalArgumentException("Assertion must have a non-empty key.");
+            throw new InvalidAssertionException("Assertion must have a non-empty key.");
         }
 
         if (assertion.getType() == null) {
-            throw new IllegalArgumentException("Assertion must have a non-null type.");
+            throw new InvalidAssertionException("Assertion must have a non-null type.");
+        }
+
+        if (assertion.getTarget() == null) {
+            throw new InvalidAssertionException("Assertion must have a non-null target.");
+        }
+
+        if (assertion.getExpected() == null) {
+            throw new InvalidAssertionException("Assertion must have a non-null expected.");
         }
     }
 
