@@ -730,7 +730,6 @@ public class TableImplConsolidatedTest extends BaseUnitUITest {
         m.setAccessible(true);
         List<SmartWebElement> elems = List.of(mock(SmartWebElement.class), mock(SmartWebElement.class));
         when(container.findSmartElements(By.className("row"))).thenReturn(elems);
-        @SuppressWarnings("unchecked")
         List<SmartWebElement> result = (List<SmartWebElement>) m.invoke(tableImpl, container, By.className("row"), "any");
         assertEquals(elems.get(0).getAttribute("class"), result.get(0).getAttribute("class"));
     }
