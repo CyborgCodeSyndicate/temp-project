@@ -17,25 +17,25 @@ class TableAnnotationsTest extends BaseUnitUITest {
     @Test
     public void testCellFilterAnnotation() throws NoSuchFieldException {
         class Mock {
-            @CellFilter(type = MockComponentType.class, componentType = "TEST_FILTER")
+            @CellFilter(type = MockComponentType.class, componentType = "DUMMY")
             private String field = "dummy";
         }
         Field field = Mock.class.getDeclaredField("field");
         CellFilter annotation = field.getAnnotation(CellFilter.class);
         assertEquals(MockComponentType.class, annotation.type());
-        assertEquals("TEST_FILTER", annotation.componentType());
+        assertEquals("DUMMY", annotation.componentType());
     }
 
     @Test
     public void testCellInsertionAnnotation() throws NoSuchFieldException {
         class Mock {
-            @CellInsertion(type = MockComponentType.class, componentType = "TEST_INSERT", order = 5)
+            @CellInsertion(type = MockComponentType.class, componentType = "DUMMY", order = 5)
             private String field = "dummy";
         }
         Field field = Mock.class.getDeclaredField("field");
         CellInsertion annotation = field.getAnnotation(CellInsertion.class);
         assertEquals(MockComponentType.class, annotation.type());
-        assertEquals("TEST_INSERT", annotation.componentType());
+        assertEquals("DUMMY", annotation.componentType());
         assertEquals(5, annotation.order());
     }
 

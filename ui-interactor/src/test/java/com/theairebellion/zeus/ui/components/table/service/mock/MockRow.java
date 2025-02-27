@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.service.mock;
 
+import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.table.annotations.CellInsertion;
 import com.theairebellion.zeus.ui.components.table.annotations.TableCellLocator;
 import com.theairebellion.zeus.ui.components.table.annotations.TableInfo;
@@ -13,7 +14,7 @@ import org.openqa.selenium.support.FindBy;
 )
 public class MockRow {
     @TableCellLocator(cellLocator = @FindBy(xpath = "//td"), tableSection = "default")
-    @CellInsertion(type = MockComponentType.class, componentType = "TEST_INSERT", order = 1)
+    @CellInsertion(type = ComponentType.class, componentType = "DUMMY", order = 1)
     private TableCell cell;
 
     public TableCell getCell() {

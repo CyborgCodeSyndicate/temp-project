@@ -13,7 +13,7 @@ import org.openqa.selenium.support.FindBy;
 )
 public class MockRowForFilter {
     @TableCellLocator(cellLocator = @FindBy(xpath = "//td"), tableSection = "filterSection")
-    @CellFilter(type = MockComponentType.class, componentType = "TEST_FILTER")
+    @CellFilter(type = MockComponentType.class, componentType = "DUMMY")
     private TableCell cell;
 
     public void setCell(TableCell cell) {
