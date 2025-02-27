@@ -1,11 +1,15 @@
 package com.theairebellion.zeus.ui.extensions;
 
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.assertion.CustomSoftAssertion;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
+import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
+import com.theairebellion.zeus.framework.util.TestContextManager;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
@@ -18,7 +22,6 @@ import com.theairebellion.zeus.ui.validator.TableAssertionFunctions;
 import com.theairebellion.zeus.ui.validator.TableAssertionTypes;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import com.theairebellion.zeus.validator.registry.AssertionRegistry;
-import io.qameta.allure.Allure;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -33,7 +36,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
-public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
+public class UiTestExtension extends TestContextManager implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
         TestExecutionExceptionHandler {
 
     private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
@@ -148,7 +150,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
         WebDriver driver = getWebDriver(decoratorsFactory, context);
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
-            takeScreenshot(driver, context.getDisplayName());
+            takeScreenshot(driver, context.getDisplayName(), getSuperQuest(context));
         }
         driver.close();
         driver.quit();
@@ -162,7 +164,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
         WebDriver driver = getWebDriver(decoratorsFactory, context);
-        takeScreenshot(driver, context.getDisplayName());
+        takeScreenshot(driver, context.getDisplayName(), getSuperQuest(context));
         throw throwable;
     }
 
@@ -230,7 +232,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         CustomSoftAssertion.registerCustomAssertion(
                 SmartWebDriver.class,
                 (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
-                        "soft_assert_failure_" + testName),
+                        "soft_assert_failure_" + testName, quest),
                 stackTrace -> Arrays.stream(stackTrace)
                         .anyMatch(element -> element.getClassName().contains(SELENIUM_PACKAGE) ||
                                 element.getClassName().contains(UI_MODULE_PACKAGE))
@@ -238,14 +240,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
 
-    private static void takeScreenshot(WebDriver driver, String testName) {
+    private static void takeScreenshot(WebDriver driver, String testName, SuperQuest superQuest) {
+        CustomAllureListener.stopParentStep();
         try {
             TakesScreenshot screenshot = (TakesScreenshot) driver;
             byte[] screenshotBytes = screenshot.getScreenshotAs(OutputType.BYTES);
-            Allure.addAttachment(testName, new ByteArrayInputStream(screenshotBytes));
-            System.out.println("Screenshot taken for: " + testName);
+            superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, screenshotBytes);
+            LogTest.info("Screenshot taken and stored for: " + testName);
         } catch (Exception e) {
-            System.err.println("Failed to take screenshot: " + e.getMessage());
+            LogTest.info("Failed to take screenshot: " + e.getMessage());
         }
     }
 

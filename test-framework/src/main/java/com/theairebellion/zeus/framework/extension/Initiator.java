@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.framework.extension;
 
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
@@ -8,6 +9,7 @@ import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.util.TestContextManager;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -28,13 +30,14 @@ import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGU
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 
 @Order(Integer.MAX_VALUE)
-public class Initiator implements InvocationInterceptor {
+public class Initiator extends TestContextManager implements InvocationInterceptor {
 
 
     @Override
     public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
                                     ExtensionContext extensionContext) throws Throwable {
 
+        CustomAllureListener.startParentStep("Test Execution", CustomAllureListener.StepType.SUCCESS);
         Optional<Method> testMethod = extensionContext.getTestMethod();
 
         if (testMethod.isPresent() && testMethod.get().isAnnotationPresent(PreQuest.class)) {

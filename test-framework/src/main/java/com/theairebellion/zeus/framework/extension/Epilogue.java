@@ -1,70 +1,49 @@
 package com.theairebellion.zeus.framework.extension;
 
-import com.theairebellion.zeus.framework.log.LogTest;
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.storage.StorageKeysTest;
+import com.theairebellion.zeus.framework.util.TestContextManager;
 import io.qameta.allure.Allure;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.stream.Collectors;
+import java.io.ByteArrayInputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
 
 @Order(Integer.MAX_VALUE)
-public class Epilogue implements AfterTestExecutionCallback {
+public class Epilogue extends TestContextManager implements AfterTestExecutionCallback {
 
     @Override
     public void afterTestExecution(final ExtensionContext context) {
+        setUpTestMetadata(context, getSuperQuest(context));
+        SuperQuest superQuest = getSuperQuest(context);
+        Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
+        String htmlContent = generateHtmlContent(arguments);
+        superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, htmlContent);
         Throwable throwable = context.getExecutionException().orElse(null);
         String status = (throwable == null) ? "SUCCESS" : "FAILED";
-
         long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);
         long durationInSeconds = (System.currentTimeMillis() - startTime) / 1000;
-
         logTestOutcome(context.getDisplayName(), status, durationInSeconds, throwable);
-
+        CustomAllureListener.stopParentStep();
+        CustomAllureListener.startParentStep("Tear Down", CustomAllureListener.StepType.SUCCESS);
         attachFilteredLogsToAllure(ThreadContext.get("testName"));
+        if (isUITest(context)) {
+            List<byte[]> screenshotBytes = superQuest.getStorage()
+                    .sub(StorageKeysTest.ALLURE_DESCRIPTION)
+                    .getAllByClass(StorageKeysTest.HTML, byte[].class);
+            Allure.addAttachment("Screenshot for " + ThreadContext.get("testName"), new ByteArrayInputStream(screenshotBytes.get(0)));
+        }
         ThreadContext.remove("testName");
+        setDescription(getSuperQuest(context));
+        CustomAllureListener.stopParentStep();
     }
 
-    private void logTestOutcome(String testName, String status, long durationInSeconds, Throwable throwable) {
-        if (throwable == null) {
-            LogTest.info("The quest of '{}' has concluded with glory. Status: {}. Duration: {} seconds.",
-                testName, status, durationInSeconds);
-        } else {
-            LogTest.info("The quest of '{}' has ended in defeat. Status: {}. Duration: {} seconds.",
-                testName, status, durationInSeconds);
-            LogTest.debug("Failure reason:", throwable);
-        }
-    }
-
-    private static void attachFilteredLogsToAllure(String testName) {
-        if (testName == null || testName.isEmpty()) {
-            Allure.addAttachment("Filtered Logs", "text/plain", "Test name is not available.", ".log");
-            return;
-        }
-
-        String logFilePath = System.getProperty("logFileName", "logs/zeus.log");
-        String testIdentifier = "[scenario=" + testName + "]";
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(logFilePath))) {
-            String filteredLogs = reader.lines()
-                                      .filter(line -> line.contains(testIdentifier))
-                                      .collect(Collectors.joining(System.lineSeparator()));
-
-            if (!filteredLogs.isEmpty()) {
-                Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain", filteredLogs, ".log");
-            } else {
-                Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain",
-                    "No logs found for test: " + testName, ".log");
-            }
-        } catch (IOException e) {
-            String errorMessage = "Failed to read or filter logs for test: " + testName + ". Error: " + e.getMessage();
-            Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain", errorMessage, ".log");
-        }
-    }
 }

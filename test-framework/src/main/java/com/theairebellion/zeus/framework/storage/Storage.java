@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.framework.storage;
 
 import com.theairebellion.zeus.framework.parameters.Late;
+import lombok.Getter;
 import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 
+@Getter
 public class Storage {
 
     private final Map<Enum<?>, LinkedList<Object>> data = new ConcurrentHashMap<>();

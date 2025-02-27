@@ -14,12 +14,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static com.theairebellion.zeus.framework.storage.StorageKeysTest.ARGUMENTS;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.STATIC_DATA;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
@@ -40,6 +42,7 @@ public class Oracle implements ParameterResolver {
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
             throws ParameterResolutionException {
+        extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).put(ARGUMENTS, new ArrayList<>());
         ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
         QuestFactory questFactory = appCtx.getBean(QuestFactory.class);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
