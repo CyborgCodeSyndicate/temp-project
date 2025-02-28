@@ -1,43 +1,61 @@
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:41,747 WARN  [] - Support for convention-based stereotype names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:42,290 INFO  [] - Starting ZeroBankTest using Java 17.0.14 with PID 22732 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\example-project)
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:42,314 INFO  [] - No active profile set, falling back to 1 default profile: "default"
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:43,450 INFO  [] - Started ZeroBankTest in 2.48 seconds (process running for 6.563)
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:44,729 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest: 'tableAssert(Quest)' has begun.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:44,846 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Driver of type: CHROME has been registered
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:44,873 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Driver of type: EDGE has been registered
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:45,565 [scenario=ZeroBankTest.tableAssert] INFO  [] - Using chromedriver 133.0.6943.126 (resolved driver for Chrome 133)
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:45,622 [scenario=ZeroBankTest.tableAssert] INFO  [] - Exporting webdriver.chrome.driver as C:\Users\stefa\.cache\selenium\chromedriver\win64\133.0.6943.126\chromedriver.exe
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:45,637 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Chrome driver is downloaded with compatible version for the installed browser
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:45,684 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Webdriver is started
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:47,136 [scenario=ZeroBankTest.tableAssert] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:48,442 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - Quest crafted for scenario: 'tableAssert(Quest)'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:48,509 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:51,689 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:52,254 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:57,072 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: 'ONLINE' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:58,927 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '2012-01-01' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:59,194 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '2012-12-31' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:59,491 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '100' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:50:59,778 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '1000' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:03,094 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - Starting hard validation.
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:03,121 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - Hard validation has passed.
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:03,135 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Starting response validation with 10 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:03,468 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_NOT_EMPTY (Expected: true, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:03,970 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_ROW_COUNT (Expected: 2, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:03,980 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ALL_ROWS_CONTAIN_VALUES (Expected: [ONLINE TRANSFER REF #UKKSDRQG6L], Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:03,994 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_DOES_NOT_CONTAIN_ROW (Expected: [random, TEST, 222.2, ], Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,019 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: UNIQUE_ROWS (Expected: true, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,029 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: NO_EMPTY_CELLS (Expected: false, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,039 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: COLUMN_VALUE_UNIQUENESS (Expected: 1, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,049 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_DATA_MATCHES_EXPECTED (Expected: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]], Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,068 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ALL_CELLS_ENABLED (Expected: true, Actual: [[Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}], [Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,078 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ALL_CELLS_CLICKABLE (Expected: true, Actual: [[Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}], [Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (59857dd5884b02ba0c3e2e170a6db984)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}]])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,526 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Starting response validation with 2 assertion(s).
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,542 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ROW_NOT_EMPTY (Expected: true, Actual: [2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,542 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ROW_CONTAIN_VALUES (Expected: [2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L], Actual: [2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ])
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,542 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest has left the journey.
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,558 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest has reached his end
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:04,767 WARN  [] - Connection reset
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:33,016 WARN  [] - Support for convention-based stereotype names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:33,255 INFO  [] - Starting ZeroBankTest using Java 17.0.2 with PID 35232 (started by vsushelski in C:\Users\vsushelski\Documents\TempProject\zeus-automation-testing-libraries\example-project)
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:33,263 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:33,818 INFO  [] - Started ZeroBankTest in 1.303 seconds (process running for 4.182)
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:34,634 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [TEST] - The quest: 'validatePurchaseCheckRadioButtons(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:34,721 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [UI] - Driver of type: CHROME has been registered
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:34,732 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [UI] - Driver of type: EDGE has been registered
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:34,999 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [] - Using chromedriver 133.0.6943.141 (resolved driver for Chrome 133)
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,039 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [] - Exporting webdriver.chrome.driver as C:\Users\vsushelski\.cache\selenium\chromedriver\win64\133.0.6943.141\chromedriver.exe
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,053 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [UI] - Chrome driver is downloaded with compatible version for the installed browser
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,068 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,266 [scenario=BakeryTest.scenario_two] INFO  [TEST] - The quest: 'scenario_two(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,325 [scenario=BakeryTest.scenario_two] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,355 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [TEST] - The quest: 'paragraphTextValueTestHardAssertionsFailedTest(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,408 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,436 [scenario=BakeryTest.scenario_three] INFO  [TEST] - The quest: 'scenario_three(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,501 [scenario=BakeryTest.scenario_three] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,558 [scenario=BakeryTest.scenario_four] INFO  [TEST] - The quest: 'scenario_four(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:35,637 [scenario=BakeryTest.scenario_four] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:37,772 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:37,772 [scenario=BakeryTest.scenario_two] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:37,772 [scenario=BakeryTest.scenario_four] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:37,772 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:37,772 [scenario=BakeryTest.scenario_three] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,380 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [TEST] - Quest crafted for scenario: 'validatePurchaseCheckRadioButtons(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,380 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [TEST] - Quest crafted for scenario: 'paragraphTextValueTestHardAssertionsFailedTest(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,380 [scenario=BakeryTest.scenario_four] INFO  [TEST] - Quest crafted for scenario: 'scenario_four(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,380 [scenario=BakeryTest.scenario_three] INFO  [TEST] - Quest crafted for scenario: 'scenario_three(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,380 [scenario=BakeryTest.scenario_two] INFO  [TEST] - Quest crafted for scenario: 'scenario_two(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,501 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,501 [scenario=BakeryTest.scenario_three] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,501 [scenario=BakeryTest.scenario_four] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,501 [scenario=BakeryTest.scenario_two] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:39,501 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:42,278 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:42,530 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:42,964 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:43,143 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:43,567 [scenario=BakeryTest.scenario_three] INFO  [UI] - Inserting value: 'barista@vaadin.com' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:43,674 [scenario=BakeryTest.scenario_four] INFO  [UI] - Inserting value: 'barista@vaadin.com' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:43,797 [scenario=BakeryTest.scenario_two] INFO  [UI] - Inserting value: 'barista@vaadin.com' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:44,964 [scenario=BakeryTest.scenario_three] INFO  [UI] - Inserting value: 'barista' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:45,004 [scenario=BakeryTest.scenario_four] INFO  [UI] - Inserting value: 'barista' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:45,311 [scenario=BakeryTest.scenario_two] INFO  [UI] - Inserting value: 'barista' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:47,361 [scenario=BakeryTest.scenario_four] INFO  [UI] - Inserting value: 'Amanda Nixon' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:49,603 [scenario=BakeryTest.scenario_four] INFO  [UI] - Framework will try to handle the exception
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:49,769 [scenario=BakeryTest.scenario_four] ERROR [UI] - Exception was not handled
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:49,843 [scenario=BakeryTest.scenario_four] ERROR [UI] - Element not found in the main DOM or any iframe.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:50,003 [scenario=BakeryTest.scenario_two] INFO  [UI] - Framework will try to handle the exception
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:50,028 [scenario=BakeryTest.scenario_three] INFO  [UI] - Framework will try to handle the exception
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:50,209 [scenario=BakeryTest.scenario_two] ERROR [UI] - Exception was not handled
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:50,252 [scenario=BakeryTest.scenario_three] ERROR [UI] - Exception was not handled
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:50,338 [scenario=BakeryTest.scenario_two] ERROR [UI] - Element not found in the main DOM or any iframe.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:51,305 [scenario=BakeryTest.scenario_three] ERROR [UI] - Element not found in the main DOM or any iframe.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:51,458 [scenario=BakeryTest.scenario_four] INFO  [TEST] - The quest of 'scenario_four(Quest)' has ended in defeat. Status: FAILED. Duration: 15 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:51,732 [scenario=BakeryTest.scenario_one] INFO  [TEST] - The quest: 'scenario_one(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:51,745 [scenario=BakeryTest.scenario_one] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:52,417 WARN  [] - Connection reset
 java.net.SocketException: Connection reset
 	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
 	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
@@ -50,8 +68,231 @@ java.net.SocketException: Connection reset
 	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
 	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
 	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
-	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:984) ~[java.net.http:?]
-	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:939) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934) ~[java.net.http:?]
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
-	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:939) ~[java.net.http:?]
-⚡️ ZEUS ⚡️ 2025-02-21T10:51:05,028 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest of 'tableAssert(Quest)' has concluded with glory. Status: SUCCESS. Duration: 20 seconds.
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:52,415 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:52,714 [scenario=BakeryTest.scenario_two] INFO  [TEST] - The quest of 'scenario_two(Quest)' has ended in defeat. Status: FAILED. Duration: 17 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:53,268 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:53,394 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:53,717 [scenario=BakeryTest.scenario_one] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:53,749 [scenario=BakeryTest.scenario_one] INFO  [TEST] - Quest crafted for scenario: 'scenario_one(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:53,883 [scenario=BakeryTest.scenario_one] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:54,158 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [UI] - Inserting value: '100' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:54,312 [scenario=BakeryTest.scenario_three] INFO  [TEST] - The quest of 'scenario_three(Quest)' has ended in defeat. Status: FAILED. Duration: 18 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:54,336 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [TEST] - The quest: 'paragraphTextValueTestMixedAssertionsFailedTest(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:54,348 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:54,699 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:54,705 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:56,038 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:56,049 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [TEST] - Quest crafted for scenario: 'paragraphTextValueTestMixedAssertionsFailedTest(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:56,125 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:57,984 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] ERROR [UI] - Element wasn't displayed after: 2 seconds
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:58,295 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:58,316 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:58,324 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:58,332 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-02-28T15:33:59,743 [scenario=BakeryTest.scenario_one] INFO  [UI] - Inserting value: 'barista@vaadin.com' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:00,379 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [UI] - Framework will try to handle the exception
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:00,532 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] ERROR [UI] - Exception was not handled
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:00,566 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] ERROR [UI] - Element not found in the main DOM or any iframe.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:00,576 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,032 [scenario=ZeroBankTest.validatePurchaseCheckRadioButtons] INFO  [TEST] - The quest of 'validatePurchaseCheckRadioButtons(Quest)' has concluded with glory. Status: SUCCESS. Duration: 26 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,062 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest: 'tableAssert(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,075 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,201 [scenario=BakeryTest.scenario_one] INFO  [UI] - Inserting value: 'barista' into input component of type: 'VA_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,628 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,695 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertionsFailedTest] INFO  [TEST] - The quest of 'paragraphTextValueTestHardAssertionsFailedTest(Quest)' has ended in defeat. Status: FAILED. Duration: 26 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,723 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [TEST] - The quest: 'paragraphTextValueTestAssertionsSuccess(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:01,732 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:02,258 [scenario=BakeryTest.scenario_one] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:02,265 [scenario=BakeryTest.scenario_one] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:02,517 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:02,835 [scenario=ZeroBankTest.tableAssert] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:02,855 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - Quest crafted for scenario: 'tableAssert(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:02,967 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:03,185 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:03,213 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [TEST] - Quest crafted for scenario: 'paragraphTextValueTestAssertionsSuccess(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:03,316 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:05,506 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:05,632 [scenario=BakeryTest.scenario_one] INFO  [UI] - Framework will try to handle the exception
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:05,769 [scenario=BakeryTest.scenario_one] ERROR [UI] - Exception was not handled
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:05,872 [scenario=BakeryTest.scenario_one] ERROR [UI] - Element not found in the main DOM or any iframe.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:05,872 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,180 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,290 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,518 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,631 [scenario=BakeryTest.scenario_one] INFO  [TEST] - The quest of 'scenario_one(Quest)' has ended in defeat. Status: FAILED. Duration: 14 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,657 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest: 'alertTest(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,661 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest: 'paragraphTextValueTestSoftAssertionsFailedTest(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,664 [scenario=ZeroBankTest.alertTest] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:06,667 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:08,159 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:08,195 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - Quest crafted for scenario: 'paragraphTextValueTestSoftAssertionsFailedTest(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:08,273 [scenario=ZeroBankTest.alertTest] WARN  [] - Unable to find an exact match for CDP version 133, returning the closest version; found: 129; Please update to a Selenium version that supports CDP version 133
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:08,303 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - Quest crafted for scenario: 'alertTest(Quest)'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:08,466 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:08,554 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:10,528 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:10,531 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:11,937 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:11,944 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:12,161 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: 'ONLINE' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:12,985 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '2012-01-01' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:13,441 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '2012-12-31' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:13,633 [scenario=ZeroBankTest.alertTest] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:13,754 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '100' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:13,980 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Inserting value: '1000' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:14,311 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:14,451 [scenario=ZeroBankTest.alertTest] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:15,212 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:15,365 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] ERROR [UI] - Element wasn't displayed after: 2 seconds
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:15,378 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:15,384 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:16,822 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:16,837 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:16,846 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Starting response validation with 10 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:16,984 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:16,992 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,200 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_NOT_EMPTY (Expected: true, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,206 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_ROW_COUNT (Expected: 2, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,212 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: EVERY_ROW_CONTAINS_VALUES (Expected: [ONLINE TRANSFER REF #UKKSDRQG6L], Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,220 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_DOES_NOT_CONTAIN_ROW (Expected: [random, TEST, 222.2, ], Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,227 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ALL_ROWS_ARE_UNIQUE (Expected: true, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,233 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: NO_EMPTY_CELLS (Expected: false, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,238 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: COLUMN_VALUES_ARE_UNIQUE (Expected: 1, Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,247 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: TABLE_DATA_MATCHES_EXPECTED (Expected: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]], Actual: [[2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ], [2012-09-01, ONLINE TRANSFER REF #UKKSDRQG6L, 1000, ]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,254 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ALL_CELLS_ENABLED (Expected: true, Actual: [[Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}], [Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,261 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ALL_CELLS_CLICKABLE (Expected: true, Actual: [[Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}], [Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(1)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(2)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(3)]}, Decorated {[[[[[[ChromeDriver: chrome on windows (8384fa38a8e84498f4d83f2c525bebe5)] -> css selector: [id='filtered_transactions_for_account'] table]] -> css selector: tbody tr]] -> css selector: td:nth-of-type(4)]}]])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,489 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [UI] - Framework will try to handle the exception
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,568 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] ERROR [UI] - Exception was not handled
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,594 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] ERROR [UI] - Element not found in the main DOM or any iframe.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,602 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,609 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,911 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Starting response validation with 2 assertion(s).
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,918 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ROW_NOT_EMPTY (Expected: true, Actual: [2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,924 [scenario=ZeroBankTest.tableAssert] VALIDATION [TEST] - ✔ Validation passed: ROW_CONTAINS_VALUES (Expected: [2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L], Actual: [2012-09-06, ONLINE TRANSFER REF #UKKSDRQG6L, 984.3, ])
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,932 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:17,938 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:18,666 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:18,671 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:18,675 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:18,679 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:18,998 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,020 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,593 [scenario=ZeroBankTest.alertTest] INFO  [UI] - Inserting value: '100' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,727 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,742 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,751 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,757 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,805 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest of 'tableAssert(Quest)' has concluded with glory. Status: SUCCESS. Duration: 18 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:19,840 [scenario=ZeroBankTest.alertTest] INFO  [UI] - Inserting value: 'IDEMO BRE' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:20,544 [scenario=ZeroBankTest.paragraphTextValueTestMixedAssertionsFailedTest] INFO  [TEST] - The quest of 'paragraphTextValueTestMixedAssertionsFailedTest(Quest)' has ended in defeat. Status: FAILED. Duration: 26 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:20,763 [scenario=ZeroBankTest.paragraphTextValueTestAssertionsSuccess] INFO  [TEST] - The quest of 'paragraphTextValueTestAssertionsSuccess(Quest)' has concluded with glory. Status: SUCCESS. Duration: 19 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:20,935 [scenario=ZeroBankTest.alertTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:20,937 [scenario=ZeroBankTest.alertTest] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:20,941 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:20,943 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:20,992 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:21,414 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest of 'alertTest(Quest)' has concluded with glory. Status: SUCCESS. Duration: 14 seconds.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:23,385 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:23,388 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:24,268 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:24,271 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:27,343 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] ERROR [UI] - Element wasn't displayed after: 2 seconds
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:29,421 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [UI] - Framework will try to handle the exception
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:29,975 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] ERROR [UI] - Exception was not handled
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:29,992 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] ERROR [UI] - Element not found in the main DOM or any iframe.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:29,995 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:29,997 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:31,009 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:31,011 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:31,250 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [UI] - Inserting value: '1000' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:31,355 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [UI] - Inserting value: '2025-01-27' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:31,475 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [UI] - Inserting value: 'Description Example' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:32,165 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:32,167 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] VALIDATION [TEST] - Starting soft validation.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:32,286 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:32,290 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-02-28T15:34:33,308 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertionsFailedTest] INFO  [TEST] - The quest of 'paragraphTextValueTestSoftAssertionsFailedTest(Quest)' has ended in defeat. Status: FAILED. Duration: 26 seconds.

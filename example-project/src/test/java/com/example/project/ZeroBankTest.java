@@ -48,6 +48,9 @@ public class ZeroBankTest extends BaseTest {
     @Description("COMPONENTS: Button, Input, Link, Select, Alert")
     @org.junit.jupiter.api.Tag("Regression")
     public void alertTest(Quest quest) {
+        System.out.println(
+            "Starting testMethod1 on thread " + Thread.currentThread().getName()
+        );
         quest
             .enters(World.EARTH)
             .browser().navigate("http://zero.webappsecurity.com/")
@@ -72,6 +75,9 @@ public class ZeroBankTest extends BaseTest {
     @Description("COMPONENTS: Button, Input, Link, List, Select, Radio, Alert")
     @org.junit.jupiter.api.Tag("Regression")
     public void validatePurchaseCheckRadioButtons(Quest quest) {
+        System.out.println(
+            "Starting testMethod1 on thread " + Thread.currentThread().getName()
+        );
         quest
             .enters(World.EARTH)
             .browser().navigate("http://zero.webappsecurity.com/")
@@ -98,6 +104,9 @@ public class ZeroBankTest extends BaseTest {
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Alert")
     @org.junit.jupiter.api.Tag("Regression")
     public void paragraphTextValueTestSoftAssertionsFailedTest(Quest quest) {
+        System.out.println(
+            "Starting testMethod1 on thread " + Thread.currentThread().getName()
+        );
         quest
             .enters(World.EARTH)
             .browser().navigate("http://zero.webappsecurity.com/")
@@ -139,6 +148,9 @@ public class ZeroBankTest extends BaseTest {
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
     @org.junit.jupiter.api.Tag("Regression")
     public void paragraphTextValueTestAssertionsSuccess(Quest quest) {
+        System.out.println(
+            "Starting testMethod1 on thread " + Thread.currentThread().getName()
+        );
         quest
             .enters(World.EARTH)
             .browser().navigate("http://zero.webappsecurity.com/")
@@ -170,6 +182,9 @@ public class ZeroBankTest extends BaseTest {
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
     @org.junit.jupiter.api.Tag("Regression")
     public void paragraphTextValueTestHardAssertionsFailedTest(Quest quest) {
+        System.out.println(
+            "Starting testMethod1 on thread " + Thread.currentThread().getName()
+        );
         quest
             .enters(World.EARTH)
             .browser().navigate("http://zero.webappsecurity.com/")
@@ -205,6 +220,9 @@ public class ZeroBankTest extends BaseTest {
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
     @org.junit.jupiter.api.Tag("Regression")
     public void paragraphTextValueTestMixedAssertionsFailedTest(Quest quest) {
+        System.out.println(
+            "Starting testMethod1 on thread " + Thread.currentThread().getName()
+        );
         quest
             .enters(World.EARTH)
             .browser().navigate("http://zero.webappsecurity.com/")
@@ -239,6 +257,9 @@ public class ZeroBankTest extends BaseTest {
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
     @org.junit.jupiter.api.Tag("Regression")
     public void tableAssert(Quest quest) {
+        System.out.println(
+            "Starting testMethod1 on thread " + Thread.currentThread().getName()
+        );
         List<List<String>> expectedTable = List.of(
             List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L", "984.3", ""),
             List.of("2012-09-01", "ONLINE TRANSFER REF #UKKSDRQG6L", "1000", "")
