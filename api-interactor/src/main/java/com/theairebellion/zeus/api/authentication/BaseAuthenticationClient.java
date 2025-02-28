@@ -3,14 +3,14 @@ package com.theairebellion.zeus.api.authentication;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public abstract class BaseAuthenticationClient implements AuthenticationClient {
 
-    public static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new HashMap<>();
+    public static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new ConcurrentHashMap<>();
 
 
     @Override

@@ -5,108 +5,161 @@ import com.theairebellion.zeus.validator.core.AssertionTypes;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
+@DisplayName("RestResponseValidator Implementation Tests")
 class RestResponseValidatorImplTest {
 
-    @Mock private Response responseMock;
+    @Mock
+    private Response responseMock;
+
     private RestResponseValidatorImpl validator;
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.openMocks(this);
         validator = new RestResponseValidatorImpl();
     }
 
-    @Test
-    void testValidateResponse_STATUS() {
-        var statusAssertion = mock(Assertion.class);
-        when(statusAssertion.getTarget()).thenReturn(RestAssertionTarget.STATUS);
-        when(statusAssertion.getKey()).thenReturn("AssertionKeyForStatus");
-        when(statusAssertion.getType()).thenReturn(AssertionTypes.IS);
-        when(responseMock.getStatusCode()).thenReturn(200);
+    @Nested
+    @DisplayName("Status Assertion Tests")
+    class StatusAssertionTests {
+        @Test
+        @DisplayName("Validate response status code")
+        void testValidateResponseStatus() {
+            // Arrange
+            Assertion<?> statusAssertion = Assertion.builder()
+                    .target(RestAssertionTarget.STATUS)
+                    .key("AssertionKeyForStatus")
+                    .type(AssertionTypes.IS)
+                    .expected(200)
+                    .build();
 
-        var assertionsArr = new Assertion[]{statusAssertion};
+            when(responseMock.getStatusCode()).thenReturn(200);
 
-        assertNotNull(validator.validateResponse(responseMock, assertionsArr));
+            // Act & Assert
+            assertNotNull(validator.validateResponse(responseMock, statusAssertion));
+        }
     }
 
-    @Test
-    void testValidateResponse_BODY() {
-        var bodyAssertion = mock(Assertion.class);
-        when(bodyAssertion.getTarget()).thenReturn(RestAssertionTarget.BODY);
-        when(bodyAssertion.getKey()).thenReturn("some.json.path");
-        when(bodyAssertion.getType()).thenReturn(AssertionTypes.IS);
-        when(responseMock.jsonPath()).thenReturn(new JsonPath("{\"some\":{\"json\":{\"path\":\"val\"}}}"));
+    @Nested
+    @DisplayName("Body Assertion Tests")
+    class BodyAssertionTests {
+        @Test
+        @DisplayName("Validate response body")
+        void testValidateResponseBody() {
+            // Arrange
+            Assertion<?> bodyAssertion = Assertion.builder()
+                    .target(RestAssertionTarget.BODY)
+                    .key("some.json.path")
+                    .type(AssertionTypes.IS)
+                    .expected("val")
+                    .build();
 
-        var assertionsArr = new Assertion[]{bodyAssertion};
+            when(responseMock.jsonPath()).thenReturn(
+                    new JsonPath("{\"some\":{\"json\":{\"path\":\"val\"}}}")
+            );
 
-        assertNotNull(validator.validateResponse(responseMock, assertionsArr));
+            // Act & Assert
+            assertNotNull(validator.validateResponse(responseMock, bodyAssertion));
+        }
+
+        @Test
+        @DisplayName("Validate response body with null key")
+        void testValidateResponseBodyNoKey() {
+            // Arrange
+            Assertion<?> bodyAssertion = Assertion.builder()
+                    .target(RestAssertionTarget.BODY)
+                    .key(null)
+                    .type(AssertionTypes.IS)
+                    .expected("value")
+                    .build();
+
+            // Act & Assert
+            assertThrows(Exception.class,
+                    () -> validator.validateResponse(responseMock, bodyAssertion));
+        }
+
+        @Test
+        @DisplayName("Validate response body with null path value")
+        void testValidateResponseBodyNullPathValue() {
+            // Arrange
+            Assertion<?> bodyAssertion = Assertion.builder()
+                    .target(RestAssertionTarget.BODY)
+                    .key("not.existing")
+                    .type(AssertionTypes.IS)
+                    .expected("someValue")
+                    .build();
+
+            when(responseMock.jsonPath()).thenReturn(new JsonPath("{}"));
+
+            // Act & Assert
+            assertThrows(IllegalArgumentException.class,
+                    () -> validator.validateResponse(responseMock, bodyAssertion));
+        }
     }
 
-    @Test
-    void testValidateResponse_BODY_NoKey() {
-        var bodyAssertion = mock(Assertion.class);
-        when(bodyAssertion.getTarget()).thenReturn(RestAssertionTarget.BODY);
-        when(bodyAssertion.getKey()).thenReturn(null);
+    @Nested
+    @DisplayName("Header Assertion Tests")
+    class HeaderAssertionTests {
+        @Test
+        @DisplayName("Validate response header")
+        void testValidateResponseHeader() {
+            // Arrange
+            Assertion<?> headerAssertion = Assertion.builder()
+                    .target(RestAssertionTarget.HEADER)
+                    .key("X-Something")
+                    .type(AssertionTypes.IS)
+                    .expected("Value")
+                    .build();
 
-        var arr = new Assertion[]{bodyAssertion};
+            when(responseMock.getHeader("X-Something")).thenReturn("Value");
 
-        assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
-    }
+            // Act & Assert
+            assertNotNull(validator.validateResponse(responseMock, headerAssertion));
+        }
 
-    @Test
-    void testValidateResponse_BODY_NullPathValue() {
-        var bodyAssertion = mock(Assertion.class);
-        when(bodyAssertion.getTarget()).thenReturn(RestAssertionTarget.BODY);
-        when(bodyAssertion.getKey()).thenReturn("not.existing");
-        when(responseMock.jsonPath()).thenReturn(new JsonPath("{}"));
+        @Test
+        @DisplayName("Validate response header with null key")
+        void testValidateResponseHeaderNoKey() {
+            // Arrange
+            Assertion<?> headerAssertion = Assertion.builder()
+                    .target(RestAssertionTarget.HEADER)
+                    .key(null)
+                    .type(AssertionTypes.IS)
+                    .expected("value")
+                    .build();
 
-        var arr = new Assertion[]{bodyAssertion};
+            // Act & Assert
+            assertThrows(Exception.class,
+                    () -> validator.validateResponse(responseMock, headerAssertion));
+        }
 
-        assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
-    }
+        @Test
+        @DisplayName("Validate response header with missing header")
+        void testValidateResponseHeaderMissingHeader() {
+            // Arrange
+            Assertion<?> headerAssertion = Assertion.builder()
+                    .target(RestAssertionTarget.HEADER)
+                    .key("X-NotThere")
+                    .type(AssertionTypes.IS)
+                    .expected("SomeValue")
+                    .build();
 
-    @Test
-    void testValidateResponse_HEADER() {
-        var headerAssertion = mock(Assertion.class);
-        when(headerAssertion.getTarget()).thenReturn(RestAssertionTarget.HEADER);
-        when(headerAssertion.getKey()).thenReturn("X-Something");
-        when(headerAssertion.getType()).thenReturn(AssertionTypes.IS);
-        when(responseMock.getHeader("X-Something")).thenReturn("Value");
+            when(responseMock.getHeader("X-NotThere")).thenReturn(null);
 
-        var arr = new Assertion[]{headerAssertion};
-
-        assertNotNull(validator.validateResponse(responseMock, arr));
-    }
-
-    @Test
-    void testValidateResponse_HEADER_NoKey() {
-        var headerAssertion = mock(Assertion.class);
-        when(headerAssertion.getTarget()).thenReturn(RestAssertionTarget.HEADER);
-        when(headerAssertion.getKey()).thenReturn(null);
-
-        var arr = new Assertion[]{headerAssertion};
-
-        assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
-    }
-
-    @Test
-    void testValidateResponse_HEADER_MissingHeader() {
-        var headerAssertion = mock(Assertion.class);
-        when(headerAssertion.getTarget()).thenReturn(RestAssertionTarget.HEADER);
-        when(headerAssertion.getKey()).thenReturn("X-NotThere");
-        when(responseMock.getHeader("X-NotThere")).thenReturn(null);
-
-        var arr = new Assertion[]{headerAssertion};
-
-        assertThrows(IllegalArgumentException.class, () -> validator.validateResponse(responseMock, arr));
+            // Act & Assert
+            assertThrows(IllegalArgumentException.class,
+                    () -> validator.validateResponse(responseMock, headerAssertion));
+        }
     }
 }

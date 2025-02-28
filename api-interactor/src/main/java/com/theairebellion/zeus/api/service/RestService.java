@@ -97,9 +97,10 @@ public class RestService {
 
 
     private Response executeRequest(Endpoint endpoint, Object body) {
+        if (endpoint == null) {
+            throw new RestServiceException("Endpoint cannot be null.");
+        }
         try {
-            Objects.requireNonNull(endpoint, "Endpoint cannot be null.");
-
             RequestSpecification spec = endpoint.prepareRequestSpec(body);
             if (baseAuthenticationClient != null) {
                 Header authenticationHeader = baseAuthenticationClient.getAuthentication(authenticationKey);

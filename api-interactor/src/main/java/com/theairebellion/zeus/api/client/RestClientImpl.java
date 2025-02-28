@@ -31,6 +31,10 @@ public class RestClientImpl implements RestClient {
 
     @Override
     public Response execute(final RequestSpecification spec, final Method method) {
+        if (method == null) {
+            throw new IllegalArgumentException("HTTP method must not be null");
+        }
+
         if (!(spec instanceof FilterableRequestSpecification filterableSpec)) {
             throw new IllegalArgumentException("RequestSpecification is not of type FilterableRequestSpecification");
         }

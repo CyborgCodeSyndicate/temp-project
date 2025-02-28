@@ -1,10 +1,8 @@
 package com.theairebellion.zeus.api.core;
 
-import com.theairebellion.zeus.api.config.ApiConfig;
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
-import org.aeonbits.owner.ConfigCache;
 
 import java.util.Collections;
 import java.util.List;

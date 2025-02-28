@@ -4,23 +4,32 @@ import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@DisplayName("RestClientImpl Tests")
 class RestClientImplTest {
 
     private static final String BASE_URL = "https://example.com";
     private static final String V1_TEST_URL = BASE_URL + "/api/v1/test";
-    private static final String V1_HEAD_URL = BASE_URL + "/api/v1/head";
     private static final String V1_OPTIONS_URL = BASE_URL + "/api/v1/options";
     private static final String JSON_PAYLOAD = "{\"hello\":\"world\"}";
     private static final String INVALID_JSON = "This is not JSON";
 
+    @Spy
     private RestClientImpl restClientImpl;
 
     @Mock
@@ -29,131 +38,187 @@ class RestClientImplTest {
     @Mock
     private Response responseMock;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        restClientImpl = new RestClientImpl();
+    @Nested
+    @DisplayName("Execute Method Tests")
+    class ExecuteMethodTests {
+
+        @Test
+        @DisplayName("Non-filterable specification should throw IllegalArgumentException")
+        void nonFilterableSpecShouldThrowException() {
+            // Arrange
+            RequestSpecification plainSpec = mock(RequestSpecification.class);
+
+            // Act & Assert
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> restClientImpl.execute(plainSpec, Method.GET),
+                    "Should throw IllegalArgumentException for non-filterable spec"
+            );
+            assertEquals(
+                    "RequestSpecification is not of type FilterableRequestSpecification",
+                    exception.getMessage()
+            );
+        }
+
+        @ParameterizedTest(name = "HTTP method {0} should be executed correctly")
+        @EnumSource(value = Method.class, names = {"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"})
+        @DisplayName("Supported HTTP methods should be executed correctly")
+        void supportedMethodsShouldBeExecutedCorrectly(Method method) {
+            // Arrange
+            when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
+            when(filterableRequestSpec.getBody()).thenReturn(null);
+            when(filterableRequestSpec.getHeaders()).thenReturn(null);
+
+            // Mock the appropriate method call based on the HTTP method
+            Response mockResponse = mock(Response.class);
+            when(mockResponse.getStatusCode()).thenReturn(200);
+            when(mockResponse.body()).thenReturn(null);
+            when(mockResponse.getHeaders()).thenReturn(null);
+
+            switch (method) {
+                case GET -> when(filterableRequestSpec.get()).thenReturn(mockResponse);
+                case POST -> when(filterableRequestSpec.post()).thenReturn(mockResponse);
+                case PUT -> when(filterableRequestSpec.put()).thenReturn(mockResponse);
+                case DELETE -> when(filterableRequestSpec.delete()).thenReturn(mockResponse);
+                case PATCH -> when(filterableRequestSpec.patch()).thenReturn(mockResponse);
+                case HEAD -> when(filterableRequestSpec.head()).thenReturn(mockResponse);
+                default -> fail("Unsupported method in test: " + method);
+            }
+
+            // Act
+            Response actualResponse = restClientImpl.execute(filterableRequestSpec, method);
+
+            // Assert
+            assertNotNull(actualResponse, "Response should not be null");
+            assertEquals(mockResponse, actualResponse, "Response should match the mock");
+
+            // Verify the correct method was called
+            switch (method) {
+                case GET -> verify(filterableRequestSpec).get();
+                case POST -> verify(filterableRequestSpec).post();
+                case PUT -> verify(filterableRequestSpec).put();
+                case DELETE -> verify(filterableRequestSpec).delete();
+                case PATCH -> verify(filterableRequestSpec).patch();
+                case HEAD -> verify(filterableRequestSpec).head();
+                default -> fail("Unsupported method in verification: " + method);
+            }
+        }
+
+        @Test
+        @DisplayName("Unsupported HTTP method should throw IllegalArgumentException")
+        void unsupportedMethodShouldThrowException() {
+            // Arrange
+            when(filterableRequestSpec.getURI()).thenReturn(V1_OPTIONS_URL);
+
+            // Act & Assert
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> restClientImpl.execute(filterableRequestSpec, Method.OPTIONS),
+                    "Should throw IllegalArgumentException for unsupported method"
+            );
+            assertTrue(
+                    exception.getMessage().contains("HTTP method OPTIONS is not supported"),
+                    "Exception message should mention unsupported method"
+            );
+        }
+
+        @Test
+        @DisplayName("Execute should correctly process request with body and headers")
+        void shouldCorrectlyProcessRequestWithBodyAndHeaders() {
+            // Arrange
+            when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
+            when(filterableRequestSpec.getBody()).thenReturn(JSON_PAYLOAD);
+            when(filterableRequestSpec.getHeaders()).thenReturn(mock(io.restassured.http.Headers.class));
+            when(filterableRequestSpec.get()).thenReturn(responseMock);
+            when(responseMock.getStatusCode()).thenReturn(200);
+            when(responseMock.body()).thenReturn(null);
+            when(responseMock.getHeaders()).thenReturn(null);
+
+            // Act
+            Response actualResponse = restClientImpl.execute(filterableRequestSpec, Method.GET);
+
+            // Assert
+            assertNotNull(actualResponse, "Response should not be null");
+
+            // Verify logging was called with correct parameters
+            verify(restClientImpl).printRequest(
+                    eq("GET"),
+                    eq(V1_TEST_URL),
+                    anyString(), // The pretty-printed JSON
+                    anyString()  // The headers
+            );
+
+            verify(restClientImpl).printResponse(
+                    eq("GET"),
+                    eq(V1_TEST_URL),
+                    eq(responseMock),
+                    anyLong()    // The duration
+            );
+        }
     }
 
-    @Test
-    void testExecute_NonFilterableSpec_ThrowsException() {
-        RequestSpecification plainSpec = mock(RequestSpecification.class);
-        assertThrows(IllegalArgumentException.class, () -> restClientImpl.execute(plainSpec, Method.GET));
+    @Nested
+    @DisplayName("JSON Formatting Tests")
+    class JsonFormattingTests {
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"   "})
+        @DisplayName("tryPrettyPrintJson should handle null and empty inputs")
+        void shouldHandleNullAndEmptyInputs(String input) {
+            assertEquals(input, restClientImpl.tryPrettyPrintJson(input),
+                    "Should return input unchanged for null or empty strings");
+        }
+
+        @Test
+        @DisplayName("tryPrettyPrintJson should format valid JSON")
+        void shouldFormatValidJson() {
+            // Act
+            String prettyJson = restClientImpl.tryPrettyPrintJson(JSON_PAYLOAD);
+
+            // Assert
+            assertTrue(
+                    prettyJson.contains("\n") || prettyJson.contains("\r"),
+                    "Pretty-printed JSON should contain line breaks"
+            );
+        }
+
+        @Test
+        @DisplayName("tryPrettyPrintJson should return original string for invalid JSON")
+        void shouldReturnOriginalStringForInvalidJson() {
+            // Act
+            String result = restClientImpl.tryPrettyPrintJson(INVALID_JSON);
+
+            // Assert
+            assertEquals(INVALID_JSON, result, "Should return original string for invalid JSON");
+        }
     }
 
-    @Test
-    void testExecute_SupportedMethod_GET() {
-        when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
-        when(filterableRequestSpec.get()).thenReturn(responseMock);
-        when(responseMock.getStatusCode()).thenReturn(200);
+    @Nested
+    @DisplayName("Logging Tests")
+    class LoggingTests {
 
-        var actualResponse = restClientImpl.execute(filterableRequestSpec, Method.GET);
+        @Test
+        @DisplayName("printRequest should handle null body and headers")
+        void printRequestShouldHandleNullBodyAndHeaders() {
+            // Act - no exception should be thrown
+            restClientImpl.printRequest("GET", BASE_URL, null, null);
 
-        assertAll(
-                () -> assertNotNull(actualResponse),
-                () -> verify(filterableRequestSpec, times(1)).get()
-        );
-    }
+            // No assertions needed - we're just verifying no exception is thrown
+        }
 
-    @Test
-    void testExecute_SupportedMethod_POST() {
-        when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
-        when(filterableRequestSpec.post()).thenReturn(responseMock);
+        @Test
+        @DisplayName("printResponse should handle null response body and headers")
+        void printResponseShouldHandleNullResponseBodyAndHeaders() {
+            // Arrange
+            when(responseMock.getStatusCode()).thenReturn(200);
+            when(responseMock.body()).thenReturn(null);
+            when(responseMock.getHeaders()).thenReturn(null);
 
-        var actualResponse = restClientImpl.execute(filterableRequestSpec, Method.POST);
+            // Act - no exception should be thrown
+            restClientImpl.printResponse("GET", BASE_URL, responseMock, 123);
 
-        assertAll(
-                () -> assertEquals(responseMock, actualResponse),
-                () -> verify(filterableRequestSpec, times(1)).post()
-        );
-    }
-
-    @Test
-    void testExecute_SupportedMethod_PUT() {
-        when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
-        when(filterableRequestSpec.put()).thenReturn(responseMock);
-
-        var actualResponse = restClientImpl.execute(filterableRequestSpec, Method.PUT);
-
-        assertAll(
-                () -> assertEquals(responseMock, actualResponse),
-                () -> verify(filterableRequestSpec, times(1)).put()
-        );
-    }
-
-    @Test
-    void testExecute_SupportedMethod_DELETE() {
-        when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
-        when(filterableRequestSpec.delete()).thenReturn(responseMock);
-
-        var actualResponse = restClientImpl.execute(filterableRequestSpec, Method.DELETE);
-
-        assertAll(
-                () -> assertEquals(responseMock, actualResponse),
-                () -> verify(filterableRequestSpec, times(1)).delete()
-        );
-    }
-
-    @Test
-    void testExecute_SupportedMethod_PATCH() {
-        when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
-        when(filterableRequestSpec.patch()).thenReturn(responseMock);
-
-        var actualResponse = restClientImpl.execute(filterableRequestSpec, Method.PATCH);
-
-        assertAll(
-                () -> assertEquals(responseMock, actualResponse),
-                () -> verify(filterableRequestSpec, times(1)).patch()
-        );
-    }
-
-    @Test
-    void testExecute_SupportedMethod_HEAD() {
-        when(filterableRequestSpec.getURI()).thenReturn(V1_HEAD_URL);
-        when(filterableRequestSpec.head()).thenReturn(responseMock);
-
-        var actualResponse = restClientImpl.execute(filterableRequestSpec, Method.HEAD);
-
-        assertAll(
-                () -> assertEquals(responseMock, actualResponse),
-                () -> verify(filterableRequestSpec, times(1)).head()
-        );
-    }
-
-    @Test
-    void testExecute_UnsupportedMethod_ThrowsException() {
-        when(filterableRequestSpec.getURI()).thenReturn(V1_OPTIONS_URL);
-        assertThrows(IllegalArgumentException.class, () -> restClientImpl.execute(filterableRequestSpec, Method.OPTIONS));
-    }
-
-    @Test
-    void testTryPrettyPrintJson_NullOrEmpty() {
-        assertAll(
-                () -> assertNull(restClientImpl.tryPrettyPrintJson(null)),
-                () -> assertEquals("", restClientImpl.tryPrettyPrintJson("")),
-                () -> assertEquals("   ", restClientImpl.tryPrettyPrintJson("   "))
-        );
-    }
-
-    @Test
-    void testTryPrettyPrintJson_ValidJson() {
-        var pretty = restClientImpl.tryPrettyPrintJson(JSON_PAYLOAD);
-        assertTrue(pretty.contains("\n") || pretty.contains("\r"));
-    }
-
-    @Test
-    void testTryPrettyPrintJson_InvalidJson() {
-        assertEquals(INVALID_JSON, restClientImpl.tryPrettyPrintJson(INVALID_JSON));
-    }
-
-    @Test
-    void testPrintRequest() {
-        restClientImpl.printRequest("GET", BASE_URL, JSON_PAYLOAD, "Header1: val1");
-    }
-
-    @Test
-    void testPrintResponse() {
-        when(responseMock.getStatusCode()).thenReturn(200);
-        restClientImpl.printResponse("GET", BASE_URL, responseMock, 123);
+            // No assertions needed - we're just verifying no exception is thrown
+        }
     }
 }

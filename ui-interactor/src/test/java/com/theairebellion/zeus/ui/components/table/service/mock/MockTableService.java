@@ -5,6 +5,8 @@ import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.service.TableService;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
+import com.theairebellion.zeus.validator.core.Assertion;
+import com.theairebellion.zeus.validator.core.AssertionResult;
 
 import java.util.List;
 
@@ -72,5 +74,10 @@ public class MockTableService implements TableService {
 
     @Override
     public void sortTable(TableComponentType tableComponentType, Class tclass, TableField column, SortingStrategy sortingStrategy) {
+    }
+
+    @Override
+    public <T> List<AssertionResult<T>> validate(Object table, Assertion<?>... assertions) {
+        return List.of();
     }
 }

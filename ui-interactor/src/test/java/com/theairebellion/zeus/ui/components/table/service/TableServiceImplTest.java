@@ -7,6 +7,7 @@ import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.validator.UiTableValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -25,18 +26,25 @@ class TableServiceImplTest extends BaseUnitUITest {
 
 
     private TestTableServiceImpl testService;
+
     @Mock
     private SmartWebDriver smartWebDriver;
+
     @Mock
     private TableServiceRegistry tableServiceRegistry;
+
     @Mock
-    private Table tableMock;
+    private UiTableValidator uiTableValidator;
+
+    @Mock
+    private static Table tableMock;
+
     private final DummyTableComponentType dummyComponentType = DummyTableComponentType.DUMMY;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        testService = new TestTableServiceImpl(smartWebDriver, tableServiceRegistry, tableMock);
+        testService = new TestTableServiceImpl(smartWebDriver, tableServiceRegistry, uiTableValidator, tableMock);
     }
 
     @Test
@@ -177,11 +185,9 @@ class TableServiceImplTest extends BaseUnitUITest {
     }
 
     static class TestTableServiceImpl extends TableServiceImpl {
-        private final Table tableMock;
 
-        TestTableServiceImpl(SmartWebDriver driver, TableServiceRegistry registry, Table tableMock) {
-            super(driver, registry);
-            this.tableMock = tableMock;
+        TestTableServiceImpl(SmartWebDriver driver, TableServiceRegistry registry, UiTableValidator uiTableValidator, Table tableMock) {
+            super(driver, registry, uiTableValidator);
         }
 
         @Override
