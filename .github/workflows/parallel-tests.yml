@@ -59,10 +59,12 @@ jobs:
           # We'll pass the parallel threads, tags, etc. to JUnit 5 via system properties.
           # "includeTags" and "excludeTags" are used by the Surefire plugin, if configured that way.
           # The JUnit 5 parallel properties are set to enable concurrency.
-          mvn clean test \
+          mvn clean test -pl example-project -am \
             -Dinclude.tags="${{ inputs.includeTags }}" \
             -Dexclude.tags="${{ inputs.excludeTags }}" \
-            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.parallelThreads }}
+            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.parallelThreads }} \
+            -Dremote.driver.url="http://localhost:4444" \
+            -Dheadless="true"
 
       - name: Teardown Selenium Grid
         if: always()
