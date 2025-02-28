@@ -2,6 +2,8 @@ package com.theairebellion.zeus.ui.extensions;
 
 import com.theairebellion.zeus.framework.assertion.CustomSoftAssertion;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.parameters.DataIntercept;
+import com.theairebellion.zeus.framework.parameters.DataRipper;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
@@ -43,7 +45,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
@@ -81,7 +85,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     private void processInterceptRequestsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(InterceptRequests.class))
                 .ifPresent(intercept -> {
-                    String[] urlsForIntercepting = intercept.requestUrlSubStrings();
+                    List<String> resolvedEndpoints = Arrays.stream(intercept.requestUrlSubStrings())
+                            .map(target -> {
+                                DataIntercept interceptRequests = ReflectionUtil.findEnumImplementationsOfInterface(
+                                        DataIntercept.class, target, getFrameworkConfig().projectPackage());
+                                return interceptRequests.getEndpoint().get();
+                            })
+                            .toList();
+
+                    String[] urlsForIntercepting = resolvedEndpoints.toArray(new String[0]);
                     Consumer<SuperQuest> questConsumer =
                             quest -> postQuestCreationIntercept(quest, urlsForIntercepting);
                     addQuestConsumer(context, questConsumer);

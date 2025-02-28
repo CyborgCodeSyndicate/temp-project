@@ -10,7 +10,8 @@ public class SharedUIFunctions {
 
     public static void waitForTimeout(SmartWebDriver smartWebDriver) {
         try {
-            smartWebDriver.getWait().wait(5000);
+            //smartWebDriver.getWait().wait(1000);
+            Thread.sleep(1000);
             System.out.println("waitForTimeout");
         } catch (Exception e) {
 

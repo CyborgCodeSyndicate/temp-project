@@ -57,9 +57,9 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
         return statusStr.startsWith(prefixStr);
     }
 
-
-    public T validate(Runnable assertion) {
-        return (T) super.validate(assertion);
+    //todo: check interceptor
+    public InterceptorServiceFluent validate(Runnable assertion) {
+        return (InterceptorServiceFluent) super.validate(assertion);
     }
 
 

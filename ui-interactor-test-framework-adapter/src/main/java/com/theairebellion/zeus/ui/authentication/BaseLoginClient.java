@@ -74,7 +74,7 @@ public abstract class BaseLoginClient implements LoginClient {
         WebDriver driver = smartWebDriver.getOriginal();
 
         smartWebDriver.get(urlAfterLogging);
-
+        smartWebDriver.manage().window().maximize();
         smartWebDriver.manage().deleteAllCookies();
 
         sessionInfo.getCookies().forEach(cookie -> driver.manage().addCookie(cookie));

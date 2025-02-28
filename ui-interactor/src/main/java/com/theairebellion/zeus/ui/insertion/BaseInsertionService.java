@@ -30,7 +30,7 @@ public abstract class BaseInsertionService implements InsertionService {
             field.setAccessible(true);
 
             try {
-                Class<? extends ComponentType> componentTypeClass = getComponentType(annotation);
+                Class<? extends ComponentType> componentTypeClass = getComponentType(annotation.get());
                 Insertion service = serviceRegistry.getService(componentTypeClass);
                 if (service == null) {
                     throw new IllegalStateException(
@@ -38,14 +38,14 @@ public abstract class BaseInsertionService implements InsertionService {
                     );
                 }
 
-                By locator = buildLocator(annotation);
-                Enum<?> enumValue = getEnumValue(annotation);
+                By locator = buildLocator(annotation.get());
+                Enum<?> enumValue = getEnumValue(annotation.get());
                 Object valueForField = field.get(data);
 
                 if (valueForField != null) {
-                    beforeInsertion(annotation);
-                    service.insertion((ComponentType) enumValue, locator, valueForField);
-                    afterInsertion(annotation);
+                    beforeInsertion(annotation.get());
+                    service.insertion(getType(annotation.get()), locator, valueForField);
+                    afterInsertion(annotation.get());
                 }
 
             } catch (IllegalAccessException e) {
@@ -65,6 +65,7 @@ public abstract class BaseInsertionService implements InsertionService {
 
     protected abstract List<Field> filterAndSortFields(Field[] fields);
 
+    protected abstract ComponentType getType(Object annotation); //todo: check this, use getType or get UiElement
 
     protected void beforeInsertion(Object annotation) {
 

@@ -1,7 +1,5 @@
 package com.example.project.data.creator;
 
-import com.example.project.base.World;
-import com.example.project.data.test.TestData;
 import com.example.project.model.bakery.Order;
 import com.example.project.model.bakery.Seller;
 import com.example.project.model.Student;
@@ -9,11 +7,10 @@ import com.example.project.rest.dto.Category;
 import com.example.project.rest.dto.Pet;
 import com.example.project.rest.dto.Status;
 import com.example.project.rest.dto.Tag;
-import com.theairebellion.zeus.db.service.DatabaseService;
-import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
+import org.openqa.selenium.NotFoundException;
 
 import java.util.List;
 
@@ -45,14 +42,6 @@ public class DataCreationFunctions {
 
 
     public static Seller createValidSeller() {
-        /*SuperQuest superQuest = QuestHolder.get();
-
-        Long id = superQuest.getStorage().sub().get(DataExtractorsUi.responseBodyExtraction("api/authenticate", "$.id"), Long.class);
-
-        if(id != null){
-
-        }*/
-
         return Seller.builder()
                 .email("barista@vaadin.com")
                 .password("barista")
@@ -62,12 +51,30 @@ public class DataCreationFunctions {
 
     public static Order createValidOrder() {
         return Order.builder()
-                .customerName("John")
-                .customerSurname("Terry")
+                .customerName("John Terry")
                 .customerDetails("Address")
                 .phoneNumber("+1-555-7777")
                 .location("Bakery")
                 .product("Strawberry Bun")
+                .build();
+    }
+
+
+    public static Order createValidLateOrder() {
+        SuperQuest superQuest = QuestHolder.get();
+        List<String> productList = superQuest.getStorage().get(DataExtractorsUi
+                .responseBodyExtraction("?v-r=uidl",
+                        "$..orderCard[?(@.fullName=='John Terry')].items[*].product.name"), List.class);
+        if(productList.isEmpty()){
+            throw new NotFoundException("There is no product element");
+        }
+
+        return Order.builder()
+                .customerName("Petar Terry")
+                .customerDetails("Address")
+                .phoneNumber("+1-222-7778")
+                .location("Store")
+                .product(productList.get(0))
                 .build();
     }
 

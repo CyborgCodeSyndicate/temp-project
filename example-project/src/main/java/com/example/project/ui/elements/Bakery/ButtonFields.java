@@ -13,14 +13,17 @@ import java.util.function.Consumer;
 
 public enum ButtonFields implements ButtonUIElement {
 
-    SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE, SharedUI.WAIT_FOR_LOADING) ,
+    SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE, SharedUI.WAIT_FOR_LOADING),
     NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE),
-    REVIEW_ORDER_BUTTON(By.cssSelector("vaadin-button#review"), ButtonFieldTypes.VA_BUTTON_TYPE/*,
-            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#review"), 3000)*/),
-    CANCEL_ORDER_BUTTON(By.cssSelector("vaadin-button#cancel"), ButtonFieldTypes.VA_BUTTON_TYPE, smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 1000)),
+    REVIEW_ORDER_BUTTON(By.cssSelector("vaadin-button#review"), ButtonFieldTypes.VA_BUTTON_TYPE,
+            SharedUI.WAIT_FOR_TIMEOUT
+            /*,smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#review"), 3000)*/),
+    CANCEL_ORDER_BUTTON(By.cssSelector("vaadin-button#cancel"), ButtonFieldTypes.VA_BUTTON_TYPE,
+            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 1000)),
     PLACE_ORDER_BUTTON(By.cssSelector("vaadin-button#save"), ButtonFieldTypes.VA_BUTTON_TYPE,
-            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 3000)/*SharedUI.WAIT_FOR_TIMEOUT,
-            SharedUI.WAIT_FOR_TIMEOUT*/),
+            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 3000),
+            SharedUI.WAIT_FOR_TIMEOUT),
+    CLEAR_SEARCH(By.cssSelector("vaadin-button#clear"), ButtonFieldTypes.VA_BUTTON_TYPE, SharedUI.WAIT_FOR_TIMEOUT) ,
     ;
 
     public static final class Data {

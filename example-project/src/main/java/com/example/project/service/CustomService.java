@@ -20,7 +20,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.util.List;
 
 import static com.example.project.base.World.EARTH;
+import static com.example.project.ui.elements.Bakery.ButtonFields.NEW_ORDER_BUTTON;
+import static com.example.project.ui.elements.Bakery.ButtonFields.SIGN_IN_BUTTON;
 import static com.example.project.ui.elements.Bakery.CheckboxFields.PAST_ORDERS_CHECKBOX;
+import static com.example.project.ui.elements.Bakery.InputFields.PASSWORD_FIELD;
+import static com.example.project.ui.elements.Bakery.InputFields.USERNAME_FIELD;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,10 +44,10 @@ public class CustomService extends FluentService {
         quest
                 .enters(EARTH)
                 .browser().navigate(getUiConfig().baseUrl())
-                .input().insert(InputFields.USERNAME_FIELD, username)
-                .input().insert(InputFields.PASSWORD_FIELD, password)
-                .button().click(ButtonFields.SIGN_IN_BUTTON);
-        //todo: validate login is successful
+                .input().insert(USERNAME_FIELD, username)
+                .input().insert(PASSWORD_FIELD, password)
+                .button().click(SIGN_IN_BUTTON)
+                .button().validateIsVisible(NEW_ORDER_BUTTON);
         return this;
     }
 
@@ -52,11 +56,21 @@ public class CustomService extends FluentService {
         quest
                 .enters(EARTH)
                 .browser().navigate(getUiConfig().baseUrl())
-                //.insertion().insertData(seller)
-                .input().insert(InputFields.USERNAME_FIELD, seller.getEmail())
-                .input().insert(InputFields.PASSWORD_FIELD, seller.getPassword())
-                .button().click(ButtonFields.SIGN_IN_BUTTON);
-        //todo: validate login is successful
+                .input().insert(USERNAME_FIELD, seller.getEmail())
+                .input().insert(PASSWORD_FIELD, seller.getPassword())
+                .button().click(SIGN_IN_BUTTON)
+                .button().validateIsVisible(NEW_ORDER_BUTTON);
+        return this;
+    }
+
+
+    public CustomService loginUser2(Seller seller) {
+        quest
+                .enters(EARTH)
+                .browser().navigate(getUiConfig().baseUrl())
+                .insertion().insertData(seller)
+                .button().click(SIGN_IN_BUTTON)
+                .button().validateIsVisible(NEW_ORDER_BUTTON);
         return this;
     }
 
@@ -89,7 +103,7 @@ public class CustomService extends FluentService {
         return this;
     }
 
-    public CustomService createOrder(Order order) {
+    /*public CustomService createOrder(Order order) {
         quest
                 .enters(EARTH)
                 .button().click(ButtonFields.NEW_ORDER_BUTTON)
@@ -103,6 +117,24 @@ public class CustomService extends FluentService {
                 .select().selectOption(SelectFields.LOCATION_DDL, order.getLocation())
                 .button().click(ButtonFields.REVIEW_ORDER_BUTTON)
                 .button().validateIsEnabled(ButtonFields.PLACE_ORDER_BUTTON)
+                .button().click(ButtonFields.PLACE_ORDER_BUTTON);
+        return this;
+    }*/
+
+    //Insertion
+    public CustomService createOrder(Order order) {
+        quest
+                .enters(EARTH)
+                .button().click(ButtonFields.NEW_ORDER_BUTTON)
+                .insertion().insertData(order)
+                .button().click(ButtonFields.REVIEW_ORDER_BUTTON)
+                /*.validate(() -> {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                })*/
                 .button().click(ButtonFields.PLACE_ORDER_BUTTON);
         return this;
     }
@@ -126,7 +158,8 @@ public class CustomService extends FluentService {
                     List<SmartWebElement> elements = quest.artifact(EARTH, SmartWebDriver.class)
                             .findSmartElements(By.cssSelector("h3[class='name']"));
                     assertTrue(elements.stream().anyMatch(e -> e.getText().equalsIgnoreCase(order.getCustomerName())));
-                });
+                })
+                .button().click(ButtonFields.CLEAR_SEARCH);
         return this;
     }
 

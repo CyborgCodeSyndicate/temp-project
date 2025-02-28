@@ -61,4 +61,9 @@ public class InsertionServiceFieldImpl extends BaseInsertionService {
                    .collect(Collectors.toList());
     }
 
+    @Override
+    protected ComponentType getType(Object annotation) { //todo: check this
+        return null;
+    }
+
 }

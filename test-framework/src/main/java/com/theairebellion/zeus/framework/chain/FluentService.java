@@ -2,6 +2,7 @@ package com.theairebellion.zeus.framework.chain;
 
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.framework.quest.QuestHolder;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.retry.RetryCondition;
 import com.theairebellion.zeus.util.reflections.RetryUtils;
@@ -20,7 +21,8 @@ public class FluentService implements FluentChain {
     @Override
     public Quest then() {
         LogTest.info("The quest has left the journey.");
-        return quest.getOriginal();
+        //return quest.getOriginal(); //todo: check interceptor
+        return QuestHolder.get().getOriginal();
     }
 
 
@@ -45,7 +47,8 @@ public class FluentService implements FluentChain {
 
             boolean isPassed = assertionResult.isPassed();
             if (assertionResult.isSoft()) {
-                quest.getSoftAssertions()
+                //quest.getSoftAssertions() //todo: check interceptor
+                QuestHolder.get().getSoftAssertions()
                         .assertThat(isPassed)
                         .as(message)
                         .isTrue();

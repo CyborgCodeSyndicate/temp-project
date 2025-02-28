@@ -41,6 +41,12 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public void selectOptions(final SmartWebElement container, final String... values) {
         openDdl(container);
+        //todo: Remove this
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
         for (String value : values) {
             SmartWebElement option = findOptionByText(options, value);

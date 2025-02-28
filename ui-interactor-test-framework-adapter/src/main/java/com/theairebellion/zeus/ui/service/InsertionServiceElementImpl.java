@@ -36,7 +36,7 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
         InsertionElement insertionElement = (InsertionElement) annotation;
         UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
             insertionElement.elementEnum());
-        return uiElement.componentType().getClass();
+        return (Class<? extends ComponentType>) Arrays.stream(uiElement.componentType().getClass().getInterfaces()).findFirst().get();
     }
 
 
@@ -45,8 +45,18 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
         InsertionElement insertionElement = (InsertionElement) annotation;
         UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
             insertionElement.elementEnum());
-        FindBy.FindByBuilder findByBuilder = new FindBy.FindByBuilder();
-        return findByBuilder.buildIt(uiElement.locator(), null);
+        //FindBy.FindByBuilder findByBuilder = new FindBy.FindByBuilder(); //todo: check this and fix for tables
+        //return findByBuilder.buildIt(uiElement.locator(), null);
+        return uiElement.locator();
+    }
+
+
+    @Override
+    protected ComponentType getType(Object annotation) {
+        InsertionElement insertionElement = (InsertionElement) annotation;
+        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
+                insertionElement.elementEnum());
+        return uiElement.componentType();
     }
 
 

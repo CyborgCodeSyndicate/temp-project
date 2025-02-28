@@ -1,11 +1,9 @@
 package com.example.project;
 
 
-import com.example.project.base.World;
 import com.example.project.data.creator.TestDataCreator;
 import com.example.project.model.bakery.Order;
 import com.example.project.model.bakery.Seller;
-import com.example.project.preconditions.BakeryInterceptRequests;
 import com.example.project.preconditions.BakeryQuestPreconditions;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
@@ -17,29 +15,25 @@ import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
 import com.theairebellion.zeus.framework.base.BaseTest;
-import com.theairebellion.zeus.framework.base.BaseTestSequential;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
-import com.theairebellion.zeus.framework.quest.QuestHolder;
-import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.annotations.UI;
-import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
 import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.ParameterizedTypeReference;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static com.example.project.data.creator.TestDataCreator.Data.VALID_ORDER;
+import static com.example.project.base.World.EARTH;
+import static com.example.project.base.World.FORGE;
 //import static com.example.project.preconditions.BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH;
 //import static com.example.project.preconditions.BakeryInterceptRequests.INTERCEPT_REQUEST_SAVE;
+import static com.example.project.data.creator.TestDataCreator.Data.*;
 import static com.example.project.preconditions.BakeryInterceptRequests.Data.*;
 import static com.example.project.ui.elements.Bakery.CheckboxFields.PAST_ORDERS_CHECKBOX;
 import static com.example.project.ui.elements.Bakery.SelectFields.LOCATION_DDL;
@@ -57,7 +51,7 @@ public class BakeryTest extends BaseTest {
     @Description("COMPONENTS: Input, Button, Select")
     public void scenario_one(Quest quest) {
         quest
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .browser().navigate("https://bakery-flow.demo.vaadin.com/")
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
@@ -76,7 +70,7 @@ public class BakeryTest extends BaseTest {
     @Test
     public void scenario_two(Quest quest) {
         quest
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .browser().navigate("https://bakery-flow.demo.vaadin.com/")
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
@@ -91,7 +85,21 @@ public class BakeryTest extends BaseTest {
                 .input().insert(InputFields.DETAILS_FIELD, "Address")
                 .select().selectOption(LOCATION_DDL, "Bakery")
                 .button().click(ButtonFields.REVIEW_ORDER_BUTTON)
+                /*.validate(() -> {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                })*/
                 .button().validateIsEnabled(ButtonFields.PLACE_ORDER_BUTTON)
+                /*.validate(() -> {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                })*/
                 .button().click(ButtonFields.PLACE_ORDER_BUTTON)
                 .complete();
     }
@@ -99,7 +107,7 @@ public class BakeryTest extends BaseTest {
     @Test
     public void scenario_three(Quest quest) {
         quest
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .browser().navigate(getUiConfig().baseUrl())
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
@@ -118,7 +126,7 @@ public class BakeryTest extends BaseTest {
     @AuthenticateViaUiAs(credentials = AdminUI.class, type = BakeryUILogging.class)
     public void scenario_four(Quest quest) {
         quest
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .input().insert(InputFields.SEARCH_BAR_FIELD, "Amanda Nixon")
                 .checkbox().validateIsEnabled(PAST_ORDERS_CHECKBOX)
                 .checkbox().select(PAST_ORDERS_CHECKBOX)
@@ -130,10 +138,10 @@ public class BakeryTest extends BaseTest {
     @Test
     public void scenario_five(Quest quest) {
         quest
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .loginUser("barista@vaadin.com", "barista")
                 .then()
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .input().insert(InputFields.SEARCH_BAR_FIELD, "Amanda Nixon")
                 .checkbox().validateIsEnabled(PAST_ORDERS_CHECKBOX)
                 .checkbox().select(PAST_ORDERS_CHECKBOX)
@@ -145,12 +153,12 @@ public class BakeryTest extends BaseTest {
     @Test
     public void scenario_six(Quest quest) {
         quest
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .loginUser("barista@vaadin.com", "barista")
                 .then()
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .input().insert(InputFields.SEARCH_BAR_FIELD, "Amanda Nixon")
-                .then().enters(World.FORGE)
+                .then().enters(FORGE)
                 .logoutUser()
                 .complete();
     }
@@ -160,19 +168,19 @@ public class BakeryTest extends BaseTest {
     @Description("Validations in Custom Service")
     public void scenario_seven(Quest quest) {
         quest
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .loginUser("barista@vaadin.com", "barista")
                 .createOrder()
                 .then()
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .input().insert(InputFields.SEARCH_BAR_FIELD, "John Terry")
                 .then()
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .validateOrder("John Terry")
                 //.validate()
                 //.validateTextInField(HTML.Tag.H3, "John Terry", true)
                 .then()
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .logoutUser()
                 .complete();
     }
@@ -182,10 +190,10 @@ public class BakeryTest extends BaseTest {
     @Description("Validations: Checkbox")
     public void scenario_eight(Quest quest) {
         quest
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .loginUser("barista@vaadin.com", "barista")
                 .then()
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .input().insert(InputFields.SEARCH_BAR_FIELD, "Amanda Nixon")
                 .checkbox().select(PAST_ORDERS_CHECKBOX)
                 .checkbox().isSelected(PAST_ORDERS_CHECKBOX)
@@ -202,10 +210,8 @@ public class BakeryTest extends BaseTest {
     @Test
     @Description("Validations: Select")
     public void scenario_nine(Quest quest) {
-        //String username = String.valueOf(ExampleDTOUI.builder().textNameOther("barista@vaadin.com").build());
-        //ExampleDTOUI.builder().textName("").textNameOther("").build();
         quest
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .browser().navigate(getUiConfig().baseUrl())
                 .input().insert(InputFields.USERNAME_FIELD, "barista@vaadin.com")
                 .input().insert(InputFields.PASSWORD_FIELD, "barista")
@@ -228,7 +234,7 @@ public class BakeryTest extends BaseTest {
     @Description("PreQuest usage")
     public void scenario_ten(Quest quest, @Craft(model = TestDataCreator.Data.VALID_SELLER) Seller seller) {
         quest
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .browser().navigate(getUiConfig().baseUrl())
                 .input().insert(InputFields.USERNAME_FIELD, seller.getEmail())
                 .input().insert(InputFields.PASSWORD_FIELD, seller.getPassword())
@@ -258,11 +264,11 @@ public class BakeryTest extends BaseTest {
     })
     public void scenario_eleven(Quest quest, @Craft(model = "VALID_SELLER") Late<Seller> seller) {
         quest
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .loginUser(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_SELLER, Seller.class))
                 .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
                 .then()
-                .enters(World.EARTH)
+                .enters(EARTH)
                 .insertion().insertData(seller.join())
                 .interceptor().validateResponseHaveStatus("/api", 2, true)
                 .complete();
@@ -280,7 +286,7 @@ public class BakeryTest extends BaseTest {
     public void scenario_twelve(Quest quest,
                                 @Craft(model = VALID_ORDER) Order order) {
         quest
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .validateOrder(order)
                 .complete();
     }
@@ -296,7 +302,7 @@ public class BakeryTest extends BaseTest {
     public void scenario_thirteen(Quest quest,
                                   @Craft(model = VALID_ORDER) Order order) {
         quest
-                .enters(World.FORGE)
+                .enters(FORGE)
                 .validateOrder(order)
                 .complete();
     }
@@ -307,11 +313,11 @@ public class BakeryTest extends BaseTest {
     @InterceptRequests(requestUrlSubStrings = {"?v-r=uidl"})
     public void scenario_fourtheen(Quest quest, @Craft(model = TestDataCreator.Data.VALID_SELLER) Seller seller) {
         quest
-                .enters(World.FORGE)
-                .loginUser(seller)
+                .enters(FORGE)
+                .loginUser2(seller)
                 .editOrder("Lionel Huber")
                 .then()
-                .enters(World.EARTH)
+                .enters(EARTH)
                 /*.interceptor().validate(() -> {
                     //SuperQuest superQuest = QuestHolder.get();
                     //List<ApiResponse> responses1 = superQuest.getStorage().sub(StorageKeysUi.UI).get(RESPONSES, new ParameterizedTypeReference<>() {});
@@ -350,5 +356,38 @@ public class BakeryTest extends BaseTest {
     }
 
 
+    @Test
+    @Description("Insertion usage")
+    public void scenario_fifteen(Quest quest,
+                                 @Craft(model = VALID_SELLER) Seller seller,
+                                 @Craft(model = VALID_ORDER) Order order) {
+        quest
+                .enters(FORGE)
+                .loginUser2(seller)
+                .createOrder(order)
+                .validateOrder(order)
+                .complete();
+    }
+
+    @Test()
+    @Description("Insertion usage")
+    @InterceptRequests(requestUrlSubStrings = {"?v-r=uidl"})
+    public void scenario_sixteen(Quest quest,
+                                 @Craft(model = VALID_SELLER) Seller seller,
+                                 @Craft(model = VALID_ORDER) Order order,
+                                 @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
+        quest
+                .enters(FORGE)
+                .loginUser2(seller)
+                .createOrder(order)
+                .validateOrder(order)
+                .then()
+                .enters(EARTH)
+                .button().click(ButtonFields.CLEAR_SEARCH)
+                .then()
+                .enters(FORGE)
+                .createOrder(lateOrder.join())
+                .complete();
+    }
 
 }

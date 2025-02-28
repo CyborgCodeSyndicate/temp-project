@@ -23,11 +23,23 @@ public enum SelectFields implements SelectUIElement {
     private final Consumer<SmartWebDriver> after;
 
 
+    public static final class Data {
+
+        public static final String LOCATION_DDL = "LOCATION_DDL";
+        public static final String PRODUCTS_DDL = "PRODUCTS_DDL";
+
+        private Data() {
+        }
+
+    }
+
+
     SelectFields(By locator) {
         this(locator, null, smartWebDriver -> {
         }, smartWebDriver -> {
         });
     }
+
 
     SelectFields(By locator, SelectComponentType componentType) {
         this(locator, componentType, smartWebDriver -> {
@@ -69,6 +81,7 @@ public enum SelectFields implements SelectUIElement {
                  ContextConsumer after) {
         this(locator, componentType, before.asConsumer(locator), after.asConsumer(locator));
     }
+
 
     @Override
     public By locator() {

@@ -28,6 +28,9 @@ public enum InputFields implements InputUIElement {
 
         public static final String USERNAME_FIELD = "USERNAME_FIELD";
         public static final String PASSWORD_FIELD = "PASSWORD_FIELD";
+        public static final String CUSTOMER_FIELD = "CUSTOMER_FIELD";
+        public static final String DETAILS_FIELD = "DETAILS_FIELD";
+        public static final String NUMBER_FIELD = "NUMBER_FIELD";
 
 
         private Data() {
@@ -99,6 +102,9 @@ public enum InputFields implements InputUIElement {
 
     @Override
     public <T extends ComponentType> T componentType() {
+        if (componentType == null) {
+            return InputUIElement.super.componentType();
+        }
         return (T) componentType;
     }
 
