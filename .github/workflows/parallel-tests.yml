@@ -1,0 +1,71 @@
+name: Single-Runner Selenium Grid
+
+on:
+  workflow_dispatch:
+    inputs:
+      parallelThreads:
+        description: "Total number of parallel test threads"
+        required: true
+        default: "15"
+      containersCount:
+        description: "How many Chrome node containers to spin up"
+        required: true
+        default: "3"
+      includeTags:
+        description: "JUnit tags to include (comma-separated for OR logic)"
+        required: false
+        default: "regression"
+      excludeTags:
+        description: "JUnit tags to exclude (comma-separated for OR logic)"
+        required: false
+        default: "flaky"
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 17  # or 17, etc.
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Start Selenium Grid
+        run: |
+          # Scale the 'chrome' service to N containers
+          docker-compose up -d --scale chrome=${{ inputs.containersCount }}
+
+      - name: Wait for Grid to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s "http://localhost:4444/status" | grep '"ready":true' ; then
+              echo "Selenium Grid is ready!"
+              break
+            fi
+            echo "Waiting for Selenium Grid..."
+            sleep 2
+          done
+
+      - name: Run Tests
+        run: |
+          # We'll pass the parallel threads, tags, etc. to JUnit 5 via system properties.
+          # "includeTags" and "excludeTags" are used by the Surefire plugin, if configured that way.
+          # The JUnit 5 parallel properties are set to enable concurrency.
+          mvn clean test -pl example-project -am \
+            -Dinclude.tags="${{ inputs.includeTags }}" \
+            -Dexclude.tags="${{ inputs.excludeTags }}" \
+            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.parallelThreads }} \
+            -Dremote.driver.url="http://localhost:4444" \
+            -Dheadless="true"
+
+      - name: Teardown Selenium Grid
+        if: always()
+        run: docker-compose down

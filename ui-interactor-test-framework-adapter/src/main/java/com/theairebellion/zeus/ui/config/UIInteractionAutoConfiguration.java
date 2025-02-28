@@ -27,11 +27,17 @@ public class UIInteractionAutoConfiguration {
                                                                                                      getUiConfig().browserVersion())
                                                                                                  .headless(
                                                                                                      getUiConfig().headless())
+                                                                                                 .remote(
+                                                                                                     getUiConfig().remoteDriverUrl() != null && !getUiConfig().remoteDriverUrl()
+                                                                                                                                                     .isEmpty())
+                                                                                                 .remoteUrl(
+                                                                                                     getUiConfig().remoteDriverUrl())
                                                                                                  .eventFiringDecorator(
                                                                                                      new EventFiringDecorator<>(
                                                                                                          new WebDriverEventListener()))
                                                                                                  .build()));
     }
+
 
     @Bean
     @Lazy
