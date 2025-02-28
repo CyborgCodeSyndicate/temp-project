@@ -347,4 +347,51 @@ public class ZeroBankTest extends BaseTest {
                 .complete();
     }
 
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    public void tableWithButtonCustomServiceReadRowWithSearchCriteriaAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.MY_MONEY_MAP_LINK)
+                .table().readRow(OUTFLOW, List.of("Retail"))
+                .validate(() -> Assertions.assertEquals(
+                        "$375.55",
+                        retrieve(tableRowExtractor(OUTFLOW),
+                                OutFlow.class).getAmount().getText(),
+                        "Wrong Amount")
+                )
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    public void tableWithButtonCustomServiceClickElementWithSearchCriteriaAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.MY_MONEY_MAP_LINK)
+                .table().clickElementInCell(OUTFLOW, List.of("Checks Written", "$255.00"), TableField.of(OutFlow::setDetails))
+                .table().readTable(DETAILED_REPORT)
+                .validate(() -> Assertions.assertEquals(
+                        "$105.00",
+                        retrieve(tableRowExtractor(DETAILED_REPORT, "09/25/2012"),
+                                DetailedReport.class).getAmount().getText(),
+                        "Wrong Amount")
+                )
+                .complete();
+    }
+
 }
