@@ -20,6 +20,8 @@
         <ui.config.file>config</ui.config.file>
         <test.data.file>test_data</test.data.file>
         <framework.config.file>config</framework.config.file>
+        <include.tags>Regression</include.tags>
+        <exclude.tags></exclude.tags>
     </properties>
 
     <dependencies>
@@ -72,6 +74,17 @@
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <properties>
+                        <includeTags>${include.tags}</includeTags>
+                        <excludeTags>${exclude.tags}</excludeTags>
+                    </properties>
                 </configuration>
             </plugin>
         </plugins>

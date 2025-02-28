@@ -11,6 +11,7 @@ import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import io.qameta.allure.Description;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @UI
@@ -19,6 +20,7 @@ public class BakeryTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Input, Button, Select")
+    @Tag("Regression")
     public void scenario_one(Quest quest) {
         quest
                 .enters(World.EARTH)
@@ -38,6 +40,7 @@ public class BakeryTest extends BaseTest {
     }
 
     @Test
+    @Tag("Regression")
     public void scenario_two(Quest quest) {
         quest
                 .enters(World.EARTH)
@@ -61,6 +64,7 @@ public class BakeryTest extends BaseTest {
     }
 
     @Test
+    @Tag("Regression")
     public void scenario_three(Quest quest) {
         quest
                 .enters(World.EARTH)
@@ -79,6 +83,7 @@ public class BakeryTest extends BaseTest {
 
 
     @Test
+    @Tag("Regression")
     public void scenario_four(Quest quest) {
         quest
                 .enters(World.EARTH)
