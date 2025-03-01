@@ -62,6 +62,7 @@ jobs:
           mvn clean test -pl example-project -am \
             -Dinclude.tags="${{ inputs.includeTags }}" \
             -Dexclude.tags="${{ inputs.excludeTags }}" \
+            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.parallelThreads }} \
             -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.parallelThreads }} \
             -Dremote.driver.url="http://localhost:4444" \
             -Dheadless="true"
