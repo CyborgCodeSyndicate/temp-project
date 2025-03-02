@@ -1,5 +1,6 @@
 package com.example.project.ui.components.select;
 
+import com.example.project.ui.functions.SharedUIFunctions;
 import com.example.project.ui.types.SelectFieldTypes;
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
@@ -18,7 +19,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -75,6 +75,12 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public List<String> getAvailableOptions(SmartWebElement container) {
         openDdl(container);
+        //todo: Remove this
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         List<SmartWebElement> options = getAllOptionsElements();
         System.out.println("All Options: " + options.size());
         List<String> availableOptions = options.stream()
@@ -163,6 +169,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
         if (!"true".equals(ddlButton.getAttribute("opened"))) {
             SmartWebElement toggleButton = findDdlButton(ddlButton);
             toggleButton.click();
+            SharedUIFunctions.waitForLoading(driver); //todo: test loading
         }
     }
 

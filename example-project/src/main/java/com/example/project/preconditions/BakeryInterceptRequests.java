@@ -1,9 +1,7 @@
 package com.example.project.preconditions;
 
 import com.theairebellion.zeus.framework.parameters.DataIntercept;
-import com.theairebellion.zeus.framework.quest.SuperQuest;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 

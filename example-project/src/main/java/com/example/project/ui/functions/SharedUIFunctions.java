@@ -57,6 +57,25 @@ public class SharedUIFunctions {
         };
     }
 
+    private static ExpectedCondition<Boolean> visibilityOfElementsLocatedCustom(final By locator) {
+        return new ExpectedCondition<>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                    SmartWebDriver smartWebDriver = new SmartWebDriver(driver);
+                    return smartWebDriver.findSmartElement(locator).isDisplayed();
+                } catch (NullPointerException | NoSuchElementException | StaleElementReferenceException e) {
+                    return false;
+                }
+            }
+
+            @Override
+            public String toString() {
+                return "element to no longer be visible: " + locator;
+            }
+        };
+    }
+
     public static ExpectedCondition<Boolean> invisibilityOfElementLocatedCustom(final By locator) {
         return new ExpectedCondition<>() {
             @Override

@@ -13,8 +13,10 @@ import java.util.function.Consumer;
 
 public enum SelectFields implements SelectUIElement {
 
-    LOCATION_DDL(By.cssSelector("vaadin-combo-box#pickupLocation"), SelectFieldTypes.VA_SELECT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
-    PRODUCTS_DDL(By.cssSelector("vaadin-combo-box#products"), SelectFieldTypes.VA_SELECT_TYPE, SharedUI.WAIT_FOR_PRESENCE);
+    LOCATION_DDL(By.cssSelector("vaadin-combo-box#pickupLocation"), SelectFieldTypes.VA_SELECT_TYPE,
+            SharedUI.WAIT_FOR_PRESENCE),
+    PRODUCTS_DDL(By.cssSelector("vaadin-combo-box#products"), SelectFieldTypes.VA_SELECT_TYPE,
+            SharedUI.WAIT_FOR_PRESENCE);
 
 
     private final By locator;
@@ -80,6 +82,14 @@ public enum SelectFields implements SelectUIElement {
                  ContextConsumer before,
                  ContextConsumer after) {
         this(locator, componentType, before.asConsumer(locator), after.asConsumer(locator));
+    }
+
+
+    SelectFields(By locator,
+                 SelectComponentType componentType,
+                 ContextConsumer before,
+                 Consumer<SmartWebDriver> after) {
+        this(locator, componentType, before.asConsumer(locator), after);
     }
 
 

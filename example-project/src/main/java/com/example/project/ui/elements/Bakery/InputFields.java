@@ -2,7 +2,6 @@ package com.example.project.ui.elements.Bakery;
 
 import com.example.project.ui.functions.ContextConsumer;
 import com.example.project.ui.functions.SharedUI;
-import com.example.project.ui.functions.SharedUIFunctions;
 import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
@@ -16,11 +15,15 @@ public enum InputFields implements InputUIElement {
 
     USERNAME_FIELD(By.id("vaadinLoginUsername"), InputFieldTypes.VA_INPUT_TYPE),
     PASSWORD_FIELD(By.id("vaadinLoginPassword"), InputFieldTypes.VA_INPUT_TYPE),
-    SEARCH_BAR_FIELD(By.cssSelector("search-bar#search"), InputFieldTypes.VA_INPUT_TYPE, SharedUI.WAIT_TO_BE_CLICKABLE),
+    SEARCH_BAR_FIELD(By.cssSelector("search-bar#search"), InputFieldTypes.VA_INPUT_TYPE,
+            SharedUI.WAIT_FOR_PRESENCE,
+            SharedUI.WAIT_FOR_LOADING), //todo: test the loading
     CUSTOMER_FIELD(By.id("customerName"), InputFieldTypes.VA_INPUT_TYPE,
-            driver -> SharedUIFunctions.waitForPresence(driver, By.cssSelector("vaadin-dialog-overlay#overlay"))),
-    DETAILS_FIELD(By.id("customerDetails"), InputFieldTypes.VA_INPUT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
-    NUMBER_FIELD(By.id("customerNumber"), InputFieldTypes.VA_INPUT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
+            SharedUI.WAIT_FOR_PRESENCE),
+    DETAILS_FIELD(By.id("customerDetails"), InputFieldTypes.VA_INPUT_TYPE,
+            SharedUI.WAIT_FOR_PRESENCE),
+    NUMBER_FIELD(By.id("customerNumber"), InputFieldTypes.VA_INPUT_TYPE,
+            SharedUI.WAIT_FOR_PRESENCE),
     ;
 
 

@@ -2,6 +2,7 @@ package com.example.project.ui.elements.Bakery;
 
 import com.example.project.ui.functions.ContextConsumer;
 import com.example.project.ui.functions.SharedUI;
+import com.example.project.ui.functions.SharedUIFunctions;
 import com.example.project.ui.types.ButtonFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
@@ -13,17 +14,26 @@ import java.util.function.Consumer;
 
 public enum ButtonFields implements ButtonUIElement {
 
-    SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE, SharedUI.WAIT_FOR_LOADING),
-    NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE),
+
+    SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE,
+            SharedUI.WAIT_FOR_LOADING), //todo: test the loading
+    NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE,
+            SharedUI.WAIT_TO_BE_CLICKABLE,
+            //SharedUI.WAIT_FOR_LOADING), //todo: test the loading
+            driver -> SharedUIFunctions.waitForPresence(driver, By.cssSelector("vaadin-dialog-overlay#overlay"))), //todo: test if loading doesn't work
     REVIEW_ORDER_BUTTON(By.cssSelector("vaadin-button#review"), ButtonFieldTypes.VA_BUTTON_TYPE,
-            SharedUI.WAIT_FOR_TIMEOUT
-            /*,smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#review"), 3000)*/),
+            SharedUI.WAIT_TO_BE_CLICKABLE,
+            SharedUI.WAIT_TO_BE_REMOVED),
     CANCEL_ORDER_BUTTON(By.cssSelector("vaadin-button#cancel"), ButtonFieldTypes.VA_BUTTON_TYPE,
-            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 1000)),
+            SharedUI.WAIT_FOR_TIMEOUT,
+            SharedUI.WAIT_TO_BE_REMOVED),
     PLACE_ORDER_BUTTON(By.cssSelector("vaadin-button#save"), ButtonFieldTypes.VA_BUTTON_TYPE,
-            smartWebDriver -> smartWebDriver.findSmartElement(By.cssSelector("vaadin-button#save"), 3000),
-            SharedUI.WAIT_FOR_TIMEOUT),
-    CLEAR_SEARCH(By.cssSelector("vaadin-button#clear"), ButtonFieldTypes.VA_BUTTON_TYPE, SharedUI.WAIT_FOR_TIMEOUT) ,
+            SharedUI.WAIT_TO_BE_CLICKABLE,
+            SharedUI.WAIT_TO_BE_REMOVED),
+    CLEAR_SEARCH(By.cssSelector("vaadin-button#clear"), ButtonFieldTypes.VA_BUTTON_TYPE,
+            SharedUI.WAIT_TO_BE_CLICKABLE,
+            //SharedUI.WAIT_FOR_LOADING) //todo: test the loading
+            SharedUI.WAIT_TO_BE_REMOVED),
     ;
 
     public static final class Data {
@@ -89,6 +99,14 @@ public enum ButtonFields implements ButtonUIElement {
                  ContextConsumer before,
                  ContextConsumer after) {
         this(locator, componentType, before.asConsumer(locator), after.asConsumer(locator));
+    }
+
+
+    ButtonFields(By locator,
+                 ButtonComponentType componentType,
+                 ContextConsumer before,
+                 Consumer<SmartWebDriver> after) {
+        this(locator, componentType, before.asConsumer(locator), after);
     }
 
 

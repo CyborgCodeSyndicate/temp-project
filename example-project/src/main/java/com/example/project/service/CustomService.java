@@ -23,8 +23,7 @@ import static com.example.project.base.World.EARTH;
 import static com.example.project.ui.elements.Bakery.ButtonFields.NEW_ORDER_BUTTON;
 import static com.example.project.ui.elements.Bakery.ButtonFields.SIGN_IN_BUTTON;
 import static com.example.project.ui.elements.Bakery.CheckboxFields.PAST_ORDERS_CHECKBOX;
-import static com.example.project.ui.elements.Bakery.InputFields.PASSWORD_FIELD;
-import static com.example.project.ui.elements.Bakery.InputFields.USERNAME_FIELD;
+import static com.example.project.ui.elements.Bakery.InputFields.*;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +46,8 @@ public class CustomService extends FluentService {
                 .input().insert(USERNAME_FIELD, username)
                 .input().insert(PASSWORD_FIELD, password)
                 .button().click(SIGN_IN_BUTTON)
-                .button().validateIsVisible(NEW_ORDER_BUTTON);
+                //.button().validateIsVisible(NEW_ORDER_BUTTON);
+                .input().validateIsEnabled(SEARCH_BAR_FIELD);
         return this;
     }
 
@@ -59,7 +59,8 @@ public class CustomService extends FluentService {
                 .input().insert(USERNAME_FIELD, seller.getEmail())
                 .input().insert(PASSWORD_FIELD, seller.getPassword())
                 .button().click(SIGN_IN_BUTTON)
-                .button().validateIsVisible(NEW_ORDER_BUTTON);
+                //.button().validateIsVisible(NEW_ORDER_BUTTON);
+                .input().validateIsEnabled(SEARCH_BAR_FIELD);
         return this;
     }
 
@@ -70,7 +71,8 @@ public class CustomService extends FluentService {
                 .browser().navigate(getUiConfig().baseUrl())
                 .insertion().insertData(seller)
                 .button().click(SIGN_IN_BUTTON)
-                .button().validateIsVisible(NEW_ORDER_BUTTON);
+                //.button().validateIsVisible(NEW_ORDER_BUTTON);
+                .input().validateIsEnabled(SEARCH_BAR_FIELD);
         return this;
     }
 
@@ -153,7 +155,7 @@ public class CustomService extends FluentService {
     public CustomService validateOrder(Order order) {
         quest
                 .enters(EARTH)
-                .input().insert(InputFields.SEARCH_BAR_FIELD, order.getCustomerName())
+                .input().insert(SEARCH_BAR_FIELD, order.getCustomerName())
                 .validate(() -> {
                     List<SmartWebElement> elements = quest.artifact(EARTH, SmartWebDriver.class)
                             .findSmartElements(By.cssSelector("h3[class='name']"));
@@ -166,13 +168,13 @@ public class CustomService extends FluentService {
     public CustomService editOrder(String customer) {
         quest
                 .enters(EARTH)
-                .input().insert(InputFields.SEARCH_BAR_FIELD, customer)
+                .input().insert(SEARCH_BAR_FIELD, customer)
                 .validate(() -> {
-                    try {
+                    /*try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
-                    }
+                    }*/
                     List<SmartWebElement> elements = quest.artifact(EARTH, SmartWebDriver.class)
                             .findSmartElements(By.cssSelector("h3[class='name']"));
                     elements.stream().filter(e -> e.getText().equalsIgnoreCase(customer)).findFirst().get().click();
