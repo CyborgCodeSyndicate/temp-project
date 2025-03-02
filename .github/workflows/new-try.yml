@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Download grouped-tests.json
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: grouped-tests
           path: .
@@ -188,70 +188,70 @@ jobs:
       # ensures it won't fail the entire job.
       # ------------------------------------------------------
       - name: "Download Allure from jobIndex=0"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-0
           path: chunk0
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=1"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-1
           path: chunk1
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=2"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-2
           path: chunk2
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=3"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-3
           path: chunk3
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=4"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-4
           path: chunk4
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=5"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-5
           path: chunk5
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=6"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-6
           path: chunk6
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=7"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-7
           path: chunk7
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=8"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-8
           path: chunk8
         continue-on-error: true
 
       - name: "Download Allure from jobIndex=9"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure-results-9
           path: chunk9
