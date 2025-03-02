@@ -90,15 +90,16 @@ jobs:
         if: ${{ steps.subset.outputs.count == '0' }}  # Ensure it compares as a string
         run: |
           echo "No tests for jobIndex=${{ matrix.jobIndex }}."
-          exit 0
 
 
       - name: Install Docker Compose
+        if: ${{ steps.subset.outputs.count != '0' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
       - name: Create docker-compose.yml
+        if: ${{ steps.subset.outputs.count != '0' }}
         run: |
           cat <<EOF > docker-compose.yml
           version: "3.9"
@@ -124,6 +125,7 @@ jobs:
           EOF
 
       - name: Start Selenium Grid
+        if: ${{ steps.subset.outputs.count != '0' }}
         id: scale-grid
         run: |
           totalMethods=${{ steps.subset.outputs.totalMethods }}
@@ -141,6 +143,7 @@ jobs:
           docker-compose up -d --scale chrome=$neededNodes
 
       - name: Wait for Selenium Hub
+        if: ${{ steps.subset.outputs.count != '0' }}
         run: |
           for i in {1..30}; do
             if curl -s "http://localhost:4444/status" | grep '"ready":true' ; then
@@ -152,6 +155,7 @@ jobs:
           done
 
       - name: Run tests
+        if: ${{ steps.subset.outputs.count != '0' }}
         run: |
           CLASSES=$(jq -r '.classes | join(",")' subset.json)
           echo "JobIndex ${{ matrix.jobIndex }} => classes: $CLASSES"
@@ -165,13 +169,14 @@ jobs:
           # Or adapt for your test runner approach
 
       - name: Upload Allure results
+        if: ${{ steps.subset.outputs.count != '0' }}
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.jobIndex }}
           path: example-project/allure-results
 
       - name: Teardown Selenium
-        if: always()
+        if: ${{ steps.subset.outputs.count != '0' && always() }}
         run: docker-compose down
   # ---------------------------------------------------------
   # 3) MERGE ALLURE: Merge all partial results into one report
