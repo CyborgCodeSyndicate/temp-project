@@ -74,9 +74,11 @@ jobs:
         id: subset
         run: |
           jq ".[] | select(.jobIndex==${{ matrix.jobIndex }})" grouped-tests.json > subset.json
-          count=$(jq '.classes | length' subset.json || echo "0")  # Ensure it's always a string
+          count=$(jq -r '.classes | length' subset.json 2>/dev/null || echo "0")
+          if [[ -z "$count" ]]; then count="0"; fi
           echo "count=$count" >> $GITHUB_OUTPUT
-          totalMethods=$(jq '.totalMethods' subset.json || echo "0")
+          totalMethods=$(jq -r '.totalMethods' subset.json 2>/dev/null || echo "0")
+          if [[ -z "$totalMethods" ]]; then totalMethods="0"; fi
           echo "totalMethods=$totalMethods" >> $GITHUB_OUTPUT
 
       - name: Debug Output
