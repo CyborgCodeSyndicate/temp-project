@@ -74,16 +74,22 @@ jobs:
         id: subset
         run: |
           jq ".[] | select(.jobIndex==${{ matrix.jobIndex }})" grouped-tests.json > subset.json
-          count=$(jq '.classes | length' subset.json || echo 0)
+          count=$(jq '.classes | length' subset.json || echo "0")  # Ensure it's always a string
           echo "count=$count" >> $GITHUB_OUTPUT
-          totalMethods=$(jq '.totalMethods' subset.json || echo 0)
+          totalMethods=$(jq '.totalMethods' subset.json || echo "0")
           echo "totalMethods=$totalMethods" >> $GITHUB_OUTPUT
 
+      - name: Debug Output
+        run: |
+          echo "Count Output: ${{ steps.subset.outputs.count }}"
+          echo "Total Methods Output: ${{ steps.subset.outputs.totalMethods }}"
+
       - name: Skip if no subset
-        if: ${{ steps.subset.outputs.count == '0' }}
+        if: ${{ steps.subset.outputs.count == '0' }}  # Ensure it compares as a string
         run: |
           echo "No tests for jobIndex=${{ matrix.jobIndex }}."
           exit 0
+
 
       - name: Install Docker Compose
         run: |
