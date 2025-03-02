@@ -73,14 +73,9 @@ jobs:
       - name: Parse subset
         id: subset
         run: |
-          # Extract the subset for this jobIndex
           jq ".[] | select(.jobIndex==${{ matrix.jobIndex }})" grouped-tests.json > subset.json
-          
-          # Count how many classes
           count=$(jq '.classes | length' subset.json || echo 0)
           echo "count=$count" >> $GITHUB_OUTPUT
-          
-          # Also extract totalMethods (the sum of test methods for these classes)
           totalMethods=$(jq '.totalMethods' subset.json || echo 0)
           echo "totalMethods=$totalMethods" >> $GITHUB_OUTPUT
 
