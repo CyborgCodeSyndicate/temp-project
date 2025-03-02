@@ -160,7 +160,7 @@ jobs:
           CLASSES=$(jq -r '.classes | join(",")' subset.json)
           echo "JobIndex ${{ matrix.jobIndex }} => classes: $CLASSES"
           
-          mvn clean test -pl example-project \
+          mvn clean test -pl example-project -am \
             -Dtest="$CLASSES" \
             -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.parallelThreads }} \
             -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.parallelThreads }} \
