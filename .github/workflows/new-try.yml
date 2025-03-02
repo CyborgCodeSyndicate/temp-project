@@ -45,7 +45,7 @@ jobs:
           # or into the workspace root. Adjust the path below if needed.
 
       - name: Upload grouped-tests
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: grouped-tests
           path: grouped-tests.json  # Adjust if the file is written elsewhere
@@ -162,7 +162,7 @@ jobs:
           # Or adapt for your test runner approach
 
       - name: Upload Allure results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.jobIndex }}
           path: example-project/allure-results
@@ -276,9 +276,8 @@ jobs:
           allure generate merged-allure --clean -o allure-report
           ls -l allure-report
 
-      # Option 2) Or just upload final Allure as an artifact
-      # - name: Upload final Allure report
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: final-allure-report
-      #     path: allure-report
+      - name: Upload final Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-allure-report
+          path: allure-report
