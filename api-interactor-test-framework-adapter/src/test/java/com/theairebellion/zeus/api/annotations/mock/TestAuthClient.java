@@ -8,7 +8,6 @@ public class TestAuthClient extends BaseAuthenticationClient {
 
     @Override
     protected Header authenticateImpl(RestService restService, String username, String password) {
-        return null;
+        return new Header("Authorization", "Bearer test-token-" + username);
     }
 }
-

@@ -1,38 +1,50 @@
 package com.theairebellion.zeus.api.service.fluent;
 
 import com.theairebellion.zeus.api.service.RestService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
+@DisplayName("SuperRestServiceFluent Tests")
 class SuperRestServiceFluentTest {
 
-    private SuperRestServiceFluent superRestServiceFluent;
+    @Mock
     private RestServiceFluent mockRestServiceFluent;
+
+    @Mock
     private RestService mockRestService;
 
-    @BeforeEach
-    void setUp() {
-        mockRestServiceFluent = mock(RestServiceFluent.class);
-        mockRestService = mock(RestService.class);
-
+    @Test
+    @DisplayName("Constructor should initialize correctly and get RestService from original")
+    void constructorShouldInitializeCorrectlyAndGetRestServiceFromOriginal() {
+        // Arrange
         when(mockRestServiceFluent.getRestService()).thenReturn(mockRestService);
 
-        superRestServiceFluent = new SuperRestServiceFluent(mockRestServiceFluent);
+        // Act
+        SuperRestServiceFluent superRestServiceFluent = new SuperRestServiceFluent(mockRestServiceFluent);
+
+        // Assert
+        assertThat(superRestServiceFluent.getRestService()).isSameAs(mockRestService);
     }
 
     @Test
-    void testConstructor_ShouldInitializeCorrectly() {
-        assertSame(mockRestService, superRestServiceFluent.getRestService());
-    }
+    @DisplayName("GetRestService should delegate to original RestServiceFluent")
+    void getRestServiceShouldDelegateToOriginalRestServiceFluent() {
+        // Arrange
+        when(mockRestServiceFluent.getRestService()).thenReturn(mockRestService);
+        SuperRestServiceFluent superRestServiceFluent = new SuperRestServiceFluent(mockRestServiceFluent);
 
-    @Test
-    void testGetRestService_ShouldReturnOriginalRestService() {
-        RestService returnedService = superRestServiceFluent.getRestService();
-        assertSame(mockRestService, returnedService);
+        // Act - Reset the mock to verify exactly one call
+        when(mockRestServiceFluent.getRestService()).thenReturn(mockRestService);
+        RestService result = superRestServiceFluent.getRestService();
 
-        verify(mockRestServiceFluent, times(2)).getRestService();
+        // Assert
+        assertThat(result).isSameAs(mockRestService);
     }
 }

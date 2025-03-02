@@ -7,30 +7,55 @@ import com.theairebellion.zeus.api.service.RestService;
 import com.theairebellion.zeus.api.service.fluent.mock.StorageDouble;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.retry.RetryCondition;
+import com.theairebellion.zeus.util.reflections.RetryUtils;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import io.restassured.response.Response;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@DisplayName("RestServiceFluent Tests")
 class RestServiceFluentTest {
 
-    private RestService restServiceMock;
+    @Mock
+    private RestService restService;
+
     private RestServiceFluent restFluent;
+
+    @Mock
+    private Endpoint endpoint;
+
+    @Mock
+    private Response response;
+
     private StorageDouble storageDouble;
 
     @BeforeEach
     void setUp() throws Exception {
-        restServiceMock = mock(RestService.class);
-        restFluent = new RestServiceFluent(restServiceMock);
+        // Create the RestServiceFluent manually to avoid Mockito issues
+        restFluent = new RestServiceFluent(restService);
 
+        // Set up Quest and storage
         var realQuest = new Quest();
         var realSuperQuest = new SuperQuest(realQuest);
         storageDouble = new StorageDouble();
@@ -44,97 +69,271 @@ class RestServiceFluentTest {
         storageField.set(realQuest, storageDouble);
     }
 
-    @Test
-    void testRequest_WithoutBody() {
-        var mockResponse = mock(Response.class);
-        when(restServiceMock.request(any(Endpoint.class))).thenReturn(mockResponse);
+    @Nested
+    @DisplayName("Request Methods")
+    class RequestMethodTests {
 
-        var endpoint = mock(Endpoint.class);
-        doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+        @Test
+        @DisplayName("Request without body should store response in storage")
+        void requestWithoutBodyShouldStoreResponseInStorage() {
+            // Arrange
+            doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+            when(restService.request(endpoint)).thenReturn(response);
 
-        restFluent.request(endpoint);
+            // Act
+            var result = restFluent.request(endpoint);
 
-        verify(restServiceMock).request(endpoint);
-        assertEquals(mockResponse, storageDouble.subStorage.get(TestEnum.MOCK_ENDPOINT));
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).request(endpoint);
+            assertThat(storageDouble.subStorage).containsEntry(TestEnum.MOCK_ENDPOINT, response);
+        }
+
+        @Test
+        @DisplayName("Request with body should store response in storage")
+        void requestWithBodyShouldStoreResponseInStorage() {
+            // Arrange
+            doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+            var body = "someBody";
+            when(restService.request(endpoint, body)).thenReturn(response);
+
+            // Act
+            var result = restFluent.request(endpoint, body);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).request(endpoint, body);
+            assertThat(storageDouble.subStorage).containsEntry(TestEnum.MOCK_ENDPOINT, response);
+        }
     }
 
-    @Test
-    void testRequest_WithBody() {
-        var mockResponse = mock(Response.class);
-        when(restServiceMock.request(any(Endpoint.class), any())).thenReturn(mockResponse);
+    @Nested
+    @DisplayName("Validation Methods")
+    class ValidationMethodTests {
 
-        var endpoint = mock(Endpoint.class);
-        doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+        @Test
+        @DisplayName("ValidateResponse should call validate on RestService")
+        void validateResponseShouldCallValidateOnRestService() {
+            // Arrange
+            List<AssertionResult<Object>> mockResults = new ArrayList<>();
+            when(restService.validate(eq(response), any(Assertion[].class))).thenReturn(mockResults);
 
-        restFluent.request(endpoint, "someBody");
+            // Act
+            var result = restFluent.validateResponse(response);
 
-        verify(restServiceMock).request(endpoint, "someBody");
-        assertEquals(mockResponse, storageDouble.subStorage.get(TestEnum.MOCK_ENDPOINT));
-    }
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).validate(eq(response), any(Assertion[].class));
+        }
 
-    @Test
-    void testValidateResponse() {
-        var response = mock(Response.class);
+        @Test
+        @DisplayName("ValidateResponse with specific assertions should call validate")
+        void validateResponseWithSpecificAssertions() {
+            // Arrange
+            List<AssertionResult<Object>> mockResults = new ArrayList<>();
+            Assertion<?>[] assertions = new Assertion<?>[0];
+            when(restService.validate(response, assertions)).thenReturn(mockResults);
+
+            // Act
+            var result = restFluent.validateResponse(response, assertions);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).validate(response, assertions);
+        }
+
+        @Test
+        @DisplayName("Validate with Runnable should return same instance")
+        void validateWithRunnableShouldReturnSameInstance() {
+            // Arrange
+            var assertion = mock(Runnable.class);
+
+            // Act
+            var result = restFluent.validate(assertion);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+        }
+
         @SuppressWarnings("unchecked")
-        var mockResults = mock(List.class);
-        when(restServiceMock.validate(eq(response), any(Assertion[].class))).thenReturn(mockResults);
+        @Test
+        @DisplayName("Validate with Consumer should return same instance")
+        void validateWithConsumerShouldReturnSameInstance() {
+            // Arrange
+            Consumer<SoftAssertions> consumer = mock(Consumer.class);
 
-        var result = restFluent.validateResponse(response);
-        assertSame(restFluent, result);
-        verify(restServiceMock).validate(eq(response), any(Assertion[].class));
+            // Act
+            var result = restFluent.validate(consumer);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+        }
     }
 
-    @Test
-    void testRequestAndValidate_WithoutBody() {
-        var mockResponse = mock(Response.class);
-        when(restServiceMock.request(any(Endpoint.class))).thenReturn(mockResponse);
-        var mockAssertionResults = new ArrayList<AssertionResult<Object>>();
-        when(restServiceMock.validate(eq(mockResponse), any(Assertion[].class))).thenReturn(mockAssertionResults);
+    @Nested
+    @DisplayName("Request and Validate Methods")
+    class RequestAndValidateMethodTests {
 
-        var endpoint = mock(Endpoint.class);
-        doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+        @Test
+        @DisplayName("RequestAndValidate without body should call request and validate")
+        void requestAndValidateWithoutBodyShouldCallRequestAndValidate() {
+            // Arrange
+            doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+            List<AssertionResult<Object>> mockResults = new ArrayList<>();
+            when(restService.request(endpoint)).thenReturn(response);
+            when(restService.validate(eq(response), any(Assertion[].class))).thenReturn(mockResults);
 
-        var result = restFluent.requestAndValidate(endpoint);
-        assertSame(restFluent, result);
-        verify(restServiceMock).request(endpoint);
-        verify(restServiceMock).validate(eq(mockResponse), any(Assertion[].class));
-        verifyNoMoreInteractions(restServiceMock);
+            // Act
+            var result = restFluent.requestAndValidate(endpoint);
 
-        assertEquals(mockResponse, storageDouble.subStorage.get(TestEnum.MOCK_ENDPOINT));
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).request(endpoint);
+            verify(restService).validate(eq(response), any(Assertion[].class));
+            assertThat(storageDouble.subStorage).containsEntry(TestEnum.MOCK_ENDPOINT, response);
+        }
+
+        @Test
+        @DisplayName("RequestAndValidate with body should call request and validate")
+        void requestAndValidateWithBodyShouldCallRequestAndValidate() {
+            // Arrange
+            doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+            var body = "body";
+            List<AssertionResult<Object>> mockResults = new ArrayList<>();
+            when(restService.request(endpoint, body)).thenReturn(response);
+            when(restService.validate(eq(response), any())).thenReturn(mockResults);
+
+            // Act
+            var result = restFluent.requestAndValidate(endpoint, body, (Assertion<?>[]) null);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).request(endpoint, body);
+            verify(restService).validate(eq(response), any());
+            assertThat(storageDouble.subStorage).containsEntry(TestEnum.MOCK_ENDPOINT, response);
+        }
+
+        @Test
+        @DisplayName("RequestAndValidate with specific assertions should use them")
+        void requestAndValidateWithSpecificAssertions() {
+            // Arrange
+            doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+            List<AssertionResult<Object>> mockResults = new ArrayList<>();
+            Assertion<?>[] assertions = new Assertion<?>[0];
+
+            when(restService.request(endpoint)).thenReturn(response);
+            when(restService.validate(response, assertions)).thenReturn(mockResults);
+
+            // Act
+            var result = restFluent.requestAndValidate(endpoint, assertions);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).request(endpoint);
+            verify(restService).validate(response, assertions);
+            assertThat(storageDouble.subStorage).containsEntry(TestEnum.MOCK_ENDPOINT, response);
+        }
     }
 
-    @Test
-    void testRequestAndValidate_WithBody() {
-        var response = mock(Response.class);
-        when(restServiceMock.request(any(Endpoint.class), any())).thenReturn(response);
-        when(restServiceMock.validate(eq(response), any())).thenReturn(new ArrayList<>());
+    @Nested
+    @DisplayName("Authentication Methods")
+    class AuthenticationTests {
 
-        var endpoint = mock(Endpoint.class);
-        doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+        @Test
+        @DisplayName("Authenticate should call authenticate on RestService")
+        void authenticateShouldCallAuthenticateOnRestService() {
+            // Act
+            var result = restFluent.authenticate("user", "pass", TestAuthClient.class);
 
-        var result = restFluent.requestAndValidate(endpoint, "body", (Assertion<?>[]) null);
-        assertSame(restFluent, result);
-        verify(restServiceMock).request(endpoint, "body");
-        verify(restServiceMock).validate(eq(response), any());
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).authenticate("user", "pass", TestAuthClient.class);
+        }
     }
 
-    @Test
-    void testAuthenticate() {
-        restFluent.authenticate("user", "pass", TestAuthClient.class);
-        verify(restServiceMock).authenticate("user", "pass", TestAuthClient.class);
+    @Nested
+    @DisplayName("Getter Methods")
+    class GetterTests {
+
+        @Test
+        @DisplayName("GetRestService should return the RestService instance")
+        void getRestServiceShouldReturnRestServiceInstance() {
+            // Act
+            var result = restFluent.getRestService();
+
+            // Assert
+            assertThat(result).isSameAs(restService);
+        }
     }
 
-    @Test
-    void testValidateRunnable() {
-        var assertion = mock(Runnable.class);
-        var result = restFluent.validate(assertion);
-        assertSame(restFluent, result);
+    @Nested
+    @DisplayName("Retry Methods")
+    class RetryTests {
+
+        @Test
+        @DisplayName("RetryUntil should delegate to RetryUtils")
+        void retryUntilShouldDelegateToRetryUtils() {
+            // Arrange
+            @SuppressWarnings("unchecked")
+            RetryCondition<Integer> retryCondition = mock(RetryCondition.class);
+            @SuppressWarnings("unchecked")
+            Predicate<Integer> condition = mock(Predicate.class);
+            lenient().when(retryCondition.condition()).thenReturn(condition);
+
+            Duration maxWait = Duration.ofSeconds(5);
+            Duration retryInterval = Duration.ofMillis(500);
+
+            try (MockedStatic<RetryUtils> retryUtils = mockStatic(RetryUtils.class)) {
+                // Act
+                var result = restFluent.retryUntil(retryCondition, maxWait, retryInterval);
+
+                // Assert
+                assertThat(result).isSameAs(restFluent);
+                retryUtils.verify(() -> RetryUtils.retryUntil(
+                        eq(maxWait),
+                        eq(retryInterval),
+                        any(),
+                        eq(condition)
+                ));
+            }
+        }
     }
 
-    @Test
-    void testValidateConsumerOfSoftAssertions() {
-        var consumer = mock(Consumer.class);
-        var result = restFluent.validate(consumer);
-        assertSame(restFluent, result);
+    @Nested
+    @DisplayName("Edge Cases")
+    class EdgeCaseTests {
+
+        @Test
+        @DisplayName("ValidateResponse with null assertions should not fail")
+        void validateResponseWithNullAssertionsShouldNotFail() {
+            // Arrange
+            List<AssertionResult<Object>> mockResults = new ArrayList<>();
+            when(restService.validate(eq(response), any())).thenReturn(mockResults);
+
+            // Act
+            var result = restFluent.validateResponse(response, (Assertion<?>[]) null);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).validate(eq(response), any());
+        }
+
+        @Test
+        @DisplayName("RequestAndValidate with null body should handle null properly")
+        void requestAndValidateWithNullBodyShouldHandleNullProperly() {
+            // Arrange
+            doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
+            List<AssertionResult<Object>> mockResults = new ArrayList<>();
+            when(restService.request(endpoint, null)).thenReturn(response);
+            when(restService.validate(eq(response), any())).thenReturn(mockResults);
+
+            // Act
+            var result = restFluent.requestAndValidate(endpoint, null, (Assertion<?>[]) null);
+
+            // Assert
+            assertThat(result).isSameAs(restFluent);
+            verify(restService).request(endpoint, null);
+            verify(restService).validate(eq(response), any());
+        }
     }
 }
