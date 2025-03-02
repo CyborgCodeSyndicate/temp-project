@@ -35,7 +35,7 @@ jobs:
 
       - name: Run plugin to split tests
         run: |
-          mvn test-compile -pl example-project -am \
+          mvn test-compile -Psetup -pl example-project -am \
             -DtestSplitter.enabled=true \
             -DtestSplitter.tags.include="${{ inputs.tagsInclude }}" \
             -DtestSplitter.tags.exclude="${{ inputs.tagsExclude }}" \
