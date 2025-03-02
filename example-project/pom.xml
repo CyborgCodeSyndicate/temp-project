@@ -87,6 +87,22 @@
                         </properties>
                 </configuration>
             </plugin>
+                <plugin>
+                    <groupId>com.theairebellion.zeus</groupId>
+                    <artifactId>test-allocator-maven-plugin</artifactId>
+                    <version>${project.version}</version>
+                    <executions>
+                        <execution>
+                            <id>split-tests</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>split</goal>
+                            </goals>
+                            <!-- optional: could specify phase or rely on the plugin's defaultPhase -->
+                        </execution>
+                    </executions>
+                </plugin>
+
         </plugins>
     </build>
 

@@ -1,0 +1,283 @@
+name: Maven Plugin + Parallel Tests + Allure
+
+on:
+  workflow_dispatch:
+    inputs:
+      tagsInclude:
+        description: "Tags to include (comma-separated)"
+        required: false
+        default: "Regression"
+      tagsExclude:
+        description: "Tags to exclude (comma-separated)"
+        required: false
+        default: "Flaky"
+      maxThreadsPerJob:
+        description: "Max test methods in each job (the plugin's maxMethods)"
+        required: true
+        default: "20"
+      maxThreadsPerBrowser:
+        description: "Number of sessions per Selenium node"
+        required: true
+        default: "5"
+
+jobs:
+  # ---------------------------------------------------------
+  # 1) SETUP: Build plugin & test project, run plugin to create grouped-tests.json
+  # ---------------------------------------------------------
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Build all modules (including plugin + example-project)
+        run: mvn clean install -DskipTests
+
+      - name: Run plugin to split tests
+        run: |
+          mvn test-compile -pl example-project -am \
+            -DtestSplitter.enabled=true \
+            -DtestSplitter.tags.include="${{ inputs.tagsInclude }}" \
+            -DtestSplitter.tags.exclude="${{ inputs.tagsExclude }}" \
+            -DtestSplitter.maxMethods="${{ inputs.maxThreadsPerJob }}"
+
+          # Suppose the plugin writes 'grouped-tests.json' into example-project/ 
+          # or into the workspace root. Adjust the path below if needed.
+
+      - name: Upload grouped-tests
+        uses: actions/upload-artifact@v3
+        with:
+          name: grouped-tests
+          path: grouped-tests.json  # Adjust if the file is written elsewhere
+
+  # ---------------------------------------------------------
+  # 2) PARALLEL TESTS: read grouped-tests.json, run each subset
+  # ---------------------------------------------------------
+parallel-tests:
+  needs: [ setup ]
+  runs-on: ubuntu-latest
+  strategy:
+    fail-fast: false
+    matrix:
+      jobIndex: [ 0,1,2,3,4,5,6,7,8,9 ]
+  steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Download grouped-tests.json
+      uses: actions/download-artifact@v3
+      with:
+        name: grouped-tests
+        path: .
+
+    - name: Parse subset
+      id: subset
+      run: |
+        # Extract the subset for this jobIndex
+        jq ".[] | select(.jobIndex==${{ matrix.jobIndex }})" grouped-tests.json > subset.json
+
+        # Count how many classes
+        count=$(jq '.classes | length' subset.json || echo 0)
+        echo "count=$count" >> $GITHUB_OUTPUT
+
+        # Also extract totalMethods (the sum of test methods for these classes)
+        totalMethods=$(jq '.totalMethods' subset.json || echo 0)
+        echo "totalMethods=$totalMethods" >> $GITHUB_OUTPUT
+
+    - name: Skip if no subset
+      if: ${{ steps.subset.outputs.count == '0' }}
+      run: |
+        echo "No tests for jobIndex=${{ matrix.jobIndex }}."
+        exit 0
+
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
+
+    - name: Create docker-compose.yml
+      run: |
+        cat <<EOF > docker-compose.yml
+        version: "3.9"
+        services:
+          selenium-hub:
+            image: selenium/hub:4.10.0
+            container_name: selenium-hub
+            ports:
+              - "4442:4442"
+              - "4443:4443"
+              - "4444:4444"
+          chrome:
+            image: selenium/node-chrome:4.10.0
+            depends_on:
+              - selenium-hub
+            shm_size: "2g"
+            environment:
+              - SE_EVENT_BUS_HOST=selenium-hub
+              - SE_EVENT_BUS_PUBLISH_PORT=4442
+              - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+              - SE_NODE_MAX_SESSIONS=${{ inputs.maxThreadsPerBrowser }}
+              - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+        EOF
+
+    - name: Start Selenium Grid
+      id: scale-grid
+      run: |
+        totalMethods=${{ steps.subset.outputs.totalMethods }}
+        maxThreads=${{ inputs.maxThreadsPerBrowser }}
+
+        # Calculate how many chrome nodes we need:
+        # e.g. if totalMethods=13, maxThreads=5 => need 3 nodes
+        # We'll do integer ceiling:
+        neededNodes=$(( (totalMethods + maxThreads - 1) / maxThreads ))
+
+        echo "Total methods = $totalMethods"
+        echo "Max threads per browser = $maxThreads"
+        echo "We will spin up $neededNodes Chrome node(s)."
+
+        docker-compose up -d --scale chrome=$neededNodes
+
+    - name: Wait for Selenium Hub
+      run: |
+        for i in {1..30}; do
+          if curl -s "http://localhost:4444/status" | grep '"ready":true' ; then
+            echo "Selenium Grid is ready!"
+            break
+          fi
+          echo "Waiting for Selenium Grid..."
+          sleep 2
+        done
+
+    - name: Run tests
+      run: |
+        CLASSES=$(jq -r '.classes | join(",")' subset.json)
+        echo "JobIndex ${{ matrix.jobIndex }} => classes: $CLASSES"
+
+        mvn clean test -pl example-project \
+          -Dtest="$CLASSES" \
+          -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.parallelThreads }} \
+          -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.parallelThreads }} \
+          -Dremote.driver.url="http://localhost:4444" \
+          -Dheadless="true"
+        # Or adapt for your test runner approach
+
+    - name: Upload Allure results
+      uses: actions/upload-artifact@v3
+      with:
+        name: allure-results-${{ matrix.jobIndex }}
+        path: example-project/allure-results
+
+    - name: Teardown Selenium
+      if: always()
+      run: docker-compose down
+  # ---------------------------------------------------------
+  # 3) MERGE ALLURE: Merge all partial results into one report
+  # ---------------------------------------------------------
+  merge-allure:
+    needs: [ parallel-tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      # ------------------------------------------------------
+      # Dynamically download partial results for indexes 0..9
+      # Each step uses the same 'download-artifact' action,
+      # but references a different artifact name.
+      # If an artifact does not exist, the step "continue-on-error: true"
+      # ensures it won't fail the entire job.
+      # ------------------------------------------------------
+      - name: "Download Allure from jobIndex=0"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-0
+          path: chunk0
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=1"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-1
+          path: chunk1
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=2"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-2
+          path: chunk2
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=3"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-3
+          path: chunk3
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=4"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-4
+          path: chunk4
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=5"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-5
+          path: chunk5
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=6"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-6
+          path: chunk6
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=7"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-7
+          path: chunk7
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=8"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-8
+          path: chunk8
+        continue-on-error: true
+
+      - name: "Download Allure from jobIndex=9"
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-9
+          path: chunk9
+        continue-on-error: true
+
+      # ------------------------------------------------------
+      # Merge all partial results into one directory
+      # Then run 'allure generate' to produce a single final report.
+      # ------------------------------------------------------
+      - name: Merge Allure results
+        run: |
+          mkdir merged-allure
+          for i in 0 1 2 3 4 5 6 7 8 9; do
+            if [ -d "chunk$i" ]; then
+              echo "Merging chunk$i..."
+              cp chunk$i/* merged-allure/ || true
+            fi
+          done
+          
+          # Now generate one combined report:
+          # (Install Allure CLI or use an Allure action like 'simple-elf/allure-report-action')
+          allure generate merged-allure --clean -o allure-report
+          ls -l allure-report
+
+      - name: Upload final Allure report
+        uses: actions/upload-artifact@v3
+        with:
+          name: final-allure-report
+          path: allure-report
