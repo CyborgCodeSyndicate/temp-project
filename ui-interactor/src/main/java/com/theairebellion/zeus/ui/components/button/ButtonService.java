@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.button;
 
+import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.openqa.selenium.By;
@@ -9,7 +10,7 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 /**
  * Interface defining operations for interacting with button elements within a web interface.
  */
-public interface ButtonService {
+public interface ButtonService extends TableInsertion {
 
     ButtonComponentType DEFAULT_TYPE = getDefaultType();
 

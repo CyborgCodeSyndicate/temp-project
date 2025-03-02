@@ -81,10 +81,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
-                    <properties>
-                        <includeTags>${include.tags}</includeTags>
-                        <excludeTags>${exclude.tags}</excludeTags>
-                    </properties>
+                        <properties>
+                            <groups>${include.tags}</groups>
+                            <excludedGroups>${exclude.tags}</excludedGroups>
+                        </properties>
                 </configuration>
             </plugin>
         </plugins>

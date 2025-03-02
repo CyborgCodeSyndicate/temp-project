@@ -63,18 +63,6 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
         return uiServiceFluent;
     }
 
-    // public final <T> UIServiceFluent validateTable(TableElement tableElement, Assertion<?>...assertions) {
-    //     List list = storage.sub(UI).get(tableElement.enumImpl(), List.class);
-    //     uiServiceFluent.validation();
-    //     return uiServiceFluent;
-    // }
-    //
-    // public final <T> UIServiceFluent validateRow(TableElement tableElement, Assertion<?>...assertions) {
-    //     List list = storage.sub(UI).get(tableElement.enumImpl(), List.class);
-    //     uiServiceFluent.validation();
-    //     return uiServiceFluent;
-    // }
-
 
     @SafeVarargs
     public final <K> T readTable(TableElement tableElement, int start, int end,
@@ -182,8 +170,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     }
 
 
-    public final <K> T insertCellValue(TableElement tableElement, int row,
-                                       K data) {
+    public final <K> T insertCellValueAsData(TableElement tableElement, int row, K data) {
         if (!tableElement.rowsRepresentationClass().equals(data.getClass())) {
             throw new IllegalArgumentException(
                     "The Data object must be from class: " + tableElement.rowsRepresentationClass());
@@ -195,7 +182,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     }
 
 
-    public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria, K data) {
+    public final <K> T insertCellValueAsData(TableElement tableElement, List<String> searchCriteria, K data) {
         if (!tableElement.rowsRepresentationClass().equals(data.getClass())) {
             throw new IllegalArgumentException(
                     "The Data object must be from class: " + tableElement.rowsRepresentationClass());
@@ -228,6 +215,38 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
                 sortingStrategy);
         tableElement.after().accept(driver);
         return uiServiceFluent;
+    }
+
+
+    public final <K> T clickElementInCell(TableElement tableElement, int row,
+                                          TableField<K> field) {
+        return insertCellValue(tableElement, row, field);
+    }
+
+
+    public final <K> T clickElementInCell(TableElement tableElement, int row, TableField<K> field, int index) {
+        return insertCellValue(tableElement, row, field, index);
+    }
+
+
+    public final <K> T clickElementInCell(TableElement tableElement, List<String> searchCriteria, TableField<K> field) {
+        return insertCellValue(tableElement, searchCriteria, field);
+    }
+
+
+    public final <K> T clickElementInCell(TableElement tableElement, List<String> searchCriteria,
+                                          TableField<K> field, int index) {
+        return insertCellValue(tableElement, searchCriteria, field, index);
+    }
+
+
+    public final <K> T clickElementInCell(TableElement tableElement, int row, K data) {
+        return insertCellValueAsData(tableElement, row, data);
+    }
+
+
+    public final <K> T clickElementInCell(TableElement tableElement, List<String> searchCriteria, K data) {
+        return insertCellValueAsData(tableElement, searchCriteria, data);
     }
 
 
