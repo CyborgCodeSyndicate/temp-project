@@ -2,23 +2,24 @@ package com.example.project;
 
 
 import com.example.project.base.World;
-import com.example.project.model.TransactionsTableEntry;
+import com.example.project.model.*;
 import com.example.project.ui.elements.ZeroBank.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.UI;
+import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.text.html.HTML.Tag;
 import java.util.List;
 
-import static com.example.project.ui.elements.Tables.TRANSACTIONS;
+import static com.example.project.ui.elements.Tables.*;
 import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.tableRowExtractor;
 import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.*;
 import static com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget.*;
-import static javax.swing.text.html.HTML.Tag;
 
 
 @UI
@@ -27,6 +28,7 @@ public class ZeroBankTest extends BaseTest {
 
     @Test()
     @Description("COMPONENTS: Button, Input, Link, Select, Alert")
+    @org.junit.jupiter.api.Tag("Regression")
     public void alertTest(Quest quest) {
         quest
                 .enters(World.EARTH)
@@ -49,7 +51,8 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Select, Radio, Alert")
-    public void validatePurchaseCheckRadioButtons(Quest quest) {
+    @org.junit.jupiter.api.Tag("Regression")
+    public void radioButtonTest(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -72,7 +75,8 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Alert")
-    public void paragraphTextValueTestSoftAssertionsFailedTest(Quest quest) {
+    @org.junit.jupiter.api.Tag("Regression")
+    public void paragraphTextValueTestSoftAssertions(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -86,20 +90,16 @@ public class ZeroBankTest extends BaseTest {
                 .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Sprint")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 12119415161214 Sprint account", true)
+                .validate().validateTextInField(Tag.I, "For 12119415161214 Sprint account", true)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Bank of America")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 47844181491040 Bank of America account", true)
+                .validate().validateTextInField(Tag.I, "For 47844181491040 Bank of America account", true)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 48944145651315q Apple account", true)
+                .validate().validateTextInField(Tag.I, "For 48944145651315 Apple account", true)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Wells Fargo")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account", true)
+                .validate().validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account", true)
                 .select().selectOption(SelectFields.SP_ACCOUNT_DDL, "Checking")
                 .input().insert(InputFields.SP_AMOUNT_FIELD, "1000")
                 .input().insert(InputFields.SP_DATE_FIELD, "2025-01-27")
@@ -111,7 +111,8 @@ public class ZeroBankTest extends BaseTest {
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
-    public void paragraphTextValueTestAssertionsSuccess(Quest quest) {
+    @org.junit.jupiter.api.Tag("Regression")
+    public void paragraphTextValueTestHardAssertions(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -125,55 +126,23 @@ public class ZeroBankTest extends BaseTest {
                 .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Sprint")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 12119415161214 Sprint account", true)
+                .validate().validateTextInField(Tag.I, "For 12119415161214 Sprint account")
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Bank of America")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 47844181491040 Bank of America account")
+                .validate().validateTextInField(Tag.I, "For 47844181491040 Bank of America account", false)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 48944145651315 Apple account", false)
-                .complete();
-    }
-
-    @Test
-    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
-    public void paragraphTextValueTestHardAssertionsFailedTest(Quest quest) {
-        quest
-                .enters(World.EARTH)
-                .browser().navigate("http://zero.webappsecurity.com/")
-                .button().click(ButtonFields.SIGN_IN_BUTTON)
-                .input().insert(InputFields.USERNAME_FIELD, "username")
-                .input().insert(InputFields.PASSWORD_FIELD, "password")
-                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
-                .browser().back()
-                .link().click(LinkFields.TRANSFER_FUNDS_LINK)
-                .list().select(ListFields.NAVIGATION_TABS, "Pay Bills")
-                .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
-                .select().selectOption(SelectFields.SP_PAYEE_DDL, "Sprint")
-                .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 12119415161214 Sprint account")
-                .select().selectOption(SelectFields.SP_PAYEE_DDL, "Bank of America")
-                .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 47844181491040 Bank of America account", false)
-                .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
-                .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 48944145651315q Apple account")
+                .validate().validateTextInField(Tag.I, "For 48944145651315 Apple account")
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Wells Fargo")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account", false)
+                .validate().validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account", false)
                 .complete();
     }
 
     @Test
     @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
-    public void paragraphTextValueTestMixedAssertionsFailedTest(Quest quest) {
+    @org.junit.jupiter.api.Tag("Regression")
+    public void paragraphTextValueTestMixedAssertions(Quest quest) {
         quest
                 .enters(World.EARTH)
                 .browser().navigate("http://zero.webappsecurity.com/")
@@ -187,24 +156,22 @@ public class ZeroBankTest extends BaseTest {
                 .list().select(ListFields.PAY_BILLS_TABS, "Pay Saved Payee")
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Sprint")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 12119415161214 Sprint account")
+                .validate().validateTextInField(Tag.I, "For 12119415161214 Sprint account")
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Bank of America")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 47844181491040 Bank of America account", false)
+                .validate().validateTextInField(Tag.I, "For 47844181491040 Bank of America account", false)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Apple")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate().validateTextInField(Tag.I, "For 48944145651315q Apple account", true)
+                .validate().validateTextInField(Tag.I, "For 48944145651315 Apple account", true)
                 .select().selectOption(SelectFields.SP_PAYEE_DDL, "Wells Fargo")
                 .link().click(LinkFields.SP_PAYEE_DETAILS_LINK)
-                .validate()
-                .validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account")
+                .validate().validateTextInField(Tag.I, "For 98480498848942 Wells Fargo account")
                 .complete();
     }
 
     @Test
-    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
     public void tableAssert(Quest quest) {
         List<List<String>> expectedTable = List.of(
                 List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L", "984.3", ""),
@@ -229,16 +196,16 @@ public class ZeroBankTest extends BaseTest {
                 .input().insert(InputFields.AA_TO_AMOUNT_FIELD, "1000")
                 .select().selectOption(SelectFields.AA_TYPE_DDL, "Deposit")
                 .button().click(ButtonFields.FIND_SUBMIT_BUTTON)
-                .table().readTable(TRANSACTIONS)
+                .table().readTable(FILTERED_TRANSACTIONS)
                 .validate(() -> {
                     Assertions.assertEquals(
                             "1000",
-                            retrieve(tableRowExtractor(TRANSACTIONS, "2012-09-01"), TransactionsTableEntry.class).getDeposit()
+                            retrieve(tableRowExtractor(FILTERED_TRANSACTIONS, "2012-09-01"), FilteredTransactionEntry.class).getDeposit()
                                     .getText(),
                             "Error Message");
                 })
                 .table().validate(
-                        TRANSACTIONS,
+                        FILTERED_TRANSACTIONS,
                         Assertion.builder().target(TABLE_VALUES).type(TABLE_NOT_EMPTY).expected(true).soft(true).build(),
                         Assertion.builder().target(TABLE_VALUES).type(TABLE_ROW_COUNT).expected(2).soft(true).build(),
                         Assertion.builder().target(TABLE_VALUES).type(EVERY_ROW_CONTAINS_VALUES).expected(List.of("ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build(),
@@ -249,11 +216,194 @@ public class ZeroBankTest extends BaseTest {
                         Assertion.builder().target(TABLE_VALUES).type(TABLE_DATA_MATCHES_EXPECTED).expected(expectedTable).soft(true).build(),
                         Assertion.builder().target(TABLE_ELEMENTS).type(ALL_CELLS_ENABLED).expected(true).soft(true).build(),
                         Assertion.builder().target(TABLE_ELEMENTS).type(ALL_CELLS_CLICKABLE).expected(true).soft(true).build())
-                .table().readRow(TRANSACTIONS, 1)
+                .table().readRow(FILTERED_TRANSACTIONS, 1)
                 .table().validate(
-                        TRANSACTIONS,
+                        FILTERED_TRANSACTIONS,
                         Assertion.builder().target(ROW_VALUES).type(ROW_NOT_EMPTY).expected(true).soft(true).build(),
                         Assertion.builder().target(ROW_VALUES).type(ROW_CONTAINS_VALUES).expected(List.of("2012-09-06", "ONLINE TRANSFER REF #UKKSDRQG6L")).soft(true).build())
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
+    public void tableCertainCellsAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.ACCOUNT_ACTIVITY_LINK)
+                .list().select(ListFields.ACCOUNT_ACTIVITY_TABS, "Find Transactions")
+                .list().validateIsSelected(ListFields.ACCOUNT_ACTIVITY_TABS, false, "Find Transactions")
+                .input().insert(InputFields.AA_FROM_DATE_FIELD, "2012-01-01")
+                .input().insert(InputFields.AA_TO_DATE_FIELD, "2012-12-31")
+                .input().insert(InputFields.AA_FROM_AMOUNT_FIELD, "1")
+                .input().insert(InputFields.AA_TO_AMOUNT_FIELD, "1000")
+                .select().selectOption(SelectFields.AA_TYPE_DDL, "Any")
+                .button().click(ButtonFields.FIND_SUBMIT_BUTTON)
+                .table().readTable(FILTERED_TRANSACTIONS, TableField.of(FilteredTransactionEntry::setDescription),
+                        TableField.of(FilteredTransactionEntry::setWithdrawal))
+                .validate(() -> Assertions.assertEquals(
+                        "50",
+                        retrieve(tableRowExtractor(FILTERED_TRANSACTIONS, "OFFICE SUPPLY"),
+                                FilteredTransactionEntry.class).getWithdrawal().getText(),
+                        "Wrong deposit value")
+                )
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
+    public void tableFromToRowsAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.MY_MONEY_MAP_LINK)
+                .table().readTable(OUTFLOW, 3, 5)
+                .validate(() -> Assertions.assertEquals(
+                        "$375.55",
+                        retrieve(tableRowExtractor(OUTFLOW, "Retail"),
+                                OutFlow.class).getAmount().getText(),
+                        "Wrong Amount")
+                )
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
+    public void tableFromToRowsCertainCellsAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.MY_MONEY_MAP_LINK)
+                .table().readTable(OUTFLOW, 3, 5, TableField.of(OutFlow::setCategory),
+                        TableField.of(OutFlow::setAmount))
+                .validate(() -> Assertions.assertEquals(
+                        "$375.55",
+                        retrieve(tableRowExtractor(OUTFLOW, "Retail"),
+                                OutFlow.class).getAmount().getText(),
+                        "Wrong Amount")
+                )
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
+    public void tableWithLinkComponentAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.ACCOUNT_SUMMARY_LINK)
+                .table().readTable(CREDIT_ACCOUNTS)
+                .table().clickElementInCell(CREDIT_ACCOUNTS, 1, TableField.of(CreditAccounts::setAccount))
+                .table().readTable(ALL_TRANSACTIONS)
+                .validate(() -> Assertions.assertEquals(
+                        "99.6",
+                        retrieve(tableRowExtractor(ALL_TRANSACTIONS, "TELECOM"),
+                                AllTransactionEntry.class).getWithdrawal().getText(),
+                        "Wrong Balance")
+                )
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
+    public void tableWithButtonCustomServiceAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.MY_MONEY_MAP_LINK)
+                .table().readTable(OUTFLOW)
+                .table().clickElementInCell(OUTFLOW, 4, TableField.of(OutFlow::setDetails))
+                .table().readTable(DETAILED_REPORT)
+                .validate(() -> Assertions.assertEquals(
+                        "$105.00",
+                        retrieve(tableRowExtractor(DETAILED_REPORT, "09/25/2012"),
+                                DetailedReport.class).getAmount().getText(),
+                        "Wrong Amount")
+                )
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
+    public void tableWithButtonCustomServiceReadRowWithSearchCriteriaAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.MY_MONEY_MAP_LINK)
+                .table().readRow(OUTFLOW, List.of("Retail"))
+                .validate(() -> Assertions.assertEquals(
+                        "$375.55",
+                        retrieve(tableRowExtractor(OUTFLOW),
+                                OutFlow.class).getAmount().getText(),
+                        "Wrong Amount")
+                )
+                .complete();
+    }
+
+    @Test
+    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select, Table")
+    @org.junit.jupiter.api.Tag("Regression")
+    public void tableWithButtonCustomServiceClickElementWithSearchCriteriaAssert(Quest quest) {
+        quest
+                .enters(World.EARTH)
+                .browser().navigate("http://zero.webappsecurity.com/")
+                .button().click(ButtonFields.SIGN_IN_BUTTON)
+                .input().insert(InputFields.USERNAME_FIELD, "username")
+                .input().insert(InputFields.PASSWORD_FIELD, "password")
+                .button().click(ButtonFields.SIGN_IN_FORM_BUTTON)
+                .browser().back()
+                .button().click(ButtonFields.MORE_SERVICES_BUTTON)
+                .link().click(LinkFields.MY_MONEY_MAP_LINK)
+                .table().clickElementInCell(OUTFLOW, List.of("Checks Written", "$255.00"), TableField.of(OutFlow::setDetails))
+                .table().readTable(DETAILED_REPORT)
+                .validate(() -> Assertions.assertEquals(
+                        "$105.00",
+                        retrieve(tableRowExtractor(DETAILED_REPORT, "09/25/2012"),
+                                DetailedReport.class).getAmount().getText(),
+                        "Wrong Amount")
+                )
                 .complete();
     }
 

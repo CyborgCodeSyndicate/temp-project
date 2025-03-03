@@ -11,6 +11,8 @@ public interface DriverProvider<T extends AbstractDriverOptions<?>> {
 
     void applyDefaultArguments(T options);
 
+    void applyHeadlessArguments(T options);
+
     void setupDriver(String version);
 
     void downloadDriver(String version);
