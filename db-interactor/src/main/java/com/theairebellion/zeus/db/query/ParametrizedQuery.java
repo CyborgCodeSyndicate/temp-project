@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.db.query;
 
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
+import com.theairebellion.zeus.db.log.LogDb;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class ParametrizedQuery implements DbQuery {
 
     @Override
     public DbQuery withParam(String name, Object value) {
+        LogDb.debug("Adding parameter '{}' with value '{}' to the query.", name, value);
         ParametrizedQuery copy = new ParametrizedQuery(this.original);
         copy.params.putAll(this.params);
         copy.params.put(name, value);

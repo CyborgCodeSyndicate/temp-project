@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.core;
 
+import com.theairebellion.zeus.api.log.LogApi;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
@@ -71,6 +72,10 @@ public class ParametrizedEndpoint implements Endpoint {
         spec.pathParams(pathParams);
         spec.queryParams(queryParams);
         headers().forEach((key, values) -> spec.header(key, String.join(",", values)));
+
+        LogApi.info("Prepared RequestSpecification with pathParams: {}, queryParams: {}, headers: {}",
+                pathParams, queryParams, headers());
+
         return spec;
     }
 

@@ -37,8 +37,12 @@ public class WebDriverFactory {
                                          .orElseThrow(() -> new IllegalArgumentException("No driver registered for type: " + type));
 
         provider.setupDriver(config.getVersion());
+
         try {
-            return new DriverCreator<>().createDriver(config, (DriverProvider<AbstractDriverOptions<?>>) provider);
+            WebDriver driver = new DriverCreator<>().createDriver(config,
+                    (DriverProvider<AbstractDriverOptions<?>>) provider);
+            LogUI.info("WebDriverFactory: Successfully created driver for type: [{}].", type);
+            return driver;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create WebDriver for type: " + type, e);
         }

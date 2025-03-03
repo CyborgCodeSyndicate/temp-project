@@ -5,6 +5,7 @@ import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
 import com.theairebellion.zeus.framework.quest.Quest;
@@ -82,7 +83,14 @@ public class Initiator extends TestContextManager implements InvocationIntercept
         DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
                 DataForge.class, journeyData.value(), getFrameworkConfig().projectPackage());
 
-        Object argument = journeyData.late() ? dataForge.dataCreator() : dataForge.dataCreator().join();
+        Object argument;
+        if (journeyData.late()) {
+            LogTest.extended("Creating data using late binding for: {}", journeyData.value());
+            argument = dataForge.dataCreator();
+        } else {
+            LogTest.extended("Joining data for: {}", journeyData.value());
+            argument = dataForge.dataCreator().join();
+        }
         quest.getStorage().sub(PRE_ARGUMENTS).put(dataForge.enumImpl(), argument);
         return argument;
     }

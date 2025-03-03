@@ -3,10 +3,12 @@ package com.theairebellion.zeus.api.extensions;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.authentication.Credentials;
+import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.api.service.fluent.RestServiceFluent;
 import com.theairebellion.zeus.api.service.fluent.SuperRestServiceFluent;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -63,6 +65,7 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
             quest.getStorage().sub(API).put(USERNAME, username);
             quest.getStorage().sub(API).put(PASSWORD, password);
 
+            LogApi.extended("Updated quest storage with credentials for username: {}", username);
             RestServiceFluent restServiceFluent = quest.enters(RestServiceFluent.class);
             SuperRestServiceFluent superRestServiceFluent =
                     decoratorsFactory.decorate(restServiceFluent, SuperRestServiceFluent.class);

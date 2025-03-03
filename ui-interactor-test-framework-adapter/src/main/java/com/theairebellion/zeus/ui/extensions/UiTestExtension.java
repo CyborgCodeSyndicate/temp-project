@@ -15,6 +15,7 @@ import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
 import com.theairebellion.zeus.ui.authentication.LoginCredentials;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
+import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
@@ -145,6 +146,7 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
         }
         responses.add(apiResponse);
         storage.sub(UI).put(RESPONSES, responses);
+        LogUI.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
     }
 
 
@@ -159,16 +161,18 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
         WebDriver driver = getWebDriver(decoratorsFactory, context);
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
+            LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName(), getSuperQuest(context));
         }
         driver.close();
         driver.quit();
+        LogUI.info("WebDriver closed successfully.");
     }
 
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        System.err.println("Exception during UI test: " + throwable.getMessage());
+        LogUI.error("Exception during test execution: {}", throwable.getMessage());
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
@@ -257,7 +261,7 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
             superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, screenshotBytes);
             LogTest.info("Screenshot taken and stored for: " + testName);
         } catch (Exception e) {
-            LogTest.info("Failed to take screenshot: " + e.getMessage());
+            LogUI.error("Failed to take screenshot for test '{}': {}", testName, e.getMessage());
         }
     }
 

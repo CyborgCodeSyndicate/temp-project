@@ -14,6 +14,13 @@ import java.util.Optional;
 public class DriverCreator<T extends AbstractDriverOptions<?>> {
 
     public WebDriver createDriver(WebDriverConfig<T> config, DriverProvider<T> provider) throws MalformedURLException {
+        LogUI.info("Creating driver using provider [{}]. Headless: [{}], Remote: [{}], Remote URL: [{}]",
+                provider.getClass().getSimpleName(),
+                config.isHeadless(),
+                config.isRemote(),
+                config.getRemoteUrl());
+
+
         T options = provider.createOptions();
         provider.applyDefaultArguments(options);
 
@@ -27,10 +34,8 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
 
         WebDriver driver;
         if (config.isRemote()) {
-            LogUI.info("Remote webdriver is started");
             driver = new RemoteWebDriver(new URL(config.getRemoteUrl()), options);
         } else {
-            LogUI.info("Webdriver is started");
             driver = provider.createDriver(options);
         }
 

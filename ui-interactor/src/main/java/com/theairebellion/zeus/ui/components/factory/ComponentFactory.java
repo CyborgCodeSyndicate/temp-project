@@ -111,6 +111,10 @@ public class ComponentFactory {
                                       SmartWebDriver smartWebDriver) {
         List<Class<? extends T>> implementations = ReflectionUtil.findImplementationsOfInterface(interfaceType,
             projectPackage);
+        LogUI.debug("Found {} classes implementing {} in package {}.",
+                implementations.size(),
+                interfaceType.getSimpleName(),
+                projectPackage);
         implementations.addAll(ReflectionUtil.findImplementationsOfInterface(interfaceType,
             FRAMEWORK_PACKAGE));
 
