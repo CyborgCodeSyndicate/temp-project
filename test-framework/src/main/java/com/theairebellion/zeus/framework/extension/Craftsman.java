@@ -1,9 +1,12 @@
 package com.theairebellion.zeus.framework.extension;
 
 import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.framework.quest.QuestFactory;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import com.theairebellion.zeus.framework.log.LogTest;
 import manifold.ext.rt.api.Jailbreak;
@@ -11,6 +14,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.ARGUMENTS;
@@ -34,7 +40,10 @@ public class Craftsman implements ParameterResolver {
         Craft craft = parameterContext.findAnnotation(Craft.class)
                           .orElseThrow(() -> new ParameterResolutionException("@Craft annotation not found"));
 
-        @Jailbreak Quest quest = (Quest) extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST);
+        Quest quest = (Quest) extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST);
+        ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
+        DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
+        SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
         if (quest == null) {
             throw new IllegalStateException("Quest not found in the global store");
         }
@@ -53,7 +62,7 @@ public class Craftsman implements ParameterResolver {
             argument = dataForge.dataCreator().join();
         }
 
-        quest.getStorage().sub(ARGUMENTS).put(dataForge.enumImpl(), argument);
+        superQuest.getStorage().sub(ARGUMENTS).put(dataForge.enumImpl(), argument);
         return argument;
     }
 

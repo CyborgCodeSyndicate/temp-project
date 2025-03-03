@@ -16,7 +16,7 @@ public enum AssertionTypes implements AssertionType {
     CONTAINS_ANY(Collection.class),
     STARTS_WITH(String.class),
     ENDS_WITH(String.class),
-    LENGTH(Number.class),
+    LENGTH(Object.class),
     MATCHES_REGEX(String.class),
     EMPTY(Collection.class),
     NOT_EMPTY(Collection.class),

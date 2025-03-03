@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 public class DataExtractorImpl<T> implements DataExtractor<T> {
 
-    private final Enum<?> subKey;
+    private Enum<?> subKey;
     private final Enum<?> key;
     private final Function<Object, T> extractionLogic;
 
@@ -13,6 +13,14 @@ public class DataExtractorImpl<T> implements DataExtractor<T> {
                              Enum<?> key,
                              Function<Object, T> extractionLogic) {
         this.subKey = subKey;
+        this.key = key;
+        this.extractionLogic = extractionLogic;
+    }
+
+
+    public DataExtractorImpl(
+        Enum<?> key,
+        Function<Object, T> extractionLogic) {
         this.key = key;
         this.extractionLogic = extractionLogic;
     }

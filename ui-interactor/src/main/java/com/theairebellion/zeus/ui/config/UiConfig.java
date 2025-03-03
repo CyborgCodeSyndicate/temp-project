@@ -18,6 +18,9 @@ public interface UiConfig extends Config {
     @Key("headless")
     boolean headless();
 
+    @Key("remote.driver.url")
+    String remoteDriverUrl();
+
     @Key("wait.duration.in.seconds")
     int waitDuration();
 
@@ -27,12 +30,51 @@ public interface UiConfig extends Config {
     @Key("input.default.type")
     String inputDefaultType();
 
+    @Key("button.default.type")
+    String buttonDefaultType();
+
+    @Key("checkbox.default.type")
+    String checkboxDefaultType();
+
+    @Key("toggle.default.type")
+    String toggleDefaultType();
+
     @Key("radio.default.type")
     String radioDefaultType();
+
+    @Key("select.default.type")
+    String selectDefaultType();
+
+    @Key("list.default.type")
+    String listDefaultType();
+
+    @Key("loader.default.type")
+    String loaderDefaultType();
+
+    @Key("link.default.type")
+    String linkDefaultType();
+
+    @Key("alert.default.type")
+    String alertDefaultType();
+
+    @Key("tab.default.type")
+    String tabDefaultType();
+
+    @Key("modal.default.type")
+    String modalDefaultType();
+
+    @Key("accordion.default.type")
+    String accordionDefaultType();
+
+    @Key("table.default.type")
+    String tableDefaultType();
 
     @DefaultValue("true")
     @Key("use.wrap.selenium.function")
     boolean useWrappedSeleniumFunctions();
 
+    @DefaultValue("false")
+    @Key("use.shadow.root")
+    boolean useShadowRoot();
 
 }
