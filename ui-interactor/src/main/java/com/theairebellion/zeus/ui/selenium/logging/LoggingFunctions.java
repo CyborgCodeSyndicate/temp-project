@@ -78,10 +78,6 @@ public class LoggingFunctions {
                         "Possible reasons: hidden, disabled, overlapped, or detached from the DOM.%n%nElement Details:%n%s",
                 cause.getClass().getSimpleName(), element.getTagName(), element.getText(), action.getMethodName(), elementDetails);
         logException(cause.getClass(), target, action.getMethodName(), args, additionalInfo);
-        String additionalInfo = String.format(
-                "Element was not found from root by using locator: [%s]. Here is the whole page source: \n[%s]",
-                locator.toString(), pageSource);
-        logException(cause.getClass(), target, method, args, additionalInfo);
     }
 
     public static void logClickInvalidSelectorException(final Object target, final WebElementAction action,
