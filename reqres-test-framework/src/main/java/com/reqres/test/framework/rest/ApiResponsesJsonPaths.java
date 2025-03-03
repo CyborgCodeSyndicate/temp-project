@@ -10,7 +10,9 @@ public enum ApiResponsesJsonPaths {
     DATA("data"),
     USER_ID("data[%d].id"),
     USER_FIRST_NAME("data[%d].first_name"),
-    USER_AVATAR_BY_INDEX("data[%d].avatar");
+    USER_AVATAR_BY_INDEX("data[%d].avatar"),
+    CREATE_USER_NAME("name"),
+    CREATE_USER_JOB("job");
 
     private final String jsonPath;
 
