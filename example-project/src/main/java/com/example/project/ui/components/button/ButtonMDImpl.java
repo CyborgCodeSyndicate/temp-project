@@ -111,17 +111,19 @@ public class ButtonMDImpl extends BaseComponent implements Button {
 
     private SmartWebElement findButtonInContainer(SmartWebElement container, String buttonText) {
         return container.findSmartElements(BUTTON_CLASS_NAME_SELECTOR).stream()
-                .filter(element -> buttonText == null || element.getText().contains(buttonText))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(String.format("Button with text %s not found", buttonText)));
+                   .filter(element -> buttonText == null || element.getText().contains(buttonText))
+                   .findFirst()
+                   .orElseThrow(
+                       () -> new NoSuchElementException(String.format("Button with text %s not found", buttonText)));
     }
 
 
     private SmartWebElement findButtonByText(String buttonText) {
         return driver.findSmartElements(BUTTON_CLASS_NAME_SELECTOR).stream()
-                .filter(element -> element.getText().contains(buttonText))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(String.format("Button with text %s not found", buttonText)));
+                   .filter(element -> element.getText().contains(buttonText))
+                   .findFirst()
+                   .orElseThrow(
+                       () -> new NoSuchElementException(String.format("Button with text %s not found", buttonText)));
     }
 
 
@@ -133,4 +135,5 @@ public class ButtonMDImpl extends BaseComponent implements Button {
     private boolean isButtonVisible(SmartWebElement button) {
         return !Objects.requireNonNull(button.getAttribute("class")).contains(NOT_VISIBLE_STATE_INDICATOR);
     }
+
 }

@@ -18,6 +18,9 @@ public interface UiConfig extends Config {
     @Key("headless")
     boolean headless();
 
+    @Key("remote.driver.url")
+    String remoteDriverUrl();
+
     @Key("wait.duration.in.seconds")
     int waitDuration();
 

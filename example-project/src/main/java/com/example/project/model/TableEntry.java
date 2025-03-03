@@ -4,11 +4,11 @@ import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.table.annotations.CellFilter;
 import com.theairebellion.zeus.ui.components.table.annotations.CellInsertion;
-import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionFunction;
 import com.theairebellion.zeus.ui.components.table.annotations.CustomCellInsertion;
-import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.components.table.annotations.TableCellLocator;
 import com.theairebellion.zeus.ui.components.table.annotations.TableInfo;
+import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionFunction;
+import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class TableEntry {
     private List<TableCell> studentSurname;
 
 
-    private class CustomInsertion implements CellInsertionFunction {
+    private static class CustomInsertion implements CellInsertionFunction {
 
         @Override
         public void cellInsertionFunction(final SmartWebElement cellElement, final String... values) {

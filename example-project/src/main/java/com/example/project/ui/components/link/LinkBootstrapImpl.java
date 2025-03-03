@@ -12,7 +12,7 @@ import org.openqa.selenium.NoSuchElementException;
 import java.util.Objects;
 
 
-@ImplementationOfType(LinkFieldTypes.BOOTSTRAP_LINK)
+@ImplementationOfType(LinkFieldTypes.Data.BOOTSTRAP_LINK)
 public class LinkBootstrapImpl extends BaseComponent implements Link {
 
     private static final By LINK_LOCATOR = By.cssSelector("span[class='headers']");
@@ -149,6 +149,11 @@ public class LinkBootstrapImpl extends BaseComponent implements Link {
                 .filter(element -> element.getText().contains(linkText))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(String.format("Link with text %s not found", linkText)));
+    }
+
+    @Override
+    public void clickElementInCell(SmartWebElement cell) {
+        cell.findSmartElement(By.tagName("a")).click();
     }
 
 

@@ -1,14 +1,19 @@
 package com.example.project.ui.elements.ZeroBank;
 
+import com.example.project.ui.functions.ContextConsumer;
+import com.example.project.ui.functions.SharedUI;
 import com.example.project.ui.types.ButtonFieldTypes;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.selenium.ButtonUIElement;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
+
+import java.util.function.Consumer;
 
 public enum ButtonFields implements ButtonUIElement {
 
-    SIGN_IN_BUTTON(By.id("signin_button"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
+    SIGN_IN_BUTTON(By.id("signin_button"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE, SharedUI.WAIT_FOR_PRESENCE),
     SIGN_IN_FORM_BUTTON(By.cssSelector("input[value='Sign in']"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
     SUBMIT_BUTTON(By.id("btn_submit"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
     CALCULATE_COST_BUTTON(By.id("pc_calculate_costs"), ButtonFieldTypes.BOOTSTRAP_INPUT_TYPE),
@@ -20,11 +25,39 @@ public enum ButtonFields implements ButtonUIElement {
 
     private final By locator;
     private final ButtonComponentType componentType;
+    private final Consumer<SmartWebDriver> before;
+    private final Consumer<SmartWebDriver> after;
 
+
+    ButtonFields(final By locator) {
+        this(locator, null, smartWebDriver -> {
+        }, smartWebDriver -> {
+        });
+    }
 
     ButtonFields(final By locator, final ButtonComponentType componentType) {
+        this(locator, componentType, smartWebDriver -> {
+        }, smartWebDriver -> {
+        });
+    }
+
+
+    ButtonFields(By locator,
+                 ButtonComponentType componentType,
+                 ContextConsumer before) {
+        this(locator, componentType, before.asConsumer(locator), smartWebDriver -> {
+        });
+    }
+
+
+    ButtonFields(By locator,
+                 ButtonComponentType componentType,
+                 Consumer<SmartWebDriver> before,
+                 Consumer<SmartWebDriver> after) {
         this.locator = locator;
         this.componentType = componentType;
+        this.before = before;
+        this.after = after;
     }
 
 
@@ -43,6 +76,18 @@ public enum ButtonFields implements ButtonUIElement {
     @Override
     public Enum<?> enumImpl() {
         return this;
+    }
+
+
+    @Override
+    public Consumer<SmartWebDriver> before() {
+        return before;
+    }
+
+
+    @Override
+    public Consumer<SmartWebDriver> after() {
+        return after;
     }
 
 }

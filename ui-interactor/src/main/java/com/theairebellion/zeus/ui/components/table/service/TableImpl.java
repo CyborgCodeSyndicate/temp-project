@@ -3,17 +3,8 @@ package com.theairebellion.zeus.ui.components.table.service;
 
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.components.table.model.CellLocator;
-import com.theairebellion.zeus.ui.components.table.model.TableCell;
+import com.theairebellion.zeus.ui.components.table.annotations.*;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
-import com.theairebellion.zeus.ui.components.table.model.TableLocators;
-import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
-import com.theairebellion.zeus.ui.components.table.annotations.CellFilter;
-import com.theairebellion.zeus.ui.components.table.annotations.CellInsertion;
-import com.theairebellion.zeus.ui.components.table.annotations.CustomCellFilter;
-import com.theairebellion.zeus.ui.components.table.annotations.CustomCellInsertion;
-import com.theairebellion.zeus.ui.components.table.annotations.TableCellLocator;
-import com.theairebellion.zeus.ui.components.table.annotations.TableInfo;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterComponent;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterFunction;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
@@ -21,6 +12,10 @@ import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
 import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionComponent;
 import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionFunction;
 import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
+import com.theairebellion.zeus.ui.components.table.model.CellLocator;
+import com.theairebellion.zeus.ui.components.table.model.TableCell;
+import com.theairebellion.zeus.ui.components.table.model.TableLocators;
+import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
@@ -31,22 +26,10 @@ import lombok.Setter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -266,6 +249,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
 
 
     protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
+        driver.getWait().until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(tableContainer, tableRowsLocator));
         return tableContainer.findSmartElements(tableRowsLocator);
     }
 
@@ -757,7 +741,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                            final SmartWebElement targetCell,
                                            final String[] values) {
         try {
-            final CellInsertionFunction functionInstance = customFunction.getDeclaredConstructor().newInstance();
+            Constructor<? extends CellInsertionFunction> constructor = customFunction.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            final CellInsertionFunction functionInstance = constructor.newInstance();
             functionInstance.accept(targetCell, values);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(
