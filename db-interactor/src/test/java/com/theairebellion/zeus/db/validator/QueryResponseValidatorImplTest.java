@@ -5,16 +5,22 @@ import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import com.theairebellion.zeus.validator.core.AssertionTypes;
-import org.junit.jupiter.api.BeforeEach;
+import com.theairebellion.zeus.validator.exceptions.InvalidAssertionException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class QueryResponseValidatorImplTest {
 
     private static final String KEY_NUM_ROWS = "numRows";
@@ -23,17 +29,16 @@ class QueryResponseValidatorImplTest {
     private static final String VALUE_NAME = "John Doe";
     private static final int EXPECTED_ROW_COUNT = 2;
 
-    private QueryResponseValidatorImpl validator;
-    private JsonPathExtractor mockExtractor;
+    @Mock
+    private JsonPathExtractor jsonPathExtractor;
 
-    @BeforeEach
-    void setUp() {
-        mockExtractor = Mockito.mock(JsonPathExtractor.class);
-        validator = new QueryResponseValidatorImpl(mockExtractor);
-    }
+    @InjectMocks
+    private QueryResponseValidatorImpl validator;
 
     @Test
+    @DisplayName("Should validate number of rows")
     void testValidateQueryResponse_NumberRowsValidation() {
+        // Arrange
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1), Map.of("id", 2)));
 
         Assertion<?> assertion = Assertion.builder()
@@ -44,19 +49,28 @@ class QueryResponseValidatorImplTest {
                 .soft(false)
                 .build();
 
+        // Act
         List<AssertionResult<Integer>> results = validator.validateQueryResponse(queryResponse, assertion);
 
-        assertEquals(1, results.size());
-        AssertionResult<Integer> result = results.get(0);
-        assertTrue(result.isPassed());
-        assertEquals(EXPECTED_ROW_COUNT, result.getExpectedValue());
-        assertEquals(EXPECTED_ROW_COUNT, result.getActualValue());
+        // Assert
+        assertAll(
+                "Number of rows validation should work correctly",
+                () -> assertEquals(1, results.size(), "Should return one result"),
+                () -> assertTrue(results.get(0).isPassed(), "Validation should pass"),
+                () -> assertEquals(EXPECTED_ROW_COUNT, results.get(0).getExpectedValue(), "Expected value should match"),
+                () -> assertEquals(EXPECTED_ROW_COUNT, results.get(0).getActualValue(), "Actual value should match")
+        );
+
+        // No interaction with JsonPathExtractor is expected for NUMBER_ROWS target
+        verifyNoInteractions(jsonPathExtractor);
     }
 
     @Test
+    @DisplayName("Should validate using JsonPath expression")
     void testValidateQueryResponse_JsonPathValidation() {
+        // Arrange
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
-        when(mockExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(VALUE_NAME);
+        when(jsonPathExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(VALUE_NAME);
 
         Assertion<?> assertion = Assertion.builder()
                 .key(KEY_JSON_PATH_NAME)
@@ -66,19 +80,29 @@ class QueryResponseValidatorImplTest {
                 .soft(false)
                 .build();
 
+        // Act
         List<AssertionResult<String>> results = validator.validateQueryResponse(queryResponse, assertion);
 
-        assertEquals(1, results.size());
-        AssertionResult<String> result = results.get(0);
-        assertTrue(result.isPassed());
-        assertEquals(VALUE_NAME, result.getExpectedValue());
-        assertEquals(VALUE_NAME, result.getActualValue());
+        // Assert
+        assertAll(
+                "JsonPath validation should work correctly",
+                () -> assertEquals(1, results.size(), "Should return one result"),
+                () -> assertTrue(results.get(0).isPassed(), "Validation should pass"),
+                () -> assertEquals(VALUE_NAME, results.get(0).getExpectedValue(), "Expected value should match"),
+                () -> assertEquals(VALUE_NAME, results.get(0).getActualValue(), "Actual value should match")
+        );
+
+        verify(jsonPathExtractor).extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class);
     }
 
     @Test
+    @DisplayName("Should validate column existence")
     void testValidateQueryResponse_ColumnValidation() {
-        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1, "name", VALUE_NAME)));
-        when(mockExtractor.extract(queryResponse.getRows().get(0).keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(KEY_COLUMN_NAME);
+        // Arrange
+        Map<String, Object> row = Map.of("id", 1, "name", VALUE_NAME);
+        QueryResponse queryResponse = new QueryResponse(List.of(row));
+
+        when(jsonPathExtractor.extract(row.keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(KEY_COLUMN_NAME);
 
         Assertion<?> assertion = Assertion.builder()
                 .key(KEY_COLUMN_NAME)
@@ -88,12 +112,195 @@ class QueryResponseValidatorImplTest {
                 .soft(false)
                 .build();
 
+        // Act
         List<AssertionResult<String>> results = validator.validateQueryResponse(queryResponse, assertion);
 
-        assertEquals(1, results.size());
-        AssertionResult<String> result = results.get(0);
-        assertTrue(result.isPassed());
-        assertEquals(KEY_COLUMN_NAME, result.getExpectedValue());
-        assertEquals(KEY_COLUMN_NAME, result.getActualValue());
+        // Assert
+        assertAll(
+                "Column validation should work correctly",
+                () -> assertEquals(1, results.size(), "Should return one result"),
+                () -> assertTrue(results.get(0).isPassed(), "Validation should pass"),
+                () -> assertEquals(KEY_COLUMN_NAME, results.get(0).getExpectedValue(), "Expected value should match"),
+                () -> assertEquals(KEY_COLUMN_NAME, results.get(0).getActualValue(), "Actual value should match")
+        );
+
+        verify(jsonPathExtractor).extract(row.keySet(), KEY_COLUMN_NAME, Object.class);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when JsonPath expression returns null")
+    void testValidateQueryResponse_JsonPathReturnsNull() {
+        // Arrange
+        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("other", "value")));
+        when(jsonPathExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(null);
+
+        Assertion<?> assertion = Assertion.builder()
+                .key(KEY_JSON_PATH_NAME)
+                .type(AssertionTypes.IS)
+                .target(DbAssertionTarget.QUERY_RESULT)
+                .expected(VALUE_NAME)
+                .soft(false)
+                .build();
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> validator.validateQueryResponse(queryResponse, assertion),
+                "Should throw exception when JsonPath returns null"
+        );
+
+        assertTrue(exception.getMessage().contains(KEY_JSON_PATH_NAME),
+                "Exception message should contain the JsonPath expression");
+        verify(jsonPathExtractor).extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when assertion key is null for QUERY_RESULT target")
+    void testValidateQueryResponse_NullKeyForQueryResult() {
+        // Arrange
+        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
+
+        Assertion<?> assertion = Assertion.builder()
+                .key(null)
+                .type(AssertionTypes.IS)
+                .target(DbAssertionTarget.QUERY_RESULT)
+                .expected(VALUE_NAME)
+                .soft(false)
+                .build();
+
+        // Act & Assert
+        InvalidAssertionException exception = assertThrows(
+                InvalidAssertionException.class,
+                () -> validator.validateQueryResponse(queryResponse, assertion),
+                "Should throw exception when key is null for QUERY_RESULT target"
+        );
+
+        assertTrue(exception.getMessage().contains("non-null key"),
+                "Exception message should mention the need for a non-null key");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when assertion key is null for COLUMNS target")
+    void testValidateQueryResponse_NullKeyForColumns() {
+        // Arrange
+        QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
+
+        Assertion<?> assertion = Assertion.builder()
+                .key(null)
+                .type(AssertionTypes.CONTAINS)
+                .target(DbAssertionTarget.COLUMNS)
+                .expected(KEY_COLUMN_NAME)
+                .soft(false)
+                .build();
+
+        // Act & Assert
+        InvalidAssertionException exception = assertThrows(
+                InvalidAssertionException.class,
+                () -> validator.validateQueryResponse(queryResponse, assertion),
+                "Should throw exception when key is null for COLUMNS target"
+        );
+
+        assertTrue(exception.getMessage().contains("non-null key"),
+                "Exception message should mention the need for a non-null key");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when query result is empty for COLUMNS target")
+    void testValidateQueryResponse_EmptyRowsForColumns() {
+        // Arrange
+        QueryResponse queryResponse = new QueryResponse(Collections.emptyList());
+
+        Assertion<?> assertion = Assertion.builder()
+                .key(KEY_COLUMN_NAME)
+                .type(AssertionTypes.CONTAINS)
+                .target(DbAssertionTarget.COLUMNS)
+                .expected(KEY_COLUMN_NAME)
+                .soft(false)
+                .build();
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> validator.validateQueryResponse(queryResponse, assertion),
+                "Should throw exception when rows are empty for COLUMNS target"
+        );
+
+        assertTrue(exception.getMessage().contains("empty"),
+                "Exception message should mention that the query result is empty");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when column is not found")
+    void testValidateQueryResponse_ColumnNotFound() {
+        // Arrange
+        Map<String, Object> row = Map.of("id", 1, "other", "value");
+        QueryResponse queryResponse = new QueryResponse(List.of(row));
+
+        when(jsonPathExtractor.extract(row.keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(null);
+
+        Assertion<?> assertion = Assertion.builder()
+                .key(KEY_COLUMN_NAME)
+                .type(AssertionTypes.CONTAINS)
+                .target(DbAssertionTarget.COLUMNS)
+                .expected(KEY_COLUMN_NAME)
+                .soft(false)
+                .build();
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> validator.validateQueryResponse(queryResponse, assertion),
+                "Should throw exception when column is not found"
+        );
+
+        assertTrue(exception.getMessage().contains(KEY_COLUMN_NAME),
+                "Exception message should contain the column name");
+        verify(jsonPathExtractor).extract(row.keySet(), KEY_COLUMN_NAME, Object.class);
+    }
+
+    @Test
+    @DisplayName("Should validate with multiple assertions")
+    void testValidateQueryResponse_MultipleAssertions() {
+        // Arrange
+        Map<String, Object> row = Map.of("id", 1, "name", VALUE_NAME);
+        QueryResponse queryResponse = new QueryResponse(List.of(row, Map.of("id", 2, "name", "Jane Doe")));
+
+        when(jsonPathExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(VALUE_NAME);
+        when(jsonPathExtractor.extract(row.keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(KEY_COLUMN_NAME);
+
+        Assertion<?> rowCountAssertion = Assertion.builder()
+                .key(KEY_NUM_ROWS)
+                .type(AssertionTypes.IS)
+                .target(DbAssertionTarget.NUMBER_ROWS)
+                .expected(2)
+                .soft(false)
+                .build();
+
+        Assertion<?> jsonPathAssertion = Assertion.builder()
+                .key(KEY_JSON_PATH_NAME)
+                .type(AssertionTypes.IS)
+                .target(DbAssertionTarget.QUERY_RESULT)
+                .expected(VALUE_NAME)
+                .soft(false)
+                .build();
+
+        Assertion<?> columnAssertion = Assertion.builder()
+                .key(KEY_COLUMN_NAME)
+                .type(AssertionTypes.CONTAINS)
+                .target(DbAssertionTarget.COLUMNS)
+                .expected(KEY_COLUMN_NAME)
+                .soft(false)
+                .build();
+
+        // Act
+        List<AssertionResult<Object>> results = validator.validateQueryResponse(
+                queryResponse, rowCountAssertion, jsonPathAssertion, columnAssertion);
+
+        // Assert
+        assertEquals(3, results.size(), "Should return three results");
+        assertTrue(results.stream().allMatch(AssertionResult::isPassed), "All validations should pass");
+
+        verify(jsonPathExtractor).extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class);
+        verify(jsonPathExtractor).extract(row.keySet(), KEY_COLUMN_NAME, Object.class);
     }
 }

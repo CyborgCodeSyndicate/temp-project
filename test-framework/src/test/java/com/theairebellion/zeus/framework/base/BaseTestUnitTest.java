@@ -1,161 +1,306 @@
 package com.theairebellion.zeus.framework.base;
 
 import com.theairebellion.zeus.framework.base.mock.MockEnum;
+import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import com.theairebellion.zeus.framework.storage.Storage;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import java.lang.reflect.Method;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@DisplayName("BaseTest Unit Tests")
 class BaseTestUnitTest {
 
-    public static final String DUMMY_VALUE = "dummyValue";
-    public static final String DEFAULT_VALUE = "defaultValue";
-    public static final String TEST_VALUE = "testValue";
-    public static final String DUMMY_PROP = "dummy.prop";
-    public static final String ADD_SYSTEM_PROPERTIES = "addSystemProperties";
+    private static final String DUMMY_PROP = "dummy.prop";
+    private static final String DUMMY_VALUE = "dummyValue";
+    private static final String TEST_VALUE = "testValue";
+    private static final String DEFAULT_VALUE = "defaultValue";
 
     @Mock
-    SuperQuest superQuest;
+    private SuperQuest superQuest;
 
     @Mock
-    Storage storage;
+    private Storage storage;
 
     @Mock
-    Storage subStorage;
+    private Storage subStorage;
 
-    @BeforeAll
-    static void loadBaseTestClass() throws ClassNotFoundException {
-        Class.forName("com.theairebellion.zeus.framework.base.BaseTest");
-    }
+    private BaseTest baseTest;
+
+    private MockedStatic<QuestHolder> questHolderMock;
+    private MockedStatic<LogTest> logTestMock;
 
     @BeforeEach
     void setUp() {
-        QuestHolder.set(superQuest);
-        when(superQuest.getStorage()).thenReturn(storage);
+        // First, setup mocks that will be accessed during test
+        lenient().when(superQuest.getStorage()).thenReturn(storage);
+
+        // Then setup static mocks
+        questHolderMock = mockStatic(QuestHolder.class);
+        questHolderMock.when(QuestHolder::get).thenReturn(superQuest);
+
+        // Setup LogTest mock
+        logTestMock = mockStatic(LogTest.class);
+
+        // Finally create test object
+        baseTest = new BaseTest();
     }
 
     @AfterEach
     void tearDown() {
-        QuestHolder.clear();
+        if (questHolderMock != null) {
+            questHolderMock.close();
+        }
+        if (logTestMock != null) {
+            logTestMock.close();
+        }
         System.clearProperty(DUMMY_PROP);
     }
 
     @Test
+    @DisplayName("retrieve(Enum, Class) should return data from storage")
     void retrievesDataByEnumAndClass() {
+        // Given
         MockEnum key = MockEnum.KEY1;
         Class<String> clazz = String.class;
         when(storage.get(key, clazz)).thenReturn(TEST_VALUE);
-        String result = new BaseTest().retrieve(key, clazz);
+
+        // When
+        String result = baseTest.retrieve(key, clazz);
+
+        // Then
         assertEquals(TEST_VALUE, result);
+        verify(storage).get(key, clazz);
+        // Verify the log method was called with matchers for all parameters
+        logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
     }
 
     @Test
+    @DisplayName("retrieve(Enum, Enum, Class) should return data from sub-storage")
     void retrievesDataBySubKeyEnumAndKeyEnumAndClass() {
+        // Given
         MockEnum subKey = MockEnum.KEY2;
         MockEnum key = MockEnum.KEY1;
         Class<Integer> clazz = Integer.class;
         when(storage.sub(subKey)).thenReturn(subStorage);
         when(subStorage.get(key, clazz)).thenReturn(42);
-        Integer result = new BaseTest().retrieve(subKey, key, clazz);
+
+        // When
+        Integer result = baseTest.retrieve(subKey, key, clazz);
+
+        // Then
         assertEquals(42, result);
+        verify(storage).sub(subKey);
+        verify(subStorage).get(key, clazz);
+        // Verify the log method was called with matchers for all parameters
+        logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
     }
 
     @Test
+    @DisplayName("retrieve(DataExtractor, Class) should return data from storage using extractor")
     void retrievesDataByDataExtractorAndClass() {
+        // Given
         Class<Boolean> clazz = Boolean.class;
         DataExtractor<Boolean> extractor = mock(DataExtractor.class);
         doReturn(MockEnum.KEY1).when(extractor).getKey();
         when(storage.get(extractor, clazz)).thenReturn(true);
-        Boolean result = new BaseTest().retrieve(extractor, clazz);
+
+        // When
+        Boolean result = baseTest.retrieve(extractor, clazz);
+
+        // Then
         assertTrue(result);
+        verify(storage).get(extractor, clazz);
+        // Verify the log method was called with matchers for all parameters
+        logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
     }
 
     @Test
+    @DisplayName("retrieve(DataExtractor, int, Class) should return indexed data from storage using extractor")
     void retrievesDataByDataExtractorIndexAndClass() {
+        // Given
         Class<Double> clazz = Double.class;
         DataExtractor<Double> extractor = mock(DataExtractor.class);
         doReturn(MockEnum.KEY1).when(extractor).getKey();
         when(storage.get(extractor, clazz, 1)).thenReturn(9.99);
-        Double result = new BaseTest().retrieve(extractor, 1, clazz);
+
+        // When
+        Double result = baseTest.retrieve(extractor, 1, clazz);
+
+        // Then
         assertEquals(9.99, result);
+        verify(storage).get(extractor, clazz, 1);
+        // Verify the log method was called with matchers for all parameters
+        logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
     }
 
     @Test
+    @DisplayName("DefaultStorage.retrieve(Enum, Class) should return data from default sub-storage")
     void defaultStorageRetrievesDataByEnumAndClass() {
+        // Given
         MockEnum key = MockEnum.KEY1;
         Class<String> clazz = String.class;
         when(storage.sub()).thenReturn(subStorage);
         when(subStorage.get(key, clazz)).thenReturn(DEFAULT_VALUE);
+
+        // When
         String result = BaseTest.DefaultStorage.retrieve(key, clazz);
+
+        // Then
         assertEquals(DEFAULT_VALUE, result);
+        verify(storage).sub();
+        verify(subStorage).get(key, clazz);
     }
 
     @Test
+    @DisplayName("DefaultStorage.retrieve(DataExtractor, Class) should return data from default sub-storage using extractor")
     void defaultStorageRetrievesDataByDataExtractorAndClass() {
+        // Given
         Class<Integer> clazz = Integer.class;
         DataExtractor<Integer> extractor = mock(DataExtractor.class);
         when(storage.sub()).thenReturn(subStorage);
         when(subStorage.get(extractor, clazz)).thenReturn(123);
+
+        // When
         Integer result = BaseTest.DefaultStorage.retrieve(extractor, clazz);
+
+        // Then
         assertEquals(123, result);
+        verify(storage).sub();
+        verify(subStorage).get(extractor, clazz);
     }
 
     @Test
-    void testAddSystemPropertiesResourceNotExists() throws Exception {
-        try (MockedConstruction<ClassPathResource> ignored =
+    @DisplayName("addSystemProperties should not set properties when resource doesn't exist")
+    void testAddSystemPropertiesResourceNotExists() {
+        // Directly test the private method using reflection
+
+        try (MockedConstruction<ClassPathResource> resourceMock =
                      mockConstruction(ClassPathResource.class, (mock, context) -> {
                          when(mock.exists()).thenReturn(false);
                      })) {
-            System.clearProperty(DUMMY_PROP);
 
-            Method method = BaseTest.class.getDeclaredMethod(ADD_SYSTEM_PROPERTIES);
+            // Call the actual private method via reflection
+            java.lang.reflect.Method method = BaseTest.class.getDeclaredMethod("addSystemProperties");
             method.setAccessible(true);
             method.invoke(null);
+
+            // Verify resource was created with correct path
+            assertEquals(1, resourceMock.constructed().size());
+
+            // Verify no property was set
             assertNull(System.getProperty(DUMMY_PROP));
+        } catch (Exception e) {
+            fail("Exception should not be thrown: " + e.getMessage());
         }
     }
 
     @Test
-    void testAddSystemPropertiesResourceExists() throws Exception {
-        try (MockedConstruction<ClassPathResource> ignored =
+    @DisplayName("addSystemProperties should set properties when resource exists")
+    void testAddSystemPropertiesResourceExists() {
+        Properties testProps = new Properties();
+        testProps.setProperty(DUMMY_PROP, DUMMY_VALUE);
+
+        try (MockedConstruction<ClassPathResource> resourceMock =
                      mockConstruction(ClassPathResource.class, (mock, context) -> {
                          when(mock.exists()).thenReturn(true);
                      });
-             MockedStatic<PropertiesLoaderUtils> propsMock =
-                     mockStatic(PropertiesLoaderUtils.class)) {
+             MockedStatic<PropertiesLoaderUtils> propsMock = mockStatic(PropertiesLoaderUtils.class)) {
 
-            Properties props = new Properties();
-            props.setProperty(DUMMY_PROP, DUMMY_VALUE);
-            propsMock.when(() -> PropertiesLoaderUtils.loadProperties(any(ClassPathResource.class)))
-                    .thenReturn(props);
-            System.clearProperty(DUMMY_PROP);
+            // Setup properties loading
+            propsMock.when(() -> PropertiesLoaderUtils.loadProperties(any(Resource.class)))
+                    .thenReturn(testProps);
 
-            Method method = BaseTest.class.getDeclaredMethod(ADD_SYSTEM_PROPERTIES);
+            // Call the actual private method via reflection
+            java.lang.reflect.Method method = BaseTest.class.getDeclaredMethod("addSystemProperties");
             method.setAccessible(true);
             method.invoke(null);
+
+            // Verify property was set
             assertEquals(DUMMY_VALUE, System.getProperty(DUMMY_PROP));
+        } catch (Exception e) {
+            fail("Exception should not be thrown: " + e.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("addSystemProperties should not override existing system properties")
+    void testAddSystemPropertiesDoesNotOverrideExisting() {
+        Properties testProps = new Properties();
+        testProps.setProperty(DUMMY_PROP, DUMMY_VALUE);
+        String existingValue = "existingValue";
+
+        try (MockedConstruction<ClassPathResource> resourceMock =
+                     mockConstruction(ClassPathResource.class, (mock, context) -> {
+                         when(mock.exists()).thenReturn(true);
+                     });
+             MockedStatic<PropertiesLoaderUtils> propsMock = mockStatic(PropertiesLoaderUtils.class)) {
+
+            // Setup properties loading
+            propsMock.when(() -> PropertiesLoaderUtils.loadProperties(any(Resource.class)))
+                    .thenReturn(testProps);
+
+            // Set existing property
+            System.setProperty(DUMMY_PROP, existingValue);
+
+            // Call the actual private method via reflection
+            java.lang.reflect.Method method = BaseTest.class.getDeclaredMethod("addSystemProperties");
+            method.setAccessible(true);
+            method.invoke(null);
+
+            // Verify property was not overridden
+            assertEquals(existingValue, System.getProperty(DUMMY_PROP));
+        } catch (Exception e) {
+            fail("Exception should not be thrown: " + e.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("addSystemProperties should throw UncheckedIOException when loading properties fails")
+    void testAddSystemPropertiesIOException() {
+        IOException testException = new IOException("Test exception");
+
+        try (MockedConstruction<ClassPathResource> resourceMock =
+                     mockConstruction(ClassPathResource.class, (mock, context) -> {
+                         when(mock.exists()).thenReturn(true);
+                     });
+             MockedStatic<PropertiesLoaderUtils> propsMock = mockStatic(PropertiesLoaderUtils.class)) {
+
+            // Setup properties loading to throw exception
+            propsMock.when(() -> PropertiesLoaderUtils.loadProperties(any(Resource.class)))
+                    .thenThrow(testException);
+
+            // Call and verify exception
+            java.lang.reflect.Method method = BaseTest.class.getDeclaredMethod("addSystemProperties");
+            method.setAccessible(true);
+
+            Exception exception = assertThrows(Exception.class, () -> method.invoke(null));
+            assertTrue(exception.getCause() instanceof UncheckedIOException);
+            UncheckedIOException uncheckedIOException = (UncheckedIOException) exception.getCause();
+            assertEquals("Failed to load system.properties", uncheckedIOException.getMessage());
+            assertSame(testException, uncheckedIOException.getCause());
+        } catch (NoSuchMethodException e) {
+            fail("Method not found: " + e.getMessage());
         }
     }
 }

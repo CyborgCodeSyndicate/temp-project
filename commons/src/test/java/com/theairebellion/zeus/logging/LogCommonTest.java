@@ -1,19 +1,22 @@
 package com.theairebellion.zeus.logging;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+@DisplayName("LogCommon Tests")
 class LogCommonTest {
 
     private static final String ARG_1 = "arg1";
@@ -27,45 +30,76 @@ class LogCommonTest {
     private static final String EXTENDED = "extended";
     private static final String INSTANCE_FIELD = "INSTANCE";
 
-    @ParameterizedTest
-    @MethodSource("loggingMethods")
-    void testLoggingMethods(BiConsumer<String, Object[]> logMethod, String methodName) {
-        var args = new Object[]{ARG_1, ARG_2};
-        var message = formatMessage(methodName);
+    @Nested
+    @DisplayName("Static Logging Methods Tests")
+    class StaticLoggingMethodsTests {
+        @ParameterizedTest(name = "Test {1} logging")
+        @MethodSource("com.theairebellion.zeus.logging.LogCommonTest#loggingMethods")
+        @DisplayName("Should delegate logging to instance methods")
+        void testLoggingMethods(BiConsumer<String, Object[]> logMethod, String methodName) {
+            // Given
+            Object[] args = new Object[]{ARG_1, ARG_2};
+            String message = formatMessage(methodName);
+            LogCommon mockInstance = mock(LogCommon.class);
 
-        var mockInstance = mock(LogCommon.class);
-        LogCommon.extend(mockInstance);
+            // When
+            LogCommon.extend(mockInstance);
+            logMethod.accept(message, args);
 
-        logMethod.accept(message, args);
-
-        verifyLogMethod(mockInstance, methodName, message, args);
+            // Then
+            verifyLogMethod(mockInstance, methodName, message, args);
+        }
     }
 
-    @Test
-    void testExtend() throws Exception {
-        var instanceField = getInstanceField();
-        var originalInstance = instanceField.get(null);
+    @Nested
+    @DisplayName("Instance Management Tests")
+    class InstanceManagementTests {
+        @Test
+        @DisplayName("Should allow extending with custom instance")
+        void testExtend() throws Exception {
+            // Given
+            Field instanceField = getInstanceField();
+            Object originalInstance = instanceField.get(null);
+            LogCommon mockInstance = mock(LogCommon.class);
 
-        var mockInstance = mock(LogCommon.class);
-        LogCommon.extend(mockInstance);
-        assertSame(mockInstance, instanceField.get(null));
+            // When
+            LogCommon.extend(mockInstance);
 
-        instanceField.set(null, originalInstance);
-    }
+            // Then
+            assertSame(mockInstance, instanceField.get(null),
+                    "Instance field should be set to the mock");
 
-    @Test
-    void testSingletonInitializationUsingReflection() throws Exception {
-        var instanceField = getInstanceField();
-        instanceField.set(null, null);
+            // Restore original instance
+            instanceField.set(null, originalInstance);
+        }
 
-        var getInstanceMethod = LogCommon.class.getDeclaredMethod("getInstance");
-        getInstanceMethod.setAccessible(true);
+        @Test
+        @DisplayName("Should create and reuse singleton instance")
+        void testSingletonInitialization() throws Exception {
+            // Given - Clear existing instance
+            Field instanceField = getInstanceField();
+            Object originalInstance = instanceField.get(null);
+            instanceField.set(null, null);
 
-        var firstInstance = getInstanceMethod.invoke(null);
-        assertNotNull(firstInstance);
+            Method getInstanceMethod = LogCommon.class.getDeclaredMethod("getInstance");
+            getInstanceMethod.setAccessible(true);
 
-        var secondInstance = getInstanceMethod.invoke(null);
-        assertSame(firstInstance, secondInstance);
+            // When - Create first instance
+            Object firstInstance = getInstanceMethod.invoke(null);
+
+            // Then
+            assertNotNull(firstInstance, "First instance should not be null");
+
+            // When - Create second instance
+            Object secondInstance = getInstanceMethod.invoke(null);
+
+            // Then
+            assertSame(firstInstance, secondInstance,
+                    "Second call should return the same instance (singleton)");
+
+            // Restore original instance
+            instanceField.set(null, originalInstance);
+        }
     }
 
     private static Stream<Arguments> loggingMethods() {
@@ -98,7 +132,7 @@ class LogCommonTest {
     }
 
     private static Field getInstanceField() throws NoSuchFieldException {
-        var instanceField = LogCommon.class.getDeclaredField(INSTANCE_FIELD);
+        Field instanceField = LogCommon.class.getDeclaredField(INSTANCE_FIELD);
         instanceField.setAccessible(true);
         return instanceField;
     }

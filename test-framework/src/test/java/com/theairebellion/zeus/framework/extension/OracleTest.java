@@ -9,6 +9,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
+import org.mockito.MockedStatic;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -60,7 +61,7 @@ class OracleTest {
         ExtensionContext.Store store = mock(ExtensionContext.Store.class);
         when(extCtx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
         ApplicationContext appCtx = mock(ApplicationContext.class);
-        try (var springExt = mockStatic(SpringExtension.class)) {
+        try (MockedStatic<SpringExtension> springExt = mockStatic(SpringExtension.class)) {
             springExt.when(() -> SpringExtension.getApplicationContext(extCtx)).thenReturn(appCtx);
             QuestFactory questFactory = mock(QuestFactory.class);
             DecoratorsFactory decoratorsFactory = mock(DecoratorsFactory.class);
@@ -88,7 +89,7 @@ class OracleTest {
         ExtensionContext.Store store = mock(ExtensionContext.Store.class);
         when(extCtx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
         ApplicationContext appCtx = mock(ApplicationContext.class);
-        try (var springExt = mockStatic(SpringExtension.class)) {
+        try (MockedStatic<SpringExtension> springExt = mockStatic(SpringExtension.class)) {
             springExt.when(() -> SpringExtension.getApplicationContext(extCtx)).thenReturn(appCtx);
             QuestFactory questFactory = mock(QuestFactory.class);
             DecoratorsFactory decoratorsFactory = mock(DecoratorsFactory.class);
@@ -109,6 +110,41 @@ class OracleTest {
     }
 
     @Test
+    void resolveParameter_WithMethodButNoAnnotation() throws Exception {
+        Oracle oracle = new Oracle();
+        ExtensionContext extCtx = mock(ExtensionContext.class);
+
+        // Create a method with no TestStaticData annotation
+        Method testMethod = MockTestClass.class.getMethod("toString");
+        when(extCtx.getTestMethod()).thenReturn(Optional.of(testMethod));
+
+        ExtensionContext.Store store = mock(ExtensionContext.Store.class);
+        when(extCtx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
+        ApplicationContext appCtx = mock(ApplicationContext.class);
+        try (MockedStatic<SpringExtension> springExt = mockStatic(SpringExtension.class)) {
+            springExt.when(() -> SpringExtension.getApplicationContext(extCtx)).thenReturn(appCtx);
+            QuestFactory questFactory = mock(QuestFactory.class);
+            DecoratorsFactory decoratorsFactory = mock(DecoratorsFactory.class);
+            when(appCtx.getBean(QuestFactory.class)).thenReturn(questFactory);
+            when(appCtx.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+            Quest quest = mock(Quest.class);
+            when(questFactory.createQuest()).thenReturn(quest);
+            SuperQuest superQuest = mock(SuperQuest.class);
+            when(decoratorsFactory.decorate(quest, SuperQuest.class)).thenReturn(superQuest);
+            Storage storage = mock(Storage.class);
+            when(superQuest.getStorage()).thenReturn(storage);
+            when(store.get(QUEST_CONSUMERS)).thenReturn(null);
+
+            Object result = oracle.resolveParameter(null, extCtx);
+
+            // Verify that null static data is put (this is what the actual code does)
+            verify(storage).put(STATIC_DATA, null);
+            verify(store).put(QUEST, quest);
+            assertSame(quest, result);
+        }
+    }
+
+    @Test
     void resolveParameter_WithConsumers() {
         Oracle oracle = new Oracle();
         ExtensionContext extCtx = mock(ExtensionContext.class);
@@ -118,7 +154,7 @@ class OracleTest {
         Consumer<SuperQuest> consumer = mock(Consumer.class);
         when(store.get(QUEST_CONSUMERS)).thenReturn(List.of(consumer));
         ApplicationContext appCtx = mock(ApplicationContext.class);
-        try (var springExt = mockStatic(SpringExtension.class)) {
+        try (MockedStatic<SpringExtension> springExt = mockStatic(SpringExtension.class)) {
             springExt.when(() -> SpringExtension.getApplicationContext(extCtx)).thenReturn(appCtx);
             QuestFactory questFactory = mock(QuestFactory.class);
             DecoratorsFactory decoratorsFactory = mock(DecoratorsFactory.class);
