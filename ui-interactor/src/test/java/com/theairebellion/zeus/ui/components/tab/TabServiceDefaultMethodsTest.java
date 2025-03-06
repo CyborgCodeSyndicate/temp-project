@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.tab;
 
+import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
@@ -21,6 +22,8 @@ class TabServiceDefaultMethodsTest extends BaseUnitUITest {
         container = mock(SmartWebElement.class);
         locator = By.id("testTab");
         service = new TabService() {
+            @Override
+            public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {}
             @Override
             public boolean isSelected(TabComponentType componentType, SmartWebElement c, String text) {
                 return true;

@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.tab.mock;
 
+import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.tab.TabComponentType;
 import com.theairebellion.zeus.ui.components.tab.TabService;
@@ -132,5 +133,9 @@ public class MockTabService implements TabService {
         lastComponentType = (TabComponentType) componentType;
         lastLocator = buttonLocator;
         return returnBool;
+    }
+
+    @Override
+    public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
     }
 }

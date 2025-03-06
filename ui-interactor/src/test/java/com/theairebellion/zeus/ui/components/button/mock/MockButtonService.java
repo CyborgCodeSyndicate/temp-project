@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.components.button.mock;
 
+import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
@@ -105,5 +106,9 @@ public class MockButtonService implements ButtonService {
         lastComponentType = componentType;
         lastLocator = buttonLocator;
         return returnVisible;
+    }
+
+    @Override
+    public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
     }
 }
