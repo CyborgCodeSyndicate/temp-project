@@ -1,23 +1,33 @@
 package com.theairebellion.zeus.framework.spring;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.Arrays;
-
 import lombok.Getter;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
 
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+@ExtendWith(MockitoExtension.class)
 class FrameworkAdapterContextCustomizerTest {
 
+    @Mock
+    private MergedContextConfiguration mergedConfig;
+
+    /**
+     * Custom extension of AnnotationConfigApplicationContext that allows testing the scan method
+     */
     @Getter
-    static class DummyAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext {
+    static class TestAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext {
         private String[] scannedPackages;
 
         @Override
@@ -27,44 +37,127 @@ class FrameworkAdapterContextCustomizerTest {
 
     }
 
-    @Test
-    void testConstructorThrowsForNullBasePackages() {
-        NullPointerException ex = assertThrows(NullPointerException.class,
-                () -> new FrameworkAdapterContextCustomizer(null));
-        assertEquals("Base packages must not be null", ex.getMessage());
+    @Nested
+    @DisplayName("Constructor tests")
+    class ConstructorTests {
+        @Test
+        @DisplayName("Should throw NullPointerException when basePackages is null")
+        void testConstructorThrowsForNullBasePackages() {
+            // When/Then
+            NullPointerException ex = assertThrows(
+                    NullPointerException.class,
+                    () -> new FrameworkAdapterContextCustomizer(null),
+                    "Constructor should throw NullPointerException for null basePackages"
+            );
+
+            assertEquals("Base packages must not be null", ex.getMessage(),
+                    "Exception message should mention basePackages");
+        }
     }
 
-    @Test
-    void testCustomizeContextWithAnnotationConfigApplicationContext() {
-        String[] basePackages = new String[] { "com.example.package1", "com.example.package2" };
-        FrameworkAdapterContextCustomizer customizer = new FrameworkAdapterContextCustomizer(basePackages);
-        DummyAnnotationConfigApplicationContext context = new DummyAnnotationConfigApplicationContext();
-        MergedContextConfiguration mergedConfig = Mockito.mock(MergedContextConfiguration.class);
-        customizer.customizeContext(context, mergedConfig);
-        assertArrayEquals(basePackages, context.getScannedPackages());
+    @Nested
+    @DisplayName("customizeContext method tests")
+    class CustomizeContextTests {
+        @Test
+        @DisplayName("Should scan basePackages when context is AnnotationConfigApplicationContext")
+        void testCustomizeContextWithAnnotationConfigApplicationContext() {
+            // Given
+            String[] basePackages = new String[] { "com.example.package1", "com.example.package2" };
+            FrameworkAdapterContextCustomizer customizer = new FrameworkAdapterContextCustomizer(basePackages);
+
+            TestAnnotationConfigApplicationContext context = new TestAnnotationConfigApplicationContext();
+
+            // When
+            customizer.customizeContext(context, mergedConfig);
+
+            // Then
+            assertArrayEquals(basePackages, context.getScannedPackages(),
+                    "Context should be scanned with the provided base packages");
+        }
+
+        @Test
+        @DisplayName("Should do nothing when context is not AnnotationConfigApplicationContext")
+        void testCustomizeContextWithNonAnnotationConfigApplicationContext() {
+            // Given
+            String[] basePackages = new String[] { "com.example.package" };
+            FrameworkAdapterContextCustomizer customizer = new FrameworkAdapterContextCustomizer(basePackages);
+
+            ConfigurableApplicationContext mockContext = mock(ConfigurableApplicationContext.class);
+
+            // When
+            customizer.customizeContext(mockContext, mergedConfig);
+
+            // Then
+            // No exception should be thrown and no method called on the mock context
+            verifyNoInteractions(mockContext);
+        }
     }
 
-    @Test
-    void testCustomizeContextWithNonAnnotationConfigApplicationContext() {
-        String[] basePackages = new String[] { "com.example.package" };
-        FrameworkAdapterContextCustomizer customizer = new FrameworkAdapterContextCustomizer(basePackages);
-        ConfigurableApplicationContext context = Mockito.mock(ConfigurableApplicationContext.class);
-        MergedContextConfiguration mergedConfig = Mockito.mock(MergedContextConfiguration.class);
-        customizer.customizeContext(context, mergedConfig);
-    }
+    @Nested
+    @DisplayName("equals, hashCode, and toString tests")
+    class ObjectMethodsTests {
+        @Test
+        @DisplayName("Should pass all equals contract tests")
+        void testEqualsContract() {
+            // Given
+            String[] packages1 = new String[] { "com.example.a", "com.example.b" };
+            String[] packages2 = new String[] { "com.example.a", "com.example.b" }; // Same content as packages1
+            String[] packages3 = new String[] { "com.example.x" }; // Different content
 
-    @Test
-    void testEqualsHashCodeToString() {
-        String[] packages1 = new String[] { "com.example.a", "com.example.b" };
-        String[] packages2 = new String[] { "com.example.a", "com.example.b" };
-        String[] packages3 = new String[] { "com.example.x" };
-        FrameworkAdapterContextCustomizer customizer1 = new FrameworkAdapterContextCustomizer(packages1);
-        FrameworkAdapterContextCustomizer customizer2 = new FrameworkAdapterContextCustomizer(packages2);
-        FrameworkAdapterContextCustomizer customizer3 = new FrameworkAdapterContextCustomizer(packages3);
-        assertEquals(customizer1, customizer2);
-        assertEquals(customizer1.hashCode(), customizer2.hashCode());
-        assertNotEquals(customizer1, customizer3);
-        String expected = "FrameworkAdapterContextCustomizer{basePackages=" + Arrays.toString(packages1) + "}";
-        assertEquals(expected, customizer1.toString());
+            FrameworkAdapterContextCustomizer customizer1 = new FrameworkAdapterContextCustomizer(packages1);
+            FrameworkAdapterContextCustomizer customizer2 = new FrameworkAdapterContextCustomizer(packages2);
+            FrameworkAdapterContextCustomizer customizer3 = new FrameworkAdapterContextCustomizer(packages3);
+
+            // Reflexive
+            assertEquals(customizer1, customizer1, "Object should equal itself");
+
+            // Symmetric
+            assertEquals(customizer1, customizer2, "Objects with equal basePackages should be equal");
+            assertEquals(customizer2, customizer1, "Equality should be symmetric");
+
+            // Not equal to different object
+            assertNotEquals(customizer1, customizer3, "Objects with different basePackages should not be equal");
+
+            // Not equal to null
+            assertNotEquals(null, customizer1, "Object should not equal null");
+
+            // Not equal to different type
+            assertNotEquals("string", customizer1, "Object should not equal different type");
+        }
+
+        @Test
+        @DisplayName("Should have same hashCode for equal objects")
+        void testHashCode() {
+            // Given
+            String[] packages1 = new String[] { "com.example.a", "com.example.b" };
+            String[] packages2 = new String[] { "com.example.a", "com.example.b" };
+            String[] packages3 = new String[] { "com.example.x" };
+
+            FrameworkAdapterContextCustomizer customizer1 = new FrameworkAdapterContextCustomizer(packages1);
+            FrameworkAdapterContextCustomizer customizer2 = new FrameworkAdapterContextCustomizer(packages2);
+            FrameworkAdapterContextCustomizer customizer3 = new FrameworkAdapterContextCustomizer(packages3);
+
+            // Then
+            assertEquals(customizer1.hashCode(), customizer2.hashCode(),
+                    "Equal objects should have same hashCode");
+
+            assertNotEquals(customizer1.hashCode(), customizer3.hashCode(),
+                    "Different objects should have different hashCode");
+        }
+
+        @Test
+        @DisplayName("Should return correct string representation")
+        void testToString() {
+            // Given
+            String[] packages = new String[] { "com.example.a", "com.example.b" };
+            FrameworkAdapterContextCustomizer customizer = new FrameworkAdapterContextCustomizer(packages);
+
+            // When
+            String result = customizer.toString();
+
+            // Then
+            String expected = "FrameworkAdapterContextCustomizer{basePackages=" + Arrays.toString(packages) + "}";
+            assertEquals(expected, result, "toString output should match expected format");
+        }
     }
 }

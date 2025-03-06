@@ -7,51 +7,68 @@ import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.mock.MockFluentService;
 import com.theairebellion.zeus.framework.quest.mock.MockFluentServiceDecorator;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.List;
 
-import static com.theairebellion.zeus.framework.quest.QuestHolder.clear;
-import static com.theairebellion.zeus.framework.quest.QuestHolder.get;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class QuestFactoryTest {
+
+    @Mock
+    private DecoratorsFactory decoratorsFactory;
+
+    private final MockFluentService mockFluentService = new MockFluentService();
 
     @AfterEach
     void tearDown() {
-        clear();
+        QuestHolder.clear();
     }
 
     @Test
+    @DisplayName("Should create Quest and register services correctly")
     void testCreateQuestRegistersServices() throws Exception {
-        DecoratorsFactory decoratorsFactory = Mockito.mock(DecoratorsFactory.class);
-        MockFluentService mockFluentService = new MockFluentService();
-        Collection<FluentService> providers = List.of(mockFluentService);
-        Mockito.when(decoratorsFactory.decorate(mockFluentService, FluentServiceDecorator.class))
-                .thenAnswer(invocation -> new MockFluentServiceDecorator(mockFluentService));
-        Mockito.when(decoratorsFactory.decorate(any(), Mockito.eq(SuperQuest.class)))
-                .thenAnswer(invocation -> new SuperQuest(invocation.getArgument(0)));
+        // Given
+        List<FluentService> providers = List.of(mockFluentService);
+
+        // Create the QuestFactory with the providers
         QuestFactory questFactory = new QuestFactory(providers);
+
+        // Set the mock decoratorsFactory using reflection
         Field factoryField = QuestFactory.class.getDeclaredField("decoratorsFactory");
         factoryField.setAccessible(true);
         factoryField.set(questFactory, decoratorsFactory);
+
+        when(decoratorsFactory.decorate(mockFluentService, FluentServiceDecorator.class))
+                .thenAnswer(invocation -> new MockFluentServiceDecorator(mockFluentService));
+
+        when(decoratorsFactory.decorate(any(), eq(SuperQuest.class)))
+                .thenAnswer(invocation -> new SuperQuest(invocation.getArgument(0)));
+
+        // When
         try (MockedStatic<LogTest> logMock = mockStatic(LogTest.class)) {
             Quest quest = questFactory.createQuest();
-            SuperQuest superQuest = get();
-            assertNotNull(quest);
-            assertNotNull(superQuest);
-            assertSame(quest, superQuest.getOriginal());
+            SuperQuest superQuest = QuestHolder.get();
+
+            // Then
+            assertNotNull(quest, "Quest should not be null");
+            assertNotNull(superQuest, "SuperQuest should not be null");
+            assertSame(quest, superQuest.getOriginal(), "Quest should be the original inside SuperQuest");
+
             MockFluentService result = quest.enters(MockFluentService.class);
-            assertSame(mockFluentService, result);
+            assertSame(mockFluentService, result, "Entered FluentService should match the mock instance");
+
             logMock.verify(() -> LogTest.extended(anyString(), any()), times(1));
         }
     }
