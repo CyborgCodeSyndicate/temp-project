@@ -213,7 +213,7 @@ public class ReqresApiTest extends BaseTest {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
-    public void testPreconditionsExample(Quest quest) {
+    public void testUserLifecycle(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
@@ -237,6 +237,13 @@ public class ReqresApiTest extends BaseTest {
                         GET_ALL_USERS.withQueryParam("page", 2),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()
                 );
+    }
+
+    @Test
+    public void testValidateAllUsers(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
+        quest.enters(RIVENDELL)
+                .loginUserAndAddSpecificHeader(loginUser)
+                .requestAndValidateGetAllUsers();
     }
 
 }
