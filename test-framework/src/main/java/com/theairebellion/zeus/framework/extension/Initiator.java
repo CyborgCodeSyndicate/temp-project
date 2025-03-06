@@ -27,10 +27,29 @@ import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.get
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 
+/**
+ * JUnit 5 {@code InvocationInterceptor} extension that processes pre-test setup
+ * for test methods annotated with {@code @PreQuest}.
+ * <p>
+ * This extension extracts all {@code @PreQuest} annotations from a test method,
+ * sorts them based on execution order, and executes the corresponding preconditions
+ * before the test runs. The preconditions are dynamically resolved and injected
+ * into the test execution context.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Order(Integer.MAX_VALUE)
 public class Initiator implements InvocationInterceptor {
 
-
+    /**
+     * Intercepts test method execution to process {@code @PreQuest} preconditions.
+     *
+     * @param invocation        The invocation context of the test method.
+     * @param invocationContext Reflective context of the method.
+     * @param extensionContext  Context of the test execution.
+     * @throws Throwable If an error occurs while processing preconditions.
+     */
     @Override
     public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
                                     ExtensionContext extensionContext) throws Throwable {
@@ -54,14 +73,24 @@ public class Initiator implements InvocationInterceptor {
         invocation.proceed();
     }
 
-
+    /**
+     * Retrieves and sorts {@code @Journey} annotations based on their execution order.
+     *
+     * @param method The test method containing {@code @Journey} annotations.
+     * @return A sorted list of {@code @Journey} annotations.
+     */
     private List<Journey> getSortedJourneys(Method method) {
         return Arrays.stream(method.getAnnotationsByType(Journey.class))
                 .sorted(Comparator.comparing(Journey::order))
                 .collect(Collectors.toList());
     }
 
-
+    /**
+     * Processes a single {@code @Journey} annotation, resolving and executing its precondition logic.
+     *
+     * @param preQuest   The {@code @Journey} annotation representing the precondition.
+     * @param superQuest The test execution context enriched with preconditions.
+     */
     private void processPreQuest(Journey preQuest, SuperQuest superQuest) {
         String journey = preQuest.value();
         JourneyData[] journeyData = preQuest.journeyData();
@@ -74,7 +103,13 @@ public class Initiator implements InvocationInterceptor {
                 .toArray());
     }
 
-
+    /**
+     * Resolves test data for {@code @JourneyData} annotations.
+     *
+     * @param journeyData The {@code @JourneyData} annotation containing the data model reference.
+     * @param quest       The test execution context where the resolved data is stored.
+     * @return The resolved test data object.
+     */
     private Object processJourneyData(JourneyData journeyData, SuperQuest quest) {
         DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
                 DataForge.class, journeyData.value(), getFrameworkConfig().projectPackage());

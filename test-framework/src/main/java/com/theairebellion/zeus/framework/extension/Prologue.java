@@ -10,18 +10,35 @@ import java.lang.reflect.Method;
 
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
 
+/**
+ * JUnit 5 {@code BeforeTestExecutionCallback} extension that logs test execution start details.
+ * <p>
+ * This extension captures and logs the test name before execution begins,
+ * storing the start time in the test execution context for later use in reporting.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Order(Integer.MIN_VALUE)
 public class Prologue implements BeforeTestExecutionCallback {
 
-
+    /**
+     * Executes before the test method starts.
+     * <p>
+     * This method records the start time of the test, assigns a unique identifier
+     * to the test execution context, and logs the initiation of the test scenario.
+     * </p>
+     *
+     * @param context The test execution context containing metadata about the test.
+     */
     @Override
     public void beforeTestExecution(final ExtensionContext context) {
         String className = context.getTestClass()
-                               .map(Class::getSimpleName)
-                               .orElse("UnknownClass");
+                .map(Class::getSimpleName)
+                .orElse("UnknownClass");
         String methodName = context.getTestMethod()
-                                .map(Method::getName)
-                                .orElse("UnknownMethod");
+                .map(Method::getName)
+                .orElse("UnknownMethod");
 
         ThreadContext.put("testName", className + "." + methodName);
 
@@ -29,6 +46,5 @@ public class Prologue implements BeforeTestExecutionCallback {
 
         LogTest.info("The quest: '{}' has begun.", context.getDisplayName());
     }
-
 
 }
