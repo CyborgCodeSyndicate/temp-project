@@ -12,6 +12,7 @@ import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.util.TestContextManager;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import io.qameta.allure.Allure;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
@@ -38,7 +39,6 @@ public class Initiator extends TestContextManager implements InvocationIntercept
     public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
                                     ExtensionContext extensionContext) throws Throwable {
 
-        CustomAllureListener.startParentStep("Test Execution", CustomAllureListener.StepType.SUCCESS);
         Optional<Method> testMethod = extensionContext.getTestMethod();
 
         if (testMethod.isPresent() && testMethod.get().isAnnotationPresent(PreQuest.class)) {
@@ -52,9 +52,11 @@ public class Initiator extends TestContextManager implements InvocationIntercept
             ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
             DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
             SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
+            CustomAllureListener.startParentStep("Processing Pre-Quests", CustomAllureListener.StepType.SUCCESS);
             sortedPreQuestAnnotations.forEach(preQuest -> processPreQuest(preQuest, superQuest));
+            CustomAllureListener.stopParentStep();
         }
-
+        CustomAllureListener.startParentStep("Test Execution", CustomAllureListener.StepType.SUCCESS);
         invocation.proceed();
     }
 
@@ -73,9 +75,18 @@ public class Initiator extends TestContextManager implements InvocationIntercept
         PreQuestJourney preQuestJourney = ReflectionUtil.findEnumImplementationsOfInterface(
                 PreQuestJourney.class, journey, getFrameworkConfig().projectPackage());
 
-        preQuestJourney.journey().accept(superQuest, Arrays.stream(journeyData)
+        Object[] processedData = Arrays.stream(journeyData)
                 .map(dataEnumStr -> processJourneyData(dataEnumStr, superQuest))
-                .toArray());
+                .toArray();
+
+        CustomAllureListener.startStep("Processing preQuestJourney: " + preQuestJourney.toString(), CustomAllureListener.StepType.SUCCESS);
+        String attachmentName = journey + "-Data";
+
+        String formattedData = formatProcessedData(journeyData, processedData);
+        Allure.addAttachment(attachmentName, formattedData);
+
+        preQuestJourney.journey().accept(superQuest, processedData);
+        CustomAllureListener.stopStep();
     }
 
 

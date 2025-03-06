@@ -52,8 +52,8 @@ public class Oracle implements ParameterResolver {
         Map<String, Object> staticTestData = getStaticTestData(extensionContext);
         superQuest.getStorage().put(STATIC_DATA, staticTestData);
 
+        LogTest.info("The quest: '{}' has begun and is crafted.", extensionContext.getDisplayName());
 
-        LogTest.info("Quest crafted for scenario: '{}'.", extensionContext.getDisplayName());
         ExtensionContext.Store store = extensionContext.getStore(GLOBAL);
         @SuppressWarnings("unchecked")
         List<Consumer<SuperQuest>> consumers = (List<Consumer<SuperQuest>>) store.get(StoreKeys.QUEST_CONSUMERS);

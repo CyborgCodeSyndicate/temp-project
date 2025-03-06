@@ -66,6 +66,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Step("[UI - Table] Reading entire table as class '{clazz}'")
     @Override
     public final <T> List<T> readTable(final Class<T> clazz) {
+        LogUI.step("Reading entire table as class '{clazz}'");
         return readTableInternal(clazz, null, null, null);
     }
 
@@ -74,6 +75,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     @SafeVarargs
     public final <T> List<T> readTable(final Class<T> clazz, final TableField<T>... fields) {
+        LogUI.step("Reading table as class '{clazz}' with fields {fields}");
         return readTableInternal(clazz, (fields == null) ? null : List.of(fields), null, null);
     }
 
@@ -81,6 +83,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Step("[UI - Table] Reading table rows from {start} to {end} as class '{clazz}'")
     @Override
     public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz) {
+        LogUI.step("Reading table rows from {start} to {end} as class '{clazz}'");
         return readTableInternal(clazz, null, start, end);
     }
 
@@ -92,6 +95,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                        final int end,
                                        final Class<T> clazz,
                                        final TableField<T>... fields) {
+        LogUI.step("Reading table rows from {start} to {end} as class '{clazz}' with fields {fields}");
         return readTableInternal(clazz, (fields == null) ? null : Arrays.asList(fields), start, end);
     }
 
@@ -99,6 +103,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Step("[UI - Table] Reading row number {row} as class '{clazz}'")
     @Override
     public final <T> T readRow(final int row, final Class<T> clazz) {
+        LogUI.step("Reading row number {row} as class '{clazz}'");
         return readRowInternal(row - 1, clazz, null);
     }
 
@@ -106,6 +111,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Step("[UI - Table] Reading row matching criteria {searchCriteria} as class '{clazz}'")
     @Override
     public final <T> T readRow(final List<String> searchCriteria, final Class<T> clazz) {
+        LogUI.step("Reading row matching criteria {searchCriteria} as class '{clazz}'");
         return readRowInternal(searchCriteria, clazz, null);
     }
 
@@ -114,6 +120,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     @SafeVarargs
     public final <T> T readRow(final int row, final Class<T> clazz, final TableField<T>... fields) {
+        LogUI.step("Reading row number {row} as class '{clazz}' with fields {fields}");
         return readRowInternal(row - 1, clazz, fields);
     }
 
@@ -124,6 +131,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     public final <T> T readRow(final List<String> searchCriteria,
                                final Class<T> clazz,
                                final TableField<T>... fields) {
+        LogUI.step("Reading row matching criteria {searchCriteria} as class '{clazz}' with fields {fields}");
         return readRowInternal(searchCriteria, clazz, fields);
     }
 
@@ -135,6 +143,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                           final TableField<T> field,
                                           final int cellIndex,
                                           final String... values) {
+        LogUI.step("Inserting cell value in row matching criteria {searchCriteria} for class '{rowClass}', field '{field}', cell index {cellIndex}");
         insertCellValueInternal(searchCriteria, rowClass, field, cellIndex, values);
     }
 
@@ -146,6 +155,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                           final TableField<T> field,
                                           final int cellIndex,
                                           final String... values) {
+        LogUI.step("Inserting cell value in row {row} for class '{rowClass}', field '{field}', cell index {cellIndex}");
         insertCellValueInternal(row - 1, rowClass, field, cellIndex, values);
     }
 
@@ -153,6 +163,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Step("[UI - Table] Inserting cell value(s) using data for row matching criteria {searchCriteria} for class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final T data) {
+        LogUI.step("Inserting cell value(s) using data for row matching criteria {searchCriteria} for class '{tClass}'");
         processInsertCellValue((fieldInvoker, strings) -> {
             if (strings.length == 1) {
                 insertCellValue(searchCriteria, tClass, fieldInvoker, 1, strings);
@@ -170,6 +181,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass,
                                           final TableField<T> field,
                                           final String... values) {
+        LogUI.step("Inserting cell value(s) into field '{field}' for row matching criteria {searchCriteria} for class '{tClass}'");
         Table.super.insertCellValue(searchCriteria, tClass, field, values);
     }
 
@@ -178,6 +190,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field,
                                           final String... values) {
+        LogUI.step("Inserting cell value(s) into field '{field}' for row {row} for class '{tClass}'");
         Table.super.insertCellValue(row, tClass, field, values);
     }
 
@@ -185,6 +198,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Step("[UI - Table] Inserting cell value(s) using data for row {row} for class '{tClass}'")
     @Override
     public final <T> void insertCellValue(final int row, final Class<T> tClass, final T data) {
+        LogUI.step("Inserting cell value(s) using data for row {row} for class '{tClass}'");
         processInsertCellValue((fieldInvoker, strings) -> {
             if (strings.length == 1) {
                 insertCellValue(row, tClass, fieldInvoker, 1, strings);
@@ -202,13 +216,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
     public final <T> void filterTable(final Class<T> tclass, final TableField<T> column,
                                       final FilterStrategy filterStrategy,
                                       final String... values) {
+        LogUI.step("Filtering table for class '{tclass}' on column '{column}' using strategy '{filterStrategy}' with values {values}");
         final Map<String, List<CellLocator>> tableSectionLocatorsMap =
-            getTableSectionLocatorsMap(tclass, List.of(column));
+                getTableSectionLocatorsMap(tclass, List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
-                                                                    .findFirst()
-                                                                    .orElseThrow(() -> new IllegalStateException(
-                                                                        "No locator found for the provided field."));
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "No locator found for the provided field."));
 
         final String tableSection = firstEntry.getKey();
         final CellLocator cellLocator = firstEntry.getValue().get(0);
@@ -224,14 +239,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     public final <T> void sortTable(final Class<T> tclass, final TableField<T> column,
                                     final SortingStrategy sortingStrategy) {
-
+        LogUI.step("Sorting table for class '{tclass}' on column '{column}' using sorting strategy '{sortingStrategy}'");
         final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass,
-            List.of(column));
+                List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
-                                                                    .findFirst()
-                                                                    .orElseThrow(() -> new IllegalStateException(
-                                                                        "No locator found for the provided field."));
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "No locator found for the provided field."));
 
         final String tableSection = firstEntry.getKey();
         final CellLocator cellLocator = firstEntry.getValue().get(0);

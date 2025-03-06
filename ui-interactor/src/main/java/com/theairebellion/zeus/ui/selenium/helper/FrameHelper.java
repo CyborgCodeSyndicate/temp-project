@@ -1,10 +1,8 @@
 package com.theairebellion.zeus.ui.selenium.helper;
 
-import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -23,19 +21,20 @@ public class FrameHelper {
     }
 
     private static SmartWebElement searchElementInIFrames(WebDriver driver, By by) {
-        try {
-            WebElement foundElement = new SmartWebDriver(driver).findElement(by);
-            return new SmartWebElement(foundElement, driver);
-        } catch (NoSuchElementException e) {
+        List<WebElement> elements = driver.findElements(by);
+        if (!elements.isEmpty()) {
+            return new SmartWebElement(elements.get(0), driver);
         }
 
         List<WebElement> frames = getAllIFrames(driver);
         for (WebElement frame : frames) {
             driver.switchTo().frame(frame);
             try {
-                WebElement foundElement = driver.findElement(by);
-                return new SmartWebElement(foundElement, driver);
-            } catch (Exception e) {
+                elements = driver.findElements(by);
+                if (!elements.isEmpty()) {
+                    return new SmartWebElement(elements.get(0), driver);
+                }
+            } finally {
                 driver.switchTo().defaultContent();
             }
         }

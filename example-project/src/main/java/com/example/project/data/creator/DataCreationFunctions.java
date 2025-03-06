@@ -22,6 +22,17 @@ public class DataCreationFunctions {
 
     }
 
+    public static Student createValidStudent2() {
+        // Long id = storage.get(null, Long.class);
+        return Student.builder()
+                   .name("Petko")
+                   .surname("Petkoski")
+                   // .id(id)
+                   .age(20)
+                   .build();
+
+    }
+
 
     public static Pet createDog() {
         return Pet.builder()

@@ -12,6 +12,7 @@ public abstract class LogCore {
     private static final Level STEP_LEVEL = Level.forName("STEP", 350);
     private static final Level VALIDATION_LEVEL = Level.forName("VALIDATION", 350);
     private static final Level EXTENDED_LEVEL = Level.forName("EXTENDED", 450);
+    private static final Boolean QUICK_EXECUTION = Boolean.parseBoolean(System.getProperty("quick.execution", "false"));
     private static Boolean EXTENDED_LOGGING;
 
 
@@ -27,37 +28,43 @@ public abstract class LogCore {
 
 
     protected void warnLog(String message, Object... args) {
-        logger.warn(marker, message, args);
+        if (!QUICK_EXECUTION) {
+            logger.warn(marker, message, args);
+        }
     }
-
 
     protected void errorLog(String message, Object... args) {
-        logger.error(marker, message, args);
+        if (!QUICK_EXECUTION) {
+            logger.error(marker, message, args);
+        }
     }
-
 
     protected void debugLog(String message, Object... args) {
-        logger.debug(marker, message, args);
+        if (!QUICK_EXECUTION) {
+            logger.debug(marker, message, args);
+        }
     }
-
 
     protected void traceLog(String message, Object... args) {
-        logger.trace(marker, message, args);
+        if (!QUICK_EXECUTION) {
+            logger.trace(marker, message, args);
+        }
     }
-
 
     protected void stepLog(String message, Object... args) {
-        logger.log(STEP_LEVEL, marker, message, args);
+        if (!QUICK_EXECUTION) {
+            logger.log(STEP_LEVEL, marker, message, args);
+        }
     }
-
 
     protected void validationLog(String message, Object... args) {
-        logger.log(VALIDATION_LEVEL, marker, message, args);
+        if (!QUICK_EXECUTION) {
+            logger.log(VALIDATION_LEVEL, marker, message, args);
+        }
     }
 
-
     protected void extendedLog(String message, Object... args) {
-        if (extendedLoggingEnabled()) {
+        if (!QUICK_EXECUTION && extendedLoggingEnabled()) {
             logger.log(EXTENDED_LEVEL, marker, message, args);
         }
     }

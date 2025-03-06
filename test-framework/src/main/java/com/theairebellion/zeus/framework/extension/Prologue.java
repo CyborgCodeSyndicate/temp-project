@@ -27,7 +27,6 @@ public class Prologue implements BeforeTestExecutionCallback {
 
         context.getStore(ExtensionContext.Namespace.GLOBAL).put(START_TIME, System.currentTimeMillis());
 
-        LogTest.info("The quest: '{}' has begun.", context.getDisplayName());
     }
 
 

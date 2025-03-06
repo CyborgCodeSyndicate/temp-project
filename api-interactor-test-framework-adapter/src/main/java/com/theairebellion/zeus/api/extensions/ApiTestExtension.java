@@ -6,9 +6,9 @@ import com.theairebellion.zeus.api.authentication.Credentials;
 import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.api.service.fluent.RestServiceFluent;
 import com.theairebellion.zeus.api.service.fluent.SuperRestServiceFluent;
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
-import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -61,6 +61,7 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
                                                      final String password,
                                                      final Class<? extends BaseAuthenticationClient> clientType,
                                                      final boolean cacheCredentials) {
+        CustomAllureListener.startParentStep("Performing Pre-Quest Authentication", CustomAllureListener.StepType.SUCCESS);
         return (SuperQuest quest) -> {
             quest.getStorage().sub(API).put(USERNAME, username);
             quest.getStorage().sub(API).put(PASSWORD, password);
@@ -71,6 +72,7 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
                     decoratorsFactory.decorate(restServiceFluent, SuperRestServiceFluent.class);
             superRestServiceFluent.getRestService().setCacheAuthentication(cacheCredentials);
             restServiceFluent.authenticate(username, password, clientType);
+            CustomAllureListener.stopParentStep();
         };
     }
 

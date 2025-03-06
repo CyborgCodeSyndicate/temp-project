@@ -21,7 +21,6 @@ public class ExceptionHandlingWebDriverFunctions {
             return webElementAction.performActionWebDriver(driver, foundElement);
         }
 
-        LogUI.error("Element not found in the main DOM or any iframe.");
-        throw new NoSuchElementException("Element not found in any iframe.");
+        throw new NoSuchElementException("Element not found in the main DOM or any iframe.");
     }
 }

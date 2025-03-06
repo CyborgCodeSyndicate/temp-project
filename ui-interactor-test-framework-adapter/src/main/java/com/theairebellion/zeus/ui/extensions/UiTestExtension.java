@@ -23,6 +23,7 @@ import com.theairebellion.zeus.ui.validator.TableAssertionFunctions;
 import com.theairebellion.zeus.ui.validator.TableAssertionTypes;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import com.theairebellion.zeus.validator.registry.AssertionRegistry;
+import io.qameta.allure.Allure;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static com.theairebellion.zeus.framework.storage.StorageKeysTest.INTERCEPTED_REQUESTS_KEY;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
@@ -145,7 +147,7 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
             responses = new ArrayList<>();
         }
         responses.add(apiResponse);
-        storage.sub(UI).put(RESPONSES, responses);
+        storage.sub(StorageKeysTest.INTERCEPTED_REQUESTS).put(INTERCEPTED_REQUESTS_KEY, responses);
         LogUI.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
     }
 
@@ -172,7 +174,6 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        LogUI.error("Exception during test execution: {}", throwable.getMessage());
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
@@ -209,8 +210,22 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
             chromeDevTools.addListener(Network.responseReceived(), entry -> {
                 ApiResponse response = new ApiResponse(entry.getResponse().getUrl(), entry.getResponse().getStatus());
                 if (checkUrl(urlsForIntercepting, entry.getResponse().getUrl())) {
-                    String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
-                    response.setBody(body);
+                    try {
+                        String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
+
+                        if (body != null && body.length() > 1000) {
+                            response.setBody(String.format(
+                                    "Response body truncated. Original length: %d characters. " +
+                                            "First 100 characters: %s",
+                                    body.length(),
+                                    body.substring(0, 100)
+                            ));
+                        } else {
+                            response.setBody(body);
+                        }
+                    } catch (Exception e) {
+                        response.setBody("Error retrieving response body: " + e.getMessage());
+                    }
                 }
                 addResponseInStorage(quest.getStorage(), response);
             });

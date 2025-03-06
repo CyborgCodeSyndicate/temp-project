@@ -28,7 +28,6 @@ public class WebDriverFactory {
             throw new IllegalArgumentException("Driver type already registered: " + type);
         }
         DRIVER_PROVIDERS.put(type.toUpperCase(), provider);
-        LogUI.info("Driver of type: {} has been registered", type);
     }
 
 
@@ -41,7 +40,6 @@ public class WebDriverFactory {
         try {
             WebDriver driver = new DriverCreator<>().createDriver(config,
                     (DriverProvider<AbstractDriverOptions<?>>) provider);
-            LogUI.info("WebDriverFactory: Successfully created driver for type: [{}].", type);
             return driver;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create WebDriver for type: " + type, e);

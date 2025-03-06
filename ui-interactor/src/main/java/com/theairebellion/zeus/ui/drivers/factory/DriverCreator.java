@@ -26,7 +26,6 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
 
         if (config.isHeadless()) {
             // options.setCapability("headless", true);
-            LogUI.info("Headless capability added to webdriver");
             provider.applyHeadlessArguments(options);
         }
 
