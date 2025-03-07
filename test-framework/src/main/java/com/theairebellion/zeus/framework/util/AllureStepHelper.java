@@ -80,7 +80,7 @@ public class AllureStepHelper extends ObjectFormatter {
     }
 
     public void setUpTestMetadata(ExtensionContext context, SuperQuest superQuest) {
-        String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/narrator-template.html");
+        String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-details.html");
 
         Map<String, String> placeholders = Map.of(
                 "{{testName}}", escapeHtml(context.getRequiredTestMethod().getName()),

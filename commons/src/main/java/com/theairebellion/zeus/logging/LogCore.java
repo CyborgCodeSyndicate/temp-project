@@ -12,7 +12,7 @@ public abstract class LogCore {
     private static final Level STEP_LEVEL = Level.forName("STEP", 350);
     private static final Level VALIDATION_LEVEL = Level.forName("VALIDATION", 350);
     private static final Level EXTENDED_LEVEL = Level.forName("EXTENDED", 450);
-    private static final Boolean QUICK_EXECUTION = Boolean.parseBoolean(System.getProperty("quick.execution", "false"));
+    private static final Boolean SILENT_MODE = Boolean.parseBoolean(System.getProperty("silent.mode", "false"));
     private static Boolean EXTENDED_LOGGING;
 
 
@@ -28,43 +28,43 @@ public abstract class LogCore {
 
 
     protected void warnLog(String message, Object... args) {
-        if (!QUICK_EXECUTION) {
+        if (!SILENT_MODE) {
             logger.warn(marker, message, args);
         }
     }
 
     protected void errorLog(String message, Object... args) {
-        if (!QUICK_EXECUTION) {
+        if (!SILENT_MODE) {
             logger.error(marker, message, args);
         }
     }
 
     protected void debugLog(String message, Object... args) {
-        if (!QUICK_EXECUTION) {
+        if (!SILENT_MODE) {
             logger.debug(marker, message, args);
         }
     }
 
     protected void traceLog(String message, Object... args) {
-        if (!QUICK_EXECUTION) {
+        if (!SILENT_MODE) {
             logger.trace(marker, message, args);
         }
     }
 
     protected void stepLog(String message, Object... args) {
-        if (!QUICK_EXECUTION) {
+        if (!SILENT_MODE) {
             logger.log(STEP_LEVEL, marker, message, args);
         }
     }
 
     protected void validationLog(String message, Object... args) {
-        if (!QUICK_EXECUTION) {
+        if (!SILENT_MODE) {
             logger.log(VALIDATION_LEVEL, marker, message, args);
         }
     }
 
     protected void extendedLog(String message, Object... args) {
-        if (!QUICK_EXECUTION && extendedLoggingEnabled()) {
+        if (!SILENT_MODE && extendedLoggingEnabled()) {
             logger.log(EXTENDED_LEVEL, marker, message, args);
         }
     }

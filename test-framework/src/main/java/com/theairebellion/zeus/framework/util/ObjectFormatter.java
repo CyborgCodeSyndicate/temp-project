@@ -89,7 +89,7 @@ public class ObjectFormatter {
 
 
     public String generateHtmlContent(Map<Enum<?>, LinkedList<Object>> arguments) {
-        String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/epilogue-template.html");
+        String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-data.html");
         return htmlTemplate.replace("{{argumentRows}}", buildRowsFromMap("", arguments));
     }
 
