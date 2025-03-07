@@ -15,6 +15,15 @@ import java.util.function.Function;
 import static com.theairebellion.zeus.api.log.LogApi.extended;
 import static com.theairebellion.zeus.api.log.LogApi.step;
 
+/**
+ * Implementation of {@code RestClient} for executing REST API requests.
+ * <p>
+ * This class provides an abstraction for sending HTTP requests using RestAssured,
+ * logging request/response details, and handling execution logic.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Component
 @NoArgsConstructor
 public class RestClientImpl implements RestClient {
@@ -28,7 +37,19 @@ public class RestClientImpl implements RestClient {
         Method.HEAD, RequestSpecification::head
     );
 
-
+    /**
+     * Executes an API request with the specified request specification and HTTP method.
+     * <p>
+     * This method logs the request details, sends the request, logs the response,
+     * and returns the response.
+     * </p>
+     *
+     * @param spec   The {@code RequestSpecification} containing request details.
+     * @param method The HTTP method to use for the request.
+     * @return The {@code Response} received from the server.
+     * @throws IllegalArgumentException If the request specification is not a {@code FilterableRequestSpecification}
+     *                                  or if the HTTP method is not supported.
+     */
     @Override
     public Response execute(final RequestSpecification spec, final Method method) {
         if (!(spec instanceof FilterableRequestSpecification filterableSpec)) {
@@ -60,13 +81,28 @@ public class RestClientImpl implements RestClient {
     }
 
 
+    /**
+     * Logs the request details before execution.
+     *
+     * @param methodName The HTTP method used for the request.
+     * @param finalUrl   The full request URL.
+     * @param body       The request body (if applicable).
+     * @param headers    The request headers.
+     */
     protected void printRequest(final String methodName, final String finalUrl, String body, String headers) {
         step("Sending request to endpoint {}-{}.", methodName, finalUrl);
         extended("Request body: {}.", body != null ? body : "");
         extended("Request headers: {}.", headers != null ? headers : "");
     }
 
-
+    /**
+     * Logs the response details after execution.
+     *
+     * @param methodName The HTTP method used for the request.
+     * @param finalUrl   The full request URL.
+     * @param response   The response received from the server.
+     * @param duration   The duration of the request execution in milliseconds.
+     */
     protected void printResponse(final String methodName, final String finalUrl, final Response response,
                                final long duration) {
         step("Response with status: {} received from endpoint: {}-{} in {}ms.",
@@ -75,7 +111,12 @@ public class RestClientImpl implements RestClient {
         extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");
     }
 
-
+    /**
+     * Attempts to pretty-print JSON request bodies.
+     *
+     * @param content The raw JSON string.
+     * @return The formatted JSON string if valid, otherwise returns the original content.
+     */
     protected String tryPrettyPrintJson(String content) {
         if (content == null || content.trim().isEmpty()) {
             return content;
