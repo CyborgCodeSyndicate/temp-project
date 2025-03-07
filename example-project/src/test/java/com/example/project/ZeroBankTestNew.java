@@ -2,8 +2,18 @@ package com.example.project;
 
 
 import com.example.project.base.World;
-import com.example.project.model.*;
-import com.example.project.ui.elements.ZeroBank.*;
+import com.example.project.model.AllTransactionEntry;
+import com.example.project.model.CreditAccounts;
+import com.example.project.model.DetailedReport;
+import com.example.project.model.FilteredTransactionEntry;
+import com.example.project.model.OutFlow;
+import com.example.project.ui.elements.ZeroBank.AlertFields;
+import com.example.project.ui.elements.ZeroBank.ButtonFields;
+import com.example.project.ui.elements.ZeroBank.InputFields;
+import com.example.project.ui.elements.ZeroBank.LinkFields;
+import com.example.project.ui.elements.ZeroBank.ListFields;
+import com.example.project.ui.elements.ZeroBank.RadioFields;
+import com.example.project.ui.elements.ZeroBank.SelectFields;
 import com.theairebellion.zeus.framework.annotation.Regression;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
@@ -17,14 +27,31 @@ import org.junit.jupiter.api.Test;
 import javax.swing.text.html.HTML.Tag;
 import java.util.List;
 
-import static com.example.project.ui.elements.Tables.*;
+import static com.example.project.ui.elements.Tables.ALL_TRANSACTIONS;
+import static com.example.project.ui.elements.Tables.CREDIT_ACCOUNTS;
+import static com.example.project.ui.elements.Tables.DETAILED_REPORT;
+import static com.example.project.ui.elements.Tables.FILTERED_TRANSACTIONS;
+import static com.example.project.ui.elements.Tables.OUTFLOW;
 import static com.theairebellion.zeus.ui.storage.DataExtractorsUi.tableRowExtractor;
-import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.*;
-import static com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget.*;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.ALL_CELLS_CLICKABLE;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.ALL_CELLS_ENABLED;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.ALL_ROWS_ARE_UNIQUE;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.COLUMN_VALUES_ARE_UNIQUE;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.EVERY_ROW_CONTAINS_VALUES;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.NO_EMPTY_CELLS;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.ROW_CONTAINS_VALUES;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.ROW_NOT_EMPTY;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.TABLE_DATA_MATCHES_EXPECTED;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.TABLE_DOES_NOT_CONTAIN_ROW;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.TABLE_NOT_EMPTY;
+import static com.theairebellion.zeus.ui.validator.TableAssertionTypes.TABLE_ROW_COUNT;
+import static com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget.ROW_VALUES;
+import static com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget.TABLE_ELEMENTS;
+import static com.theairebellion.zeus.ui.validator.UiTablesAssertionTarget.TABLE_VALUES;
 
 
 @UI
-public class ZeroBankTest extends BaseTest {
+public class ZeroBankTestNew extends BaseTest {
 
 
     @Test()

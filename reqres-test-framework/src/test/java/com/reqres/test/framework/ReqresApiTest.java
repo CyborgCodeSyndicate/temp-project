@@ -21,6 +21,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -44,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ReqresApiTest extends BaseTest {
 
     @Test
+    @Regression
     public void testGetAllUsers(Quest quest) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -80,6 +82,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testGetUser(Quest quest) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -91,6 +94,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testUserNotFound(Quest quest) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -100,6 +104,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testGetUsersJUnitAssertions(Quest quest) {
         quest.enters(OLYMPYS)
                 .request(
@@ -112,6 +117,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testGetUserFromListOfUsers(Quest quest) {
         quest.enters(OLYMPYS)
                 .request(
@@ -123,6 +129,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testGetUserFromListOfUsersByName(Quest quest) {
         final String targetFirstName = "Tobias";
         quest.enters(OLYMPYS)
@@ -150,6 +157,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testCreateUser(Quest quest, @Craft(model = USER_LEADER) User user) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -161,6 +169,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testCreateJuniorUser(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -174,6 +183,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testCreateTwoUsers(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -192,6 +202,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testLoginUserAndAddHeader(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
         quest.enters(OLYMPYS)
                 .request(LOGIN_USER, loginUser)
@@ -213,6 +224,7 @@ public class ReqresApiTest extends BaseTest {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
+    @Regression
     public void testUserLifecycle(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
@@ -228,6 +240,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testCustomService(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
         quest.enters(RIVENDELL)
                 .loginUserAndAddSpecificHeader(loginUser)
@@ -240,6 +253,7 @@ public class ReqresApiTest extends BaseTest {
     }
 
     @Test
+    @Regression
     public void testValidateAllUsers(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
         quest.enters(RIVENDELL)
                 .loginUserAndAddSpecificHeader(loginUser)
