@@ -12,6 +12,7 @@ import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
+import com.theairebellion.zeus.framework.annotation.Regression;
 import com.theairebellion.zeus.framework.annotation.Ripper;
 import com.theairebellion.zeus.framework.base.BaseTestSequential;
 import com.theairebellion.zeus.framework.quest.Quest;
@@ -41,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UserLifecycleEvolutionTest extends BaseTestSequential {
 
     @Test
+    @Regression
     public void testUserLifecycleBasic(Quest quest) {
         final TestData testData = ConfigCache.getOrCreate(TestData.class);
         final String username = testData.username();
@@ -96,6 +98,7 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
 
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
+    @Regression
     public void testUserLifecycleWithAuth(Quest quest) {
         User userLeader = User.builder()
                 .name("Morpheus")
@@ -138,6 +141,7 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
+    @Regression
     public void testUserLifecycleWithPreQuest(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
@@ -163,6 +167,7 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
+    @Regression
     public void testUserLifecycleWithRipper(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
@@ -184,6 +189,7 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
             @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
+    @Regression
     public void testUserLifecycleWithCustomService(Quest quest) {
         quest.enters(GONDOR)
                 .validateCreatedUser();

@@ -52,4 +52,29 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>setup</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.theairebellion.zeus</groupId>
+                        <artifactId>test-allocator-maven-plugin</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>split-tests</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>split</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

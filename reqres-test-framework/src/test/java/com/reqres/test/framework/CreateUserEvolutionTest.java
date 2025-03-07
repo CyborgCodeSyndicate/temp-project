@@ -7,6 +7,7 @@ import com.reqres.test.framework.rest.dto.response.GetUsersResponse;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.annotation.Regression;
 import com.theairebellion.zeus.framework.base.BaseTestSequential;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
@@ -30,6 +31,7 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 public class CreateUserEvolutionTest extends BaseTestSequential {
 
     @Test
+    @Regression
     public void testCreateJuniorUserBasic(Quest quest) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -58,6 +60,7 @@ public class CreateUserEvolutionTest extends BaseTestSequential {
     }
 
     @Test
+    @Regression
     public void testCreateJuniorUserImproved(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -74,6 +77,7 @@ public class CreateUserEvolutionTest extends BaseTestSequential {
     }
 
     @Test
+    @Regression
     public void testCreateJuniorUserImprovedWithCustomService(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
         quest.enters(GONDOR)
                 .getAllUsersAndValidateResponse()
