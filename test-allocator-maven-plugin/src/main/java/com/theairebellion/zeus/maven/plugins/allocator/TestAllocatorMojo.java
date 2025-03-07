@@ -63,6 +63,10 @@ public class TestAllocatorMojo extends AbstractMojo {
     @Parameter(property = "testSplitter.parallel.methods", defaultValue = "true", required = true)
     private Boolean parallelMethods;
 
+    @Parameter(property = "testSplitter.max.number.runners", defaultValue = "20", required = true)
+    private int maxNumberOfParallelRunners;
+
+
 
     @Override
     public void execute() throws MojoExecutionException {

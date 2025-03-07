@@ -39,13 +39,24 @@ public abstract class BaseAllocatorService implements TestAllocatorService {
             configuration
         );
 
-        log.info("[TestSplitter] classMethodCount size=" + classMethodCounts.size());
 
-        List<TestBucket> buckets =
-            TestBucketAllocator.groupClasses(
-                classMethodCounts,
-                configuration.getMaxMethodsPerBucket()
-            );
+        int classSize = classMethodCounts.size();
+        log.info("[TestSplitter] classMethodCount size=" + classSize);
+
+        List<TestBucket> buckets;
+
+        if (classSize <= configuration.getMaxNumberOfParallelRunners()) {
+            buckets = new ArrayList<>();
+            classMethodCounts.forEach((key, value) ->
+                                          buckets.add(new TestBucket(List.of(key), value)));
+        } else {
+            buckets =
+                TestBucketAllocator.groupClasses(
+                    classMethodCounts,
+                    configuration.getMaxMethodsPerBucket()
+                );
+        }
+
 
         writeGroupedTestsToFile(buckets, configuration.getJsonOutputFile());
     }

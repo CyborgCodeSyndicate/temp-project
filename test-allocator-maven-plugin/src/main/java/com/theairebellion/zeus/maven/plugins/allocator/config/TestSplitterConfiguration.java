@@ -17,5 +17,6 @@ public class TestSplitterConfiguration {
     private final String jsonOutputFile;
     private final String projectRoot;
     private final boolean parallelMethods;
+    private int maxNumberOfParallelRunners;
 
 }
