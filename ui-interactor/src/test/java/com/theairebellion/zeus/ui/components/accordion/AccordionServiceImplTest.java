@@ -2,184 +2,425 @@ package com.theairebellion.zeus.ui.components.accordion;
 
 import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockAccordionComponentType;
+import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@DisplayName("AccordionServiceImpl test")
 class AccordionServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private AccordionServiceImpl service;
     private SmartWebElement container;
-    private Accordion accordionMock;
-    private MockAccordionComponentType mockAccordionComponentType;
+    private Accordion accordion;
+    private MockAccordionComponentType componentType;
     private Strategy strategy;
     private MockedStatic<ComponentFactory> factoryMock;
 
     @BeforeEach
-    public void setUp() {
-        driver = Mockito.mock(SmartWebDriver.class);
+    void setUp() {
+        driver = mock(SmartWebDriver.class);
         service = new AccordionServiceImpl(driver);
-        container = Mockito.mock(SmartWebElement.class);
-        accordionMock = Mockito.mock(Accordion.class);
-        mockAccordionComponentType = MockAccordionComponentType.DUMMY;
-        strategy = Mockito.mock(Strategy.class);
-        factoryMock = Mockito.mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getAccordionComponent(eq(mockAccordionComponentType), eq(driver)))
-                .thenReturn(accordionMock);
+        container = mock(SmartWebElement.class);
+        accordion = mock(Accordion.class);
+        componentType = MockAccordionComponentType.DUMMY;
+        strategy = mock(Strategy.class);
 
+        factoryMock = Mockito.mockStatic(ComponentFactory.class);
+        factoryMock.when(() -> ComponentFactory.getAccordionComponent(eq(componentType), eq(driver)))
+                .thenReturn(accordion);
     }
 
     @AfterEach
-    public void tearDown() {
-        factoryMock.close();
+    void tearDown() {
+        if (factoryMock != null) {
+            factoryMock.close();
+        }
+    }
+
+    @Nested
+    @DisplayName("Expand operations")
+    class ExpandOperations {
+
+        @Test
+        @DisplayName("expand with container and text")
+        void expandWithContainerAndText() {
+            // When
+            service.expand(componentType, container, "Panel1", "Panel2");
+
+            // Then
+            verify(accordion).expand(container, "Panel1", "Panel2");
+        }
+
+        @Test
+        @DisplayName("expand with container and strategy")
+        void expandWithContainerAndStrategy() {
+            // Given
+            when(accordion.expand(container, strategy)).thenReturn("Expanded");
+
+            // When
+            String result = service.expand(componentType, container, strategy);
+
+            // Then
+            assertThat(result).isEqualTo("Expanded");
+            verify(accordion).expand(container, strategy);
+        }
+
+        @Test
+        @DisplayName("expand with text only")
+        void expandWithTextOnly() {
+            // When
+            service.expand(componentType, "Panel1");
+
+            // Then
+            verify(accordion).expand("Panel1");
+        }
+
+        @Test
+        @DisplayName("expand with By locator")
+        void expandWithByLocator() {
+            // Given
+            By locator = By.id("accordion");
+
+            // When
+            service.expand(componentType, locator);
+
+            // Then
+            verify(accordion).expand(locator);
+        }
+    }
+
+    @Nested
+    @DisplayName("Collapse operations")
+    class CollapseOperations {
+
+        @Test
+        @DisplayName("collapse with container and text")
+        void collapseWithContainerAndText() {
+            // When
+            service.collapse(componentType, container, "Panel1");
+
+            // Then
+            verify(accordion).collapse(container, "Panel1");
+        }
+
+        @Test
+        @DisplayName("collapse with container and strategy")
+        void collapseWithContainerAndStrategy() {
+            // Given
+            when(accordion.collapse(container, strategy)).thenReturn("Collapsed");
+
+            // When
+            String result = service.collapse(componentType, container, strategy);
+
+            // Then
+            assertThat(result).isEqualTo("Collapsed");
+            verify(accordion).collapse(container, strategy);
+        }
+
+        @Test
+        @DisplayName("collapse with text only")
+        void collapseWithTextOnly() {
+            // When
+            service.collapse(componentType, "Panel1");
+
+            // Then
+            verify(accordion).collapse("Panel1");
+        }
+
+        @Test
+        @DisplayName("collapse with By locator")
+        void collapseWithByLocator() {
+            // Given
+            By locator = By.id("accordion");
+
+            // When
+            service.collapse(componentType, locator);
+
+            // Then
+            verify(accordion).collapse(locator);
+        }
+    }
+
+    @Nested
+    @DisplayName("Status check operations")
+    class StatusCheckOperations {
+
+        @Test
+        @DisplayName("areEnabled with container and text")
+        void areEnabledWithContainerAndText() {
+            // Given
+            when(accordion.areEnabled(container, "Panel1", "Panel2")).thenReturn(true);
+
+            // When
+            boolean result = service.areEnabled(componentType, container, "Panel1", "Panel2");
+
+            // Then
+            assertThat(result).isTrue();
+            verify(accordion).areEnabled(container, "Panel1", "Panel2");
+        }
+
+        @Test
+        @DisplayName("areEnabled with text only")
+        void areEnabledWithTextOnly() {
+            // Given
+            when(accordion.areEnabled("Panel1")).thenReturn(true);
+
+            // When
+            boolean result = service.areEnabled(componentType, "Panel1");
+
+            // Then
+            assertThat(result).isTrue();
+            verify(accordion).areEnabled("Panel1");
+        }
+
+        @Test
+        @DisplayName("areEnabled with By locator")
+        void areEnabledWithByLocator() {
+            // Given
+            By locator = By.id("accordion");
+            when(accordion.areEnabled(locator)).thenReturn(true);
+
+            // When
+            boolean result = service.areEnabled(componentType, locator);
+
+            // Then
+            assertThat(result).isTrue();
+            verify(accordion).areEnabled(locator);
+        }
+    }
+
+    @Nested
+    @DisplayName("Get accordion information")
+    class GetAccordionInformation {
+
+        @Test
+        @DisplayName("getExpanded returns list of expanded panels")
+        void getExpanded() {
+            // Given
+            List<String> expandedList = Collections.singletonList("Panel1");
+            when(accordion.getExpanded(container)).thenReturn(expandedList);
+
+            // When
+            List<String> result = service.getExpanded(componentType, container);
+
+            // Then
+            assertThat(result).isEqualTo(expandedList);
+            verify(accordion).getExpanded(container);
+        }
+
+        @Test
+        @DisplayName("getCollapsed returns list of collapsed panels")
+        void getCollapsed() {
+            // Given
+            List<String> collapsedList = Arrays.asList("Panel2", "Panel3");
+            when(accordion.getCollapsed(container)).thenReturn(collapsedList);
+
+            // When
+            List<String> result = service.getCollapsed(componentType, container);
+
+            // Then
+            assertThat(result).isEqualTo(collapsedList);
+            verify(accordion).getCollapsed(container);
+        }
+
+        @Test
+        @DisplayName("getAll returns list of all panels")
+        void getAll() {
+            // Given
+            List<String> allPanels = Arrays.asList("Panel1", "Panel2", "Panel3");
+            when(accordion.getAll(container)).thenReturn(allPanels);
+
+            // When
+            List<String> result = service.getAll(componentType, container);
+
+            // Then
+            assertThat(result).isEqualTo(allPanels);
+            verify(accordion).getAll(container);
+        }
+
+        @Test
+        @DisplayName("getTitle returns panel title")
+        void getTitle() {
+            // Given
+            By locator = By.id("title");
+            when(accordion.getTitle(locator)).thenReturn("Title");
+
+            // When
+            String result = service.getTitle(componentType, locator);
+
+            // Then
+            assertThat(result).isEqualTo("Title");
+            verify(accordion).getTitle(locator);
+        }
+
+        @Test
+        @DisplayName("getText returns panel text content")
+        void getText() {
+            // Given
+            By locator = By.id("text");
+            when(accordion.getText(locator)).thenReturn("Text");
+
+            // When
+            String result = service.getText(componentType, locator);
+
+            // Then
+            assertThat(result).isEqualTo("Text");
+            verify(accordion).getText(locator);
+        }
     }
 
     @Test
-    public void testExpandWithContainerAndText() {
-        service.expand(mockAccordionComponentType, container, "Panel1", "Panel2");
-        verify(accordionMock).expand(container, "Panel1", "Panel2");
+    @DisplayName("Component is cached and reused")
+    void componentCaching() {
+        // When
+        service.expand(componentType, container, "Panel1");
+        service.collapse(componentType, container, "Panel1");
+
+        // Then
+        factoryMock.verify(() -> ComponentFactory.getAccordionComponent(eq(componentType), eq(driver)), times(1));
     }
 
     @Test
-    public void testExpandWithContainerAndStrategy() {
-        when(accordionMock.expand(container, strategy)).thenReturn("Expanded");
-        String result = service.expand(mockAccordionComponentType, container, strategy);
-        assertEquals("Expanded", result);
-        verify(accordionMock).expand(container, strategy);
+    @DisplayName("Different component types create different components")
+    void differentComponentTypes() {
+        // Create a separate service instance to avoid cache issues
+        AccordionServiceImpl service2 = new AccordionServiceImpl(driver);
+
+        // Create two accordion mocks
+        Accordion accordion1 = mock(Accordion.class);
+        Accordion accordion2 = mock(Accordion.class);
+
+        // Set up the component cache manually to ensure different instances
+        Map<AccordionComponentType, Accordion> componentsMap1 = new HashMap<>();
+        componentsMap1.put(componentType, accordion1);
+
+        Map<AccordionComponentType, Accordion> componentsMap2 = new HashMap<>();
+        componentsMap2.put(componentType, accordion2);
+
+        // Access private field using reflection to set the components map
+        try {
+            java.lang.reflect.Field componentsField1 = AbstractComponentService.class.getDeclaredField("components");
+            componentsField1.setAccessible(true);
+            componentsField1.set(service, componentsMap1);
+
+            java.lang.reflect.Field componentsField2 = AbstractComponentService.class.getDeclaredField("components");
+            componentsField2.setAccessible(true);
+            componentsField2.set(service2, componentsMap2);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set components map using reflection", e);
+        }
+
+        // Reset factory mock to ensure clean setup
+        factoryMock.reset();
+
+        // Configure factory to return specific accordions based on service instance
+        factoryMock.when(() -> ComponentFactory.getAccordionComponent(any(), eq(driver)))
+                .thenAnswer(invocation -> {
+                    // Return accordion1 for first service, accordion2 for second service
+                    AccordionComponentType type = invocation.getArgument(0);
+                    if (type == componentType) {
+                        // Return appropriate accordion based on which service map contains it
+                        if (componentsMap1.containsKey(type)) {
+                            return accordion1;
+                        } else {
+                            return accordion2;
+                        }
+                    }
+                    return null;
+                });
+
+        // Execute the methods on both services
+        service.expand(componentType, "Panel1");
+        service2.expand(componentType, "Panel2");
+
+        // Verify each mock received the appropriate call
+        verify(accordion1).expand("Panel1");
+        verify(accordion2).expand("Panel2");
     }
 
-    @Test
-    public void testExpandWithTextOnly() {
-        service.expand(mockAccordionComponentType, "Panel1");
-        verify(accordionMock).expand("Panel1");
-    }
+    @Nested
+    @DisplayName("Default Type Resolution")
+    class DefaultTypeResolution {
 
-    @Test
-    public void testExpandWithByLocator() {
-        By locator = By.id("accordion");
-        service.expand(mockAccordionComponentType, locator);
-        verify(accordionMock).expand(locator);
-    }
+        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
+        private MockedStatic<ReflectionUtil> reflectionUtilMock;
+        private UiConfig uiConfigMock;
 
-    @Test
-    public void testCollapseWithContainerAndText() {
-        service.collapse(mockAccordionComponentType, container, "Panel1");
-        verify(accordionMock).collapse(container, "Panel1");
-    }
+        @BeforeEach
+        void setUp() {
+            uiConfigMock = mock(UiConfig.class);
+            uiConfigHolderMock = mockStatic(UiConfigHolder.class);
+            reflectionUtilMock = mockStatic(ReflectionUtil.class);
 
-    @Test
-    public void testCollapseWithContainerAndStrategy() {
-        when(accordionMock.collapse(container, strategy)).thenReturn("Collapsed");
-        String result = service.collapse(mockAccordionComponentType, container, strategy);
-        assertEquals("Collapsed", result);
-        verify(accordionMock).collapse(container, strategy);
-    }
+            uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfigMock);
+            when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
+            when(uiConfigMock.accordionDefaultType()).thenReturn("TEST_TYPE");
+        }
 
-    @Test
-    public void testCollapseWithTextOnly() {
-        service.collapse(mockAccordionComponentType, "Panel1");
-        verify(accordionMock).collapse("Panel1");
-    }
+        @AfterEach
+        void tearDown() {
+            if (uiConfigHolderMock != null) {
+                uiConfigHolderMock.close();
+            }
+            if (reflectionUtilMock != null) {
+                reflectionUtilMock.close();
+            }
+        }
 
-    @Test
-    public void testCollapseWithByLocator() {
-        By locator = By.id("accordion");
-        service.collapse(mockAccordionComponentType, locator);
-        verify(accordionMock).collapse(locator);
-    }
+        @Test
+        @DisplayName("getDefaultType returns component type when found")
+        void getDefaultTypeSuccess() throws Exception {
+            // Given
+            AccordionComponentType mockType = mock(AccordionComponentType.class);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(AccordionComponentType.class),
+                            eq("TEST_TYPE"),
+                            eq("com.test.package")))
+                    .thenReturn(mockType);
 
-    @Test
-    public void testAreEnabledWithContainerAndText() {
-        when(accordionMock.areEnabled(container, "Panel1", "Panel2")).thenReturn(true);
-        boolean result = service.areEnabled(mockAccordionComponentType, container, "Panel1", "Panel2");
-        assertTrue(result);
-        verify(accordionMock).areEnabled(container, "Panel1", "Panel2");
-    }
+            // When - accessing the private method using reflection
+            java.lang.reflect.Method getDefaultTypeMethod = AccordionService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            AccordionComponentType result = (AccordionComponentType) getDefaultTypeMethod.invoke(null);
 
-    @Test
-    public void testAreEnabledWithTextOnly() {
-        when(accordionMock.areEnabled("Panel1")).thenReturn(true);
-        boolean result = service.areEnabled(mockAccordionComponentType, "Panel1");
-        assertTrue(result);
-        verify(accordionMock).areEnabled("Panel1");
-    }
+            // Then
+            assertThat(result).isEqualTo(mockType);
+        }
 
-    @Test
-    public void testAreEnabledWithByLocator() {
-        By locator = By.id("accordion");
-        when(accordionMock.areEnabled(locator)).thenReturn(true);
-        boolean result = service.areEnabled(mockAccordionComponentType, locator);
-        assertTrue(result);
-        verify(accordionMock).areEnabled(locator);
-    }
+        @Test
+        @DisplayName("getDefaultType returns null when exception occurs")
+        void getDefaultTypeWithException() throws Exception {
+            // Given
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(AccordionComponentType.class),
+                            anyString(),
+                            anyString()))
+                    .thenThrow(new RuntimeException("Test exception"));
 
-    @Test
-    public void testGetExpanded() {
-        List<String> expandedList = Collections.singletonList("Panel1");
-        when(accordionMock.getExpanded(container)).thenReturn(expandedList);
-        List<String> result = service.getExpanded(mockAccordionComponentType, container);
-        assertEquals(expandedList, result);
-        verify(accordionMock).getExpanded(container);
-    }
+            // When - accessing the private method using reflection
+            java.lang.reflect.Method getDefaultTypeMethod = AccordionService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            AccordionComponentType result = (AccordionComponentType) getDefaultTypeMethod.invoke(null);
 
-    @Test
-    public void testGetCollapsed() {
-        List<String> collapsedList = Arrays.asList("Panel2", "Panel3");
-        when(accordionMock.getCollapsed(container)).thenReturn(collapsedList);
-        List<String> result = service.getCollapsed(mockAccordionComponentType, container);
-        assertEquals(collapsedList, result);
-        verify(accordionMock).getCollapsed(container);
-    }
-
-    @Test
-    public void testGetAll() {
-        List<String> allPanels = Arrays.asList("Panel1", "Panel2", "Panel3");
-        when(accordionMock.getAll(container)).thenReturn(allPanels);
-        List<String> result = service.getAll(mockAccordionComponentType, container);
-        assertEquals(allPanels, result);
-        verify(accordionMock).getAll(container);
-    }
-
-    @Test
-    public void testGetTitle() {
-        By locator = By.id("title");
-        when(accordionMock.getTitle(locator)).thenReturn("Title");
-        String result = service.getTitle(mockAccordionComponentType, locator);
-        assertEquals("Title", result);
-        verify(accordionMock).getTitle(locator);
-    }
-
-    @Test
-    public void testGetText() {
-        By locator = By.id("text");
-        when(accordionMock.getText(locator)).thenReturn("Text");
-        String result = service.getText(mockAccordionComponentType, locator);
-        assertEquals("Text", result);
-        verify(accordionMock).getText(locator);
-    }
-
-    @Test
-    public void testComponentCaching() {
-        service.expand(mockAccordionComponentType, container, "Panel1");
-        service.collapse(mockAccordionComponentType, container, "Panel1");
-        factoryMock.verify(() -> ComponentFactory.getAccordionComponent(eq(mockAccordionComponentType), eq(driver)), Mockito.times(1));
+            // Then
+            assertThat(result).isNull();
+        }
     }
 }

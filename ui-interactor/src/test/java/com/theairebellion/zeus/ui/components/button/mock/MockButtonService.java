@@ -12,15 +12,26 @@ public class MockButtonService implements ButtonService {
     public SmartWebElement lastContainer;
     public String lastButtonText;
     public By lastLocator;
+    public SmartWebElement lastCellElement;
+    public String[] lastValues;
 
     public boolean returnEnabled;
     public boolean returnVisible;
 
+    public MockButtonService() {
+        // Set DEFAULT_TYPE for testing
+        lastComponentType = MockButtonComponentType.DUMMY;
+        returnEnabled = true;
+        returnVisible = true;
+    }
+
     public void reset() {
-        lastComponentType = null;
+        lastComponentType = MockButtonComponentType.DUMMY;
         lastContainer = null;
         lastButtonText = null;
         lastLocator = null;
+        lastCellElement = null;
+        lastValues = null;
         returnEnabled = true;
         returnVisible = true;
     }
@@ -110,5 +121,8 @@ public class MockButtonService implements ButtonService {
 
     @Override
     public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
+        lastCellElement = cellElement;
+        lastComponentType = (ButtonComponentType) componentType;
+        lastValues = values;
     }
 }
