@@ -18,10 +18,11 @@ public class TestSplitterConfigurationJunit extends TestSplitterConfiguration {
                                           final File testOutputDirectory,
                                           final MavenProject mavenProject, final String jsonOutputFile,
                                           final String projectRoot,
-                                          final boolean parallelMethods, final Set<String> includeTags,
-                                          final Set<String> excludeTags) {
+                                          final boolean parallelMethods, final int maxNumberOfParallelRunners,
+                                          final Set<String> includeTags, final Set<String> excludeTags) {
         super(enabled, maxMethodsPerBucket, testOutputDirectory, mavenProject, jsonOutputFile, projectRoot,
-            parallelMethods);
+            parallelMethods,
+            maxNumberOfParallelRunners);
         this.includeTags = includeTags;
         this.excludeTags = excludeTags;
     }

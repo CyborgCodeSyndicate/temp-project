@@ -16,9 +16,11 @@ public class TestSplitterConfigurationTestng extends TestSplitterConfiguration {
                                            final File testOutputDirectory,
                                            final MavenProject mavenProject, final String jsonOutputFile,
                                            final String projectRoot,
-                                           final boolean parallelMethods, final Set<String> suites) {
+                                           final boolean parallelMethods, final int maxNumberOfParallelRunners,
+                                           final Set<String> suites) {
         super(enabled, maxMethodsPerBucket, testOutputDirectory, mavenProject, jsonOutputFile, projectRoot,
-            parallelMethods);
+            parallelMethods,
+            maxNumberOfParallelRunners);
         this.suites = suites;
     }
 

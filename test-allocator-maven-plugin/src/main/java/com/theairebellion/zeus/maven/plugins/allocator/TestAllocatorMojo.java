@@ -91,14 +91,14 @@ public class TestAllocatorMojo extends AbstractMojo {
             case "junit":
                 config = new TestSplitterConfigurationJunit(
                     enabled, maxMethods, testOutputDir, project, outputJsonFile,
-                    projectBaseDir.getAbsolutePath(), parallelMethods, parseInput(tagsInclude), parseInput(tagsExclude)
+                    projectBaseDir.getAbsolutePath(), parallelMethods, maxNumberOfParallelRunners, parseInput(tagsInclude), parseInput(tagsExclude)
                 );
                 service = new JUnitAllocatorService(getLog());
                 break;
             case "testng":
                 config = new TestSplitterConfigurationTestng(
                     enabled, maxMethods, testOutputDir, project, outputJsonFile,
-                    projectBaseDir.getAbsolutePath(), this.parallelMethods, parseInput(suites)
+                    projectBaseDir.getAbsolutePath(), this.parallelMethods, maxNumberOfParallelRunners, parseInput(suites)
                 );
                 service = new TestNgAllocatorService(getLog());
                 break;
