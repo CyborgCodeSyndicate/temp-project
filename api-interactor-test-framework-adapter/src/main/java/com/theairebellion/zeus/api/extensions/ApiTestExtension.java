@@ -20,9 +20,23 @@ import java.util.function.Consumer;
 
 import static com.theairebellion.zeus.api.storage.StorageKeysApi.*;
 
+/**
+ * Handles API authentication for test execution.
+ * <p>
+ * This JUnit 5 extension processes the {@link AuthenticateViaApiAs} annotation
+ * to authenticate users before API tests.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class ApiTestExtension implements BeforeTestExecutionCallback {
 
-
+    /**
+     * Executes authentication before test execution.
+     *
+     * @param context The test execution context.
+     * @throws Exception If authentication fails.
+     */
     @Override
     public void beforeTestExecution(final ExtensionContext context) throws Exception {
         context.getTestMethod()
@@ -32,9 +46,7 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
 
     private void handleAuthentication(final ExtensionContext context, final AuthenticateViaApiAs annotation) {
         try {
-            Credentials credentials = annotation.credentials()
-                    .getDeclaredConstructor()
-                    .newInstance();
+            Credentials credentials = annotation.credentials().getDeclaredConstructor().newInstance();
             ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
             DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
@@ -47,10 +59,8 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
 
             addConsumerToStore(context, questConsumer);
 
-        } catch (InstantiationException
-                 | IllegalAccessException
-                 | InvocationTargetException
-                 | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             throw new IllegalStateException("Failed to instantiate credentials.", e);
         }
     }
@@ -79,5 +89,4 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
 
         consumers.add(questConsumer);
     }
-
 }

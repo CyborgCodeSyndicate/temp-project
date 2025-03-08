@@ -5,6 +5,16 @@ import io.qameta.allure.Allure;
 import io.restassured.response.Response;
 import org.springframework.stereotype.Component;
 
+/**
+ * Enhances {@link RestClientImpl} with Allure reporting capabilities.
+ * <p>
+ * This class logs API request and response details to Allure, attaching
+ * HTTP method, headers, body, response time, status codes, and other key
+ * request/response metadata.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Component
 public class RestClientAllureImpl extends RestClientImpl {
 
@@ -17,7 +27,14 @@ public class RestClientAllureImpl extends RestClientImpl {
     private static final String ATTACHMENT_RESPONSE_HEADERS = "Response Headers";
     private static final String ATTACHMENT_RESPONSE_BODY = "Response Body";
 
-
+    /**
+     * Logs API request details and attaches them to Allure reports.
+     *
+     * @param methodName The HTTP method used for the request.
+     * @param finalUrl   The request URL.
+     * @param body       The request body, if applicable.
+     * @param headers    The request headers.
+     */
     @Override
     protected void printRequest(final String methodName, final String finalUrl, final String body,
                                 final String headers) {
@@ -25,7 +42,14 @@ public class RestClientAllureImpl extends RestClientImpl {
         logRequestDetails(methodName, finalUrl, headers, body);
     }
 
-
+    /**
+     * Logs API response details and attaches them to Allure reports.
+     *
+     * @param methodName The HTTP method used for the request.
+     * @param finalUrl   The request URL.
+     * @param response   The received response.
+     * @param duration   The time taken to execute the request in milliseconds.
+     */
     @Override
     protected void printResponse(final String methodName, final String finalUrl, final Response response,
                                  final long duration) {
@@ -33,7 +57,14 @@ public class RestClientAllureImpl extends RestClientImpl {
         logResponseDetails(methodName, finalUrl, response, duration);
     }
 
-
+    /**
+     * Logs request details as Allure attachments.
+     *
+     * @param methodName The HTTP method used.
+     * @param url        The request URL.
+     * @param headers    The request headers.
+     * @param body       The request body, if applicable.
+     */
     private void logRequestDetails(String methodName, String url, String headers, String body) {
         Allure.step(String.format("Sending request to endpoint %s-%s.", methodName, url), () -> {
             addAttachmentIfPresent(ATTACHMENT_HTTP_METHOD, methodName);
@@ -43,22 +74,34 @@ public class RestClientAllureImpl extends RestClientImpl {
         });
     }
 
-
+    /**
+     * Logs response details as Allure attachments.
+     *
+     * @param methodName The HTTP method used.
+     * @param url        The request URL.
+     * @param response   The API response.
+     * @param duration   The execution time in milliseconds.
+     */
     private void logResponseDetails(String methodName, String url, Response response, long duration) {
         int statusCode = response.getStatusCode();
         Allure.step(
-            String.format("Response with status: %d received from endpoint: %s-%s in %dms.", statusCode, methodName,
-                url, duration), () -> {
-                addAttachmentIfPresent(ATTACHMENT_HTTP_METHOD, methodName);
-                addAttachmentIfPresent(ATTACHMENT_URL, url);
-                addAttachmentIfPresent(ATTACHMENT_RESPONSE_TIME, String.valueOf(duration));
-                addAttachmentIfPresent(ATTACHMENT_STATUS_CODE, String.valueOf(statusCode));
-                addAttachmentIfPresent(ATTACHMENT_RESPONSE_HEADERS, response.getHeaders().toString());
-                addAttachmentIfPresent(ATTACHMENT_RESPONSE_BODY, response.getBody().prettyPrint());
-            });
+                String.format("Response with status: %d received from endpoint: %s-%s in %dms.", statusCode, methodName,
+                        url, duration), () -> {
+                    addAttachmentIfPresent(ATTACHMENT_HTTP_METHOD, methodName);
+                    addAttachmentIfPresent(ATTACHMENT_URL, url);
+                    addAttachmentIfPresent(ATTACHMENT_RESPONSE_TIME, String.valueOf(duration));
+                    addAttachmentIfPresent(ATTACHMENT_STATUS_CODE, String.valueOf(statusCode));
+                    addAttachmentIfPresent(ATTACHMENT_RESPONSE_HEADERS, response.getHeaders().toString());
+                    addAttachmentIfPresent(ATTACHMENT_RESPONSE_BODY, response.getBody().prettyPrint());
+                });
     }
 
-
+    /**
+     * Adds an attachment to Allure if the content is not null or empty.
+     *
+     * @param name    The attachment name.
+     * @param content The attachment content.
+     */
     private void addAttachmentIfPresent(String name, String content) {
         if (content != null && !content.trim().isEmpty()) {
             Allure.addAttachment(name, content);
