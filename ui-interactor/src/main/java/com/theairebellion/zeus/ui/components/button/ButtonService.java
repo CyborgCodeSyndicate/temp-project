@@ -8,7 +8,14 @@ import org.openqa.selenium.By;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with button elements within a web interface.
+ * Provides service-level methods for interacting with button UI components.
+ * <p>
+ * This interface defines operations to click buttons and to check their enabled
+ * and visible states, delegating the actual interactions to specific implementations
+ * based on the configured {@link ButtonComponentType}.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface ButtonService extends TableInsertion {
 
