@@ -2,187 +2,568 @@ package com.theairebellion.zeus.ui.components.tab;
 
 import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
+import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.tab.mock.MockTabComponentType;
 import com.theairebellion.zeus.ui.components.tab.mock.MockTabService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedStatic;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
+@DisplayName("TabService Interface Methods")
 class TabServiceTest extends BaseUnitUITest {
 
-    private MockTabService service;
-    private MockTabComponentType mockType;
-    private MockSmartWebElement container;
+    private MockTabService mockService;
+    private SmartWebElement container;
     private By locator;
+
+    // For direct testing of default methods
+    private TabService directService;
 
     @BeforeEach
     void setUp() {
-        service = new MockTabService();
-        mockType = MockTabComponentType.DUMMY;
+        mockService = new MockTabService();
         WebElement webElement = mock(WebElement.class);
         WebDriver driver = mock(WebDriver.class);
         container = new MockSmartWebElement(webElement, driver);
         locator = By.id("testTab");
+
+        // Setup for direct testing of default methods
+        directService = new TabService() {
+            @Override
+            public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
+            }
+
+            @Override
+            public boolean isSelected(TabComponentType componentType, SmartWebElement c, String text) {
+                return true;
+            }
+
+            @Override
+            public boolean isSelected(TabComponentType componentType, SmartWebElement c) {
+                return true;
+            }
+
+            @Override
+            public boolean isSelected(TabComponentType componentType, String text) {
+                return true;
+            }
+
+            @Override
+            public boolean isSelected(TabComponentType componentType, By by) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> void click(T componentType, SmartWebElement c, String text) {
+            }
+
+            @Override
+            public <T extends ButtonComponentType> void click(T componentType, SmartWebElement c) {
+            }
+
+            @Override
+            public <T extends ButtonComponentType> void click(T componentType, String text) {
+            }
+
+            @Override
+            public <T extends ButtonComponentType> void click(T componentType, By by) {
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement c, String text) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement c) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isEnabled(T componentType, String text) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isEnabled(T componentType, By by) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement c, String text) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement c) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isVisible(T componentType, String text) {
+                return true;
+            }
+
+            @Override
+            public <T extends ButtonComponentType> boolean isVisible(T componentType, By by) {
+                return true;
+            }
+        };
+    }
+
+    @Nested
+    @DisplayName("Mock Service Tests")
+    class MockServiceTests {
+
+        @Nested
+        @DisplayName("IsSelected Method Tests")
+        class IsSelectedMethodTests {
+
+            @Test
+            @DisplayName("isSelected with container and text delegates correctly")
+            void isSelectedWithContainerAndText() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "TabX";
+
+                // When
+                var result = mockService.isSelected(componentType, container, tabText);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("isSelected with container delegates correctly")
+            void isSelectedWithContainer() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                var result = mockService.isSelected(componentType, container);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+            }
+
+            @Test
+            @DisplayName("isSelected with text only delegates correctly")
+            void isSelectedWithTextOnly() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "TabZ";
+
+                // When
+                var result = mockService.isSelected(componentType, tabText);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("isSelected with locator delegates correctly")
+            void isSelectedWithLocator() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                var result = mockService.isSelected(componentType, locator);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastLocator).isEqualTo(locator);
+            }
+        }
+
+        @Nested
+        @DisplayName("Click Method Tests")
+        class ClickMethodTests {
+
+            @Test
+            @DisplayName("click with container and text delegates correctly")
+            void clickWithContainerAndText() {
+                // Given
+                mockService.reset();
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "ClickTab";
+
+                // When
+                mockService.click(componentType, container, tabText);
+
+                // Then
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("click with container delegates correctly")
+            void clickWithContainer() {
+                // Given
+                mockService.reset();
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                mockService.click(componentType, container);
+
+                // Then
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+            }
+
+            @Test
+            @DisplayName("click with text only delegates correctly")
+            void clickWithTextOnly() {
+                // Given
+                mockService.reset();
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "CText";
+
+                // When
+                mockService.click(componentType, tabText);
+
+                // Then
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("click with locator delegates correctly")
+            void clickWithLocator() {
+                // Given
+                mockService.reset();
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                mockService.click(componentType, locator);
+
+                // Then
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastLocator).isEqualTo(locator);
+            }
+        }
+
+        @Nested
+        @DisplayName("IsEnabled Method Tests")
+        class IsEnabledMethodTests {
+
+            @Test
+            @DisplayName("isEnabled with container and text delegates correctly")
+            void isEnabledWithContainerAndText() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "TabA";
+
+                // When
+                var result = mockService.isEnabled(componentType, container, tabText);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("isEnabled with container delegates correctly")
+            void isEnabledWithContainer() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                var result = mockService.isEnabled(componentType, container);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+            }
+
+            @Test
+            @DisplayName("isEnabled with text only delegates correctly")
+            void isEnabledWithTextOnly() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "TT";
+
+                // When
+                var result = mockService.isEnabled(componentType, tabText);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("isEnabled with locator delegates correctly")
+            void isEnabledWithLocator() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                var result = mockService.isEnabled(componentType, locator);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastLocator).isEqualTo(locator);
+            }
+        }
+
+        @Nested
+        @DisplayName("IsVisible Method Tests")
+        class IsVisibleMethodTests {
+
+            @Test
+            @DisplayName("isVisible with container and text delegates correctly")
+            void isVisibleWithContainerAndText() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "TabView";
+
+                // When
+                var result = mockService.isVisible(componentType, container, tabText);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("isVisible with container delegates correctly")
+            void isVisibleWithContainer() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                var result = mockService.isVisible(componentType, container);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastContainer).isEqualTo(container);
+            }
+
+            @Test
+            @DisplayName("isVisible with text only delegates correctly")
+            void isVisibleWithTextOnly() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+                var tabText = "TCheck";
+
+                // When
+                var result = mockService.isVisible(componentType, tabText);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastText).isEqualTo(tabText);
+            }
+
+            @Test
+            @DisplayName("isVisible with locator delegates correctly")
+            void isVisibleWithLocator() {
+                // Given
+                mockService.reset();
+                mockService.returnBool = true;
+                var componentType = MockTabComponentType.DUMMY;
+
+                // When
+                var result = mockService.isVisible(componentType, locator);
+
+                // Then
+                assertThat(result).isTrue();
+                assertThat(mockService.lastComponentType).isEqualTo(componentType);
+                assertThat(mockService.lastLocator).isEqualTo(locator);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Direct Default Methods Tests")
+    class DirectDefaultMethodsTests {
+
+        @Test
+        @DisplayName("isSelected default methods delegate correctly")
+        void isSelectedDefaultMethods() {
+            // Test container and text
+            assertThat(directService.isSelected(container, "TabA")).isTrue();
+
+            // Test container only
+            assertThat(directService.isSelected(container)).isTrue();
+
+            // Test text only
+            assertThat(directService.isSelected("TabA")).isTrue();
+
+            // Test locator
+            assertThat(directService.isSelected(locator)).isTrue();
+        }
+
+        @Test
+        @DisplayName("isEnabled default methods delegate correctly")
+        void isEnabledDefaultMethods() {
+            // Test container and text
+            assertThat(directService.isEnabled(container, "BtnA")).isTrue();
+
+            // Test container only
+            assertThat(directService.isEnabled(container)).isTrue();
+
+            // Test text only
+            assertThat(directService.isEnabled("BtnA")).isTrue();
+
+            // Test locator
+            assertThat(directService.isEnabled(locator)).isTrue();
+        }
+
+        @Test
+        @DisplayName("isVisible default methods delegate correctly")
+        void isVisibleDefaultMethods() {
+            // Test container and text
+            assertThat(directService.isVisible(container, "BtnVis")).isTrue();
+
+            // Test container only
+            assertThat(directService.isVisible(container)).isTrue();
+
+            // Test text only
+            assertThat(directService.isVisible("BtnVis")).isTrue();
+
+            // Test locator
+            assertThat(directService.isVisible(locator)).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("Default Type Resolution Tests")
+    class DefaultTypeResolutionTests {
+        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
+        private MockedStatic<ReflectionUtil> reflectionUtilMock;
+        private UiConfig uiConfigMock;
+
+        @BeforeEach
+        void setUp() {
+            uiConfigMock = mock(UiConfig.class);
+            uiConfigHolderMock = mockStatic(UiConfigHolder.class);
+            reflectionUtilMock = mockStatic(ReflectionUtil.class);
+
+            uiConfigHolderMock.when(UiConfigHolder::getUiConfig)
+                    .thenReturn(uiConfigMock);
+            when(uiConfigMock.tabDefaultType()).thenReturn("TEST_TYPE");
+            when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
+        }
+
+        @AfterEach
+        void tearDown() {
+            if (uiConfigHolderMock != null) {
+                uiConfigHolderMock.close();
+            }
+            if (reflectionUtilMock != null) {
+                reflectionUtilMock.close();
+            }
+        }
+
+        @Test
+        @DisplayName("getDefaultType returns component type when found")
+        void getDefaultTypeSuccess() throws Exception {
+            // Given
+            var mockType = MockTabComponentType.DUMMY;
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(TabComponentType.class),
+                            eq("TEST_TYPE"),
+                            eq("com.test.package")))
+                    .thenReturn(mockType);
+
+            // When - access the private method using reflection
+            var getDefaultTypeMethod = TabService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            var result = (TabComponentType) getDefaultTypeMethod.invoke(null);
+
+            // Then
+            assertThat(result).isEqualTo(mockType);
+        }
+
+        @Test
+        @DisplayName("getDefaultType returns null when exception occurs")
+        void getDefaultTypeWithException() throws Exception {
+            // Given - ReflectionUtil throws exception when called
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(TabComponentType.class),
+                            anyString(),
+                            anyString()))
+                    .thenThrow(new RuntimeException("Test exception"));
+
+            // When - access private method via reflection
+            var getDefaultTypeMethod = TabService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            var result = (TabComponentType) getDefaultTypeMethod.invoke(null);
+
+            // Then - verify null is returned when exception occurs
+            assertThat(result).isNull();
+        }
     }
 
     @Test
-    void testDefaultIsSelectedContainerAndText() {
-        service.reset();
-        service.returnBool = true;
-        boolean selected = service.isSelected(mockType, container, "TabX");
-        assertTrue(selected);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("TabX", service.lastText);
-    }
+    @DisplayName("reset method clears all fields properly")
+    void resetMethodClearsAllFields() {
+        // Given
+        mockService.lastComponentType = MockTabComponentType.DUMMY;
+        mockService.lastContainer = container;
+        mockService.lastText = "buttonText";
+        mockService.lastLocator = locator;
+        mockService.returnBool = true;
 
-    @Test
-    void testDefaultIsSelectedContainerOnly() {
-        service.reset();
-        service.returnBool = true;
-        boolean selected = service.isSelected(mockType, container);
-        assertTrue(selected);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
+        // When
+        mockService.reset();
 
-    @Test
-    void testDefaultIsSelectedTextOnly() {
-        service.reset();
-        service.returnBool = true;
-        boolean selected = service.isSelected(mockType, "TabZ");
-        assertTrue(selected);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals("TabZ", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsSelectedLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean selected = service.isSelected(mockType, locator);
-        assertTrue(selected);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
-
-    @Test
-    void testDefaultClickContainerAndText() {
-        service.reset();
-        service.click(mockType, container, "ClickTab");
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("ClickTab", service.lastText);
-    }
-
-    @Test
-    void testDefaultClickContainerOnly() {
-        service.reset();
-        service.click(mockType, container);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
-
-    @Test
-    void testDefaultClickTextOnly() {
-        service.reset();
-        service.click(mockType, "CText");
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals("CText", service.lastText);
-    }
-
-    @Test
-    void testDefaultClickLocator() {
-        service.reset();
-        service.click(mockType, locator);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
-
-    @Test
-    void testDefaultIsEnabledContainerAndText() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isEnabled(mockType, container, "TabA");
-        assertTrue(enabled);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("TabA", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsEnabledContainer() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isEnabled(mockType, container);
-        assertTrue(enabled);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
-
-    @Test
-    void testDefaultIsEnabledText() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isEnabled(mockType, "TT");
-        assertTrue(enabled);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals("TT", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsEnabledLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isEnabled(mockType, locator);
-        assertTrue(enabled);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
-
-    @Test
-    void testDefaultIsVisibleContainerAndText() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isVisible(mockType, container, "TabView");
-        assertTrue(visible);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("TabView", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsVisibleContainer() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isVisible(mockType, container);
-        assertTrue(visible);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
-
-    @Test
-    void testDefaultIsVisibleText() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isVisible(mockType, "TCheck");
-        assertTrue(visible);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals("TCheck", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsVisibleLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isVisible(mockType, locator);
-        assertTrue(visible);
-        assertEquals(mockType, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
+        // Then
+        assertThat(mockService.lastComponentType).isNull();
+        assertThat(mockService.lastContainer).isNull();
+        assertThat(mockService.lastText).isNull();
+        assertThat(mockService.lastLocator).isNull();
+        assertThat(mockService.returnBool).isFalse();
     }
 }

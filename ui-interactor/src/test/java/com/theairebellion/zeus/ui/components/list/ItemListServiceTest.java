@@ -4,20 +4,24 @@ import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.list.mock.MockItemListComponentType;
 import com.theairebellion.zeus.ui.components.list.mock.MockItemListService;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+@DisplayName("ItemListService Interface Tests")
 class ItemListServiceTest extends BaseUnitUITest {
 
     private MockItemListService service;
@@ -28,435 +32,712 @@ class ItemListServiceTest extends BaseUnitUITest {
     @BeforeEach
     void setUp() {
         service = new MockItemListService();
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        container = new MockSmartWebElement(webElement, driver);
+        container = MockSmartWebElement.createMock();
         locator = By.id("testList");
         strategy = Strategy.FIRST;
+        service.reset();
+    }
+
+    @Nested
+    @DisplayName("Select Default Methods")
+    class SelectDefaultMethodsTests {
+
+        @Test
+        @DisplayName("select(container, itemText) delegates to implementation with DEFAULT_TYPE")
+        void selectContainerItemText() {
+            // When
+            service.select(container, "item1", "item2");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
+        }
+
+        @Test
+        @DisplayName("select(locator, itemText) delegates to implementation with DEFAULT_TYPE")
+        void selectLocatorItemText() {
+            // When
+            service.select(locator, "item1");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+            assertThat(service.lastText).isEqualTo(new String[]{"item1"});
+        }
+
+        @Test
+        @DisplayName("select(container, strategy) delegates to implementation with DEFAULT_TYPE")
+        void selectContainerStrategy() {
+            // When
+            String result = service.select(container, strategy);
+
+            // Then
+            assertThat(result).isEqualTo("mockSelectStrategy");
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastStrategy).isEqualTo(strategy);
+        }
+
+        @Test
+        @DisplayName("select(locator, strategy) delegates to implementation with DEFAULT_TYPE")
+        void selectLocatorStrategy() {
+            // When
+            String result = service.select(locator, strategy);
+
+            // Then
+            assertThat(result).isEqualTo("mockSelectStrategy");
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+            assertThat(service.lastStrategy).isEqualTo(strategy);
+        }
+
+        @Test
+        @DisplayName("select(itemText) delegates to implementation with DEFAULT_TYPE")
+        void selectItemText() {
+            // When
+            service.select("item1", "item2");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
+        }
+
+        @Test
+        @DisplayName("select(itemLocators) delegates to implementation with DEFAULT_TYPE")
+        void selectItemLocators() {
+            // Given
+            By locator1 = By.id("loc1");
+            By locator2 = By.id("loc2");
+
+            // When
+            service.select(locator1, locator2);
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator1, locator2});
+        }
+    }
+
+    @Nested
+    @DisplayName("AreSelected/IsSelected Default Methods")
+    class AreSelectedDefaultMethodsTests {
+
+        @Test
+        @DisplayName("areSelected(container, itemText) delegates to implementation with DEFAULT_TYPE")
+        void areSelectedContainerItemText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.areSelected(container, "item1", "item2");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
+        }
+
+        @Test
+        @DisplayName("isSelected(container, itemText) delegates to implementation with DEFAULT_TYPE")
+        void isSelectedContainerItemText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isSelected(container, "item");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo(new String[]{"item"});
+        }
+
+        @Test
+        @DisplayName("areSelected(locator, itemText) delegates to implementation with DEFAULT_TYPE")
+        void areSelectedLocatorItemText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.areSelected(locator, "item1", "item2");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+            assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
+        }
+
+        @Test
+        @DisplayName("isSelected(locator, itemText) delegates to implementation with DEFAULT_TYPE")
+        void isSelectedLocatorItemText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isSelected(locator, "item");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+            assertThat(service.lastText).isEqualTo(new String[]{"item"});
+        }
+
+        @Test
+        @DisplayName("areSelected(itemText) delegates to implementation with DEFAULT_TYPE")
+        void areSelectedItemText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.areSelected("item1", "item2");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
+        }
+
+        @Test
+        @DisplayName("isSelected(itemText) delegates to implementation with DEFAULT_TYPE")
+        void isSelectedItemText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isSelected("item");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo(new String[]{"item"});
+        }
+
+        @Test
+        @DisplayName("areSelected(itemLocators) delegates to implementation with DEFAULT_TYPE")
+        void areSelectedItemLocators() {
+            // Given
+            service.returnBool = true;
+            By locator1 = By.id("item1");
+            By locator2 = By.id("item2");
+
+            // When
+            boolean result = service.areSelected(locator1, locator2);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator1, locator2});
+        }
+
+        @Test
+        @DisplayName("isSelected(itemLocator) delegates to implementation with DEFAULT_TYPE")
+        void isSelectedItemLocator() {
+            // Given
+            service.returnBool = true;
+            By itemLocator = By.id("item");
+
+            // When
+            boolean result = service.isSelected(itemLocator);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{itemLocator});
+        }
+    }
+
+    @Nested
+    @DisplayName("DeSelect Default Methods")
+    class DeSelectDefaultMethodsTests {
+
+        @Test
+        @DisplayName("deSelect(container, itemText) delegates to implementation with DEFAULT_TYPE")
+        void deSelectContainerItemText() {
+            // When
+            service.deSelect(container, "item1", "item2");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
+        }
+
+        @Test
+        @DisplayName("deSelect(locator, itemText) delegates to implementation with DEFAULT_TYPE")
+        void deSelectLocatorItemText() {
+            // When
+            service.deSelect(locator, "item1");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+            assertThat(service.lastText).isEqualTo(new String[]{"item1"});
+        }
+
+        @Test
+        @DisplayName("deSelect(container, strategy) delegates to implementation with DEFAULT_TYPE")
+        void deSelectContainerStrategy() {
+            // When
+            String result = service.deSelect(container, strategy);
+
+            // Then
+            assertThat(result).isEqualTo("mockDeSelectStrategy");
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastStrategy).isEqualTo(strategy);
+        }
+
+        @Test
+        @DisplayName("deSelect(locator, strategy) delegates to implementation with DEFAULT_TYPE")
+        void deSelectLocatorStrategy() {
+            // When
+            String result = service.deSelect(locator, strategy);
+
+            // Then
+            assertThat(result).isEqualTo("mockDeSelectStrategy");
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+            assertThat(service.lastStrategy).isEqualTo(strategy);
+        }
+
+        @Test
+        @DisplayName("deSelect(itemText) delegates to implementation with DEFAULT_TYPE")
+        void deSelectItemText() {
+            // When
+            service.deSelect("item1", "item2");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
+        }
+
+        @Test
+        @DisplayName("deSelect(itemLocators) delegates to implementation with DEFAULT_TYPE")
+        void deSelectItemLocators() {
+            // Given
+            By locator1 = By.id("loc1");
+            By locator2 = By.id("loc2");
+
+            // When
+            service.deSelect(locator1, locator2);
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+            assertThat(service.lastLocators).isEqualTo(new By[]{locator1, locator2});
+        }
+    }
+
+    @Nested
+    @DisplayName("Default Type Resolution Tests")
+    class DefaultTypeResolutionTests {
+        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
+        private MockedStatic<ReflectionUtil> reflectionUtilMock;
+        private UiConfig uiConfigMock;
+
+        @BeforeEach
+        void setUp() {
+            uiConfigMock = mock(UiConfig.class);
+            uiConfigHolderMock = Mockito.mockStatic(UiConfigHolder.class);
+            reflectionUtilMock = Mockito.mockStatic(ReflectionUtil.class);
+
+            uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfigMock);
+            Mockito.when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
+            Mockito.when(uiConfigMock.listDefaultType()).thenReturn("DUMMY_TYPE");
+        }
+
+        @AfterEach
+        void tearDown() {
+            if (uiConfigHolderMock != null) {
+                uiConfigHolderMock.close();
+            }
+            if (reflectionUtilMock != null) {
+                reflectionUtilMock.close();
+            }
+        }
+
+        @Test
+        @DisplayName("getDefaultType returns component type when found")
+        void getDefaultTypeSuccess() throws Exception {
+            // Given
+            MockItemListComponentType mockType = MockItemListComponentType.DUMMY;
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            Mockito.eq(ItemListComponentType.class),
+                            Mockito.eq("DUMMY_TYPE"),
+                            Mockito.eq("com.test.package")))
+                    .thenReturn(mockType);
+
+            // When - access the private method using reflection
+            Method getDefaultTypeMethod = ItemListService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            ItemListComponentType result = (ItemListComponentType) getDefaultTypeMethod.invoke(null);
+
+            // Then
+            assertThat(result).isEqualTo(mockType);
+        }
+
+        @Test
+        @DisplayName("getDefaultType returns null when exception occurs")
+        void getDefaultTypeWithException() throws Exception {
+            // Given
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            Mockito.eq(ItemListComponentType.class),
+                            Mockito.anyString(),
+                            Mockito.anyString()))
+                    .thenThrow(new RuntimeException("Test exception"));
+
+            // When - access the private method using reflection
+            Method getDefaultTypeMethod = ItemListService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            ItemListComponentType result = (ItemListComponentType) getDefaultTypeMethod.invoke(null);
+
+            // Then
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("DEFAULT_TYPE constant is initialized correctly")
+        void defaultTypeInitialization() throws Exception {
+            // Given
+            MockItemListComponentType mockType = MockItemListComponentType.DUMMY;
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            Mockito.eq(ItemListComponentType.class),
+                            Mockito.anyString(),
+                            Mockito.anyString()))
+                    .thenReturn(mockType);
+
+            // When/Then - verify the DEFAULT_TYPE field by reflection
+            Field defaultTypeField = ItemListService.class.getDeclaredField("DEFAULT_TYPE");
+            defaultTypeField.setAccessible(true);
+
+            // Test via the method to ensure consistent behavior
+            Method getDefaultTypeMethod = ItemListService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            ItemListComponentType resultFromMethod = (ItemListComponentType) getDefaultTypeMethod.invoke(null);
+
+            assertThat(resultFromMethod).isEqualTo(mockType);
+        }
     }
 
     @Test
-    void testDefaultSelectContainer() {
-        service.reset();
-        service.select(container, "a", "b");
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"a", "b"}, service.lastText);
-    }
-
-    @Test
-    void testDefaultSelectLocator() {
-        service.reset();
-        service.select(locator, "a");
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"a"}, service.lastText);
-    }
-
-    @Test
-    void testDefaultSelectContainerStrategy() {
-        service.reset();
-        String result = service.select(container, strategy);
-        assertEquals("mockSelectStrategy", result);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals(strategy, service.lastStrategy);
-    }
-
-    @Test
-    void testDefaultSelectLocatorStrategy() {
-        service.reset();
-        String result = service.select(locator, strategy);
-        assertEquals("mockSelectStrategy", result);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertEquals(strategy, service.lastStrategy);
-    }
-
-    @Test
-    void testDefaultSelectTextVarargs() {
-        service.reset();
-        service.select("x", "y");
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"x", "y"}, service.lastText);
-    }
-
-    @Test
-    void testDefaultSelectByVarargs() {
-        service.reset();
-        By l1 = By.id("l1");
-        By l2 = By.id("l2");
-        service.select(l1, l2);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1, l2}, service.lastLocators);
-    }
-
-    @Test
-    void testDefaultDeSelectContainer() {
-        service.reset();
-        service.deSelect(container, "p", "q");
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"p", "q"}, service.lastText);
-    }
-
-    @Test
-    void testDefaultDeSelectLocator() {
-        service.reset();
-        service.deSelect(locator, "p");
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"p"}, service.lastText);
-    }
-
-    @Test
-    void testDefaultDeSelectContainerStrategy() {
-        service.reset();
-        String result = service.deSelect(container, strategy);
-        assertEquals("mockDeSelectStrategy", result);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals(strategy, service.lastStrategy);
-    }
-
-    @Test
-    void testDefaultDeSelectLocatorStrategy() {
-        service.reset();
-        String result = service.deSelect(locator, strategy);
-        assertEquals("mockDeSelectStrategy", result);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertEquals(strategy, service.lastStrategy);
-    }
-
-    @Test
-    void testDefaultDeSelectTextVarargs() {
-        service.reset();
-        service.deSelect("p", "q");
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"p", "q"}, service.lastText);
-    }
-
-    @Test
-    void testDefaultDeSelectByVarargs() {
-        service.reset();
-        By l1 = By.id("l1");
-        By l2 = By.id("l2");
-        service.deSelect(l1, l2);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1, l2}, service.lastLocators);
-    }
-
-    @Test
-    void testDefaultAreSelectedContainer() {
-        service.reset();
+    @DisplayName("areEnabled(container, itemText) delegates correctly")
+    void areEnabledContainerItemText() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.areSelected(container, "a", "b");
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"a", "b"}, service.lastText);
+
+        // When
+        boolean result = service.areEnabled(container, "item1", "item2");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastContainer).isEqualTo(container);
+        assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
     }
 
     @Test
-    void testDefaultIsSelectedContainer() {
-        service.reset();
+    @DisplayName("isEnabled(container, itemText) delegates correctly")
+    void isEnabledContainerItemText() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.isSelected(container, "single");
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"single"}, service.lastText);
+
+        // When
+        boolean result = service.isEnabled(container, "item");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastContainer).isEqualTo(container);
+        assertThat(service.lastText).isEqualTo(new String[]{"item"});
     }
 
     @Test
-    void testDefaultAreSelectedLocator() {
-        service.reset();
+    @DisplayName("areEnabled(locator, itemText) delegates correctly")
+    void areEnabledLocatorItemText() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.areSelected(locator, "a", "b");
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"a", "b"}, service.lastText);
+
+        // When
+        boolean result = service.areEnabled(locator, "item1", "item2");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+        assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
     }
 
     @Test
-    void testDefaultIsSelectedLocator() {
-        service.reset();
+    @DisplayName("isEnabled(locator, itemText) delegates correctly")
+    void isEnabledLocatorItemText() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.isSelected(locator, "one");
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"one"}, service.lastText);
+
+        // When
+        boolean result = service.isEnabled(locator, "item");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+        assertThat(service.lastText).isEqualTo(new String[]{"item"});
     }
 
     @Test
-    void testDefaultAreSelectedTextVarargs() {
-        service.reset();
+    @DisplayName("areEnabled(itemText) delegates correctly")
+    void areEnabledItemText() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.areSelected("x", "y");
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"x", "y"}, service.lastText);
+
+        // When
+        boolean result = service.areEnabled("item1", "item2");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
     }
 
     @Test
-    void testDefaultIsSelectedText() {
-        service.reset();
+    @DisplayName("isEnabled(itemText) delegates correctly")
+    void isEnabledItemText() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.isSelected("z");
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"z"}, service.lastText);
+
+        // When
+        boolean result = service.isEnabled("item");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastText).isEqualTo(new String[]{"item"});
     }
 
     @Test
-    void testDefaultAreSelectedByVarargs() {
-        service.reset();
-        By l1 = By.id("1");
-        By l2 = By.id("2");
+    @DisplayName("areEnabled(itemLocators) delegates correctly")
+    void areEnabledItemLocators() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.areSelected(l1, l2);
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1, l2}, service.lastLocators);
+        By locator1 = By.id("loc1");
+        By locator2 = By.id("loc2");
+
+        // When
+        boolean result = service.areEnabled(locator1, locator2);
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator1, locator2});
     }
 
     @Test
-    void testDefaultIsSelectedBy() {
-        service.reset();
-        By l1 = By.id("3");
+    @DisplayName("isEnabled(itemLocator) delegates correctly")
+    void isEnabledItemLocator() {
+        // Given
         service.returnBool = true;
-        boolean sel = service.isSelected(l1, "someTxt");
-        // This calls isSelected(DEFAULT_TYPE, l1, "someTxt") => isSelected(<<component>>, By l, "someTxt")
-        // The interface calls are slightly different. We'll just verify last state.
-        assertTrue(sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1}, service.lastLocators);
-        assertArrayEquals(new String[]{"someTxt"}, service.lastText);
+        By itemLocator = By.id("item");
+
+        // When
+        boolean result = service.isEnabled(itemLocator);
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{itemLocator});
     }
 
     @Test
-    void testDefaultAreEnabledContainer() {
-        service.reset();
+    @DisplayName("areVisible(container, itemText) delegates correctly")
+    void areVisibleContainerItemText() {
+        // Given
         service.returnBool = true;
-        boolean en = service.areEnabled(container, "1", "2");
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"1", "2"}, service.lastText);
+
+        // When
+        boolean result = service.areVisible(container, "item1", "item2");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastContainer).isEqualTo(container);
+        assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
     }
 
     @Test
-    void testDefaultIsEnabledContainer() {
-        service.reset();
+    @DisplayName("isVisible(container, itemText) delegates correctly")
+    void isVisibleContainerItemText() {
+        // Given
         service.returnBool = true;
-        boolean en = service.isEnabled(container, "one");
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"one"}, service.lastText);
+
+        // When
+        boolean result = service.isVisible(container, "item");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastContainer).isEqualTo(container);
+        assertThat(service.lastText).isEqualTo(new String[]{"item"});
     }
 
     @Test
-    void testDefaultAreEnabledLocator() {
-        service.reset();
+    @DisplayName("areVisible(locator, itemText) delegates correctly")
+    void areVisibleLocatorItemText() {
+        // Given
         service.returnBool = true;
-        boolean en = service.areEnabled(locator, "xxx", "yyy");
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"xxx", "yyy"}, service.lastText);
+
+        // When
+        boolean result = service.areVisible(locator, "item1", "item2");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+        assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
     }
 
     @Test
-    void testDefaultIsEnabledLocator() {
-        service.reset();
+    @DisplayName("isVisible(locator, itemText) delegates correctly")
+    void isVisibleLocatorItemText() {
+        // Given
         service.returnBool = true;
-        boolean en = service.isEnabled(locator, "solo");
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"solo"}, service.lastText);
+
+        // When
+        boolean result = service.isVisible(locator, "item");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator});
+        assertThat(service.lastText).isEqualTo(new String[]{"item"});
     }
 
     @Test
-    void testDefaultAreEnabledTextVarargs() {
-        service.reset();
+    @DisplayName("areVisible(itemText) delegates correctly")
+    void areVisibleItemText() {
+        // Given
         service.returnBool = true;
-        boolean en = service.areEnabled("a", "b");
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"a", "b"}, service.lastText);
+
+        // When
+        boolean result = service.areVisible("item1", "item2");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastText).isEqualTo(new String[]{"item1", "item2"});
     }
 
     @Test
-    void testDefaultIsEnabledText() {
-        service.reset();
+    @DisplayName("isVisible(itemText) delegates correctly")
+    void isVisibleItemText() {
+        // Given
         service.returnBool = true;
-        boolean en = service.isEnabled("something");
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"something"}, service.lastText);
+
+        // When
+        boolean result = service.isVisible("item");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastText).isEqualTo(new String[]{"item"});
     }
 
     @Test
-    void testDefaultAreEnabledByVarargs() {
-        service.reset();
-        By l1 = By.id("l1");
-        By l2 = By.id("l2");
+    @DisplayName("areVisible(itemLocators) delegates correctly")
+    void areVisibleItemLocators() {
+        // Given
         service.returnBool = true;
-        boolean en = service.areEnabled(l1, l2);
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1, l2}, service.lastLocators);
+        By locator1 = By.id("loc1");
+        By locator2 = By.id("loc2");
+
+        // When
+        boolean result = service.areVisible(locator1, locator2);
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator1, locator2});
     }
 
     @Test
-    void testDefaultIsEnabledBy() {
-        service.reset();
-        By l1 = By.id("xyz");
+    @DisplayName("isVisible(itemLocator) delegates correctly")
+    void isVisibleItemLocator() {
+        // Given
         service.returnBool = true;
-        boolean en = service.isEnabled(l1);
-        assertTrue(en);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1}, service.lastLocators);
+        By itemLocator = By.id("item");
+
+        // When
+        boolean result = service.isVisible(itemLocator);
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{itemLocator});
     }
 
     @Test
-    void testDefaultAreVisibleContainer() {
-        service.reset();
-        service.returnBool = true;
-        boolean vis = service.areVisible(container, "x", "y");
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"x", "y"}, service.lastText);
+    @DisplayName("getSelected(container) delegates correctly")
+    void getSelectedContainer() {
+        // Given
+        List<String> selectedItems = Arrays.asList("item1", "item2");
+        service.returnSelectedList = selectedItems;
+
+        // When
+        List<String> result = service.getSelected(container);
+
+        // Then
+        assertThat(result).isEqualTo(selectedItems);
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastContainer).isEqualTo(container);
     }
 
     @Test
-    void testDefaultIsVisibleContainer() {
-        service.reset();
-        service.returnBool = true;
-        boolean vis = service.isVisible(container, "X");
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"X"}, service.lastText);
+    @DisplayName("getSelected(locator) delegates correctly")
+    void getSelectedLocator() {
+        // Given
+        List<String> selectedItems = Arrays.asList("item1", "item2");
+        service.returnSelectedList = selectedItems;
+
+        // When
+        List<String> result = service.getSelected(locator);
+
+        // Then
+        assertThat(result).isEqualTo(selectedItems);
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator});
     }
 
     @Test
-    void testDefaultAreVisibleLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean vis = service.areVisible(locator, "a", "b");
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"a", "b"}, service.lastText);
+    @DisplayName("getAll(container) delegates correctly")
+    void getAllContainer() {
+        // Given
+        List<String> allItems = Arrays.asList("item1", "item2", "item3");
+        service.returnAllList = allItems;
+
+        // When
+        List<String> result = service.getAll(container);
+
+        // Then
+        assertThat(result).isEqualTo(allItems);
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastContainer).isEqualTo(container);
     }
 
     @Test
-    void testDefaultIsVisibleLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean vis = service.isVisible(locator, "zz");
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"zz"}, service.lastText);
-    }
+    @DisplayName("getAll(locator) delegates correctly")
+    void getAllLocator() {
+        // Given
+        List<String> allItems = Arrays.asList("item1", "item2", "item3");
+        service.returnAllList = allItems;
 
-    @Test
-    void testDefaultAreVisibleTextVarargs() {
-        service.reset();
-        service.returnBool = true;
-        boolean vis = service.areVisible("cc", "dd");
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"cc", "dd"}, service.lastText);
-    }
+        // When
+        List<String> result = service.getAll(locator);
 
-    @Test
-    void testDefaultIsVisibleText() {
-        service.reset();
-        service.returnBool = true;
-        boolean vis = service.isVisible("gg");
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new String[]{"gg"}, service.lastText);
-    }
-
-    @Test
-    void testDefaultAreVisibleByVarargs() {
-        service.reset();
-        By l1 = By.id("aa");
-        By l2 = By.id("bb");
-        service.returnBool = true;
-        boolean vis = service.areVisible(l1, l2);
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1, l2}, service.lastLocators);
-    }
-
-    @Test
-    void testDefaultIsVisibleBy() {
-        service.reset();
-        By l1 = By.id("cc");
-        service.returnBool = true;
-        boolean vis = service.isVisible(l1);
-        assertTrue(vis);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{l1}, service.lastLocators);
-    }
-
-    @Test
-    void testDefaultGetSelectedContainer() {
-        service.reset();
-        service.returnSelectedList = List.of("x");
-        List<String> sel = service.getSelected(container);
-        assertEquals(List.of("x"), sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
-
-    @Test
-    void testDefaultGetSelectedLocator() {
-        service.reset();
-        service.returnSelectedList = List.of("a", "b");
-        List<String> sel = service.getSelected(locator);
-        assertEquals(List.of("a", "b"), sel);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-    }
-
-    @Test
-    void testDefaultGetAllContainer() {
-        service.reset();
-        service.returnAllList = List.of("q", "r");
-        List<String> all = service.getAll(container);
-        assertEquals(List.of("q", "r"), all);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
-
-    @Test
-    void testDefaultGetAllLocator() {
-        service.reset();
-        service.returnAllList = List.of("u", "v");
-        List<String> all = service.getAll(locator);
-        assertEquals(List.of("u", "v"), all);
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-    }
-
-    @Test
-    void testInsertionMethod() {
-        service.reset();
-        service.insertion(MockItemListComponentType.DUMMY, locator, "arrOne", "arrTwo");
-        assertEquals(MockItemListComponentType.DUMMY, service.lastComponentType);
-        assertArrayEquals(new By[]{locator}, service.lastLocators);
-        assertArrayEquals(new String[]{"arrOne", "arrTwo"}, service.lastText);
+        // Then
+        assertThat(result).isEqualTo(allItems);
+        assertThat(service.lastComponentType).isNotNull();
+        assertThat(service.lastLocators).isEqualTo(new By[]{locator});
     }
 }

@@ -4,22 +4,25 @@ import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.select.mock.MockSelectComponentType;
 import com.theairebellion.zeus.ui.components.select.mock.MockSelectService;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedStatic;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
+@DisplayName("SelectService Interface Default Methods")
 class SelectServiceTest extends BaseUnitUITest {
 
     private MockSelectService service;
-    private MockSmartWebElement container;
+    private SmartWebElement container;
     private By locator;
     private Strategy strategy;
 
@@ -33,154 +36,303 @@ class SelectServiceTest extends BaseUnitUITest {
         strategy = Strategy.RANDOM;
     }
 
-    @Test
-    void testDefaultSelectOptionsContainerVarargs() {
-        service.reset();
-        service.selectOptions(container, "val1", "val2");
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"val1", "val2"}, service.lastValues);
+    @Nested
+    @DisplayName("Default Methods with SmartWebElement")
+    class DefaultMethodsWithSmartWebElement {
+
+        @Test
+        @DisplayName("selectOptions delegates with correct parameters")
+        void selectOptionsCorrectlyDelegates() {
+            // When
+            service.selectOptions(container, "val1", "val2");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastValues).containsExactly("val1", "val2");
+        }
+
+        @Test
+        @DisplayName("selectOption delegates with correct parameters")
+        void selectOptionCorrectlyDelegates() {
+            // When
+            service.selectOption(container, "singleVal");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastValues).containsExactly("singleVal");
+        }
+
+        @Test
+        @DisplayName("selectOptions with strategy delegates correctly")
+        void selectOptionsWithStrategyDelegates() {
+            // Given
+            var expectedResult = List.of("option1", "option2");
+            service.returnOptions = expectedResult;
+
+            // When
+            var result = service.selectOptions(container, strategy);
+
+            // Then
+            assertThat(result).isEqualTo(expectedResult);
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastStrategy).isEqualTo(strategy);
+        }
+
+        @Test
+        @DisplayName("getAvailableOptions delegates correctly")
+        void getAvailableOptionsDelegates() {
+            // Given
+            var expectedOptions = List.of("avail1", "avail2");
+            service.returnOptions = expectedOptions;
+
+            // When
+            var result = service.getAvailableOptions(container);
+
+            // Then
+            assertThat(result).isEqualTo(expectedOptions);
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+        }
+
+        @Test
+        @DisplayName("getSelectedOptions delegates correctly")
+        void getSelectedOptionsDelegates() {
+            // Given
+            var expectedOptions = List.of("sel1", "sel2");
+            service.returnOptions = expectedOptions;
+
+            // When
+            var result = service.getSelectedOptions(container);
+
+            // Then
+            assertThat(result).isEqualTo(expectedOptions);
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+        }
+
+        @Test
+        @DisplayName("isOptionVisible delegates correctly")
+        void isOptionVisibleDelegates() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            var result = service.isOptionVisible(container, "optionValue");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastValues).containsExactly("optionValue");
+        }
+
+        @Test
+        @DisplayName("isOptionEnabled delegates correctly")
+        void isOptionEnabledDelegates() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            var result = service.isOptionEnabled(container, "optionValue");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastValues).containsExactly("optionValue");
+        }
+    }
+
+    @Nested
+    @DisplayName("Default Methods with By Locator")
+    class DefaultMethodsWithByLocator {
+
+        @Test
+        @DisplayName("selectOptions delegates with correct parameters")
+        void selectOptionsCorrectlyDelegates() {
+            // When
+            service.selectOptions(locator, "val1", "val2");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastValues).containsExactly("val1", "val2");
+        }
+
+        @Test
+        @DisplayName("selectOption delegates with correct parameters")
+        void selectOptionCorrectlyDelegates() {
+            // When
+            service.selectOption(locator, "singleVal");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastValues).containsExactly("singleVal");
+        }
+
+        @Test
+        @DisplayName("selectOptions with strategy delegates correctly")
+        void selectOptionsWithStrategyDelegates() {
+            // Given
+            var expectedResult = List.of("option1", "option2");
+            service.returnOptions = expectedResult;
+
+            // When
+            var result = service.selectOptions(locator, strategy);
+
+            // Then
+            assertThat(result).isEqualTo(expectedResult);
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastStrategy).isEqualTo(strategy);
+        }
+
+        @Test
+        @DisplayName("getAvailableOptions delegates correctly")
+        void getAvailableOptionsDelegates() {
+            // Given
+            var expectedOptions = List.of("avail1", "avail2");
+            service.returnOptions = expectedOptions;
+
+            // When
+            var result = service.getAvailableOptions(locator);
+
+            // Then
+            assertThat(result).isEqualTo(expectedOptions);
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
+
+        @Test
+        @DisplayName("getSelectedOptions delegates correctly")
+        void getSelectedOptionsDelegates() {
+            // Given
+            var expectedOptions = List.of("sel1", "sel2");
+            service.returnOptions = expectedOptions;
+
+            // When
+            var result = service.getSelectedOptions(locator);
+
+            // Then
+            assertThat(result).isEqualTo(expectedOptions);
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
+
+        @Test
+        @DisplayName("isOptionVisible delegates correctly")
+        void isOptionVisibleDelegates() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            var result = service.isOptionVisible(locator, "optionValue");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastValues).containsExactly("optionValue");
+        }
+
+        @Test
+        @DisplayName("isOptionEnabled delegates correctly")
+        void isOptionEnabledDelegates() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            var result = service.isOptionEnabled(locator, "optionValue");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastValues).containsExactly("optionValue");
+        }
     }
 
     @Test
-    void testDefaultSelectOptionContainer() {
+    @DisplayName("insertion method correctly delegates")
+    void insertionMethodDelegates() {
+        // Given
         service.reset();
-        service.selectOption(container, "valSingle");
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"valSingle"}, service.lastValues);
+
+        // When
+        service.insertion(MockSelectComponentType.DUMMY, locator, "val1", "val2");
+
+        // Then
+        assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+        assertThat(service.lastLocator).isEqualTo(locator);
+        assertThat(service.lastValues).containsExactly("val1", "val2");
     }
 
     @Test
-    void testDefaultSelectOptionsLocatorVarargs() {
+    @DisplayName("insertion method handles non-string values")
+    void insertionMethodHandlesNonStringValues() {
+        // Given
         service.reset();
-        service.selectOptions(locator, "v1", "v2");
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-        assertArrayEquals(new String[]{"v1", "v2"}, service.lastValues);
+
+        // When
+        service.insertion(MockSelectComponentType.DUMMY, locator, 42, true);
+
+        // Then
+        assertThat(service.lastComponentType).isEqualTo(MockSelectComponentType.DUMMY);
+        assertThat(service.lastLocator).isEqualTo(locator);
+        assertThat(service.lastValues).containsExactly("42", "true");
     }
 
-    @Test
-    void testDefaultSelectOptionLocator() {
-        service.reset();
-        service.selectOption(locator, "single");
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-        assertArrayEquals(new String[]{"single"}, service.lastValues);
-    }
+    @Nested
+    @DisplayName("Default Type Resolution Tests")
+    class DefaultTypeResolutionTests {
 
-    @Test
-    void testDefaultSelectOptionsContainerStrategy() {
-        service.reset();
-        service.returnOptions = List.of("res1", "res2");
-        List<String> result = service.selectOptions(container, strategy);
-        assertEquals(List.of("res1", "res2"), result);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals(strategy, service.lastStrategy);
-    }
+        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
+        private MockedStatic<com.theairebellion.zeus.util.reflections.ReflectionUtil> reflectionUtilMock;
+        private com.theairebellion.zeus.ui.config.UiConfig uiConfigMock;
 
-    @Test
-    void testDefaultSelectOptionsLocatorStrategy() {
-        service.reset();
-        service.returnOptions = List.of("op1", "op2");
-        List<String> result = service.selectOptions(locator, strategy);
-        assertEquals(List.of("op1", "op2"), result);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-        assertEquals(strategy, service.lastStrategy);
-    }
+        @BeforeEach
+        void setUp() {
+            uiConfigMock = mock(com.theairebellion.zeus.ui.config.UiConfig.class);
+            uiConfigHolderMock = mockStatic(com.theairebellion.zeus.ui.config.UiConfigHolder.class);
+            reflectionUtilMock = mockStatic(com.theairebellion.zeus.util.reflections.ReflectionUtil.class);
 
-    @Test
-    void testDefaultGetAvailableOptionsContainer() {
-        service.reset();
-        service.returnOptions = List.of("avail1", "avail2");
-        List<String> opts = service.getAvailableOptions(container);
-        assertEquals(List.of("avail1", "avail2"), opts);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
+            uiConfigHolderMock.when(UiConfigHolder::getUiConfig)
+                    .thenReturn(uiConfigMock);
+            when(uiConfigMock.selectDefaultType()).thenReturn("TEST_TYPE");
+            when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
+        }
 
-    @Test
-    void testDefaultGetAvailableOptionsLocator() {
-        service.reset();
-        service.returnOptions = List.of("x", "y");
-        List<String> opts = service.getAvailableOptions(locator);
-        assertEquals(List.of("x", "y"), opts);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
+        @AfterEach
+        void tearDown() {
+            if (uiConfigHolderMock != null) {
+                uiConfigHolderMock.close();
+            }
+            if (reflectionUtilMock != null) {
+                reflectionUtilMock.close();
+            }
+        }
 
-    @Test
-    void testDefaultGetSelectedOptionsContainer() {
-        service.reset();
-        service.returnOptions = List.of("s1", "s2");
-        List<String> selected = service.getSelectedOptions(container);
-        assertEquals(List.of("s1", "s2"), selected);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
+        @Test
+        @DisplayName("getDefaultType returns null when exception occurs")
+        void getDefaultTypeWithException() throws Exception {
+            // Given - ReflectionUtil throws exception when called
+            reflectionUtilMock.when(() -> com.theairebellion.zeus.util.reflections.ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(SelectComponentType.class),
+                            anyString(),
+                            anyString()))
+                    .thenThrow(new RuntimeException("Test exception"));
 
-    @Test
-    void testDefaultGetSelectedOptionsLocator() {
-        service.reset();
-        service.returnOptions = List.of("chosenA", "chosenB");
-        List<String> selected = service.getSelectedOptions(locator);
-        assertEquals(List.of("chosenA", "chosenB"), selected);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
+            // When - access private method via reflection
+            java.lang.reflect.Method getDefaultTypeMethod = SelectService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            SelectComponentType result = (SelectComponentType) getDefaultTypeMethod.invoke(null);
 
-    @Test
-    void testDefaultIsOptionVisibleContainer() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isOptionVisible(container, "valueA");
-        assertTrue(visible);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"valueA"}, service.lastValues);
-    }
-
-    @Test
-    void testDefaultIsOptionVisibleLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isOptionVisible(locator, "valZ");
-        assertTrue(visible);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-        assertArrayEquals(new String[]{"valZ"}, service.lastValues);
-    }
-
-    @Test
-    void testDefaultIsOptionEnabledContainer() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isOptionEnabled(container, "enableVal");
-        assertTrue(enabled);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertArrayEquals(new String[]{"enableVal"}, service.lastValues);
-    }
-
-    @Test
-    void testDefaultIsOptionEnabledLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isOptionEnabled(locator, "maybe");
-        assertTrue(enabled);
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-        assertArrayEquals(new String[]{"maybe"}, service.lastValues);
-    }
-
-    @Test
-    void testInsertionMethod() {
-        service.reset();
-        service.insertion(MockSelectComponentType.DUMMY, locator, "ins1", "ins2");
-        assertEquals(MockSelectComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-        assertArrayEquals(new String[]{"ins1", "ins2"}, service.lastValues);
+            // Then - verify null is returned when exception occurs
+            assertThat(result).isNull();
+        }
     }
 }

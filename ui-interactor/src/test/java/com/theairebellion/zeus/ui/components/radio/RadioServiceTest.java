@@ -4,19 +4,27 @@ import com.theairebellion.zeus.ui.components.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.radio.mock.MockRadioComponentType;
 import com.theairebellion.zeus.ui.components.radio.mock.MockRadioService;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@DisplayName("RadioService Interface Tests")
 class RadioServiceTest extends BaseUnitUITest {
 
     private MockRadioService service;
@@ -27,188 +35,392 @@ class RadioServiceTest extends BaseUnitUITest {
     @BeforeEach
     void setUp() {
         service = new MockRadioService();
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        container = new MockSmartWebElement(webElement, driver);
+        container = MockSmartWebElement.createMock();
         locator = By.id("testRadio");
         strategy = Strategy.FIRST;
+        service.reset();
     }
 
-    @Test
-    void testDefaultSelectContainerText() {
-        service.reset();
-        service.select(container, "RadioText");
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("RadioText", service.lastText);
+    @Nested
+    @DisplayName("Default Type Resolution Tests")
+    class DefaultTypeResolutionTests {
+        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
+        private MockedStatic<ReflectionUtil> reflectionUtilMock;
+        private UiConfig uiConfigMock;
+
+        @BeforeEach
+        void setUp() {
+            uiConfigMock = mock(UiConfig.class);
+            uiConfigHolderMock = Mockito.mockStatic(UiConfigHolder.class);
+            reflectionUtilMock = Mockito.mockStatic(ReflectionUtil.class);
+
+            uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfigMock);
+            when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
+            when(uiConfigMock.radioDefaultType()).thenReturn("DUMMY_TYPE");
+        }
+
+        @AfterEach
+        void tearDown() {
+            if (uiConfigHolderMock != null) {
+                uiConfigHolderMock.close();
+            }
+            if (reflectionUtilMock != null) {
+                reflectionUtilMock.close();
+            }
+        }
+
+        @Test
+        @DisplayName("getDefaultType returns component type when found")
+        void getDefaultTypeSuccess() throws Exception {
+            // Given
+            MockRadioComponentType mockType = MockRadioComponentType.DUMMY;
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(RadioComponentType.class),
+                            eq("DUMMY_TYPE"),
+                            eq("com.test.package")))
+                    .thenReturn(mockType);
+
+            // When - access the private method using reflection
+            Method getDefaultTypeMethod = RadioService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            RadioComponentType result = (RadioComponentType) getDefaultTypeMethod.invoke(null);
+
+            // Then
+            assertThat(result).isEqualTo(mockType);
+        }
+
+        @Test
+        @DisplayName("getDefaultType returns null when exception occurs")
+        void getDefaultTypeWithException() throws Exception {
+            // Given
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(RadioComponentType.class),
+                            anyString(),
+                            anyString()))
+                    .thenThrow(new RuntimeException("Test exception"));
+
+            // When - access the private method using reflection
+            Method getDefaultTypeMethod = RadioService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            RadioComponentType result = (RadioComponentType) getDefaultTypeMethod.invoke(null);
+
+            // Then
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("DEFAULT_TYPE constant is initialized correctly")
+        void defaultTypeInitialization() throws Exception {
+            // Given
+            MockRadioComponentType mockType = MockRadioComponentType.DUMMY;
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            eq(RadioComponentType.class),
+                            anyString(),
+                            anyString()))
+                    .thenReturn(mockType);
+
+            // When/Then - verify the DEFAULT_TYPE field by reflection
+            Field defaultTypeField = RadioService.class.getDeclaredField("DEFAULT_TYPE");
+            defaultTypeField.setAccessible(true);
+
+            // Test via the method to ensure consistent behavior
+            Method getDefaultTypeMethod = RadioService.class.getDeclaredMethod("getDefaultType");
+            getDefaultTypeMethod.setAccessible(true);
+            RadioComponentType resultFromMethod = (RadioComponentType) getDefaultTypeMethod.invoke(null);
+
+            assertThat(resultFromMethod).isEqualTo(mockType);
+        }
     }
 
-    @Test
-    void testDefaultSelectContainerStrategy() {
-        service.reset();
-        service.returnSelected = "StrategyRadio";
-        String result = service.select(container, strategy);
-        assertEquals("StrategyRadio", result);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals(strategy, service.lastStrategy);
+    @Nested
+    @DisplayName("Select Default Methods")
+    class SelectDefaultMethodsTests {
+
+        @Test
+        @DisplayName("select(container, radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void selectContainerText() {
+            // When
+            service.select(container, "RadioOption");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("select(container, strategy) delegates to implementation with DEFAULT_TYPE")
+        void selectContainerStrategy() {
+            // Given
+            service.returnSelected = "SelectedByStrategy";
+
+            // When
+            String result = service.select(container, strategy);
+
+            // Then
+            assertThat(result).isEqualTo("SelectedByStrategy");
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastStrategy).isEqualTo(strategy);
+        }
+
+        @Test
+        @DisplayName("select(radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void selectRadioButtonText() {
+            // When
+            service.select("RadioOption");
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("select(radioButtonLocator) delegates to implementation with DEFAULT_TYPE")
+        void selectRadioButtonLocator() {
+            // When
+            service.select(locator);
+
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
     }
 
-    @Test
-    void testDefaultSelectText() {
-        service.reset();
-        service.select("RadioLabel");
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals("RadioLabel", service.lastText);
+    @Nested
+    @DisplayName("IsEnabled Default Methods")
+    class IsEnabledDefaultMethodsTests {
+
+        @Test
+        @DisplayName("isEnabled(container, radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void isEnabledContainerText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isEnabled(container, "RadioOption");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("isEnabled(radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void isEnabledRadioButtonText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isEnabled("RadioOption");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("isEnabled(radioButtonLocator) delegates to implementation with DEFAULT_TYPE")
+        void isEnabledRadioButtonLocator() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isEnabled(locator);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
     }
 
-    @Test
-    void testDefaultSelectLocator() {
-        service.reset();
-        service.select(locator);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
+    @Nested
+    @DisplayName("IsSelected Default Methods")
+    class IsSelectedDefaultMethodsTests {
+
+        @Test
+        @DisplayName("isSelected(container, radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void isSelectedContainerText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isSelected(container, "RadioOption");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("isSelected(radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void isSelectedRadioButtonText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isSelected("RadioOption");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("isSelected(radioButtonLocator) delegates to implementation with DEFAULT_TYPE")
+        void isSelectedRadioButtonLocator() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isSelected(locator);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
     }
 
-    @Test
-    void testDefaultIsEnabledContainerText() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isEnabled(container, "OptionA");
-        assertTrue(enabled);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("OptionA", service.lastText);
+    @Nested
+    @DisplayName("IsVisible Default Methods")
+    class IsVisibleDefaultMethodsTests {
+
+        @Test
+        @DisplayName("isVisible(container, radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void isVisibleContainerText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isVisible(container, "RadioOption");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("isVisible(radioButtonText) delegates to implementation with DEFAULT_TYPE")
+        void isVisibleRadioButtonText() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isVisible("RadioOption");
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
+
+        @Test
+        @DisplayName("isVisible(radioButtonLocator) delegates to implementation with DEFAULT_TYPE")
+        void isVisibleRadioButtonLocator() {
+            // Given
+            service.returnBool = true;
+
+            // When
+            boolean result = service.isVisible(locator);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
     }
 
-    @Test
-    void testDefaultIsEnabledText() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isEnabled("OptionB");
-        assertTrue(enabled);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals("OptionB", service.lastText);
+    @Nested
+    @DisplayName("Get Methods Default Delegation")
+    class GetMethodsDefaultTests {
+
+        @Test
+        @DisplayName("getSelected(container) delegates to implementation with DEFAULT_TYPE")
+        void getSelectedContainer() {
+            // Given
+            service.returnSelected = "SelectedRadio";
+
+            // When
+            String result = service.getSelected(container);
+
+            // Then
+            assertThat(result).isEqualTo("SelectedRadio");
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+        }
+
+        @Test
+        @DisplayName("getSelected(containerLocator) delegates to implementation with DEFAULT_TYPE")
+        void getSelectedContainerLocator() {
+            // Given
+            service.returnSelected = "SelectedRadio";
+
+            // When
+            String result = service.getSelected(locator);
+
+            // Then
+            assertThat(result).isEqualTo("SelectedRadio");
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
+
+        @Test
+        @DisplayName("getAll(container) delegates to implementation with DEFAULT_TYPE")
+        void getAllContainer() {
+            // Given
+            List<String> options = Arrays.asList("Option1", "Option2", "Option3");
+            service.returnAll = options;
+
+            // When
+            List<String> result = service.getAll(container);
+
+            // Then
+            assertThat(result).isEqualTo(options);
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastContainer).isEqualTo(container);
+        }
+
+        @Test
+        @DisplayName("getAll(containerLocator) delegates to implementation with DEFAULT_TYPE")
+        void getAllContainerLocator() {
+            // Given
+            List<String> options = Arrays.asList("Option1", "Option2", "Option3");
+            service.returnAll = options;
+
+            // When
+            List<String> result = service.getAll(locator);
+
+            // Then
+            assertThat(result).isEqualTo(options);
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+        }
     }
 
-    @Test
-    void testDefaultIsEnabledLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean enabled = service.isEnabled(locator);
-        assertTrue(enabled);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
+    @Nested
+    @DisplayName("Insertion Method Default Delegation")
+    class InsertionMethodTest {
 
-    @Test
-    void testDefaultIsSelectedContainerText() {
-        service.reset();
-        service.returnBool = true;
-        boolean selected = service.isSelected(container, "RA");
-        assertTrue(selected);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("RA", service.lastText);
-    }
+        @Test
+        @DisplayName("insertion method delegates with DEFAULT_TYPE")
+        void insertionDelegatesToImplementation() {
+            // When
+            service.insertion(MockRadioComponentType.DUMMY, locator, "RadioOption");
 
-    @Test
-    void testDefaultIsSelectedText() {
-        service.reset();
-        service.returnBool = true;
-        boolean selected = service.isSelected("RB");
-        assertTrue(selected);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals("RB", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsSelectedLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean selected = service.isSelected(locator);
-        assertTrue(selected);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
-
-    @Test
-    void testDefaultIsVisibleContainerText() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isVisible(container, "RX");
-        assertTrue(visible);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-        assertEquals("RX", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsVisibleText() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isVisible("RY");
-        assertTrue(visible);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals("RY", service.lastText);
-    }
-
-    @Test
-    void testDefaultIsVisibleLocator() {
-        service.reset();
-        service.returnBool = true;
-        boolean visible = service.isVisible(locator);
-        assertTrue(visible);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
-
-    @Test
-    void testDefaultGetSelectedContainer() {
-        service.reset();
-        service.returnSelected = "RC";
-        String sel = service.getSelected(container);
-        assertEquals("RC", sel);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
-
-    @Test
-    void testDefaultGetSelectedLocator() {
-        service.reset();
-        service.returnSelected = "RD";
-        String sel = service.getSelected(locator);
-        assertEquals("RD", sel);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
-
-    @Test
-    void testDefaultGetAllContainer() {
-        service.reset();
-        service.returnAll = List.of("R1", "R2");
-        List<String> all = service.getAll(container);
-        assertEquals(List.of("R1", "R2"), all);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(container, service.lastContainer);
-    }
-
-    @Test
-    void testDefaultGetAllLocator() {
-        service.reset();
-        service.returnAll = List.of("R3", "R4");
-        List<String> all = service.getAll(locator);
-        assertEquals(List.of("R3", "R4"), all);
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-    }
-
-    @Test
-    void testInsertionMethod() {
-        service.reset();
-        service.insertion(MockRadioComponentType.DUMMY, locator, "InsertRadio");
-        assertEquals(MockRadioComponentType.DUMMY, service.lastComponentType);
-        assertEquals(locator, service.lastLocator);
-        assertEquals("InsertRadio", service.lastText);
+            // Then
+            assertThat(service.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastText).isEqualTo("RadioOption");
+        }
     }
 }

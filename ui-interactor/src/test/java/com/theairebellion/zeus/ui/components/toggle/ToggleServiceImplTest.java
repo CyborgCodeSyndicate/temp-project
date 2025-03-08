@@ -1,136 +1,283 @@
 package com.theairebellion.zeus.ui.components.toggle;
 
 import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.toggle.mock.MockToggleComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import org.aeonbits.owner.ConfigCache;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@DisplayName("ToggleServiceImpl Unit Tests")
 class ToggleServiceImplTest extends BaseUnitUITest {
 
     private SmartWebDriver driver;
     private ToggleServiceImpl service;
     private SmartWebElement container;
-    private By locator;
     private Toggle toggleMock;
-    private MockToggleComponentType mockToggleComponentType;
+    private MockToggleComponentType componentType;
+    private By locator;
     private MockedStatic<ComponentFactory> factoryMock;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         driver = mock(SmartWebDriver.class);
         service = new ToggleServiceImpl(driver);
-        container = mock(SmartWebElement.class);
-        locator = By.id("toggle");
+        container = MockSmartWebElement.createMock();
         toggleMock = mock(Toggle.class);
-        mockToggleComponentType = MockToggleComponentType.DUMMY;
-        factoryMock = Mockito.mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getToggleComponent(eq(mockToggleComponentType), eq(driver)))
+        componentType = MockToggleComponentType.DUMMY;
+        locator = By.id("toggle");
+
+        // Configure static mock for ComponentFactory
+        factoryMock = mockStatic(ComponentFactory.class);
+        factoryMock.when(() -> ComponentFactory.getToggleComponent(eq(componentType), eq(driver)))
                 .thenReturn(toggleMock);
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         if (factoryMock != null) {
             factoryMock.close();
         }
     }
 
-    @Test
-    public void testActivateContainerAndText() {
-        service.activate(mockToggleComponentType, container, "On");
-        verify(toggleMock).activate(container, "On");
+    @Nested
+    @DisplayName("Activate Method Tests")
+    class ActivateMethodTests {
+
+        @Test
+        @DisplayName("activate with container and text delegates correctly")
+        void activateWithContainerAndText() {
+            // Given
+            var toggleText = "On";
+
+            // When
+            service.activate(componentType, container, toggleText);
+
+            // Then
+            verify(toggleMock).activate(container, toggleText);
+        }
+
+        @Test
+        @DisplayName("activate with text only delegates correctly")
+        void activateWithTextOnly() {
+            // Given
+            var toggleText = "On";
+
+            // When
+            service.activate(componentType, toggleText);
+
+            // Then
+            verify(toggleMock).activate(toggleText);
+        }
+
+        @Test
+        @DisplayName("activate with locator delegates correctly")
+        void activateWithLocator() {
+            // When
+            service.activate(componentType, locator);
+
+            // Then
+            verify(toggleMock).activate(locator);
+        }
     }
 
-    @Test
-    public void testActivateTextOnly() {
-        service.activate(mockToggleComponentType, "On");
-        verify(toggleMock).activate("On");
+    @Nested
+    @DisplayName("Deactivate Method Tests")
+    class DeactivateMethodTests {
+
+        @Test
+        @DisplayName("deactivate with container and text delegates correctly")
+        void deactivateWithContainerAndText() {
+            // Given
+            var toggleText = "Off";
+
+            // When
+            service.deactivate(componentType, container, toggleText);
+
+            // Then
+            verify(toggleMock).deactivate(container, toggleText);
+        }
+
+        @Test
+        @DisplayName("deactivate with text only delegates correctly")
+        void deactivateWithTextOnly() {
+            // Given
+            var toggleText = "Off";
+
+            // When
+            service.deactivate(componentType, toggleText);
+
+            // Then
+            verify(toggleMock).deactivate(toggleText);
+        }
+
+        @Test
+        @DisplayName("deactivate with locator delegates correctly")
+        void deactivateWithLocator() {
+            // When
+            service.deactivate(componentType, locator);
+
+            // Then
+            verify(toggleMock).deactivate(locator);
+        }
     }
 
-    @Test
-    public void testActivateLocator() {
-        service.activate(mockToggleComponentType, locator);
-        verify(toggleMock).activate(locator);
+    @Nested
+    @DisplayName("IsEnabled Method Tests")
+    class IsEnabledMethodTests {
+
+        @Test
+        @DisplayName("isEnabled with container and text delegates correctly")
+        void isEnabledWithContainerAndText() {
+            // Given
+            var toggleText = "On";
+            when(toggleMock.isEnabled(container, toggleText)).thenReturn(true);
+
+            // When
+            var result = service.isEnabled(componentType, container, toggleText);
+
+            // Then
+            assertThat(result).isTrue();
+            verify(toggleMock).isEnabled(container, toggleText);
+        }
+
+        @Test
+        @DisplayName("isEnabled with text only delegates correctly")
+        void isEnabledWithTextOnly() {
+            // Given
+            var toggleText = "On";
+            when(toggleMock.isEnabled(toggleText)).thenReturn(true);
+
+            // When
+            var result = service.isEnabled(componentType, toggleText);
+
+            // Then
+            assertThat(result).isTrue();
+            verify(toggleMock).isEnabled(toggleText);
+        }
+
+        @Test
+        @DisplayName("isEnabled with locator delegates correctly")
+        void isEnabledWithLocator() {
+            // Given
+            when(toggleMock.isEnabled(locator)).thenReturn(true);
+
+            // When
+            var result = service.isEnabled(componentType, locator);
+
+            // Then
+            assertThat(result).isTrue();
+            verify(toggleMock).isEnabled(locator);
+        }
     }
 
-    @Test
-    public void testDeactivateContainerAndText() {
-        service.deactivate(mockToggleComponentType, container, "Off");
-        verify(toggleMock).deactivate(container, "Off");
+    @Nested
+    @DisplayName("IsActivated Method Tests")
+    class IsActivatedMethodTests {
+
+        @Test
+        @DisplayName("isActivated with container and text delegates correctly")
+        void isActivatedWithContainerAndText() {
+            // Given
+            var toggleText = "On";
+            when(toggleMock.isActivated(container, toggleText)).thenReturn(true);
+
+            // When
+            var result = service.isActivated(componentType, container, toggleText);
+
+            // Then
+            assertThat(result).isTrue();
+            verify(toggleMock).isActivated(container, toggleText);
+        }
+
+        @Test
+        @DisplayName("isActivated with text only delegates correctly")
+        void isActivatedWithTextOnly() {
+            // Given
+            var toggleText = "On";
+            when(toggleMock.isActivated(toggleText)).thenReturn(true);
+
+            // When
+            var result = service.isActivated(componentType, toggleText);
+
+            // Then
+            assertThat(result).isTrue();
+            verify(toggleMock).isActivated(toggleText);
+        }
+
+        @Test
+        @DisplayName("isActivated with locator delegates correctly")
+        void isActivatedWithLocator() {
+            // Given
+            when(toggleMock.isActivated(locator)).thenReturn(true);
+
+            // When
+            var result = service.isActivated(componentType, locator);
+
+            // Then
+            assertThat(result).isTrue();
+            verify(toggleMock).isActivated(locator);
+        }
     }
 
-    @Test
-    public void testDeactivateTextOnly() {
-        service.deactivate(mockToggleComponentType, "Off");
-        verify(toggleMock).deactivate("Off");
-    }
+    @Nested
+    @DisplayName("Component Caching Tests")
+    class ComponentCachingTests {
 
-    @Test
-    public void testDeactivateLocator() {
-        service.deactivate(mockToggleComponentType, locator);
-        verify(toggleMock).deactivate(locator);
-    }
+        @Test
+        @DisplayName("Component is cached and reused")
+        void componentCaching() {
+            // When
+            service.activate(componentType, container, "On");
+            service.deactivate(componentType, container, "Off");
+            service.isEnabled(componentType, container, "On");
 
-    @Test
-    public void testIsEnabledContainerAndText() {
-        when(toggleMock.isEnabled(container, "On")).thenReturn(true);
-        assertTrue(service.isEnabled(mockToggleComponentType, container, "On"));
-        verify(toggleMock).isEnabled(container, "On");
-    }
+            // Then
+            factoryMock.verify(() -> ComponentFactory.getToggleComponent(eq(componentType), eq(driver)), times(1));
+        }
 
-    @Test
-    public void testIsEnabledTextOnly() {
-        when(toggleMock.isEnabled("On")).thenReturn(true);
-        assertTrue(service.isEnabled(mockToggleComponentType, "On"));
-        verify(toggleMock).isEnabled("On");
-    }
+        @Test
+        @DisplayName("Different component types create different instances")
+        void differentComponentTypes() {
+            // Setup mock component types
+            componentType = MockToggleComponentType.DUMMY;
+            var componentType2 = MockToggleComponentType.TEST;
 
-    @Test
-    public void testIsEnabledLocator() {
-        when(toggleMock.isEnabled(locator)).thenReturn(true);
-        assertTrue(service.isEnabled(mockToggleComponentType, locator));
-        verify(toggleMock).isEnabled(locator);
-    }
+            // Create mock components
+            var toggle1 = mock(Toggle.class);
+            var toggle2 = mock(Toggle.class);
 
-    @Test
-    public void testIsActivatedContainerAndText() {
-        when(toggleMock.isActivated(container, "On")).thenReturn(true);
-        assertTrue(service.isActivated(mockToggleComponentType, container, "On"));
-        verify(toggleMock).isActivated(container, "On");
-    }
+            // Configure behavior
+            when(toggle1.isActivated(container, "On")).thenReturn(false);
+            when(toggle2.isActivated(container, "On")).thenReturn(true);
 
-    @Test
-    public void testIsActivatedTextOnly() {
-        when(toggleMock.isActivated("On")).thenReturn(true);
-        assertTrue(service.isActivated(mockToggleComponentType, "On"));
-        verify(toggleMock).isActivated("On");
-    }
+            // Configure factory mock
+            factoryMock.reset();
+            factoryMock.when(() -> ComponentFactory.getToggleComponent(eq(componentType), eq(driver)))
+                    .thenReturn(toggle1);
+            factoryMock.when(() -> ComponentFactory.getToggleComponent(eq(componentType2), eq(driver)))
+                    .thenReturn(toggle2);
 
-    @Test
-    public void testIsActivatedLocator() {
-        when(toggleMock.isActivated(locator)).thenReturn(true);
-        assertTrue(service.isActivated(mockToggleComponentType, locator));
-        verify(toggleMock).isActivated(locator);
-    }
+            // First component type operation
+            var result1 = service.isActivated(componentType, container, "On");
+            assertThat(result1).isFalse();
+            verify(toggle1).isActivated(container, "On");
 
-    @Test
-    public void testComponentCaching() {
-        service.activate(mockToggleComponentType, container, "On");
-        service.deactivate(mockToggleComponentType, container, "Off");
-        service.isEnabled(mockToggleComponentType, container, "On");
-        factoryMock.verify(() -> ComponentFactory.getToggleComponent(eq(mockToggleComponentType), eq(driver)), times(1));
+            // Second component type operation
+            var result2 = service.isActivated(componentType2, container, "On");
+            assertThat(result2).isTrue();
+            verify(toggle2).isActivated(container, "On");
+
+            // Verify factory calls
+            factoryMock.verify(() -> ComponentFactory.getToggleComponent(eq(componentType), eq(driver)), times(1));
+            factoryMock.verify(() -> ComponentFactory.getToggleComponent(eq(componentType2), eq(driver)), times(1));
+        }
     }
 }
