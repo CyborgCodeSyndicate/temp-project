@@ -3,6 +3,7 @@ package com.reqres.test.framework;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.annotation.Regression;
 import com.theairebellion.zeus.framework.base.BaseTestSequential;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
@@ -23,6 +24,7 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
 
     @Test
+    @Regression
     public void testCreateTwoUsersBasic(Quest quest) {
         User userLeader = User.builder()
                 .name("Morpheus")
@@ -51,6 +53,7 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
     }
 
     @Test
+    @Regression
     public void testCreateTwoUsersImproved(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -69,6 +72,7 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
     }
 
     @Test
+    @Regression
     public void testCreateTwoUsersImprovedWithCustomService(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
         quest.enters(GONDOR)
                 .createLeaderUserAndValidateResponse(userLeader)
