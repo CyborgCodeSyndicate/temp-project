@@ -9,16 +9,38 @@ import com.theairebellion.zeus.db.query.QueryResponse;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Implements a database client for executing SQL queries on relational databases.
+ * <p>
+ * This class handles database interactions, including executing queries and processing
+ * results for both SELECT and UPDATE statements.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class RelationalDbClient implements DbClient {
 
     private final BaseDbConnectorService connector;
     private final DatabaseConfiguration dbConfig;
 
+    /**
+     * Constructs a new {@code RelationalDbClient} with the specified connector and configuration.
+     *
+     * @param connector The database connection service.
+     * @param dbConfig  The database configuration details.
+     */
     public RelationalDbClient(BaseDbConnectorService connector, DatabaseConfiguration dbConfig) {
         this.connector = connector;
         this.dbConfig = dbConfig;
     }
 
+    /**
+     * Executes a SQL query and processes the result.
+     *
+     * @param query The SQL query to execute.
+     * @return The {@code QueryResponse} containing the query results.
+     * @throws DatabaseOperationException If the query execution fails.
+     */
     @Override
     public QueryResponse executeQuery(String query) {
         try (Connection connection = connector.getConnection(dbConfig)) {
@@ -81,12 +103,25 @@ public class RelationalDbClient implements DbClient {
         }
     }
 
+    /**
+     * Logs the executed query.
+     *
+     * @param query The SQL query being executed.
+     */
     protected void printQuery(String query) {
         LogDb.step("Executing database query: {}", query);
     }
 
+    /**
+     * Logs the query response details.
+     *
+     * @param query    The executed SQL query.
+     * @param response The query response containing results.
+     * @param duration The execution duration in milliseconds.
+     */
     protected void printResponse(String query, QueryResponse response, long duration) {
         LogDb.step("Query '{}' executed in {}ms, result count: {}", query, duration, response.getRows().size());
         LogDb.extended("Query response data: {}", response.getRows());
     }
+
 }
