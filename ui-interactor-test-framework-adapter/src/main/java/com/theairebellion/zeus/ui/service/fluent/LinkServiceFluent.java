@@ -5,7 +5,6 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.link.LinkService;
 import com.theairebellion.zeus.ui.selenium.LinkUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -28,9 +27,6 @@ public class LinkServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public T click(final LinkUIElement element) {
-        Allure.step(String.format("Clicking link with locator: '%s' from link component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         linkService.click(element.componentType(), element.locator());
         element.after().accept(driver);

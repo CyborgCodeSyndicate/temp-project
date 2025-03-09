@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
 import com.theairebellion.zeus.ui.components.accordion.AccordionService;
 import com.theairebellion.zeus.ui.selenium.AccordionUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 
 import java.util.List;
 
@@ -30,9 +29,6 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public T expand(final AccordionUIElement element) {
-        Allure.step(String.format("Expanding panel with locator: '%s' from accordion component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         accordionService.expand((AccordionComponentType) element.componentType(), element.locator());
         element.after().accept(driver);
@@ -41,9 +37,6 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
 
 
     public T collapse(final AccordionUIElement element) {
-        Allure.step(String.format("Collapsing panel with locator: '%s' from accordion component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         accordionService.collapse((AccordionComponentType) element.componentType(), element.locator());
         element.after().accept(driver);

@@ -7,7 +7,7 @@ import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import io.qameta.allure.Step;
+import io.qameta.allure.Allure;
 import org.openqa.selenium.By;
 
 public class InputServiceImpl extends AbstractComponentService<InputComponentType, Input> implements InputService {
@@ -21,157 +21,172 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
         return ComponentFactory.getInputComponent(componentType, driver);
     }
 
-    @Step("[UI - Accordion] Inserting value '{value}' into input component of type '{componentType}'")
     @Override
     public void insert(final InputComponentType componentType, final SmartWebElement container, final String value) {
+        Allure.step(String.format("[UI - Input] Inserting value '%s' into input component of type '%s'", value, componentType));
         LogUI.step("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
         getOrCreateComponent(componentType).insert(container, value);
     }
 
-    @Step("[UI - Accordion] Inserting value '{value}' into input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public void insert(final InputComponentType componentType, final SmartWebElement container,
                        final String inputFieldLabel, final String value) {
+        Allure.step(String.format("[UI - Input] Inserting value '%s' into input field labeled '%s' for component type '%s'",
+                value, inputFieldLabel, componentType));
         LogUI.step("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
                 componentType.getType().name());
         getOrCreateComponent(componentType).insert(container, inputFieldLabel, value);
     }
 
-    @Step("[UI - Accordion] Inserting value '{value}' into input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public void insert(final InputComponentType componentType, final String inputFieldLabel, final String value) {
+        Allure.step(String.format("[UI - Input] Inserting value '%s' into input field labeled '%s' for component type '%s'",
+                value, inputFieldLabel, componentType));
         LogUI.step("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
                 componentType.getType().name());
         getOrCreateComponent(componentType).insert(inputFieldLabel, value);
     }
 
-    @Step("[UI - Accordion] Inserting value '{value}' using locator '{inputFieldContainerLocator}' into input component of type '{componentType}'")
     @Override
     public void insert(final InputComponentType componentType, final By inputFieldContainerLocator,
                        final String value) {
+        Allure.step(String.format("[UI - Input] Inserting value '%s' into input component of type '%s' with container locator '%s'.",
+                value, componentType, inputFieldContainerLocator));
         LogUI.step("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
         getOrCreateComponent(componentType).insert(inputFieldContainerLocator, value);
     }
 
-    @Step("[UI - Accordion] Clearing value in input component of type '{componentType}'")
     @Override
     public void clear(final InputComponentType componentType, final SmartWebElement container) {
+        Allure.step(String.format("[UI - Input] Clearing value in input component of type '%s'", componentType));
         LogUI.step("Clearing value in input component of type: '{}'.", componentType.getType().name());
         getOrCreateComponent(componentType).clear(container);
     }
 
-    @Step("[UI - Accordion] Clearing value in input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public void clear(final InputComponentType componentType, final SmartWebElement container,
                       final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Clearing value in input field labeled '%s' for component type '%s'",
+                inputFieldLabel, componentType));
         LogUI.step("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         getOrCreateComponent(componentType).clear(container, inputFieldLabel);
     }
 
-    @Step("[UI - Accordion] Clearing value in input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public void clear(final InputComponentType componentType, final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Clearing value in input field labeled '%s' for component type '%s'",
+                inputFieldLabel, componentType));
         LogUI.step("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         getOrCreateComponent(componentType).clear(inputFieldLabel);
     }
 
-    @Step("[UI - Accordion] Clearing value using locator '{inputFieldContainerLocator}' in input component of type '{componentType}'")
     @Override
     public void clear(final InputComponentType componentType, final By inputFieldContainerLocator) {
+        Allure.step(String.format("[UI - Input] Clearing value using locator '%s' in input component of type '%s'",
+                inputFieldContainerLocator, componentType));
         LogUI.step("Clearing value in input component of type: '{}'.", componentType.getType().name());
         getOrCreateComponent(componentType).clear(inputFieldContainerLocator);
     }
 
-    @Step("[UI - Accordion] Fetching value from input component of type '{componentType}'")
     @Override
     public String getValue(final InputComponentType componentType, final SmartWebElement container) {
+        Allure.step(String.format("[UI - Input] Fetching value from input component of type '%s'", componentType));
         LogUI.step("Fetching value from input component of type: '{}'.", componentType.getType().name());
         return getOrCreateComponent(componentType).getValue(container);
     }
 
-    @Step("[UI - Accordion] Fetching value from input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public String getValue(final InputComponentType componentType, final SmartWebElement container,
                            final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Fetching value from input field labeled '%s' for component type '%s'",
+                inputFieldLabel, componentType));
         LogUI.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return getOrCreateComponent(componentType).getValue(container);
     }
 
-    @Step("[UI - Accordion] Fetching value from input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public String getValue(final InputComponentType componentType, final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Fetching value from input field labeled '%s' for component type '%s'",
+                inputFieldLabel, componentType));
         LogUI.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return getOrCreateComponent(componentType).getValue(inputFieldLabel);
     }
 
-    @Step("[UI - Accordion] Fetching value using locator '{inputFieldContainerLocator}' from input component of type '{componentType}'")
     @Override
     public String getValue(final InputComponentType componentType, final By inputFieldContainerLocator) {
+        Allure.step(String.format("[UI - Input] Fetching value using locator '%s' from input component of type '%s'",
+                inputFieldContainerLocator, componentType));
         LogUI.step("Fetching value from input component of type: '{}'.", componentType.getType().name());
         return getOrCreateComponent(componentType).getValue(inputFieldContainerLocator);
     }
 
-    @Step("[UI - Accordion] Checking if input component of type '{componentType}' is enabled")
     @Override
     public boolean isEnabled(final InputComponentType componentType, final SmartWebElement container) {
+        Allure.step(String.format("[UI - Input] Checking if input component of type '%s' is enabled", componentType));
         LogUI.step("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
         return getOrCreateComponent(componentType).isEnabled(container);
     }
 
-    @Step("[UI - Accordion] Checking if input field labeled '{inputFieldLabel}' for component type '{componentType}' is enabled")
     @Override
     public boolean isEnabled(final InputComponentType componentType, final SmartWebElement container, final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Checking if input field labeled '%s' for component type '%s' is enabled",
+                inputFieldLabel, componentType));
         LogUI.step("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
                 componentType.getType().name());
         return getOrCreateComponent(componentType).isEnabled(container, inputFieldLabel);
     }
 
-    @Step("[UI - Accordion] Checking if input field labeled '{inputFieldLabel}' for component type '{componentType}' is enabled")
     @Override
     public boolean isEnabled(final InputComponentType componentType, final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Checking if input field labeled '%s' for component type '%s' is enabled",
+                inputFieldLabel, componentType));
         LogUI.step("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
                 componentType.getType().name());
         return getOrCreateComponent(componentType).isEnabled(inputFieldLabel);
     }
 
-    @Step("[UI - Accordion] Checking if input component using locator '{inputFieldContainerLocator}' for type '{componentType}' is enabled")
     @Override
     public boolean isEnabled(final InputComponentType componentType, final By inputFieldContainerLocator) {
+        Allure.step(String.format("[UI - Input] Checking if input component using locator '%s' for type '%s' is enabled",
+                inputFieldContainerLocator, componentType));
         LogUI.step("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
         return getOrCreateComponent(componentType).isEnabled(inputFieldContainerLocator);
     }
 
-    @Step("[UI - Accordion] Fetching error message from input component of type '{componentType}'")
     @Override
     public String getErrorMessage(final InputComponentType componentType, final SmartWebElement container) {
+        Allure.step(String.format("[UI - Input] Fetching error message from input component of type '%s'", componentType));
         LogUI.step("Fetching error message from input component of type: '{}'.", componentType.getType().name());
         return getOrCreateComponent(componentType).getErrorMessage(container);
     }
 
-    @Step("[UI - Accordion] Fetching error message from input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public String getErrorMessage(final InputComponentType componentType, final SmartWebElement container,
                                   final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Fetching error message from input field labeled '%s' for component type '%s'",
+                inputFieldLabel, componentType));
         LogUI.step("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return getOrCreateComponent(componentType).getErrorMessage(container, inputFieldLabel);
     }
 
-    @Step("[UI - Accordion] Fetching error message from input field labeled '{inputFieldLabel}' for component type '{componentType}'")
     @Override
     public String getErrorMessage(final InputComponentType componentType, final String inputFieldLabel) {
+        Allure.step(String.format("[UI - Input] Fetching error message from input field labeled '%s' for component type '%s'",
+                inputFieldLabel, componentType));
         LogUI.step("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return getOrCreateComponent(componentType).getErrorMessage(inputFieldLabel);
     }
 
-    @Step("[UI - Accordion] Fetching error message using locator '{inputFieldContainerLocator}' from input component of type '{componentType}'")
     @Override
     public String getErrorMessage(final InputComponentType componentType, final By inputFieldContainerLocator) {
+        Allure.step(String.format("[UI - Input] Fetching error message using locator '%s' from input component of type '%s'",
+                inputFieldContainerLocator, componentType));
         LogUI.step("Fetching error message from input component of type: '{}'.", componentType.getType().name());
         return getOrCreateComponent(componentType).getErrorMessage(inputFieldContainerLocator);
     }
@@ -183,7 +198,6 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
         getOrCreateComponent((InputComponentType) componentType).tableInsertion(cellElement, values);
     }
 
-    @Step("[UI - Accordion] Applying table filter in cell for component type '{componentType}' with strategy '{filterStrategy}' and values {values}")
     @Override
     public void tableFilter(final SmartWebElement cellElement, final ComponentType componentType,
                             final FilterStrategy filterStrategy,

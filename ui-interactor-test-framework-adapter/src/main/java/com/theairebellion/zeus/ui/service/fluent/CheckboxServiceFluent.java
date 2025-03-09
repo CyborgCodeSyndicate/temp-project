@@ -8,7 +8,6 @@ import com.theairebellion.zeus.ui.components.checkbox.CheckboxService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.CheckboxUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -33,17 +32,11 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
     }
 
     public T select(final CheckboxUIElement element) {
-        Allure.step(String.format("Selecting checkbox with locator: '%s' from checkbox component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         checkboxService.select((CheckboxComponentType) element.componentType(), element.locator());
         return uiServiceFluent;
     }
 
     public T deSelect(final CheckboxUIElement element) {
-        Allure.step(String.format("Deselecting checkbox with locator: '%s' from checkbox component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         checkboxService.deSelect((CheckboxComponentType) element.componentType(), element.locator());
         return uiServiceFluent;
     }
