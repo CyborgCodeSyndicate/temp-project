@@ -1,26 +1,20 @@
 package com.theairebellion.zeus.framework.extension;
 
 import com.theairebellion.zeus.framework.allure.CustomAllureListener;
-import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import com.theairebellion.zeus.framework.util.TestContextManager;
 import io.qameta.allure.Allure;
-import io.qameta.allure.internal.shadowed.jackson.databind.ObjectMapper;
-import io.qameta.allure.internal.shadowed.jackson.databind.SerializationFeature;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.INTERCEPTED_REQUESTS_KEY;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
@@ -51,7 +45,9 @@ public class Epilogue extends TestContextManager implements AfterTestExecutionCa
             List<Object> storedResponses = superQuest.getStorage().sub(StorageKeysTest.INTERCEPTED_REQUESTS)
                     .getAllByClass(INTERCEPTED_REQUESTS_KEY, Object.class);
             if (!storedResponses.isEmpty()) {
-                Allure.addAttachment("Intercepted Requests", "application/json", Objects.requireNonNull(formatResponses(storedResponses)));
+                Allure.addAttachment("Intercepted Requests", "text/html", new ByteArrayInputStream(formatResponses(storedResponses).getBytes(StandardCharsets.UTF_8)),
+                        ".html");
+
             }
         }
         ThreadContext.remove("testName");

@@ -1,7 +1,6 @@
 package com.theairebellion.zeus.framework.util;
 
 import com.theairebellion.zeus.framework.annotation.JourneyData;
-import com.theairebellion.zeus.framework.log.LogTest;
 import io.qameta.allure.internal.shadowed.jackson.annotation.JsonInclude;
 import io.qameta.allure.internal.shadowed.jackson.databind.ObjectMapper;
 import io.qameta.allure.internal.shadowed.jackson.databind.SerializationFeature;
@@ -15,8 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,11 @@ public class ObjectFormatter {
 
     private static final ConcurrentHashMap<Class<?>, Field[]> FIELDS_CACHE = new ConcurrentHashMap<>();
     private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
+    private final Map<Class<?>, Method> urlMethodCache = new HashMap<>();
+    private final Map<Class<?>, Method> statusMethodCache = new HashMap<>();
+    private final Map<Class<?>, Method> bodyMethodCache = new HashMap<>();
+    private final Map<Class<?>, Method> methodMethodCache = new HashMap<>();
+    private final Map<Class<?>, Boolean> validClassCache = new HashMap<>();
 
 
     private static ObjectMapper createObjectMapper() {
@@ -87,7 +91,6 @@ public class ObjectFormatter {
     }
 
 
-
     public String generateHtmlContent(Map<Enum<?>, LinkedList<Object>> arguments) {
         String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-data.html");
         return htmlTemplate.replace("{{argumentRows}}", buildRowsFromMap("", arguments));
@@ -119,7 +122,6 @@ public class ObjectFormatter {
                 .replace("'", "&#39;")
                 .replace("%", "%%");
     }
-
 
 
     public String getClassAnnotations(ExtensionContext context) {
@@ -281,90 +283,140 @@ public class ObjectFormatter {
                 .orElse("No arguments available.");
     }
 
+    protected String formatResponses(List<Object> responses) {
+        List<Object> flatResponses = new ArrayList<>();
+        int totalRequests = 0;
+        int successCount = 0;
+        int warningCount = 0;
+        int errorCount = 0;
 
-    public String formatResponses(List<Object> storedResponses) {
-        try {
-            List<Map<String, Object>> formattedResponses = new ArrayList<>();
+        for (Object response : responses) {
+            if (response instanceof List<?> responseList) {
+                totalRequests += responseList.size();
 
-            for (Object responseList : storedResponses) {
-                if (responseList instanceof List) {
-                    List<?> apiResponseList = (List<?>) responseList;
-                    for (Object apiResponse : apiResponseList) {
-                        Map<String, Object> responseMap = formatSingleResponse(apiResponse);
-                        if (!responseMap.isEmpty()) {
-                            formattedResponses.add(responseMap);
-                        }
-                    }
+                for (Object item : responseList) {
+                    flatResponses.add(item);
+                    int status = getResponseStatus(item);
+                    if (status >= 400) errorCount++;
+                    else if (status >= 300) warningCount++;
+                    else if (status > 0) successCount++;
                 }
-            }
-
-            return OBJECT_MAPPER.writeValueAsString(formattedResponses);
-        } catch (Exception e) {
-            LogTest.error("Error formatting API responses", e);
-            return "Error formatting API responses: " + e.getMessage();
-        }
-    }
-
-    protected Map<String, Object> formatSingleResponse(Object apiResponse) {
-        Map<String, Object> responseMap = new LinkedHashMap<>();
-
-        Object url = invokeGetter(apiResponse, "url", apiResponse.getClass());
-        if (url != null) {
-            responseMap.put("URL", url.toString());
-        }
-
-        Object status = invokeGetter(apiResponse, "status", apiResponse.getClass());
-        if (status != null) {
-            responseMap.put("Status", status);
-        }
-
-        Object body = invokeGetter(apiResponse, "body", apiResponse.getClass());
-        if (body != null) {
-            String bodyStr = body.toString();
-
-            if (bodyStr.length() > 1000) {
-                String bodyType = detectBodyType(bodyStr);
-
-                responseMap.put("Body", Map.of(
-                        "type", bodyType,
-                        "length", bodyStr.length(),
-                        "preview", bodyStr.substring(0, 200)
-                ));
             } else {
-                responseMap.put("Body", bodyStr);
+                totalRequests++;
+                flatResponses.add(response);
+                int status = getResponseStatus(response);
+                if (status >= 400) errorCount++;
+                else if (status >= 300) warningCount++;
+                else if (status > 0) successCount++;
             }
         }
 
-        return responseMap;
+        String templateHtml = ResourceLoader.loadHtmlTemplate("allure/html/intercepted-responses.html");
+        StringBuilder htmlBuilder = new StringBuilder(
+                templateHtml.replace("{{total}}", String.valueOf(totalRequests))
+                        .replace("{{success}}", String.valueOf(successCount))
+                        .replace("{{warning}}", String.valueOf(warningCount))
+                        .replace("{{error}}", String.valueOf(errorCount)));
+
+        for (int i = 0; i < flatResponses.size(); i++) {
+            appendResponseAccordion(htmlBuilder, flatResponses.get(i), i);
+        }
+
+        return htmlBuilder.toString();
     }
 
-    protected String detectBodyType(String body) {
-        if (body.startsWith("{") && body.endsWith("}")) return "JSON";
-        if (body.startsWith("<!doctype html>") || body.startsWith("<html")) return "HTML";
-        if (body.startsWith("function")) return "JavaScript";
-        if (body.startsWith("data:")) return "Base64/Data URI";
-        return "Text";
-    }
-
-    protected Object invokeGetter(Object obj, String fieldName, Class<?> clazz) {
+    private int getResponseStatus(Object response) {
         try {
-            Method[] methods = clazz.getMethods();
-            for (Method method : methods) {
-                if ((method.getName().equals("get" + capitalize(fieldName)) ||
-                        method.getName().equals("is" + capitalize(fieldName)) ||
-                        method.getName().equals(fieldName)) &&
-                        method.getParameterCount() == 0) {
-                    return method.invoke(obj);
-                }
+            Class<?> clazz = response.getClass();
+            if (!isValidResponseClass(clazz)) {
+                return 0;
             }
+
+            Method statusMethod = getMethodFor(clazz, "getStatus", statusMethodCache);
+            return ((Number) statusMethod.invoke(response)).intValue();
         } catch (Exception e) {
-            LogTest.error("Could not invoke getter for " + fieldName + ": " + e.getMessage());
+            return 0;
         }
-        return null;
     }
 
-    protected String capitalize(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    private void appendResponseAccordion(StringBuilder html, Object response, int index) {
+        try {
+            Class<?> clazz = response.getClass();
+            if (!isValidResponseClass(clazz)) {
+                return;
+            }
+
+            Method urlMethod = getMethodFor(clazz, "getUrl", urlMethodCache);
+            Method statusMethod = getMethodFor(clazz, "getStatus", statusMethodCache);
+            Method bodyMethod = getMethodFor(clazz, "getBody", bodyMethodCache);
+
+            String method = "GET";
+            try {
+                Method methodMethod = getMethodFor(clazz, "getMethod", methodMethodCache);
+                if (methodMethod != null) {
+                    method = (String) methodMethod.invoke(response);
+                }
+            } catch (Exception e) {
+            }
+
+            String url = (String) urlMethod.invoke(response);
+            int status = ((Number) statusMethod.invoke(response)).intValue();
+            String body = (String) bodyMethod.invoke(response);
+
+            String statusClass = (status >= 400) ? "status-error" :
+                    (status >= 300) ? "status-warning" :
+                            "status-success";
+
+            String endpoint = extractEndpoint(url);
+
+            html.append("<div class='accordion'>")
+                    .append("<div class='accordion-header' id='header-").append(index)
+                    .append("' onclick='toggleAccordion(").append(index).append(")'>")
+                    .append("<div class='method'>").append(method).append("</div>")
+                    .append("<div class='url'>").append(endpoint).append("</div>")
+                    .append("<div class='status ").append(statusClass).append("'>")
+                    .append(status).append("</div>")
+                    .append("<span class='chevron'>&#9660;</span>")
+                    .append("</div>")
+                    .append("<div id='content-").append(index).append("' class='accordion-content'>")
+                    .append("<pre>").append(escapeHtml(body != null ? body : "")).append("</pre>")
+                    .append("</div>")
+                    .append("</div>");
+        } catch (Exception e) {
+        }
+    }
+
+    private String extractEndpoint(String url) {
+        try {
+            java.net.URL urlObj = new java.net.URL(url);
+            String endpoint = urlObj.getPath();
+            return endpoint.isEmpty() ? "/" : endpoint;
+        } catch (Exception e) {
+            return url;
+        }
+    }
+
+    private boolean isValidResponseClass(Class<?> clazz) {
+        return validClassCache.computeIfAbsent(clazz, c -> {
+            try {
+                c.getMethod("getUrl");
+                c.getMethod("getStatus");
+                c.getMethod("getBody");
+                return true;
+            } catch (NoSuchMethodException e) {
+                return false;
+            }
+        });
+    }
+
+    private Method getMethodFor(Class<?> clazz, String methodName, Map<Class<?>, Method> cache) {
+        return cache.computeIfAbsent(clazz, c -> {
+            try {
+                return c.getMethod(methodName);
+            } catch (NoSuchMethodException e) {
+                return null;
+            }
+        });
     }
 
 

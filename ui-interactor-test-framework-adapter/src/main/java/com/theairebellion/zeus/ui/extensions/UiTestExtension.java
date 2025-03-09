@@ -100,6 +100,44 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
                 });
     }
 
+    private static void postQuestCreationIntercept(final SuperQuest quest, final String[] urlsForIntercepting) {
+        SmartWebDriver artifact = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
+        WebDriver driver = unwrapDriver(artifact.getOriginal());
+        if (driver instanceof ChromeDriver) {
+            DevTools chromeDevTools = ((ChromeDriver) driver).getDevTools();
+            chromeDevTools.createSession();
+            chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+            chromeDevTools.addListener(Network.responseReceived(), entry -> {
+                int statusCode = entry.getResponse().getStatus();
+                String url = entry.getResponse().getUrl();
+                ApiResponse response = new ApiResponse(url, statusCode);
+
+                if (checkUrl(urlsForIntercepting, url)) {
+                    try {
+                        String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
+
+                        if (body != null && body.length() > 10000) {
+                            response.setBody(String.format(
+                                    "Response body truncated. Original length: %d characters. " +
+                                            "First 100 characters: %s",
+                                    body.length(),
+                                    body.substring(0, 100)
+                            ));
+                        } else {
+                            response.setBody(body);
+                        }
+                    } catch (Exception e) {
+                        response.setBody("Error retrieving response body: " + e.getMessage());
+                    }
+                }
+                addResponseInStorage(quest.getStorage(), response);
+            });
+        } else {
+            throw new IllegalArgumentException("Intercepting Backend Requests is only acceptable with Chrome browser");
+        }
+    }
+
+
 
     private void processAuthenticateViaUiAsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(AuthenticateViaUiAs.class))
@@ -197,41 +235,6 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
             }
         }
 
-    }
-
-
-    private static void postQuestCreationIntercept(final SuperQuest quest, final String[] urlsForIntercepting) {
-        SmartWebDriver artifact = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
-        WebDriver driver = unwrapDriver(artifact.getOriginal());
-        if (driver instanceof ChromeDriver) {
-            DevTools chromeDevTools = ((ChromeDriver) driver).getDevTools();
-            chromeDevTools.createSession();
-            chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
-            chromeDevTools.addListener(Network.responseReceived(), entry -> {
-                ApiResponse response = new ApiResponse(entry.getResponse().getUrl(), entry.getResponse().getStatus());
-                if (checkUrl(urlsForIntercepting, entry.getResponse().getUrl())) {
-                    try {
-                        String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
-
-                        if (body != null && body.length() > 1000) {
-                            response.setBody(String.format(
-                                    "Response body truncated. Original length: %d characters. " +
-                                            "First 100 characters: %s",
-                                    body.length(),
-                                    body.substring(0, 100)
-                            ));
-                        } else {
-                            response.setBody(body);
-                        }
-                    } catch (Exception e) {
-                        response.setBody("Error retrieving response body: " + e.getMessage());
-                    }
-                }
-                addResponseInStorage(quest.getStorage(), response);
-            });
-        } else {
-            throw new IllegalArgumentException("Intercepting Backend Requests is only acceptable with Chrome browser");
-        }
     }
 
 
