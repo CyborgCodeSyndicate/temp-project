@@ -1,0 +1,262 @@
+name: UI Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      tagsInclude:
+        description: "Tags to include (comma-separated)"
+        required: false
+        default: "Regression"
+      tagsExclude:
+        description: "Tags to exclude (comma-separated)"
+        required: false
+        default: "Flaky"
+      maxTestsPerJob:
+        description: "Max test methods in each job (the plugin's maxMethods)"
+        required: true
+        default: "20"
+      maxThreadsPerJob:
+        description: "Max test methods in each job (the plugin's maxMethods)"
+        required: true
+        default: "10"
+      maxThreadsPerSeleniumContainer:
+        description: "Number of sessions per Selenium node"
+        required: true
+        default: "5"
+      sizePerSeleniumContainer:
+        description: "Size in GB for Selenium container"
+        required: true
+        default: "2g"
+
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Build all modules (including plugin + example-project)
+        run: mvn clean install -pl test-allocator-maven-plugin
+
+      - name: Run plugin to split tests
+        run: mvn test-compile -Psetup -pl example-project -am  -DtestSplitter.enabled=true -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" -DtestSplitter.test.engine=junit -DtestSplitter.json.output=grouped-tests -DtestSplitter.parallel.methods=true -DtestSplitter.max.number.runners=20
+
+      - name: Upload grouped-tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: grouped-tests
+          path: grouped-tests.json
+
+
+  create-matrix:
+    needs: [ setup ]
+    runs-on: ubuntu-latest
+    outputs:
+      testMatrix: ${{ steps.prepare-matrix.outputs.testMatrix }}
+      matrixCount: ${{ steps.prepare-matrix.outputs.matrixCount }}
+    steps:
+      - name: Download grouped-tests artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: grouped-tests
+          path: .
+
+      - name: Prepare matrix
+        id: prepare-matrix
+        run: |
+          echo "Reading grouped-tests.json..."
+          cat grouped-tests.json
+
+          MATRIX_JSON=$(cat grouped-tests.json)
+          MATRIX_COUNT=$(echo "$MATRIX_JSON" | jq '. | length')
+
+          echo "MATRIX_JSON=$MATRIX_JSON"
+          echo "MATRIX_COUNT=MATRIX_COUNT"
+
+          echo "testMatrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          echo "matrixCount=$MATRIX_COUNT" >> $GITHUB_OUTPUT
+
+  parallel-tests:
+    needs: [ setup, create-matrix ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        testGroup: ${{ fromJson(needs.create-matrix.outputs.testMatrix) }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Download grouped-tests.json
+        uses: actions/download-artifact@v4
+        with:
+          name: grouped-tests
+          path: .
+
+      - name: Parse subset
+        id: subset
+        run: |
+          jq ".[] | select(.jobIndex==${{ matrix.testGroup.jobIndex  }})" grouped-tests.json > subset.json
+          count=$(jq -r '.classes | length' subset.json 2>/dev/null || echo "0")
+          if [[ -z "$count" ]]; then count="0"; fi
+          echo "count=$count" >> $GITHUB_OUTPUT
+          totalMethods=$(jq -r '.totalMethods' subset.json 2>/dev/null || echo "0")
+          if [[ -z "$totalMethods" ]]; then totalMethods="0"; fi
+          echo "totalMethods=$totalMethods" >> $GITHUB_OUTPUT
+
+      - name: Install Docker Compose
+        if: ${{ steps.subset.outputs.count != '0' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Create docker-compose.yml
+        if: ${{ steps.subset.outputs.count != '0' }}
+        run: |
+          cat <<EOF > docker-compose.yml
+          version: "3.9"
+          services:
+            selenium-hub:
+              image: selenium/hub:4.10.0
+              container_name: selenium-hub
+              ports:
+                - "4442:4442"
+                - "4443:4443"
+                - "4444:4444"
+            chrome:
+              image: selenium/node-chrome:4.10.0
+              depends_on:
+                - selenium-hub
+              shm_size: ${{ inputs.sizePerSeleniumContainer }}
+              environment:
+                - SE_EVENT_BUS_HOST=selenium-hub
+                - SE_EVENT_BUS_PUBLISH_PORT=4442
+                - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+                - SE_NODE_MAX_SESSIONS=${{ inputs.maxThreadsPerSeleniumContainer }}
+                - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+          EOF
+
+      - name: Start Selenium Grid
+        if: ${{ steps.subset.outputs.count != '0' }}
+        id: scale-grid
+        run: |
+          totalMethods=${{ steps.subset.outputs.totalMethods }}
+          maxThreads=${{ inputs.maxThreadsPerSeleniumContainer }}
+          maxThreadsPerJob=${{ inputs.maxThreadsPerJob }}
+          
+          # Use maxThreadsPerJob if totalMethods exceeds it
+          if [ "$totalMethods" -gt "$maxThreadsPerJob" ]; then
+            totalMethods=$maxThreadsPerJob
+          fi
+          
+          # Calculate how many chrome nodes we need:
+          # e.g. if totalMethods=13, maxThreads=5 => need 3 nodes
+          # We'll do integer ceiling:
+          neededNodes=$(( (totalMethods + maxThreads - 1) / maxThreads ))
+          
+          echo "Total methods (adjusted) = $totalMethods"
+          echo "Max threads per browser = $maxThreads"
+          echo "We will spin up $neededNodes Chrome node(s)."
+          
+          docker-compose up -d --scale chrome=$neededNodes
+
+      - name: Wait for Selenium Hub
+        if: ${{ steps.subset.outputs.count != '0' }}
+        run: |
+          set +e
+          
+          for i in {1..30}; do
+            RESPONSE=$(curl -s "http://localhost:4444/status")
+            CURL_EXIT=$?
+          
+            if [ $CURL_EXIT -ne 0 ]; then
+              echo "curl failed with exit code $CURL_EXIT (likely the Grid is not up yet)."
+            fi
+          
+            READY=$(echo "$RESPONSE" | jq -r '.value.ready' 2>/dev/null)
+          
+            if [ "$READY" = "true" ]; then
+              echo "✅ Selenium Grid is ready!"
+              exit 0  # End the loop and mark this step as success
+            fi
+          
+            echo "⏳ Waiting for Selenium Grid... Attempt $i of 30"
+            sleep 2
+          done
+          
+          echo "❌ Selenium Grid was not ready after 30 attempts."
+
+      - name: Run tests
+        if: ${{ steps.subset.outputs.count != '0' }}
+        run: |
+          CLASSES=$(jq -r '.classes | join(",")' subset.json)
+          echo "JobIndex ${{ matrix.testGroup.jobIndex }} => classes: $CLASSES"
+          
+          mvn clean install -pl example-project -am -DskipTests
+          
+          mvn clean test -pl example-project \
+            -Dtest="$CLASSES" \
+            -Dinclude.tags="${{ inputs.tagsInclude }}" \
+            -Dexclude.tags="${{ inputs.tagsExclude }}" \
+            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.maxThreadsPerJob }} \
+            -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.maxThreadsPerJob }} \
+            -Dremote.driver.url="http://localhost:4444" \
+            -Dheadless="true"
+
+      - name: Upload Allure results
+        if: ${{ steps.subset.outputs.count != '0' && always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.testGroup.jobIndex }}
+          path: example-project/allure-results
+
+      - name: Teardown Selenium
+        if: ${{ steps.subset.outputs.count != '0' && always() }}
+        run: docker-compose down
+
+
+
+  merge-allure:
+    needs: [ parallel-tests, create-matrix ]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Download Allure artifacts dynamically
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: merged-allure  # Directly store all allure results here
+          merge-multiple: true
+
+      - name: Install Official Allure CLI
+        run: |
+          # 1) Download Allure 2.29.0 (adjust version as needed)
+          curl -LO https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.zip
+          
+          # 2) Unzip to /tmp/allure
+          unzip allure-2.29.0.zip -d /tmp/allure
+          
+          # 3) Move it to /opt
+          sudo mv /tmp/allure/allure-2.29.0 /opt/allure
+          
+          # 4) Symlink 'allure' into /usr/local/bin
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+          
+          # 5) Verify Allure
+          allure --version          
+
+      - name: Generate Allure report
+        run: |
+          allure generate merged-allure --clean -o allure-report
+          ls -l allure-report          
+
+
+      - name: Upload final Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-allure-report
+          path: allure-report
