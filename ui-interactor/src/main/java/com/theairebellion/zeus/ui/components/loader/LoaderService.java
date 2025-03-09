@@ -7,7 +7,21 @@ import org.openqa.selenium.By;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with loader elements within a web interface using Selenium.
+ * Provides an interface for interacting with loader elements in a UI automation framework,
+ * enabling checks for visibility and waiting mechanisms for when loaders appear or disappear.
+ * By referencing a {@link LoaderComponentType} and the {@link #DEFAULT_TYPE}, implementations
+ * integrate seamlessly with broader test automation pipelines.
+ *
+ * <p>Classes implementing this interface typically rely on Selenium-based operations for
+ * synchronization, ensuring loaders are properly shown or removed within expected timeframes.</p>
+ *
+ * <p>All methods are designed to support both container-based and locator-based identification
+ * of loader elements, offering a flexible approach to handle various UI designs.</p>
+ *
+ * <p>Methods in this interface throw runtime exceptions if loaders do not appear or disappear
+ * within the specified time, allowing test flows to handle unexpected loading behavior.</p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface LoaderService {
 
