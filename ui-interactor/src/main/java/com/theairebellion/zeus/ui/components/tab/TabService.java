@@ -8,7 +8,18 @@ import org.openqa.selenium.By;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with tab elements within a web interface.
+ * Provides an interface for interacting with tab elements in a UI automation framework,
+ * extending the capabilities of {@link ButtonService}. By referencing a {@link TabComponentType}
+ * and the {@link #DEFAULT_TYPE}, implementations can handle tab-based navigation and
+ * state checks consistently across various UI designs.
+ *
+ * <p>Classes implementing this interface generally leverage Selenium-based strategies to
+ * identify tabs either by container (using {@link SmartWebElement}) or locator (using {@link By}),
+ * ensuring a flexible approach that accommodates multiple application layouts.</p>
+ *
+ * <p>No usage examples are included here.</p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface TabService extends ButtonService {
 

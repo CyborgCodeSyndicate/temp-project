@@ -11,7 +11,21 @@ import java.util.List;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with select components within a web interface using Selenium.
+ * Provides an interface for interacting with select components in a UI automation
+ * framework, enabling selection of multiple options and retrieval of their states
+ * or availability. By referencing a {@link SelectComponentType} and the {@link #DEFAULT_TYPE},
+ * implementations can manage different styles of dropdown or multi-select elements
+ * with consistent operations.
+ *
+ * <p>Classes implementing this interface typically leverage Selenium-based approaches
+ * for identifying containers (via {@link SmartWebElement}) or using direct locators
+ * (via {@link By}), ensuring robust and flexible automation across various UI designs.</p>
+ *
+ * <p>This interface also extends the {@link com.theairebellion.zeus.ui.insertion.Insertion}
+ * contract, thereby supporting scenarios where select components are part of
+ * automated data entry flows.</p>
+ *
+ * author Cyborg Code Syndicate
  */
 public interface SelectService extends Insertion {
 
@@ -314,7 +328,6 @@ public interface SelectService extends Insertion {
      *
      * @return The default SelectComponentType.
      */
-
     private static SelectComponentType getDefaultType() {
         try {
             return ReflectionUtil.findEnumImplementationsOfInterface(SelectComponentType.class,
