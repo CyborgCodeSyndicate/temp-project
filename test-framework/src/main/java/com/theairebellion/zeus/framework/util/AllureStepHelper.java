@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class AllureStepHelper extends ObjectFormatter {
 
-    public <T> T executeWithAllureStep(String stepName, AllureStepHelper.AllureStepSupplier<T> supplier) {
+    public static <T> T executeWithAllureStep(String stepName, AllureStepSupplier<T> supplier) {
         String stepId = UUID.randomUUID().toString();
         Allure.getLifecycle().startStep(stepId, new StepResult().setName(stepName).setStatus(Status.PASSED));
         try {
@@ -30,7 +30,7 @@ public class AllureStepHelper extends ObjectFormatter {
         }
     }
 
-    public void setDescription(SuperQuest superQuest) {
+    public static void setDescription(SuperQuest superQuest) {
         List<String> htmlContent = superQuest.getStorage()
                 .sub(StorageKeysTest.ALLURE_DESCRIPTION)
                 .getAllByClass(StorageKeysTest.HTML, String.class);
@@ -68,7 +68,7 @@ public class AllureStepHelper extends ObjectFormatter {
         }
     }
 
-    public void logTestOutcome(String testName, String status, long durationInSeconds, Throwable throwable) {
+    public static void logTestOutcome(String testName, String status, long durationInSeconds, Throwable throwable) {
         String logMessage = "The quest of '{}' has " +
                 (throwable == null ? "concluded with glory" : "ended in defeat") +
                 ". Status: {}. Duration: {} seconds.";
@@ -79,7 +79,7 @@ public class AllureStepHelper extends ObjectFormatter {
         }
     }
 
-    public void setUpTestMetadata(ExtensionContext context, SuperQuest superQuest) {
+    public static void setUpTestMetadata(ExtensionContext context, SuperQuest superQuest) {
         String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-details.html");
 
         Map<String, String> placeholders = Map.of(
@@ -95,7 +95,6 @@ public class AllureStepHelper extends ObjectFormatter {
 
         superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, formattedHtml);
     }
-
 
     @FunctionalInterface
     public interface AllureStepSupplier<T> {

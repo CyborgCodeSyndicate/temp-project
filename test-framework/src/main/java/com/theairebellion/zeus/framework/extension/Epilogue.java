@@ -3,6 +3,7 @@ package com.theairebellion.zeus.framework.extension;
 import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.StorageKeysTest;
+import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import com.theairebellion.zeus.framework.util.TestContextManager;
 import io.qameta.allure.Allure;
 import org.apache.logging.log4j.ThreadContext;
@@ -18,16 +19,19 @@ import java.util.Map;
 
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.INTERCEPTED_REQUESTS_KEY;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.*;
+import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
+import static com.theairebellion.zeus.framework.util.TestContextManager.isUITest;
 
 @Order(Integer.MAX_VALUE)
-public class Epilogue extends TestContextManager implements AfterTestExecutionCallback {
+public class Epilogue implements AfterTestExecutionCallback {
 
     @Override
     public void afterTestExecution(final ExtensionContext context) {
         setUpTestMetadata(context, getSuperQuest(context));
         SuperQuest superQuest = getSuperQuest(context);
         Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
-        String htmlContent = generateHtmlContent(arguments);
+        String htmlContent = new ObjectFormatter().generateHtmlContent(arguments);
         superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, htmlContent);
         Throwable throwable = context.getExecutionException().orElse(null);
         String status = (throwable == null) ? "SUCCESS" : "FAILED";
@@ -45,7 +49,7 @@ public class Epilogue extends TestContextManager implements AfterTestExecutionCa
             List<Object> storedResponses = superQuest.getStorage().sub(StorageKeysTest.INTERCEPTED_REQUESTS)
                     .getAllByClass(INTERCEPTED_REQUESTS_KEY, Object.class);
             if (!storedResponses.isEmpty()) {
-                Allure.addAttachment("Intercepted Requests", "text/html", new ByteArrayInputStream(formatResponses(storedResponses).getBytes(StandardCharsets.UTF_8)),
+                Allure.addAttachment("Intercepted Requests", "text/html", new ByteArrayInputStream(new ObjectFormatter().formatResponses(storedResponses).getBytes(StandardCharsets.UTF_8)),
                         ".html");
 
             }

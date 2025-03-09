@@ -13,8 +13,9 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
+import static com.theairebellion.zeus.framework.util.TestContextManager.*;
 
-public class Craftsman extends TestContextManager implements ParameterResolver {
+public class Craftsman implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)

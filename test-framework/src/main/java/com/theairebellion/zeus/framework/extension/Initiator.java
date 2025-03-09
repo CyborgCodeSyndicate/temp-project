@@ -10,6 +10,7 @@ import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import com.theairebellion.zeus.framework.util.TestContextManager;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import io.qameta.allure.Allure;
@@ -32,7 +33,7 @@ import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGU
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 
 @Order(Integer.MAX_VALUE)
-public class Initiator extends TestContextManager implements InvocationInterceptor {
+public class Initiator implements InvocationInterceptor {
 
 
     @Override
@@ -82,7 +83,7 @@ public class Initiator extends TestContextManager implements InvocationIntercept
         CustomAllureListener.startStep("Processing preQuestJourney: " + preQuestJourney.toString(), CustomAllureListener.StepType.SUCCESS);
         String attachmentName = journey + "-Data";
 
-        String formattedData = formatProcessedData(journeyData, processedData);
+        String formattedData = new ObjectFormatter().formatProcessedData(journeyData, processedData);
         Allure.addAttachment(attachmentName, formattedData);
 
         preQuestJourney.journey().accept(superQuest, processedData);

@@ -21,7 +21,7 @@ public class TestContextManager extends AllureStepHelper {
 
     private static final String TOTAL_PARAMS_KEY = "totalParams";
 
-    public SuperQuest getSuperQuest(ExtensionContext extensionContext) {
+    public static SuperQuest getSuperQuest(ExtensionContext extensionContext) {
         Quest quest = Optional.ofNullable((Quest) extensionContext.getStore(ExtensionContext.Namespace.GLOBAL).get(QUEST))
                 .orElseThrow(() -> new IllegalStateException("Quest not found in the global store."));
 
@@ -31,7 +31,7 @@ public class TestContextManager extends AllureStepHelper {
         return decoratorsFactory.decorate(quest, SuperQuest.class);
     }
 
-    public void storeArgument(SuperQuest superQuest, DataForge dataForge, Object argument, ExtensionContext extensionContext) {
+    public static void storeArgument(SuperQuest superQuest, DataForge dataForge, Object argument, ExtensionContext extensionContext) {
         superQuest.getStorage().sub(ARGUMENTS).put(dataForge.enumImpl(), argument);
 
         ExtensionContext.Store store = extensionContext.getStore(ExtensionContext.Namespace.GLOBAL);
@@ -41,12 +41,12 @@ public class TestContextManager extends AllureStepHelper {
         store.put(ARGUMENTS, args);
     }
 
-    public void initializeParameterTracking(ExtensionContext extensionContext) {
-        extensionContext.getStore(ExtensionContext.Namespace.create(getClass(), extensionContext.getUniqueId()))
+    public static void initializeParameterTracking(ExtensionContext extensionContext) {
+        extensionContext.getStore(ExtensionContext.Namespace.create(TestContextManager.class, extensionContext.getUniqueId()))
                 .getOrComputeIfAbsent(TOTAL_PARAMS_KEY, key -> extensionContext.getRequiredTestMethod().getParameters().length);
     }
 
-    public boolean isUITest(ExtensionContext context) {
+    public static boolean isUITest(ExtensionContext context) {
         return Arrays.stream(context.getRequiredTestClass().getAnnotations())
                 .map(Annotation::annotationType)
                 .anyMatch(type -> "UI".equals(type.getSimpleName()));

@@ -10,17 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -29,12 +19,15 @@ public class ObjectFormatter {
 
     private static final ConcurrentHashMap<Class<?>, Field[]> FIELDS_CACHE = new ConcurrentHashMap<>();
     private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
+
     private final Map<Class<?>, Method> urlMethodCache = new HashMap<>();
     private final Map<Class<?>, Method> statusMethodCache = new HashMap<>();
     private final Map<Class<?>, Method> bodyMethodCache = new HashMap<>();
     private final Map<Class<?>, Method> methodMethodCache = new HashMap<>();
     private final Map<Class<?>, Boolean> validClassCache = new HashMap<>();
 
+    public ObjectFormatter() {
+    }
 
     private static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -43,12 +36,11 @@ public class ObjectFormatter {
         return mapper;
     }
 
-
-    public String formatObjectFields(Object obj) {
+    public static String formatObjectFields(Object obj) {
         return formatObjectFields(obj, Collections.newSetFromMap(new IdentityHashMap<>()));
     }
 
-    protected String formatObjectFields(Object obj, Set<Object> visited) {
+    private static String formatObjectFields(Object obj, Set<Object> visited) {
         if (obj == null) return "null";
         if (visited.contains(obj)) return "[Circular Reference Detected]";
         visited.add(obj);
@@ -68,7 +60,7 @@ public class ObjectFormatter {
         return result.toString();
     }
 
-    protected String formatArgumentValue(Object argument, Set<Object> visited) {
+    private static String formatArgumentValue(Object argument, Set<Object> visited) {
         if (argument == null) return "null";
         if (argument instanceof String || argument instanceof Number || argument instanceof Boolean)
             return argument.toString();
@@ -77,26 +69,25 @@ public class ObjectFormatter {
         return formatObjectFields(argument, visited);
     }
 
-    protected String formatCollection(Collection<?> collection, Set<Object> visited) {
+    private static String formatCollection(Collection<?> collection, Set<Object> visited) {
         return collection.stream()
                 .map(element -> formatArgumentValue(element, visited))
                 .collect(Collectors.joining(", "));
     }
 
-    protected String formatArray(Object array, Set<Object> visited) {
+    private static String formatArray(Object array, Set<Object> visited) {
         int length = Array.getLength(array);
         return IntStream.range(0, length)
                 .mapToObj(i -> formatArgumentValue(Array.get(array, i), visited))
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
-
     public String generateHtmlContent(Map<Enum<?>, LinkedList<Object>> arguments) {
         String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-data.html");
         return htmlTemplate.replace("{{argumentRows}}", buildRowsFromMap("", arguments));
     }
 
-    protected String buildRowsFromMap(String label, Map<Enum<?>, LinkedList<Object>> map) {
+    private String buildRowsFromMap(String label, Map<Enum<?>, LinkedList<Object>> map) {
         if ("PreArguments".equals(label)) return "";
         return map.entrySet().stream()
                 .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())
@@ -105,16 +96,16 @@ public class ObjectFormatter {
                 .collect(Collectors.joining());
     }
 
-    protected String formatObject(LinkedList<Object> objects) {
+    private String formatObject(LinkedList<Object> objects) {
         return objects == null || objects.isEmpty() ? "" :
                 objects.stream()
                         .filter(Objects::nonNull)
                         .filter(obj -> !obj.getClass().getName().contains("Lambda"))
-                        .map(this::formatObjectFields)
+                        .map(ObjectFormatter::formatObjectFields)
                         .collect(Collectors.joining(", "));
     }
 
-    protected String escapeHtml(String input) {
+    static String escapeHtml(String input) {
         return input == null ? "N/A" : input.replace("&", "&amp;")
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
@@ -123,8 +114,7 @@ public class ObjectFormatter {
                 .replace("%", "%%");
     }
 
-
-    public String getClassAnnotations(ExtensionContext context) {
+    public static String getClassAnnotations(ExtensionContext context) {
         String annotations = Arrays.stream(context.getRequiredTestClass().getAnnotations())
                 .map(annotation -> "@" + annotation.annotationType().getSimpleName() +
                         (annotationHasArguments(annotation) ? formatAnnotationArguments(annotation) : ""))
@@ -133,13 +123,13 @@ public class ObjectFormatter {
         return annotations.isEmpty() ? "No class annotations" : annotations;
     }
 
-    protected String getMethodAnnotations(ExtensionContext context) {
+    static String getMethodAnnotations(ExtensionContext context) {
         return Arrays.stream(context.getRequiredTestMethod().getAnnotations())
-                .map(this::formatAnnotation)
+                .map(ObjectFormatter::formatAnnotation)
                 .collect(Collectors.joining("\n"));
     }
 
-    protected String formatAnnotation(Annotation annotation) {
+    private static String formatAnnotation(Annotation annotation) {
         String annotationName = annotation.annotationType().getSimpleName();
         String args = Arrays.stream(annotation.annotationType().getDeclaredMethods())
                 .filter(method -> method.getParameterCount() == 0)
@@ -149,7 +139,7 @@ public class ObjectFormatter {
         return "@" + annotationName + (args.isEmpty() ? "" : "(" + args + ")");
     }
 
-    protected String getAnnotationArgument(Annotation annotation, Method method) {
+    private static String getAnnotationArgument(Annotation annotation, Method method) {
         try {
             Object value = method.invoke(annotation);
             return value.getClass().isArray() ? method.getName() + "=" + arrayToString(value) : method.getName() + "=" + value;
@@ -158,7 +148,7 @@ public class ObjectFormatter {
         }
     }
 
-    protected String arrayToString(Object array) {
+    private static String arrayToString(Object array) {
         if (array.getClass().isArray()) {
             int length = Array.getLength(array);
             StringBuilder sb = new StringBuilder("[");
@@ -172,12 +162,12 @@ public class ObjectFormatter {
         return array.toString();
     }
 
-    protected boolean annotationHasArguments(Annotation annotation) {
+    private static boolean annotationHasArguments(Annotation annotation) {
         return Arrays.stream(annotation.annotationType().getDeclaredMethods())
                 .anyMatch(method -> method.getParameterCount() > 0);
     }
 
-    protected String formatAnnotationArguments(Annotation annotation) {
+    private static String formatAnnotationArguments(Annotation annotation) {
         return Arrays.stream(annotation.annotationType().getDeclaredMethods())
                 .filter(method -> method.getParameterCount() == 0)
                 .map(method -> {
@@ -190,7 +180,7 @@ public class ObjectFormatter {
                 .collect(Collectors.joining(", ", "(", ")"));
     }
 
-    protected String formatAnnotationsToNewRows(String annotations) {
+    static String formatAnnotationsToNewRows(String annotations) {
         if (annotations == null || annotations.trim().isEmpty()) {
             return "None";
         }
@@ -217,7 +207,7 @@ public class ObjectFormatter {
         return formattedAnnotations.toString();
     }
 
-    protected String cleanAnnotation(String annotation) {
+    private static String cleanAnnotation(String annotation) {
         return annotation.trim()
                 .replaceAll("com\\.theairebellion\\.zeus\\.framework\\.annotation\\.", "")
                 .replace("<", "&lt;")
@@ -232,7 +222,7 @@ public class ObjectFormatter {
                 .replaceAll("requestUrlSubStrings\\s*=\\s*\\[([^]]+)]", "requestUrlSubStrings = [$1]");
     }
 
-    protected String applyIndentation(String text, int baseIndentLevel) {
+    private static String applyIndentation(String text, int baseIndentLevel) {
         return text
                 .replaceAll("\\{", "{\n" + getIndent(baseIndentLevel + 1))
                 .replaceAll("}", "\n" + getIndent(baseIndentLevel) + "}")
@@ -242,15 +232,15 @@ public class ObjectFormatter {
                 .replaceAll("\n\\s*\n", "\n");
     }
 
-    protected String getIndent(int level) {
+    private static String getIndent(int level) {
         return "    ".repeat(level);
     }
 
-    protected int countOccurrences(String str, String target) {
+    private static int countOccurrences(String str, String target) {
         return str.length() - str.replace(target, "").length();
     }
 
-    protected String formatLongText(String text) {
+    static String formatLongText(String text) {
         if (text == null || text.trim().isEmpty()) {
             return "None";
         }
@@ -274,7 +264,7 @@ public class ObjectFormatter {
         return formattedText.toString();
     }
 
-    protected String getTestArguments(ExtensionContext context) {
+    static String getTestArguments(ExtensionContext context) {
         return context.getTestInstance()
                 .flatMap(instance -> context.getTestMethod()
                         .map(method -> Arrays.stream(method.getParameters())
@@ -283,7 +273,7 @@ public class ObjectFormatter {
                 .orElse("No arguments available.");
     }
 
-    protected String formatResponses(List<Object> responses) {
+    public String formatResponses(List<Object> responses) {
         List<Object> flatResponses = new ArrayList<>();
         int totalRequests = 0;
         int successCount = 0;
@@ -419,7 +409,6 @@ public class ObjectFormatter {
         });
     }
 
-
     public String formatProcessedData(JourneyData[] originalData, Object[] processedData) {
         if (processedData == null || processedData.length == 0) {
             return "No data available";
@@ -449,11 +438,11 @@ public class ObjectFormatter {
         return sb.toString();
     }
 
-    protected String extractJourneyDataValue(JourneyData journeyData) {
+    private static String extractJourneyDataValue(JourneyData journeyData) {
         return journeyData.value();
     }
 
-    protected void formatJsonData(StringBuilder sb, Object data) {
+    private static void formatJsonData(StringBuilder sb, Object data) {
         try {
             String formattedJson = OBJECT_MAPPER.writeValueAsString(data);
             String[] jsonLines = formattedJson.split("\n");
