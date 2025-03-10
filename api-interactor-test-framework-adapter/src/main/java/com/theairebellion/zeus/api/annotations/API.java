@@ -13,8 +13,13 @@ import java.lang.annotation.Target;
  * Marks a test class as an API test.
  * <p>
  * This annotation enables API testing by applying the {@link ApiTestExtension} and
- * integrating authentication via {@link AuthenticateViaApiAs}.
+ * integrating API-related framework functionalities. It ensures that necessary API
+ * configurations, authentication mechanisms, and request handling are properly managed
+ * during test execution.
  * </p>
+ *
+ * <p>Applying this annotation to a test class automatically enables API-specific features
+ * such as API request execution, response validation, and authentication handling.</p>
  *
  * @author Cyborg Code Syndicate
  */
@@ -25,3 +30,4 @@ import java.lang.annotation.Target;
 public @interface API {
 
 }
+

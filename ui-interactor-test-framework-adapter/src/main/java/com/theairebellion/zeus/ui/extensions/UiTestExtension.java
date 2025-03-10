@@ -46,6 +46,24 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
+/**
+ * JUnit 5 test extension for managing UI-related test execution lifecycle.
+ * <p>
+ * This extension provides support for:
+ * <ul>
+ *     <li>Intercepting UI-related HTTP requests using {@link InterceptRequests}.</li>
+ *     <li>Automating login via UI authentication using {@link AuthenticateViaUiAs}.</li>
+ *     <li>Capturing screenshots on test failures and optionally on passed tests.</li>
+ *     <li>Registering UI assertions and handling WebDriver session cleanup.</li>
+ *     <li>Intercepting backend requests in Chrome DevTools.</li>
+ * </ul>
+ * <p>
+ * It integrates with {@link SmartWebDriver} for Selenium interactions and works
+ * with {@link Quest} for structured test execution.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
         TestExecutionExceptionHandler {
 
@@ -67,7 +85,16 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_CLICKABLE, TableAssertionFunctions::validateAllCellsClickable);
     }
 
-
+    /**
+     * Executes actions before the test runs, such as:
+     * <ul>
+     *     <li>Intercepting UI-related requests.</li>
+     *     <li>Setting up authentication via UI.</li>
+     *     <li>Registering custom assertions.</li>
+     * </ul>
+     *
+     * @param context The current test execution context.
+     */
     @Override
     public void beforeTestExecution(final ExtensionContext context) {
         context.getTestMethod().ifPresent(method -> {
@@ -150,7 +177,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         return Arrays.stream(urlsForIntercepting).anyMatch(url::contains);
     }
 
-
+    /**
+     * Executes actions after the test completes, such as:
+     * <ul>
+     *     <li>Taking screenshots if enabled.</li>
+     *     <li>Cleaning up the WebDriver session.</li>
+     * </ul>
+     *
+     * @param context The current test execution context.
+     */
     @Override
     public void afterTestExecution(ExtensionContext context) {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
@@ -163,7 +198,13 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         driver.quit();
     }
 
-
+    /**
+     * Handles test execution exceptions by capturing a screenshot and throwing the error.
+     *
+     * @param context   The current test execution context.
+     * @param throwable The exception that occurred during test execution.
+     * @throws Throwable The rethrown exception.
+     */
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
         System.err.println("Exception during UI test: " + throwable.getMessage());
@@ -246,7 +287,6 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         );
     }
 
-
     private static void takeScreenshot(WebDriver driver, String testName) {
         try {
             TakesScreenshot screenshot = (TakesScreenshot) driver;
@@ -258,14 +298,12 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         }
     }
 
-
     private WebDriver getWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
         Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(StoreKeys.QUEST);
         SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
         SmartWebDriver artifact = superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
         return unwrapDriver(artifact.getOriginal());
     }
-
 
     private static WebDriver unwrapDriver(WebDriver maybeProxy) {
         try {
@@ -275,6 +313,5 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             throw new RuntimeException("Failed to unwrap WebDriver", e);
         }
     }
-
 
 }
