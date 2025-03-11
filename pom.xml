@@ -21,6 +21,8 @@
         <module>ui-interactor-test-framework-adapter</module>
         <module>example-project</module>
         <module>commons</module>
+        <module>reqres-test-framework</module>
+        <module>test-allocator-maven-plugin</module>
     </modules>
 
     <properties>

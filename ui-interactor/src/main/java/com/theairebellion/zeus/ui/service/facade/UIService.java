@@ -2,11 +2,13 @@ package com.theairebellion.zeus.ui.service.facade;
 
 import com.theairebellion.zeus.ui.components.alert.AlertService;
 import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
+import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
+import com.theairebellion.zeus.ui.components.link.LinkComponentType;
 import com.theairebellion.zeus.ui.components.link.LinkService;
 import com.theairebellion.zeus.ui.components.link.LinkServiceImpl;
 import com.theairebellion.zeus.ui.components.list.ItemListComponentType;
@@ -36,6 +38,8 @@ import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.validator.UiTableValidator;
+import com.theairebellion.zeus.ui.validator.UiTableValidatorImpl;
 import lombok.Getter;
 
 @Getter
@@ -59,7 +63,7 @@ public class UIService {
 
     private final TableServiceRegistry tableServiceRegistry;
     private final TableService tableService;
-
+    private final UiTableValidator uiTableValidator;
 
     public UIService(SmartWebDriver driver) {
         this.driver = driver;
@@ -78,7 +82,8 @@ public class UIService {
         tableServiceRegistry = new TableServiceRegistry();
         registerInsertionServices();
         insertionService = new InsertionServiceFieldImpl(serviceRegistry);
-        tableService = new TableServiceImpl(driver, tableServiceRegistry);
+        uiTableValidator = new UiTableValidatorImpl();
+        tableService = new TableServiceImpl(driver, tableServiceRegistry, uiTableValidator);
     }
 
 
@@ -88,6 +93,8 @@ public class UIService {
         serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
         serviceRegistry.registerService(SelectComponentType.class, selectField);
         serviceRegistry.registerService(ItemListComponentType.class, listField);
+        tableServiceRegistry.registerService(ButtonComponentType.class, buttonField);
+        tableServiceRegistry.registerService(LinkComponentType.class, linkField);
         tableServiceRegistry.registerService(InputComponentType.class, (TableFilter) inputField);
         tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputField);
     }

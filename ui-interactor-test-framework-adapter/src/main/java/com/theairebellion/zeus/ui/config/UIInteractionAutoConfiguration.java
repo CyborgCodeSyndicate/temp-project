@@ -4,6 +4,8 @@ import com.theairebellion.zeus.ui.drivers.config.WebDriverConfig;
 import com.theairebellion.zeus.ui.drivers.factory.WebDriverFactory;
 import com.theairebellion.zeus.ui.selenium.listeners.WebDriverEventListener;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.validator.UiTableValidator;
+import com.theairebellion.zeus.ui.validator.UiTableValidatorImpl;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,11 @@ public class UIInteractionAutoConfiguration {
                                                                                                      getUiConfig().browserVersion())
                                                                                                  .headless(
                                                                                                      getUiConfig().headless())
+                                                                                                 .remote(
+                                                                                                     getUiConfig().remoteDriverUrl() != null && !getUiConfig().remoteDriverUrl()
+                                                                                                                                                     .isEmpty())
+                                                                                                 .remoteUrl(
+                                                                                                     getUiConfig().remoteDriverUrl())
                                                                                                  .eventFiringDecorator(
                                                                                                      new EventFiringDecorator<>(
                                                                                                          new WebDriverEventListener()))
@@ -32,5 +39,10 @@ public class UIInteractionAutoConfiguration {
     }
 
 
+    @Bean
+    @Lazy
+    public UiTableValidator uiTableValidator() {
+        return new UiTableValidatorImpl();
+    }
 
 }

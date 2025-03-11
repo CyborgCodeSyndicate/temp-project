@@ -58,10 +58,19 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
     private static final String UI_MODULE_PACKAGE = "theairebellion.zeus.ui";
 
-
     static {
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.VALUES_PRESENT_IN_ALL_ROWS,
-                TableAssertionFunctions::valuesPresentInAllRows);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_NOT_EMPTY, TableAssertionFunctions::validateTableNotEmpty);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_ROW_COUNT, TableAssertionFunctions::validateTableRowCount);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.EVERY_ROW_CONTAINS_VALUES, TableAssertionFunctions::validateEveryRowContainsValues);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DOES_NOT_CONTAIN_ROW, TableAssertionFunctions::validateTableDoesNotContainRow);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_ROWS_ARE_UNIQUE, TableAssertionFunctions::validateAllRowsAreUnique);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.NO_EMPTY_CELLS, TableAssertionFunctions::validateNoEmptyCells);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.COLUMN_VALUES_ARE_UNIQUE, TableAssertionFunctions::validateColumnValuesAreUnique);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DATA_MATCHES_EXPECTED, TableAssertionFunctions::validateTableDataMatchesExpected);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_NOT_EMPTY, TableAssertionFunctions::validateRowNotEmpty);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_CONTAINS_VALUES, TableAssertionFunctions::validateRowContainsValues);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ENABLED, TableAssertionFunctions::validateAllCellsEnabled);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_CLICKABLE, TableAssertionFunctions::validateAllCellsClickable);
     }
 
 

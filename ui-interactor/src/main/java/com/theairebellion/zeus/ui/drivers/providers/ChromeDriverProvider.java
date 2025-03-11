@@ -30,7 +30,13 @@ public class ChromeDriverProvider extends BaseDriverProvider<ChromeOptions> {
 
     @Override
     public void applyDefaultArguments(ChromeOptions options) {
-        options.addArguments("--disable-gpu", "--no-sandbox");
+        options.addArguments("--disable-gpu", "--no-sandbox", "--remote-allow-origins=*");
+    }
+
+
+    @Override
+    public void applyHeadlessArguments(final ChromeOptions options) {
+        options.addArguments("--headless", "window-size=1920x1080", "--allow-insecure-localhost", "--disable-dev-shm-usage");
     }
 
 
