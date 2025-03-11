@@ -10,6 +10,14 @@ import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
+/**
+ * Provides a fluent API for interacting with tab UI components.
+ * Supports actions such as clicking, visibility checks, selection validation, and enabling/disabling tabs.
+ *
+ * @param <T> The type extending {@link UIServiceFluent}, enabling method chaining.
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class TabServiceFluent<T extends UIServiceFluent<?>> {
 
     private final TabService tabService;
@@ -17,7 +25,14 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
     private final Storage storage;
     private final SmartWebDriver driver;
 
-
+    /**
+     * Constructs a new {@code TabServiceFluent} instance.
+     *
+     * @param uiServiceFluent The parent UI service fluent instance.
+     * @param storage         The storage instance for persisting UI states.
+     * @param tabService      The tab service instance for performing tab-related operations.
+     * @param webDriver       The WebDriver instance for browser interactions.
+     */
     public TabServiceFluent(T uiServiceFluent, Storage storage, TabService tabService,
                             SmartWebDriver webDriver) {
         this.tabService = tabService;
@@ -26,7 +41,12 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
         driver = webDriver;
     }
 
-
+    /**
+     * Clicks on the specified tab UI element.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T click(final TabUIElement element) {
         Allure.step(String.format("Clicking tab with locator: '%s' from tab component of type: '%s'.",
                 element.locator().toString(),
@@ -37,7 +57,12 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
         return uiServiceFluent;
     }
 
-
+    /**
+     * Checks if the specified tab is enabled.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T isEnabled(final TabUIElement element) {
         element.before().accept(driver);
         boolean enabled = tabService.isEnabled(element.componentType(), element.locator());
@@ -46,26 +71,47 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the specified tab is enabled.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T validateIsEnabled(final TabUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
-
+    /**
+     * Validates whether the specified tab is enabled or disabled.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @param soft    Whether to perform a soft assertion.
+     * @return The fluent UI service instance.
+     */
     public T validateIsEnabled(final TabUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
-
+    /**
+     * Validates that the specified tab is disabled.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T validateIsDisabled(final TabUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
-
+    /**
+     * Validates whether the specified tab is disabled.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @param soft    Whether to perform a soft assertion.
+     * @return The fluent UI service instance.
+     */
     public T validateIsDisabled(final TabUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
-
 
     private T validateIsEnabled(final TabUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
@@ -100,7 +146,12 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
         }
     }
 
-
+    /**
+     * Checks if the specified tab is visible.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T isVisible(final TabUIElement element) {
         element.before().accept(driver);
         boolean visible = tabService.isVisible(element.componentType(), element.locator());
@@ -109,26 +160,47 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the specified tab is visible.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T validateIsVisible(final TabUIElement element) {
         return validateIsVisible(element, true, false);
     }
 
-
+    /**
+     * Validates whether the specified tab is visible.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @param soft    Whether to perform a soft assertion.
+     * @return The fluent UI service instance.
+     */
     public T validateIsVisible(final TabUIElement element, boolean soft) {
         return validateIsVisible(element, true, soft);
     }
 
-
+    /**
+     * Validates that the specified tab is hidden.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T validateIsHidden(final TabUIElement element) {
         return validateIsVisible(element, false, false);
     }
 
-
+    /**
+     * Validates whether the specified tab is hidden.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @param soft    Whether to perform a soft assertion.
+     * @return The fluent UI service instance.
+     */
     public T validateIsHidden(final TabUIElement element, boolean soft) {
         return validateIsVisible(element, false, soft);
     }
-
 
     private T validateIsVisible(final TabUIElement element, boolean shouldBeVisible, boolean soft) {
         element.before().accept(driver);
@@ -163,7 +235,12 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
         }
     }
 
-
+    /**
+     * Checks if the specified tab is selected.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T isSelected(final TabUIElement element) {
         element.before().accept(driver);
         boolean selected = tabService.isSelected(element.componentType(), element.locator());
@@ -172,26 +249,49 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the specified tab is selected.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T validateIsSelected(final TabUIElement element) {
         return validateIsSelected(element, true, false);
     }
 
-
+    /**
+     * Validates whether the specified tab is selected.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @return The fluent UI service instance.
+     */
     public T validateIsSelected(final TabUIElement element, boolean soft) {
         return validateIsSelected(element, true, soft);
     }
 
-
+    /**
+     * Validates whether the specified tab is not selected.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @return The fluent UI service instance.
+     */
     public T validateIsNotSelected(final TabUIElement element) {
         return validateIsSelected(element, false, false);
     }
 
-
+    /**
+     * Validates whether the specified tab is not selected.
+     *
+     * @param element The {@link TabUIElement} representing the tab.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @return The fluent UI service instance.
+     */
     public T validateIsNotSelected(final TabUIElement element, boolean soft) {
         return validateIsSelected(element, false, soft);
     }
-
 
     private T validateIsSelected(final TabUIElement element, boolean shouldBeSelected, boolean soft) {
         element.before().accept(driver);
@@ -225,4 +325,5 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
             );
         }
     }
+
 }

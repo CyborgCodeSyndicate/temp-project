@@ -16,6 +16,14 @@ import java.util.List;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
+/**
+ * Fluent service for interacting with list UI elements.
+ * Provides methods for selecting, validating, and interacting with lists.
+ *
+ * @param <T> The type of the UI service fluent interface.
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
 
     private final ItemListService itemListService;
@@ -23,7 +31,14 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
     private final Storage storage;
     private final SmartWebDriver driver;
 
-
+    /**
+     * Constructs a new ListServiceFluent instance.
+     *
+     * @param uiServiceFluent The UI service fluent instance.
+     * @param storage         The storage instance for UI states.
+     * @param itemListService The list service for interacting with UI elements.
+     * @param webDriver       The smart web driver instance.
+     */
     public ListServiceFluent(T uiServiceFluent, Storage storage, ItemListService itemListService,
                              SmartWebDriver webDriver) {
         this.itemListService = itemListService;
@@ -32,7 +47,13 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         driver = webDriver;
     }
 
-
+    /**
+     * Selects items from the list.
+     *
+     * @param element The list UI element.
+     * @param values  The values to select.
+     * @return The fluent UI service instance.
+     */
     public T select(final ListUIElement element, final String... values) {
         Allure.step(String.format("Selecting items: '%s' from list component of type: '%s'.", Arrays.toString(values),
                 element.componentType().toString()));
@@ -42,7 +63,13 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Deselects items from the list.
+     *
+     * @param element The list UI element.
+     * @param values  The values to deselect.
+     * @return The fluent UI service instance.
+     */
     public T deSelect(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         itemListService.deSelect(element.componentType(), element.locator(), values);
@@ -50,7 +77,13 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Checks if the given values are selected in the list.
+     *
+     * @param element The list UI element.
+     * @param values  The values to check.
+     * @return The fluent UI service instance.
+     */
     public T areSelected(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         boolean selected = itemListService.areSelected(element.componentType(), element.locator(), values);
@@ -59,29 +92,56 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the given values are selected in the list.
+     *
+     * @param element The list UI element.
+     * @param values  The expected selected values.
+     * @return The fluent UI service instance.
+     */
     public T validateAreSelected(final ListUIElement element, final String... values) {
         return validateAreSelected(element, true, false, values);
     }
 
-
+    /**
+     * Validates that the specified values are selected in the given list element.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param values  The expected values that should be selected in the list.
+     * @return The fluent UI service instance.
+     */
     public T validateAreSelected(final ListUIElement element, boolean soft, final String... values) {
         return validateAreSelected(element, true, soft, values);
     }
 
-
+    /**
+     * Validates that the given values are not selected in the list.
+     *
+     * @param element The list UI element.
+     * @param values  The expected unselected values.
+     * @return The fluent UI service instance.
+     */
     public T validateAreNotSelected(final ListUIElement element, final String... values) {
         return validateAreSelected(element, false, false, values);
     }
 
-
+    /**
+     * Validates that the specified values are not selected in the given list element.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param values  The values that should not be selected in the list.
+     * @return The fluent UI service instance.
+     */
     public T validateAreNotSelected(final ListUIElement element, boolean soft, final String... values) {
         return validateAreSelected(element, false, soft, values);
     }
 
-
     private T validateAreSelected(final ListUIElement element, boolean shouldBeSelected, boolean soft,
-                                                final String... values) {
+                                  final String... values) {
         element.before().accept(driver);
         boolean selected = itemListService.areSelected(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -114,7 +174,13 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         }
     }
 
-
+    /**
+     * Checks if the specified value is selected in the given list element.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The value to check for selection.
+     * @return The fluent UI service instance.
+     */
     public T isSelected(final ListUIElement element, final String value) {
         element.before().accept(driver);
         boolean selected = itemListService.isSelected(element.componentType(), element.locator(), value);
@@ -123,27 +189,61 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the specified value is selected in the given list element.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The value that should be selected.
+     * @return The fluent UI service instance.
+     */
     public T validateIsSelected(final ListUIElement element, final String value) {
         return validateAreSelected(element, true, false, value);
     }
 
-
+    /**
+     * Validates that the specified value is selected in the given list element.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param value   The value that should be selected.
+     * @return The fluent UI service instance.
+     */
     public T validateIsSelected(final ListUIElement element, boolean soft, final String value) {
         return validateAreSelected(element, true, soft, value);
     }
 
-
+    /**
+     * Validates that the specified value is not selected in the given list element.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The value that should not be selected.
+     * @return The fluent UI service instance.
+     */
     public T validateIsNotSelected(final ListUIElement element, final String value) {
         return validateAreSelected(element, false, false, value);
     }
 
-
+    /**
+     * Validates that the specified value is not selected in the given list element.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param value   The value that should not be selected.
+     * @return The fluent UI service instance.
+     */
     public T validateIsNotSelected(final ListUIElement element, boolean soft, final String value) {
         return validateAreSelected(element, false, soft, value);
     }
 
-
+    /**
+     * Checks if the given values are enabled in the list.
+     *
+     * @param element The list UI element.
+     * @param values  The values to check.
+     * @return The fluent UI service instance.
+     */
     public T areEnabled(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         boolean enabled = itemListService.areEnabled(element.componentType(), element.locator(), values);
@@ -152,29 +252,56 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the list items are enabled.
+     *
+     * @param element The list UI element.
+     * @param values  The values to validate.
+     * @return The fluent UI service instance.
+     */
     public T validateAreEnabled(final ListUIElement element, final String... values) {
         return validateAreEnabled(element, true, false, values);
     }
 
-
+    /**
+     * Validates that the specified values in the given list element are enabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param values  The values that should be enabled.
+     * @return The fluent UI service instance.
+     */
     public T validateAreEnabled(final ListUIElement element, boolean soft, final String... values) {
         return validateAreEnabled(element, true, soft, values);
     }
 
-
+    /**
+     * Validates that the specified values in the given list element are disabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param values  The values that should be disabled.
+     * @return The fluent UI service instance.
+     */
     public T validateAreDisabled(final ListUIElement element, final String... values) {
         return validateAreEnabled(element, false, false, values);
     }
 
-
+    /**
+     * Validates that the specified values in the given list element are disabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param values  The values that should be disabled.
+     * @return The fluent UI service instance.
+     */
     public T validateAreDisabled(final ListUIElement element, boolean soft, final String... values) {
         return validateAreEnabled(element, false, soft, values);
     }
 
-
     private T validateAreEnabled(final ListUIElement element, boolean shouldBeEnabled, boolean soft,
-                                               final String... values) {
+                                 final String... values) {
         element.before().accept(driver);
         boolean enabled = itemListService.areEnabled(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -207,7 +334,13 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         }
     }
 
-
+    /**
+     * Checks if the specified value in the given list element is enabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The specific value to check for being enabled.
+     * @return The fluent UI service instance.
+     */
     public T isEnabled(final ListUIElement element, final String value) {
         element.before().accept(driver);
         boolean enabled = itemListService.isEnabled(element.componentType(), element.locator(), value);
@@ -216,27 +349,61 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is enabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The specific value that should be enabled.
+     * @return The fluent UI service instance.
+     */
     public T validateIsEnabled(final ListUIElement element, final String value) {
         return validateAreEnabled(element, true, false, value);
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is enabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param value   The specific value that should be enabled.
+     * @return The fluent UI service instance.
+     */
     public T validateIsEnabled(final ListUIElement element, boolean soft, final String value) {
         return validateAreEnabled(element, true, soft, value);
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is disabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The specific value that should be disabled.
+     * @return The fluent UI service instance.
+     */
     public T validateIsDisabled(final ListUIElement element, final String value) {
         return validateAreEnabled(element, false, false, value);
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is disabled.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param value   The specific value that should be disabled.
+     * @return The fluent UI service instance.
+     */
     public T validateIsDisabled(final ListUIElement element, boolean soft, final String value) {
         return validateAreEnabled(element, false, soft, value);
     }
 
-
+    /**
+     * Checks if the given values are visible in the list.
+     *
+     * @param element The list UI element.
+     * @param values  The values to check.
+     * @return The fluent UI service instance.
+     */
     public T areVisible(final ListUIElement element, final String... values) {
         element.before().accept(driver);
         boolean visible = itemListService.areVisible(element.componentType(), element.locator(), values);
@@ -245,29 +412,56 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the given values are visible in the list.
+     *
+     * @param element The list UI element.
+     * @param values  The expected visible values.
+     * @return The fluent UI service instance.
+     */
     public T validateAreVisible(final ListUIElement element, final String... values) {
         return validateAreVisible(element, true, false, values);
     }
 
-
+    /**
+     * Validates that the specified values in the given list element are visible.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param values  The specific values that should be visible.
+     * @return The fluent UI service instance.
+     */
     public T validateAreVisible(final ListUIElement element, boolean soft, final String... values) {
         return validateAreVisible(element, true, soft, values);
     }
 
-
+    /**
+     * Validates that the specified values in the given list element are hidden.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param values  The specific values that should be hidden.
+     * @return The fluent UI service instance.
+     */
     public T validateAreHidden(final ListUIElement element, final String... values) {
         return validateAreVisible(element, false, false, values);
     }
 
-
+    /**
+     * Validates that the specified values in the given list element are hidden.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param values  The specific values that should be hidden.
+     * @return The fluent UI service instance.
+     */
     public T validateAreHidden(final ListUIElement element, boolean soft, final String... values) {
         return validateAreVisible(element, false, soft, values);
     }
 
-
     private T validateAreVisible(final ListUIElement element, boolean shouldBeVisible, boolean soft,
-                                              final String... values) {
+                                 final String... values) {
         element.before().accept(driver);
         boolean visible = itemListService.areVisible(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -300,7 +494,13 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         }
     }
 
-
+    /**
+     * Checks if the specified value in the given list element is visible.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The specific value to check for visibility.
+     * @return The fluent UI service instance.
+     */
     public T isVisible(final ListUIElement element, final String value) {
         element.before().accept(driver);
         boolean visible = itemListService.isVisible(element.componentType(), element.locator(), value);
@@ -309,27 +509,60 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is visible.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The specific value that should be visible.
+     * @return The fluent UI service instance.
+     */
     public T validateIsVisible(final ListUIElement element, final String value) {
         return validateAreVisible(element, true, false, value);
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is visible.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param value   The specific value that should be visible.
+     * @return The fluent UI service instance.
+     */
     public T validateIsVisible(final ListUIElement element, boolean soft, final String value) {
         return validateAreVisible(element, true, soft, value);
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is hidden.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param value   The specific value that should be hidden.
+     * @return The fluent UI service instance.
+     */
     public T validateIsHidden(final ListUIElement element, final String value) {
         return validateAreVisible(element, false, false, value);
     }
 
-
+    /**
+     * Validates that the specified value in the given list element is hidden.
+     *
+     * @param element The {@link ListUIElement} representing the list UI component.
+     * @param soft    A boolean indicating whether the validation should be performed softly.
+     *                If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param value   The specific value that should be hidden.
+     * @return The fluent UI service instance.
+     */
     public T validateIsHidden(final ListUIElement element, boolean soft, final String value) {
         return validateAreVisible(element, false, soft, value);
     }
 
-
+    /**
+     * Retrieves the selected items from the list.
+     *
+     * @param element The list UI element.
+     * @return The fluent UI service instance.
+     */
     public T getSelected(final ListUIElement element) {
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
@@ -338,29 +571,57 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the specified items are selected within the given list UI element.
+     *
+     * @param element        The {@link ListUIElement} representing the list UI component.
+     * @param expectedValues The expected values that should be selected.
+     * @return The fluent UI service instance, allowing for method chaining.
+     */
     public T validateSelectedItems(final ListUIElement element, final String... expectedValues) {
         return validateSelectedItems(element, true, false, expectedValues);
     }
 
-
+    /**
+     * Validates that the specified items are selected within the given list UI element.
+     *
+     * @param element        The {@link ListUIElement} representing the list UI component.
+     * @param soft           A boolean indicating whether the validation should be performed softly.
+     *                       If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param expectedValues The expected values that should be selected.
+     * @return The fluent UI service instance, allowing for method chaining.
+     */
     public T validateSelectedItems(final ListUIElement element, boolean soft, final String... expectedValues) {
         return validateSelectedItems(element, true, soft, expectedValues);
     }
 
-
+    /**
+     * Validates that the specified items are not selected within the given list UI element.
+     *
+     * @param element        The {@link ListUIElement} representing the list UI component.
+     * @param expectedValues The expected values that should not be selected.
+     * @return The fluent UI service instance, allowing for method chaining.
+     */
     public T validateNotSelectedItems(final ListUIElement element, final String... expectedValues) {
         return validateSelectedItems(element, false, false, expectedValues);
     }
 
-
+    /**
+     * Validates that the specified items are not selected within the given list UI element.
+     *
+     * @param element        The {@link ListUIElement} representing the list UI component.
+     * @param soft           A boolean indicating whether the validation should be performed softly.
+     *                       If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param expectedValues The expected values that should not be selected.
+     * @return The fluent UI service instance, allowing for method chaining.
+     */
     public T validateNotSelectedItems(final ListUIElement element, boolean soft, final String... expectedValues) {
         return validateSelectedItems(element, false, soft, expectedValues);
     }
 
 
     private T validateSelectedItems(final ListUIElement element, boolean shouldBeSelected, boolean soft,
-                                               final String... expectedValues) {
+                                    final String... expectedValues) {
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -393,7 +654,12 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         }
     }
 
-
+    /**
+     * Retrieves all available items in the list.
+     *
+     * @param element The list UI element.
+     * @return The fluent UI service instance.
+     */
     public T getAll(final ListUIElement element) {
         element.before().accept(driver);
         List<String> allItems = itemListService.getAll(element.componentType(), element.locator());
@@ -402,12 +668,26 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that all expected items are present within the given list UI element.
+     *
+     * @param element        The {@link ListUIElement} representing the list UI component.
+     * @param expectedValues The expected values that should be present in the list.
+     * @return The fluent UI service instance, allowing for method chaining.
+     */
     public T validateAllItems(final ListUIElement element, final String... expectedValues) {
         return validateAllItems(element, false, expectedValues);
     }
 
-
+    /**
+     * Validates that all expected items are present within the given list UI element.
+     *
+     * @param element        The {@link ListUIElement} representing the list UI component.
+     * @param soft           A boolean indicating whether the validation should be performed softly.
+     *                       If {@code true}, failures will be collected rather than throwing an exception immediately.
+     * @param expectedValues The expected values that should be present in the list.
+     * @return The fluent UI service instance, allowing for method chaining.
+     */
     public T validateAllItems(final ListUIElement element, boolean soft, final String... expectedValues) {
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
@@ -427,7 +707,13 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
         }
     }
 
-
+    /**
+     * Inserts values into the list.
+     *
+     * @param componentType The type of the list component.
+     * @param locator       The locator of the list element.
+     * @param values        The values to insert.
+     */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
         itemListService.insertion(componentType, locator, values);

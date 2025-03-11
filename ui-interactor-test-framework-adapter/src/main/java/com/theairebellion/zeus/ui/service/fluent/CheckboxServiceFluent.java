@@ -16,6 +16,14 @@ import java.util.List;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
+/**
+ * Provides fluent methods for interacting with checkbox UI elements.
+ * Supports selecting, deselecting, validation, and storing checkbox states.
+ *
+ * @param <T> The type of UI service fluent implementation.
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
 
     private final CheckboxService checkboxService;
@@ -23,7 +31,14 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
     private final Storage storage;
     private final SmartWebDriver driver;
 
-
+    /**
+     * Constructs a fluent service for interacting with checkboxes.
+     *
+     * @param uiServiceFluent The parent UI service fluent instance.
+     * @param storage         The storage instance for persisting checkbox states.
+     * @param checkboxService The service handling checkbox interactions.
+     * @param smartWebDriver  The WebDriver instance used for UI interactions.
+     */
     public CheckboxServiceFluent(T uiServiceFluent, Storage storage, CheckboxService checkboxService,
                                  SmartWebDriver smartWebDriver) {
         this.checkboxService = checkboxService;
@@ -32,6 +47,12 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
         this.driver = smartWebDriver;
     }
 
+    /**
+     * Selects the specified checkbox element.
+     *
+     * @param element The {@link CheckboxUIElement} to be selected.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T select(final CheckboxUIElement element) {
         Allure.step(String.format("Selecting checkbox with locator: '%s' from checkbox component of type: '%s'.",
                 element.locator().toString(),
@@ -40,6 +61,12 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
         return uiServiceFluent;
     }
 
+    /**
+     * Deselects the specified checkbox element.
+     *
+     * @param element The {@link CheckboxUIElement} to be deselected.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T deSelect(final CheckboxUIElement element) {
         Allure.step(String.format("Deselecting checkbox with locator: '%s' from checkbox component of type: '%s'.",
                 element.locator().toString(),
@@ -48,16 +75,35 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
         return uiServiceFluent;
     }
 
+    /**
+     * Checks if the specified checkbox element is selected.
+     *
+     * @param element The {@link CheckboxUIElement} to check.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T isSelected(final CheckboxUIElement element) {
         boolean selected = checkboxService.isSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
         return uiServiceFluent;
     }
 
+    /**
+     * Validates whether the checkbox is selected.
+     *
+     * @param element The {@link CheckboxUIElement} to validate.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T validateIsSelected(final CheckboxUIElement element) {
         return validateIsSelected(element, false);
     }
 
+    /**
+     * Validates whether the checkbox is selected.
+     *
+     * @param element The {@link CheckboxUIElement} to validate.
+     * @param soft    If {@code true}, performs a soft assertion.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T validateIsSelected(final CheckboxUIElement element, boolean soft) {
         element.before().accept(driver);
         boolean selected = checkboxService.isSelected(element.componentType(), element.locator());
@@ -77,22 +123,48 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
         }
     }
 
+    /**
+     * Checks if multiple checkboxes associated with the given {@link CheckboxUIElement} are selected.
+     * The selection state is stored in the {@link Storage} for future reference.
+     *
+     * @param element The {@link CheckboxUIElement} representing the checkbox group or a single checkbox.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T areSelected(final CheckboxUIElement element) {
         boolean selected = checkboxService.areSelected((CheckboxComponentType) element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
         return uiServiceFluent;
     }
 
+    /**
+     * Checks if the specified checkbox element is enabled.
+     *
+     * @param element The {@link CheckboxUIElement} to check.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T isEnabled(final CheckboxUIElement element) {
         boolean enabled = checkboxService.isEnabled(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
     }
 
+    /**
+     * Validates whether the checkbox is enabled.
+     *
+     * @param element The {@link CheckboxUIElement} to validate.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T validateIsEnabled(final CheckboxUIElement element) {
         return validateIsEnabled(element, false);
     }
 
+    /**
+     * Validates whether the checkbox is enabled.
+     *
+     * @param element The {@link CheckboxUIElement} to validate.
+     * @param soft    If {@code true}, performs a soft assertion.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T validateIsEnabled(final CheckboxUIElement element, boolean soft) {
         element.before().accept(driver);
         boolean enabled = checkboxService.isEnabled(element.componentType(), element.locator());
@@ -112,25 +184,52 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
         }
     }
 
+    /**
+     * Checks if multiple checkboxes associated with the given {@link CheckboxUIElement} are enabled.
+     * The enabled state is stored in the {@link Storage} for future reference.
+     *
+     * @param element The {@link CheckboxUIElement} representing the checkbox group or a single checkbox.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T areEnabled(final CheckboxUIElement element) {
         boolean enabled = checkboxService.areEnabled((CheckboxComponentType) element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
     }
 
+    /**
+     * Retrieves the selected values from the checkbox.
+     *
+     * @param element The {@link CheckboxUIElement} to retrieve values from.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T getSelected(final CheckboxUIElement element) {
         List<String> selectedValues = checkboxService.getSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selectedValues);
         return uiServiceFluent;
     }
 
+    /**
+     * Retrieves all checkbox values.
+     *
+     * @param element The {@link CheckboxUIElement} to retrieve all values from.
+     * @return The instance of {@link UIServiceFluent} for method chaining.
+     */
     public T getAll(final CheckboxUIElement element) {
         checkboxService.getAll(element.componentType(), element.locator()); //todo: Do we need storage
         return uiServiceFluent;
     }
 
+    /**
+     * Inserts a value into a checkbox element.
+     *
+     * @param componentType The type of the checkbox component.
+     * @param locator       The locator of the checkbox element.
+     * @param values        The values to be inserted.
+     */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
         checkboxService.insertion(componentType, locator, values);
     }
+
 }
