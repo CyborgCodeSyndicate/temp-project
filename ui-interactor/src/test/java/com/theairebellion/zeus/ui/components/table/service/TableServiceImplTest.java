@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.components.table.service;
 
 import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
@@ -8,22 +9,23 @@ import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.validator.UiTableValidator;
+import com.theairebellion.zeus.validator.core.Assertion;
+import com.theairebellion.zeus.validator.core.AssertionResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("all")
 class TableServiceImplTest extends BaseUnitUITest {
-
 
     private TestTableServiceImpl testService;
 
@@ -173,6 +175,114 @@ class TableServiceImplTest extends BaseUnitUITest {
         };
         testService.sortTable(dummyComponentType, String.class, field, SortingStrategy.ASC);
         verify(tableMock).sortTable(String.class, field, SortingStrategy.ASC);
+    }
+
+    @Test
+    void testValidate_WithValidInput() {
+        Assertion<?> assertion1 = mock(Assertion.class);
+        Assertion<?> assertion2 = mock(Assertion.class);
+
+        // Create expected results with explicit type casting
+        @SuppressWarnings("unchecked")
+        List<AssertionResult<String>> expectedResults = (List<AssertionResult<String>>)
+                (List<?>) List.of(
+                        mock(AssertionResult.class),
+                        mock(AssertionResult.class)
+                );
+
+        // Mock the validator to return expected results
+        // Use .thenAnswer to handle generic type complexity
+        when(uiTableValidator.validateTable(
+                eq("table object"),
+                eq(assertion1),
+                eq(assertion2)
+        )).thenAnswer(invocation -> expectedResults);
+
+        // Execute the validate method
+        List<AssertionResult<String>> results = testService.validate("table object", assertion1, assertion2);
+
+        // Verify the validator was called with the correct parameters
+        verify(uiTableValidator).validateTable(
+                eq("table object"),
+                eq(assertion1),
+                eq(assertion2)
+        );
+
+        // Verify the results match what we expected
+        assertEquals(expectedResults, results);
+    }
+
+    @Test
+    void testValidate_WithNullTable() {
+        // Create mock assertions
+        Assertion<?> assertion = mock(Assertion.class);
+
+        // Execute and verify exception thrown for null table
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> testService.validate(null, assertion)
+        );
+
+        // Verify the exception message
+        assertEquals("Table cannot be null for validation.", ex.getMessage());
+    }
+
+    @Test
+    void testValidate_WithNullAssertions() {
+        // Execute and verify exception thrown for null assertions
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> testService.validate("table object", (Assertion<?>[]) null)
+        );
+
+        // Verify the exception message
+        assertEquals("At least one assertion must be provided.", ex.getMessage());
+    }
+
+    @Test
+    void testValidate_WithEmptyAssertions() {
+        // Execute and verify exception thrown for empty assertions array
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> testService.validate("table object", new Assertion<?>[0])
+        );
+
+        // Verify the exception message
+        assertEquals("At least one assertion must be provided.", ex.getMessage());
+    }
+
+    @Test
+    void testCreateComponent() {
+        // Create a new instance of TableServiceImpl that calls the real createComponent method
+        TableServiceImpl realTableService = new TableServiceImpl(smartWebDriver, tableServiceRegistry, uiTableValidator) {
+            // Expose the protected createComponent method for testing
+            @Override
+            public Table createComponent(TableComponentType componentType) {
+                return super.createComponent(componentType);
+            }
+        };
+
+        // Mock static ComponentFactory
+        try (MockedStatic<ComponentFactory> componentFactoryMock = mockStatic(ComponentFactory.class)) {
+            // Create mock TableImpl
+            TableImpl mockTableImpl = mock(TableImpl.class);
+
+            // Set up the mock to return our mockTableImpl when getTableComponent is called
+            componentFactoryMock.when(() -> ComponentFactory.getTableComponent(any(TableComponentType.class), any(SmartWebDriver.class)))
+                    .thenReturn(mockTableImpl);
+
+            // Call createComponent
+            Table result = realTableService.createComponent(dummyComponentType);
+
+            // Verify that the factory was called with the right parameters
+            componentFactoryMock.verify(() -> ComponentFactory.getTableComponent(dummyComponentType, smartWebDriver));
+
+            // Verify the service registry was set on the table
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+
+            // Verify the result is our mock table
+            assertSame(mockTableImpl, result);
+        }
     }
 
     enum DummyTableComponentType implements TableComponentType {
