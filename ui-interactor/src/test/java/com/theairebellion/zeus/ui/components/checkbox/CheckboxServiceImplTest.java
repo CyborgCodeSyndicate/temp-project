@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.checkbox;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.checkbox.mock.MockCheckboxComponentType;

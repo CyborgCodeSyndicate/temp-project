@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.accordion;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockAccordionComponentType;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;

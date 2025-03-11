@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.ui.components;
+package com.theairebellion.zeus.ui;
 
 public class BaseUnitUITest {
 

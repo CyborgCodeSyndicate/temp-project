@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.base;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.mock.MockComponent;
 import com.theairebellion.zeus.ui.components.base.mock.MockComponentService;
 import com.theairebellion.zeus.ui.components.base.mock.MockType;

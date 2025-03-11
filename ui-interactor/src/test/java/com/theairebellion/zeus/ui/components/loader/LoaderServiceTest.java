@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.loader.mock.MockLoaderComponentType;
 import com.theairebellion.zeus.ui.components.loader.mock.MockLoaderService;

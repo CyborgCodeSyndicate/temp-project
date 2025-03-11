@@ -1,10 +1,9 @@
 package com.theairebellion.zeus.ui.components.table.filters;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.table.filters.mock.TestCellFilterFunction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.model;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterComponent;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterFunction;
 import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionComponent;

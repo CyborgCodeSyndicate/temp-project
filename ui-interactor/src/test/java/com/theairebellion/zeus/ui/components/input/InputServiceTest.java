@@ -9,7 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.input.mock.MockInputComponentType;
 import com.theairebellion.zeus.ui.components.input.mock.MockInputService;

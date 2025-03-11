@@ -7,7 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;

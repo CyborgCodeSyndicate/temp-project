@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.toggle;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.toggle.mock.MockToggleComponentType;

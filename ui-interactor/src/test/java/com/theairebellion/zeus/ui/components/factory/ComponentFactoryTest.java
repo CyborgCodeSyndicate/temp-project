@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.ui.components.factory;
 
 import com.theairebellion.zeus.ui.annotations.ImplementationOfType;
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.accordion.Accordion;
 import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
 import com.theairebellion.zeus.ui.components.alert.Alert;

@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.filters;
 
-import com.theairebellion.zeus.ui.components.BaseUnitUITest;
+import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.mock.MockComponentType;
 import org.junit.jupiter.api.Test;
 
