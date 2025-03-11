@@ -2,30 +2,21 @@ package com.theairebellion.zeus.ui.storage;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.theairebellion.zeus.framework.quest.QuestHolder;
-import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import com.theairebellion.zeus.framework.storage.DataExtractorImpl;
-import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
-import net.minidev.json.JSONArray;
-import org.springframework.core.ParameterizedTypeReference;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.RESPONSES;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
-
 public class DataExtractorsUi {
-
-    private static final Pattern FOR_LOOP_PATTERN = Pattern.compile("^for\\(;;\\);");
 
 
     public static <T> DataExtractor<T> responseBodyExtraction(String responsePrefix, String jsonPath) {
@@ -34,40 +25,6 @@ public class DataExtractorsUi {
 
 
     public static <T> DataExtractor<T> responseBodyExtraction(String responsePrefix, String jsonPath, int index) {
-        return new DataExtractorImpl<>(
-                StorageKeysUi.UI,
-                StorageKeysUi.RESPONSES,
-                raw -> {
-                    List<ApiResponse> responses = (List<ApiResponse>) raw;
-                    List<ApiResponse> filteredResponses = responses.stream()
-                            .filter(
-                                    response -> response.getUrl().contains(responsePrefix))
-                            .toList();
-
-                    int adjustedIndex = filteredResponses.size() - index;
-                    if (adjustedIndex < 0 || adjustedIndex >= filteredResponses.size()) {
-                        throw new IllegalArgumentException("Invalid index for response list.");
-                    }
-
-                    for (ApiResponse filteredResponse : filteredResponses) {
-                        String jsonBody = removeForLoopPrefix(filteredResponse.getBody());
-                        try {
-                            Object result = JsonPath.read(jsonBody, jsonPath);
-                            if (result instanceof List<?> list && list.isEmpty()) {
-                                continue;
-                            }
-                            return (T) result;
-                        } catch (PathNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    return null;
-                }
-        );
-    }
-
-
-    /*public static <T> DataExtractor<T> responseBodyExtraction(String responsePrefix, String jsonPath, int index) {
         return new DataExtractorImpl<>(
                 StorageKeysUi.UI,
                 StorageKeysUi.RESPONSES,
@@ -89,7 +46,35 @@ public class DataExtractorsUi {
                     return JsonPath.read(selectedResponse.getBody(), jsonPath);
                 }
         );
-    }*/
+    }
+
+
+    public static <T> DataExtractor<T> responseBodyExtraction(String responsePrefix, String jsonPath, String jsonPrefix) {
+        return new DataExtractorImpl<>(
+                StorageKeysUi.UI,
+                StorageKeysUi.RESPONSES,
+                raw -> {
+                    List<ApiResponse> responses = (List<ApiResponse>) raw;
+                    List<ApiResponse> filteredResponses = responses.stream()
+                            .filter(
+                                    response -> response.getUrl().contains(responsePrefix))
+                            .toList();
+
+                    for (ApiResponse filteredResponse : filteredResponses) {
+                        String jsonBody = removeJsonPrefix(filteredResponse.getBody(), jsonPrefix);
+                        try {
+                            Object result = JsonPath.read(jsonBody, jsonPath);
+                            if (result instanceof List<?> list && list.isEmpty()) {
+                                continue;
+                            }
+                            return (T) result;
+                        } catch (PathNotFoundException ignored) {
+                        }
+                    }
+                    return null;
+                }
+        );
+    }
 
 
     public static <T> DataExtractor<T> tableRowExtractor(Enum<?> key, String... indicators) {
@@ -181,9 +166,11 @@ public class DataExtractorsUi {
     }
 
 
-    private static String removeForLoopPrefix(String body) {
-        if (body.startsWith("for(;;);")) {
-            return FOR_LOOP_PATTERN.matcher(body).replaceFirst("");
+    private static String removeJsonPrefix(String body, String jsonPrefix) {
+        Pattern dynamicPrefixPattern = Pattern.compile("^" + Pattern.quote(jsonPrefix));
+        Matcher matcher = dynamicPrefixPattern.matcher(body);
+        if (matcher.find()) {
+            return matcher.replaceFirst("");
         }
         return body;
     }

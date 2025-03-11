@@ -1,15 +1,14 @@
 package com.example.project;
 
 
+import com.example.project.data.creator.TestDataCreator;
 import com.example.project.data.test.TestData;
 import com.example.project.model.bakery.Order;
 import com.example.project.model.bakery.Seller;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
-import com.theairebellion.zeus.framework.annotation.Craft;
-import com.theairebellion.zeus.framework.annotation.Journey;
-import com.theairebellion.zeus.framework.annotation.JourneyData;
-import com.theairebellion.zeus.framework.annotation.PreQuest;
+import com.theairebellion.zeus.db.annotations.DB;
+import com.theairebellion.zeus.framework.annotation.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
@@ -26,19 +25,20 @@ import org.openqa.selenium.By;
 
 import java.util.List;
 
-import static com.example.project.base.World.EARTH;
-import static com.example.project.base.World.FORGE;
+import static com.example.project.base.World.*;
+import static com.example.project.data.cleaner.TestDataCleaner.Data.DELETE_CREATED_ORDERS;
 import static com.example.project.data.creator.TestDataCreator.Data.*;
-import static com.example.project.preconditions.BakeryQuestPreconditions.Data.LOGIN_PRECONDITION;
-import static com.example.project.preconditions.BakeryQuestPreconditions.Data.ORDER_PRECONDITION;
+import static com.example.project.preconditions.BakeryQuestPreconditions.Data.*;
 import static com.example.project.ui.elements.Bakery.ButtonFields.*;
 import static com.example.project.ui.elements.Bakery.InputFields.*;
 import static com.example.project.ui.elements.Bakery.SelectFields.LOCATION_DDL;
 import static com.example.project.ui.elements.Bakery.SelectFields.PRODUCTS_DDL;
+import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UI
+@DB
 public class BakeryEvolvingTest extends BaseTest {
 
 
@@ -208,6 +208,22 @@ public class BakeryEvolvingTest extends BaseTest {
         quest
                 .enters(FORGE)
                 .validateOrder(order)
+                .complete();
+    }
+
+
+    @Test
+    @Description("Authenticate, PreQuest, Service and Ripper usage")
+    @AuthenticateViaUiAs(credentials = AdminUI.class, type = BakeryUILogging.class)
+    @PreQuest({
+            @Journey(value = ORDER_PRECONDITION,
+                    journeyData = {@JourneyData(VALID_ORDER)})
+    })
+    //@Ripper(targets = {DELETE_CREATED_ORDERS})
+    public void createOrderPreArgumentsAndRipper(Quest quest) {
+        quest
+                .enters(FORGE)
+                .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
                 .complete();
     }
 

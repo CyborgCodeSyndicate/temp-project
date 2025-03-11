@@ -6,6 +6,10 @@ import org.aeonbits.owner.Config;
 @Config.Sources({"system:properties", "classpath:${db.config.file}.properties"})
 public interface DbConfig extends Config {
 
+    @Key("project.package")
+    String projectPackage();
+
+    @ConverterClass(DbTypeConverter.class)
     @Key("db.default.type")
     DbType type();
 
@@ -13,7 +17,7 @@ public interface DbConfig extends Config {
     String host();
 
     @Key("db.default.port")
-    Integer port();
+    String port();
 
     @Key("db.default.name")
     String name();
@@ -23,6 +27,5 @@ public interface DbConfig extends Config {
 
     @Key("db.default.password")
     String password();
-
 
 }

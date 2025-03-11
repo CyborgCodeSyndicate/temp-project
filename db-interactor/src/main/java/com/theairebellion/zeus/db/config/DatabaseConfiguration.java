@@ -11,7 +11,7 @@ public class DatabaseConfiguration {
 
     private DbType dbType;
     private final String host;
-    private final int port;
+    private final String port;
     private final String database;
     private final String dbUser;
     private final String dbPassword;

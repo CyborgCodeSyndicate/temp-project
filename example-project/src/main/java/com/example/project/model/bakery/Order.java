@@ -16,6 +16,8 @@ import static com.example.project.ui.elements.Bakery.SelectFields.Data.PRODUCTS_
 @Setter
 public class Order {
 
+    private int id;
+
     @InsertionElement(locatorClass = InputFields.class, elementEnum = CUSTOMER_FIELD, order = 1)
     private String customerName;
 

@@ -246,9 +246,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                 if (checkUrl(urlsForIntercepting, entry.getResponse().getUrl())) {
                     String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
                     response.setBody(body);
-                    addResponseInStorage(quest.getStorage(), response);
                 }
-                //addResponseInStorage(quest.getStorage(), response);
+                addResponseInStorage(quest.getStorage(), response);
             });
         } else {
             throw new IllegalArgumentException("Intercepting Backend Requests is only acceptable with Chrome browser");

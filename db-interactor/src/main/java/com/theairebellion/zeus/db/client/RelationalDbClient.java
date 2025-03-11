@@ -21,7 +21,8 @@ public class RelationalDbClient implements DbClient {
 
     @Override
     public QueryResponse executeQuery(String query) {
-        try (Connection connection = connector.getConnection(dbConfig)) {
+        try {
+            Connection connection = connector.getConnection(dbConfig);
             return executeAndProcessQuery(connection, query);
         } catch (SQLException e) {
             LogDb.error("Failed to execute query: {}", query, e);

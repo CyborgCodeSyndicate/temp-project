@@ -56,9 +56,9 @@ public class NewTest extends BaseTest {
                 Assertion.builder(String.class).target(BODY).key("list").type(CONTAINS).expected("Ssfsdf").build())
             .then()
             .enters(World.UNDERWORLD)
-            .query(Queries.EXAMPLE.withParam("id",
+            .query(Queries.QUERY_ORDER.withParam("id",
                 retrieve(responseBodyExtraction(ENDPOINT_EXAMPLE, "$.id"), Long.class)))
-            .validate(retrieve(Queries.EXAMPLE, QueryResponse.class),
+            .validate(retrieve(Queries.QUERY_ORDER, QueryResponse.class),
                 Assertion.builder(Integer.class).target(NUMBER_ROWS).type(IS).expected(3).soft(true)
                     .build())
             .then()

@@ -22,7 +22,7 @@ public class DbClientManager {
     }
 
     public DbClient getClient(DatabaseConfiguration dbConfig) {
-        String urlKey = buildUrlKey(dbConfig);
+        String urlKey = dbConfig.getDbType().protocol().contains("h2") ? dbConfig.getHost() : buildUrlKey(dbConfig);
 
         return clientCache.computeIfAbsent(urlKey, key -> initializeDbClient(dbConfig));
     }
@@ -32,7 +32,7 @@ public class DbClientManager {
     }
 
     private String buildUrlKey(DatabaseConfiguration dbConfig) {
-        return String.format("%s://%s:%d/%s",
+        return String.format("%s://%s:%s/%s",
                 dbConfig.getDbType().protocol(),
                 dbConfig.getHost(),
                 dbConfig.getPort(),

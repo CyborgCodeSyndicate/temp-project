@@ -37,7 +37,7 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
             switch ((DbAssertionTarget) assertion.getTarget()) {
                 case NUMBER_ROWS -> data.put("numRows", (T) Integer.valueOf(queryResponse.getRows().size()));
                 case QUERY_RESULT -> {
-                    Object value = jsonPathExtractor.extract(queryResponse.getRows(), assertion.getKey(), Object.class);
+                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0), key, Object.class);
                     if (value == null) {
                         throw new IllegalArgumentException("Jsonpath expression: '" + key + "' not found in query result.");
                     }
@@ -47,7 +47,7 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
                     if (queryResponse.getRows().isEmpty()) {
                         throw new IllegalArgumentException("Query result is empty; cannot validate columns.");
                     }
-                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0).keySet(), key, Object.class);
+                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0), key, Object.class);
                     if (value == null) {
                         throw new IllegalArgumentException("Column: '" + key + "' not found in query result.");
                     }

@@ -51,6 +51,7 @@ public class DataCreationFunctions {
 
     public static Order createValidOrder() {
         return Order.builder()
+                .id(1)
                 .customerName("John Terry")
                 .customerDetails("Address")
                 .phoneNumber("+1-555-7777")
@@ -64,12 +65,14 @@ public class DataCreationFunctions {
         SuperQuest superQuest = QuestHolder.get();
         List<String> productList = superQuest.getStorage().get(DataExtractorsUi
                 .responseBodyExtraction("?v-r=uidl",
-                        "$..orderCard[?(@.fullName=='John Terry')].items[*].product.name"), List.class);
+                        "$..orderCard[?(@.fullName=='John Terry')].items[*].product.name", "for(;;);"),
+                List.class);
         if(productList.isEmpty()){
             throw new NotFoundException("There is no product element");
         }
 
         return Order.builder()
+                .id(2)
                 .customerName("Petar Terry")
                 .customerDetails("Address")
                 .phoneNumber("+1-222-7778")

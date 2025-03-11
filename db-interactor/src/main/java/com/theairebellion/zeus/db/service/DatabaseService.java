@@ -19,7 +19,7 @@ import java.util.List;
 public class DatabaseService {
 
     private final JsonPathExtractor jsonPathExtractor;
-    private final DbClientManager dbClientManager;
+    public final DbClientManager dbClientManager;
     private final QueryResponseValidator queryResponseValidator;
 
     @Autowired

@@ -1,37 +1,45 @@
 package com.example.project.preconditions;
 
 import com.example.project.base.World;
-import com.example.project.db.Queries;
 import com.example.project.model.bakery.Order;
 import com.example.project.model.bakery.Seller;
 import com.example.project.rest.Endpoints;
 import com.theairebellion.zeus.db.query.QueryResponse;
+import com.theairebellion.zeus.db.storage.StorageKeysDb;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.DataExtractorsTest;
 import com.theairebellion.zeus.validator.core.Assertion;
 
-import static com.example.project.rest.Endpoints.ENDPOINT_EXAMPLE;
-import static com.theairebellion.zeus.api.storage.DataExtractorsApi.responseBodyExtraction;
-import static com.theairebellion.zeus.db.validator.DbAssertionTarget.NUMBER_ROWS;
-import static com.theairebellion.zeus.framework.base.BaseTest.DefaultStorage.retrieve;
-import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
+import static com.example.project.base.World.FORGE;
+import static com.example.project.base.World.UNDERWORLD;
+import static com.example.project.db.Queries.QUERY_SELLER;
+import static com.theairebellion.zeus.db.validator.DbAssertionTarget.*;
+import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNORE_CASE;
 
 public class BakeryQuestPreconditionFunctions {
 
 
     public static void loginUser(SuperQuest quest, Seller seller) {
-        quest.enters(World.FORGE)
+        quest.enters(FORGE)
                 .loginUser(seller);
     }
 
     public static void validSellerSetup(SuperQuest quest, Seller seller) {
-        quest.enters(World.UNDERWORLD)
-                .query(Queries.EXAMPLE.withParam("id",
-                        retrieve(responseBodyExtraction(ENDPOINT_EXAMPLE, "$.id"), Long.class)))
-                .validate(retrieve(Queries.EXAMPLE, QueryResponse.class),
-                        Assertion.builder(Integer.class).target(NUMBER_ROWS).type(IS).expected(3).soft(true)
-                                .build());
+        quest
+                .enters(UNDERWORLD)
+                .query(QUERY_SELLER.withParam("id", 1))
+                .validate(quest.getStorage().sub(StorageKeysDb.DB).get(QUERY_SELLER, QueryResponse.class),
+                        Assertion.builder(String.class)
+                                .target(COLUMNS).key("EMAIL")
+                                .type(EQUALS_IGNORE_CASE).expected(seller.getEmail()).soft(true)
+                                .build(),
+                        Assertion.builder(String.class)
+                                .target(COLUMNS).key("PASSWORD")
+                                .type(EQUALS_IGNORE_CASE).expected(seller.getPassword()).soft(true)
+                                .build()
+
+                );
     }
 
     public static void validSellerSetup(SuperQuest quest, Late<Seller> seller) {
@@ -41,12 +49,12 @@ public class BakeryQuestPreconditionFunctions {
     }
 
     public static void validOrderSetup(SuperQuest quest, Order order) {
-        quest.enters(World.FORGE)
+        quest.enters(FORGE)
                 .createOrder(order);
     }
 
     public static void validOrderSetup(SuperQuest quest, Late<Order> order) {
-        quest.enters(World.FORGE)
+        quest.enters(FORGE)
                 .createOrder(order.join());
     }
 

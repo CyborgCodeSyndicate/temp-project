@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.framework.base;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -17,7 +18,7 @@ public class BaseTestSequential extends BaseTest {
     @Lazy
     private Services services;
 
-    @AfterAll
+    @BeforeAll
     protected final void beforeAll() {
         beforeAll(services);
     }
