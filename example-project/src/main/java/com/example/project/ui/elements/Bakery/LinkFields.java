@@ -13,9 +13,9 @@ import java.util.function.Consumer;
 
 public enum LinkFields implements LinkUIElement {
 
-    STOREFRONT_LINK(By.cssSelector("a[href='dashboard']"), LinkFieldTypes.VA_LINK_TYPE),
-    DASHBOARD_LINK(By.cssSelector("a[href='dashboard']"), LinkFieldTypes.VA_LINK_TYPE),
-    LOGOUT_LINK(By.cssSelector("a[href='/logout']"), LinkFieldTypes.VA_LINK_TYPE),
+    STOREFRONT_LINK(By.cssSelector("a[href='dashboard']"), LinkFieldTypes.VA_LINK),
+    DASHBOARD_LINK(By.cssSelector("a[href='dashboard']"), LinkFieldTypes.VA_LINK),
+    LOGOUT_LINK(By.cssSelector("a[href='/logout']"), LinkFieldTypes.VA_LINK),
     ;
 
     private final By locator;

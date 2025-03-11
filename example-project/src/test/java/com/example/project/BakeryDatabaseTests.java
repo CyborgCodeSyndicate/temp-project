@@ -54,11 +54,11 @@ public class BakeryDatabaseTests extends BaseTestSequential {
                 .enters(UNDERWORLD)
                 .query(QUERY_ORDER.withParam("id", 1))
                 .validate(retrieve(StorageKeysDb.DB, QUERY_ORDER, QueryResponse.class),
-                        Assertion.builder(String.class)
+                        Assertion.builder()
                                 .target(QUERY_RESULT).key("$.PRODUCT")
                                 .type(EQUALS_IGNORE_CASE).expected(order.getProduct()).soft(true)
                                 .build(),
-                        Assertion.builder(String.class)
+                        Assertion.builder()
                                 .target(COLUMNS).key("LOCATION")
                                 .type(EQUALS_IGNORE_CASE).expected(order.getLocation()).soft(true)
                                 .build()
@@ -86,11 +86,11 @@ public class BakeryDatabaseTests extends BaseTestSequential {
                 .enters(UNDERWORLD)
                 .query(QUERY_ORDER_PRODUCT.withParam("id", 1))
                 .validate(retrieve(StorageKeysDb.DB, QUERY_ORDER_PRODUCT, QueryResponse.class),
-                        Assertion.builder(String.class)
+                        Assertion.builder()
                                 .target(QUERY_RESULT).key("$.PRODUCT")
                                 .type(EQUALS_IGNORE_CASE).expected(order.getProduct()).soft(true)
                                 .build(),
-                        Assertion.builder(String.class)
+                        Assertion.builder()
                                 .target(COLUMNS).key("PRODUCT")
                                 .type(EQUALS_IGNORE_CASE).expected(order.getProduct()).soft(true)
                                 .build()

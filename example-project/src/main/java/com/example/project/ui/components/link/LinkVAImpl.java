@@ -12,7 +12,7 @@ import org.openqa.selenium.NoSuchElementException;
 import java.util.Objects;
 
 
-@ImplementationOfType(LinkFieldTypes.VA_LINK)
+@ImplementationOfType(LinkFieldTypes.Data.VA_LINK)
 public class LinkVAImpl extends BaseComponent implements Link {
 
     private static final By LINK_TAG_NAME_SELECTOR = By.tagName("vaadin-tab");

@@ -30,11 +30,11 @@ public class BakeryQuestPreconditionFunctions {
                 .enters(UNDERWORLD)
                 .query(QUERY_SELLER.withParam("id", 1))
                 .validate(quest.getStorage().sub(StorageKeysDb.DB).get(QUERY_SELLER, QueryResponse.class),
-                        Assertion.builder(String.class)
+                        Assertion.builder()
                                 .target(COLUMNS).key("EMAIL")
                                 .type(EQUALS_IGNORE_CASE).expected(seller.getEmail()).soft(true)
                                 .build(),
-                        Assertion.builder(String.class)
+                        Assertion.builder()
                                 .target(COLUMNS).key("PASSWORD")
                                 .type(EQUALS_IGNORE_CASE).expected(seller.getPassword()).soft(true)
                                 .build()
