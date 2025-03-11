@@ -3188,7 +3188,7 @@ class TableImplTest extends BaseUnitUITest {
         Method mergeObjectsMethod = TableImpl.class.getDeclaredMethod("mergeObjects", Object.class, Object.class);
         mergeObjectsMethod.setAccessible(true);
 
-        // Execute - this should work since we're using the existing DummyRow class with public constructor
+        // Execute
         List<DummyRow> result = new ArrayList<>();
         try {
             result = (List<DummyRow>) mergeMethod.invoke(tableImpl, rowsMap, locatorsMap, DummyRow.class);
@@ -3198,8 +3198,6 @@ class TableImplTest extends BaseUnitUITest {
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof IllegalStateException &&
                     e.getCause().getMessage().contains("Could not create a new instance")) {
-                // This specific error suggests the DummyRow class is working but some other setup is missing
-                // Let's verify the mergeObjects method behavior separately
 
                 DummyRow row1 = new DummyRow();
                 row1.setDummyField(new TableCell(null, "section1 value"));

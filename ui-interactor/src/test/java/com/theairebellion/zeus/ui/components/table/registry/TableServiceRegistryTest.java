@@ -7,6 +7,7 @@ import com.theairebellion.zeus.ui.components.table.registry.mock.MockComponentTy
 import com.theairebellion.zeus.ui.components.table.registry.mock.MockTableFilter;
 import com.theairebellion.zeus.ui.components.table.registry.mock.MockTableInsertion;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -21,27 +22,33 @@ public class TableServiceRegistryTest extends BaseUnitUITest {
         registry = new TableServiceRegistry();
     }
 
-    @Test
-    void testRegisterAndGetTableInsertion() {
-        TableInsertion insertion = new MockTableInsertion();
-        registry.registerService(MockComponentType.class, insertion);
-        assertSame(insertion, registry.getTableService(MockComponentType.class));
+    @Nested
+    class RegistrationTests {
+        @Test
+        void testRegisterAndGetTableInsertion() {
+            TableInsertion insertion = new MockTableInsertion();
+            registry.registerService(MockComponentType.class, insertion);
+            assertSame(insertion, registry.getTableService(MockComponentType.class));
+        }
+
+        @Test
+        void testRegisterAndGetTableFilter() {
+            TableFilter filter = new MockTableFilter();
+            registry.registerService(MockComponentType.class, filter);
+            assertSame(filter, registry.getFilterService(MockComponentType.class));
+        }
     }
 
-    @Test
-    void testRegisterAndGetTableFilter() {
-        TableFilter filter = new MockTableFilter();
-        registry.registerService(MockComponentType.class, filter);
-        assertSame(filter, registry.getFilterService(MockComponentType.class));
-    }
+    @Nested
+    class LookupTests {
+        @Test
+        void testGetTableServiceNotRegistered() {
+            assertNull(registry.getTableService(MockComponentType.class));
+        }
 
-    @Test
-    void testGetTableServiceNotRegistered() {
-        assertNull(registry.getTableService(MockComponentType.class));
-    }
-
-    @Test
-    void testGetFilterServiceNotRegistered() {
-        assertNull(registry.getFilterService(MockComponentType.class));
+        @Test
+        void testGetFilterServiceNotRegistered() {
+            assertNull(registry.getFilterService(MockComponentType.class));
+        }
     }
 }

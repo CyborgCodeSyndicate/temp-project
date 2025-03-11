@@ -10,6 +10,7 @@ import com.theairebellion.zeus.validator.core.AssertionResult;
 
 import java.util.List;
 
+@SuppressWarnings("all")
 public class MockTableService implements TableService {
 
     @Override

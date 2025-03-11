@@ -99,7 +99,6 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
         }
     }
 
-    // This should be defined at the class level, not inside the test method
     @TableInfo(
             tableContainerLocator = @FindBy(id = "container"),
             rowsLocator = @FindBy(id = "rows"),
