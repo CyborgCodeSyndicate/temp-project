@@ -206,7 +206,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         WebDriver driver = getWebDriver(decoratorsFactory, context);
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
             LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
-            takeScreenshot(driver, context.getDisplayName(), getSuperQuest(context));
+            takeScreenshot(driver, context.getDisplayName());
         }
         List<Object> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES, Object.class);
         if (!responses.isEmpty()) {
@@ -226,7 +226,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
         WebDriver driver = getWebDriver(decoratorsFactory, context);
-        takeScreenshot(driver, context.getDisplayName(), getSuperQuest(context));
+        takeScreenshot(driver, context.getDisplayName());
         throw throwable;
     }
 
@@ -273,7 +273,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         CustomSoftAssertion.registerCustomAssertion(
                 SmartWebDriver.class,
                 (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
-                        "soft_assert_failure_" + testName, quest),
+                        "soft_assert_failure_" + testName),
                 stackTrace -> Arrays.stream(stackTrace)
                         .anyMatch(element -> element.getClassName().contains(SELENIUM_PACKAGE) ||
                                 element.getClassName().contains(UI_MODULE_PACKAGE))
@@ -281,7 +281,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
 
-    private static void takeScreenshot(WebDriver driver, String testName, SuperQuest superQuest) {
+    private static void takeScreenshot(WebDriver driver, String testName) {
         if(CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
             CustomAllureListener.stopParentStep();
             CustomAllureListener.startParentStep(TEAR_DOWN);

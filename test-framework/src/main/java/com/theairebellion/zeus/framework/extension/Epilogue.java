@@ -9,10 +9,13 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
+import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
 import static com.theairebellion.zeus.framework.util.AllureStepHelper.attachFilteredLogsToAllure;
 import static com.theairebellion.zeus.framework.util.AllureStepHelper.logTestOutcome;
@@ -25,11 +28,16 @@ public class Epilogue implements AfterTestExecutionCallback {
 
     @Override
     public void afterTestExecution(final ExtensionContext context) {
-        setUpTestMetadata(context, getSuperQuest(context));
+        setUpTestMetadata(context);
         SuperQuest superQuest = getSuperQuest(context);
         Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
         String htmlContent = new ObjectFormatter().generateHtmlContent(arguments);
-        superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, htmlContent);
+        List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML, List.class);
+        if (htmlList == null) {
+            htmlList = new ArrayList<>();
+        }
+        htmlList.add(htmlContent);
+        context.getStore(ExtensionContext.Namespace.GLOBAL).put(HTML, htmlList);
         Throwable throwable = context.getExecutionException().orElse(null);
         String status = (throwable == null) ? "SUCCESS" : "FAILED";
         long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);
@@ -41,7 +49,7 @@ public class Epilogue implements AfterTestExecutionCallback {
         }
         attachFilteredLogsToAllure(ThreadContext.get("testName"));
         ThreadContext.remove("testName");
-        setDescription(getSuperQuest(context));
+        setDescription(context);
         CustomAllureListener.stopParentStep();
     }
 }

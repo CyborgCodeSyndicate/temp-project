@@ -8,9 +8,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,11 +42,5 @@ public class TestContextManager extends AllureStepHelper {
     public static void initializeParameterTracking(ExtensionContext extensionContext) {
         extensionContext.getStore(ExtensionContext.Namespace.create(TestContextManager.class, extensionContext.getUniqueId()))
                 .getOrComputeIfAbsent(TOTAL_PARAMS_KEY, key -> extensionContext.getRequiredTestMethod().getParameters().length);
-    }
-
-    public static boolean isUITest(ExtensionContext context) {
-        return Arrays.stream(context.getRequiredTestClass().getAnnotations())
-                .map(Annotation::annotationType)
-                .anyMatch(type -> "UI".equals(type.getSimpleName()));
     }
 }

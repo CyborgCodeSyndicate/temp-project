@@ -1,39 +1,25 @@
 package com.theairebellion.zeus.framework.util;
 
 import com.theairebellion.zeus.framework.log.LogTest;
-import com.theairebellion.zeus.framework.quest.SuperQuest;
-import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import io.qameta.allure.Allure;
-import io.qameta.allure.model.Status;
-import io.qameta.allure.model.StepResult;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
 
 public class AllureStepHelper extends ObjectFormatter {
 
-    public static <T> T executeWithAllureStep(String stepName, AllureStepSupplier<T> supplier) {
-        String stepId = UUID.randomUUID().toString();
-        Allure.getLifecycle().startStep(stepId, new StepResult().setName(stepName).setStatus(Status.PASSED));
-        try {
-            return supplier.get();
-        } finally {
-            Allure.getLifecycle().stopStep(stepId);
-        }
-    }
-
-    public static void setDescription(SuperQuest superQuest) {
-        List<String> htmlContent = superQuest.getStorage()
-                .sub(StorageKeysTest.ALLURE_DESCRIPTION)
-                .getAllByClass(StorageKeysTest.HTML, String.class);
+    public static void setDescription(ExtensionContext context) {
+        List<String> htmlContent = (List<String>) context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML);
 
         String combinedHtml = htmlContent.stream()
                 .filter(Objects::nonNull)
@@ -79,7 +65,7 @@ public class AllureStepHelper extends ObjectFormatter {
         }
     }
 
-    public static void setUpTestMetadata(ExtensionContext context, SuperQuest superQuest) {
+    public static void setUpTestMetadata(ExtensionContext context) {
         String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-details.html");
 
         Map<String, String> placeholders = Map.of(
@@ -92,8 +78,12 @@ public class AllureStepHelper extends ObjectFormatter {
 
         String formattedHtml = placeholders.entrySet().stream()
                 .reduce(htmlTemplate, (html, entry) -> html.replace(entry.getKey(), entry.getValue()), (a, b) -> a);
-
-        superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, formattedHtml);
+        List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML, List.class);
+        if (htmlList == null) {
+            htmlList = new ArrayList<>();
+        }
+        htmlList.add(formattedHtml);
+        context.getStore(ExtensionContext.Namespace.GLOBAL).put(HTML, htmlList);
     }
 
     @FunctionalInterface

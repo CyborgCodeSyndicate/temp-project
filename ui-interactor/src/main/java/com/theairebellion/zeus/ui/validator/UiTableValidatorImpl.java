@@ -150,10 +150,4 @@ public class UiTableValidatorImpl implements UiTableValidator {
         LogUI.info("Processing assertion for target: {}", target);
     }
 
-
-    @Step("Processing field: {0}")
-    private static void processField(Field field) {
-        LogUI.extended("Processing field: {}", field.getName());
-    }
-
 }
