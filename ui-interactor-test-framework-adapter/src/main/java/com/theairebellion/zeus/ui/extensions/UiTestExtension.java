@@ -7,9 +7,8 @@ import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
-import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
-import com.theairebellion.zeus.framework.util.TestContextManager;
+import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
@@ -38,20 +37,25 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.theairebellion.zeus.framework.storage.StorageKeysTest.INTERCEPTED_REQUESTS_KEY;
+import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
+import static com.theairebellion.zeus.framework.allure.StepType.TEST_EXECUTION;
+import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
-public class UiTestExtension extends TestContextManager implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
+public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
         TestExecutionExceptionHandler {
 
     private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
@@ -178,14 +182,14 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
 
 
     private static void addResponseInStorage(Storage storage, ApiResponse apiResponse) {
-
         List<ApiResponse> responses = storage.sub(UI).get(RESPONSES, new ParameterizedTypeReference<>() {
         });
         if (responses == null) {
             responses = new ArrayList<>();
         }
         responses.add(apiResponse);
-        storage.sub(StorageKeysTest.INTERCEPTED_REQUESTS).put(INTERCEPTED_REQUESTS_KEY, responses);
+        storage.sub(UI).put(RESPONSES, apiResponse);
+
         LogUI.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
     }
 
@@ -203,6 +207,12 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
             LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName(), getSuperQuest(context));
+        }
+        List<Object> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES, Object.class);
+        if (!responses.isEmpty()) {
+            String formattedResponses = new ObjectFormatter().formatResponses(Collections.singletonList(responses));
+            Allure.addAttachment("Intercepted Requests", "text/html",
+                    new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
         }
         driver.close();
         driver.quit();
@@ -272,11 +282,14 @@ public class UiTestExtension extends TestContextManager implements BeforeTestExe
 
 
     private static void takeScreenshot(WebDriver driver, String testName, SuperQuest superQuest) {
-        CustomAllureListener.stopParentStep();
+        if(CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
+            CustomAllureListener.stopParentStep();
+            CustomAllureListener.startParentStep(TEAR_DOWN);
+        }
         try {
             TakesScreenshot screenshot = (TakesScreenshot) driver;
             byte[] screenshotBytes = screenshot.getScreenshotAs(OutputType.BYTES);
-            superQuest.getStorage().sub(StorageKeysTest.ALLURE_DESCRIPTION).put(StorageKeysTest.HTML, screenshotBytes);
+            Allure.addAttachment(testName, new ByteArrayInputStream(screenshotBytes));
             LogTest.info("Screenshot taken and stored for: " + testName);
         } catch (Exception e) {
             LogUI.error("Failed to take screenshot for test '{}': {}", testName, e.getMessage());

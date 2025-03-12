@@ -5,6 +5,8 @@ import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.decorators.WebElementDecorator;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElement;
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
+import io.qameta.allure.Allure;
+import io.qameta.allure.model.Status;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -163,7 +165,15 @@ public class SmartWebElement extends WebElementDecorator {
                     .get(cause.getClass())
                     .apply(driver, this, exception, params);
         } else {
-            LogUI.error("No exception handling for this specific exception.");
+            String locator = (params.length > 0 && params[0] instanceof By) ? params[0].toString() : "Unknown locator";
+            String exceptionMessage = exception.getClass().getSimpleName();
+
+            String errorMessage = String.format(
+                    "[BROKEN] Exception handling failed for method '%s'. Exception: '%s'. Parameters: Locator - '%s'.",
+                    methodName, exceptionMessage, locator
+            );
+            Allure.step(errorMessage, Status.BROKEN);
+            LogUI.error(errorMessage);
             throw exception;
         }
     }

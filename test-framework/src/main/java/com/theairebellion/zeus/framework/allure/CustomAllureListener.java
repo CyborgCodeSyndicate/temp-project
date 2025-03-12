@@ -4,20 +4,19 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.junit5.AllureJunit5;
 import io.qameta.allure.model.Status;
 import io.qameta.allure.model.StepResult;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-public class CustomAllureListener extends AllureJunit5 implements BeforeEachCallback {
+public class CustomAllureListener extends AllureJunit5 {
 
     private static final ThreadLocal<Deque<String>> STEP_STACK = ThreadLocal.withInitial(LinkedList::new);
     private static final ThreadLocal<String> PARENT_STEP = new ThreadLocal<>();
+    private static final ThreadLocal<String> PARENT_STEP_NAME = new ThreadLocal<>();
+    private static final ThreadLocal<String> TEST_ID = new ThreadLocal<>();
 
-    public enum StepType {
+    public enum StatusType {
         DEFAULT,
         INFO,
         SUCCESS,
@@ -25,32 +24,29 @@ public class CustomAllureListener extends AllureJunit5 implements BeforeEachCall
         ERROR
     }
 
-    @Override
-    public void beforeEach(ExtensionContext context) {
-        Allure.getLifecycle().updateTestCase(tc -> tc.setName(context.getDisplayName()));
-    }
-
-    public static void startParentStep(String name, StepType type) {
+    private static void startParentStep(String name, StatusType type) {
         String uuid = UUID.randomUUID().toString();
         StepResult stepResult = new StepResult().setName(name);
         applyStepType(stepResult, type);
 
         Allure.getLifecycle().startStep(uuid, stepResult);
         PARENT_STEP.set(uuid);
+        PARENT_STEP_NAME.set(name);
     }
 
-    public static void startParentStep(String name) {
-        startParentStep(name, StepType.DEFAULT);
+    public static void startParentStep(StepType parentStepType) {
+        startParentStep(parentStepType.getDisplayName(), StatusType.DEFAULT);
     }
 
     public static void stopParentStep() {
         if (PARENT_STEP.get() != null) {
             Allure.getLifecycle().stopStep(PARENT_STEP.get());
             PARENT_STEP.remove();
+            PARENT_STEP_NAME.remove();
         }
     }
 
-    public static void startStep(String name, StepType type) {
+    private static void startStep(String name, StatusType type) {
         String uuid = UUID.randomUUID().toString();
         StepResult stepResult = new StepResult().setName(name);
         applyStepType(stepResult, type);
@@ -59,8 +55,12 @@ public class CustomAllureListener extends AllureJunit5 implements BeforeEachCall
         STEP_STACK.get().push(uuid);
     }
 
-    public static void startStep(String name) {
-        startStep(name, StepType.DEFAULT);
+    public static void startStep(StepType stepType) {
+        startStep(stepType.getDisplayName(), StatusType.DEFAULT);
+    }
+
+    public static void startStep(String stepName) {
+        startStep(stepName, StatusType.DEFAULT);
     }
 
     public static void stopStep() {
@@ -70,24 +70,19 @@ public class CustomAllureListener extends AllureJunit5 implements BeforeEachCall
         }
     }
 
-    public static <T> T runAsStep(String stepName, StepType type, Supplier<T> code) {
-        String stepId = UUID.randomUUID().toString();
-        StepResult stepResult = new StepResult().setName(stepName);
-        applyStepType(stepResult, type);
-
-        Allure.getLifecycle().startStep(stepId, stepResult);
-        try {
-            return code.get();
-        } finally {
-            Allure.getLifecycle().stopStep(stepId);
-        }
+    public static boolean isParentStepActive(StepType parentStepType) {
+        return parentStepType.getDisplayName().equals(PARENT_STEP_NAME.get());
     }
 
-    public static <T> T runAsStep(String stepName, Supplier<T> code) {
-        return runAsStep(stepName, StepType.DEFAULT, code);
+    public static void setTestId(String id) {
+        TEST_ID.set(id);
     }
 
-    private static void applyStepType(StepResult stepResult, StepType type) {
+    public static void clearTestId() {
+        TEST_ID.remove();
+    }
+
+    private static void applyStepType(StepResult stepResult, StatusType type) {
         switch (type) {
             case INFO:
                 stepResult.setStatus(Status.SKIPPED);

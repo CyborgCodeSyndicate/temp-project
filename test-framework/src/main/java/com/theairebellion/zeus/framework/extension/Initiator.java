@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.framework.extension;
 
 import com.theairebellion.zeus.framework.allure.CustomAllureListener;
+import com.theairebellion.zeus.framework.allure.StepType;
 import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
@@ -11,7 +12,6 @@ import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.util.ObjectFormatter;
-import com.theairebellion.zeus.framework.util.TestContextManager;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import io.qameta.allure.Allure;
 import org.junit.jupiter.api.Order;
@@ -53,11 +53,11 @@ public class Initiator implements InvocationInterceptor {
             ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
             DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
             SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
-            CustomAllureListener.startParentStep("Processing Pre-Quests", CustomAllureListener.StepType.SUCCESS);
+            CustomAllureListener.startParentStep(StepType.PROCESSING_PRE_QUESTS);
             sortedPreQuestAnnotations.forEach(preQuest -> processPreQuest(preQuest, superQuest));
             CustomAllureListener.stopParentStep();
         }
-        CustomAllureListener.startParentStep("Test Execution", CustomAllureListener.StepType.SUCCESS);
+        CustomAllureListener.startParentStep(StepType.TEST_EXECUTION);
         invocation.proceed();
     }
 
@@ -80,7 +80,7 @@ public class Initiator implements InvocationInterceptor {
                 .map(dataEnumStr -> processJourneyData(dataEnumStr, superQuest))
                 .toArray();
 
-        CustomAllureListener.startStep("Processing preQuestJourney: " + preQuestJourney.toString(), CustomAllureListener.StepType.SUCCESS);
+        CustomAllureListener.startStep(StepType.PROCESSING_PRE_QUEST.getDisplayName() + ": " + preQuestJourney.toString());
         String attachmentName = journey + "-Data";
 
         String formattedData = new ObjectFormatter().formatProcessedData(journeyData, processedData);
