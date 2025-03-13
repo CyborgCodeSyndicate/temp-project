@@ -16,7 +16,7 @@ package com.theairebellion.zeus.framework.storage;
  * @param <T> The type of the data to be extracted.
  *
  * <p>
- * Author: Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate
  * </p>
  */
 public interface DataExtractor<T> {

@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  * </p>
  *
  * <p>
- * Author: Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate
  * </p>
  */
 public class RetryConditionImpl<T> implements RetryCondition<T> {

@@ -28,7 +28,7 @@ import java.util.Objects;
  * </p>
  *
  * <p>
- * Author: Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate
  * </p>
  */
 public class FrameworkAdapterContextCustomizer implements ContextCustomizer {

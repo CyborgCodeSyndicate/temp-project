@@ -25,7 +25,7 @@ import java.util.Set;
  * </p>
  *
  * <p>
- * Author: Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate
  * </p>
  */
 public class FrameworkAdapterContextCustomizerFactory implements ContextCustomizerFactory {
