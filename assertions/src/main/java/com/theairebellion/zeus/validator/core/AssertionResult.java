@@ -11,7 +11,8 @@ import lombok.Getter;
  * allowing validations to continue even when failures occur.
  * </p>
  *
- * @param <T> The type of the expected and actual values in the assertion.
+ * <p>The expected and actual values in the assertion are represented by the generic type {@code T},
+ * which allows this class to handle various data types in validation checks.</p>
  *
  * @author Cyborg Code Syndicate
  */
