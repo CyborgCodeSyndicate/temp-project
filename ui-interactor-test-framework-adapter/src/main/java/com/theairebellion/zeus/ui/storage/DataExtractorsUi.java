@@ -33,7 +33,7 @@ public class DataExtractorsUi {
 
                     List<ApiResponse> filteredResponses = responses.stream()
                             .filter(
-                                    response -> response.getUrl().startsWith(responsePrefix))
+                                    response -> response.getUrl().endsWith(responsePrefix))
                             .toList();
 
                     int adjustedIndex = filteredResponses.size() - index;
