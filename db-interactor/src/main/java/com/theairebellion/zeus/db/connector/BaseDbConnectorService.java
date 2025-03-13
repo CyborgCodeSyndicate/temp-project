@@ -17,8 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class BaseDbConnectorService {
 
-    private final Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
-    private final Set<DbType> registeredTypes = Collections.synchronizedSet(new HashSet<>());
+    private static final Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
+    private static final Set<DbType> registeredTypes = Collections.synchronizedSet(new HashSet<>());
 
     public Connection getConnection(DatabaseConfiguration dbConfig) {
         DbType dbType = dbConfig.getDbType();

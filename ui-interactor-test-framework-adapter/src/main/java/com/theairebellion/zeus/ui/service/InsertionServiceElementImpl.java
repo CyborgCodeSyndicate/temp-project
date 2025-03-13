@@ -1,13 +1,12 @@
 package com.theairebellion.zeus.ui.service;
 
+import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.insertion.BaseInsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
-import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.FindBy;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -32,11 +31,11 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
 
 
     @Override
-    protected Class<? extends ComponentType> getComponentType(Object annotation) {
+    protected Class<? extends ComponentType> getComponentTypeEnumClass(Object annotation) {
         InsertionElement insertionElement = (InsertionElement) annotation;
         UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-            insertionElement.elementEnum());
-        return (Class<? extends ComponentType>) Arrays.stream(uiElement.componentType().getClass().getInterfaces()).findFirst().get();
+                insertionElement.elementEnum());
+        return uiElement.componentType().getClass();
     }
 
 
@@ -44,9 +43,7 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
     protected By buildLocator(Object annotation) {
         InsertionElement insertionElement = (InsertionElement) annotation;
         UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-            insertionElement.elementEnum());
-        //FindBy.FindByBuilder findByBuilder = new FindBy.FindByBuilder(); //todo: check this and fix for tables
-        //return findByBuilder.buildIt(uiElement.locator(), null);
+                insertionElement.elementEnum());
         return uiElement.locator();
     }
 
@@ -69,9 +66,9 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
     @Override
     protected List<Field> filterAndSortFields(final Field[] fields) {
         return Arrays.stream(fields)
-                   .filter(field -> field.isAnnotationPresent(InsertionElement.class))
-                   .sorted(Comparator.comparing(field -> field.getAnnotation(InsertionElement.class).order()))
-                   .collect(Collectors.toList());
+                .filter(field -> field.isAnnotationPresent(InsertionElement.class))
+                .sorted(Comparator.comparing(field -> field.getAnnotation(InsertionElement.class).order()))
+                .collect(Collectors.toList());
     }
 
 
@@ -79,7 +76,7 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
     protected void beforeInsertion(Object annotation) {
         InsertionElement insertionElement = (InsertionElement) annotation;
         UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-            insertionElement.elementEnum());
+                insertionElement.elementEnum());
         uiElement.before().accept(webDriver);
     }
 
@@ -88,7 +85,7 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
     protected void afterInsertion(Object annotation) {
         InsertionElement insertionElement = (InsertionElement) annotation;
         UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-            insertionElement.elementEnum());
+                insertionElement.elementEnum());
         uiElement.after().accept(webDriver);
     }
 

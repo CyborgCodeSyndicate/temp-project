@@ -41,19 +41,13 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public void selectOptions(final SmartWebElement container, final String... values) {
         openDdl(container);
-        //todo: Remove this
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        SharedUIFunctions.waitForTimeout(driver);
         List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
         for (String value : values) {
             SmartWebElement option = findOptionByText(options, value);
             selectIfNotChecked(option);
         }
         closeDdl(container);
-        //waitForDropDownToBeClosed();
     }
 
     @Override
@@ -75,12 +69,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public List<String> getAvailableOptions(SmartWebElement container) {
         openDdl(container);
-        //todo: Remove this
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        SharedUIFunctions.waitForTimeout(driver);
         List<SmartWebElement> options = getAllOptionsElements();
         System.out.println("All Options: " + options.size());
         List<String> availableOptions = options.stream()

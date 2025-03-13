@@ -31,7 +31,8 @@ import static com.example.project.data.cleaner.TestDataCleaner.Data.DELETE_CREAT
 import static com.example.project.data.creator.TestDataCreator.Data.*;
 import static com.example.project.db.Queries.QUERY_ORDER;
 import static com.example.project.preconditions.BakeryInterceptRequests.Data.INTERCEPT_REQUEST_AUTH;
-import static com.example.project.preconditions.BakeryQuestPreconditions.Data.*;
+import static com.example.project.preconditions.BakeryQuestPreconditions.Data.LOGIN_PRECONDITION;
+import static com.example.project.preconditions.BakeryQuestPreconditions.Data.ORDER_PRECONDITION;
 import static com.example.project.ui.elements.Bakery.ButtonFields.*;
 import static com.example.project.ui.elements.Bakery.SelectFields.LOCATION_DDL;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
@@ -50,16 +51,16 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                                      @Craft(model = VALID_ORDER) Order order) {
         quest
                 .enters(EARTH)
-                    .browser().navigate(getUiConfig().baseUrl())
-                    .insertion().insertData(seller)
-                    .button().click(SIGN_IN_BUTTON)
-                    .button().click(NEW_ORDER_BUTTON)
-                    .insertion().insertData(order)
-                    .button().click(REVIEW_ORDER_BUTTON)
-                    .button().click(PLACE_ORDER_BUTTON)
+                .browser().navigate(getUiConfig().baseUrl())
+                .insertion().insertData(seller)
+                .button().click(SIGN_IN_BUTTON)
+                .button().click(NEW_ORDER_BUTTON)
+                .insertion().insertData(order)
+                .button().click(REVIEW_ORDER_BUTTON)
+                .button().click(PLACE_ORDER_BUTTON)
                 .then()
                 .enters(FORGE)
-                    .validateOrder(order)
+                .validateOrder(order)
                 .complete();
     }
 
@@ -67,20 +68,20 @@ public class BakeryFeaturesTest extends BaseTestSequential {
     @Test
     @Description("Storage usage")
     public void createOrderStorage(Quest quest,
-                             @Craft(model = VALID_SELLER) Seller seller) {
+                                   @Craft(model = VALID_SELLER) Seller seller) {
         quest
                 .enters(FORGE)
-                    .loginUser(seller)
+                .loginUser(seller)
                 .then()
                 .enters(EARTH)
-                    .button().click(NEW_ORDER_BUTTON)
-                    .select().getAvailableOptions(LOCATION_DDL)
-                    .validate(() -> Assertions.assertEquals(
-                            2,
-                            DefaultStorage.retrieve(LOCATION_DDL, List.class).size()))
-                    .validate(() -> Assertions.assertIterableEquals(
-                            List.of("Store", "Bakery"),
-                            DefaultStorage.retrieve(LOCATION_DDL, List.class)))
+                .button().click(NEW_ORDER_BUTTON)
+                .select().getAvailableOptions(LOCATION_DDL)
+                .validate(() -> Assertions.assertEquals(
+                        2,
+                        DefaultStorage.retrieve(LOCATION_DDL, List.class).size()))
+                .validate(() -> Assertions.assertIterableEquals(
+                        List.of("Store", "Bakery"),
+                        DefaultStorage.retrieve(LOCATION_DDL, List.class)))
                 .complete();
     }
 
@@ -97,7 +98,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                                     @Craft(model = VALID_ORDER) Order order) {
         quest
                 .enters(FORGE)
-                    .validateOrder(order)
+                .validateOrder(order)
                 .complete();
     }
 
@@ -109,8 +110,8 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                                 @Craft(model = VALID_ORDER) Order order) {
         quest
                 .enters(FORGE)
-                    .createOrder(order)
-                    .validateOrder(order)
+                .createOrder(order)
+                .validateOrder(order)
                 .complete();
     }
 
@@ -125,7 +126,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
     public void createOrderAuthPreQuestPreArguments(Quest quest) {
         quest
                 .enters(FORGE)
-                    .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
+                .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
                 .complete();
     }
 
@@ -137,15 +138,15 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                                        @Craft(model = VALID_SELLER) Seller seller) {
         quest
                 .enters(FORGE)
-                    .loginUser2(seller)
-                    .editOrder("Lionel Huber")
+                .loginUser2(seller)
+                .editOrder("Lionel Huber")
                 .then()
                 .enters(EARTH)
-                    .interceptor().validate(() -> assertEquals(List.of("$197.54"),
-                            retrieve(DataExtractorsUi
-                                    .responseBodyExtraction(BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpoint().get(),
-                                        "$[0].changes[?(@.key=='totalPrice')].value", "for(;;);"),
-                                    List.class)))
+                .validate(() -> assertEquals(List.of("$197.54"),
+                        retrieve(DataExtractorsUi
+                                        .responseBodyExtraction(BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpointSubString(),
+                                                "$[0].changes[?(@.key=='totalPrice')].value", "for(;;);"),
+                                List.class)))
                 .complete();
     }
 
@@ -155,16 +156,16 @@ public class BakeryFeaturesTest extends BaseTestSequential {
     @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
     @Ripper(targets = {DELETE_CREATED_ORDERS})
     public void createOrderInterceptorLateDataAndRipper(Quest quest,
-                                               @Craft(model = VALID_SELLER) Seller seller,
-                                               @Craft(model = VALID_ORDER) Order order,
-                                               @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
+                                                        @Craft(model = VALID_SELLER) Seller seller,
+                                                        @Craft(model = VALID_ORDER) Order order,
+                                                        @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
         quest
                 .enters(FORGE)
-                    .loginUser2(seller)
-                    .createOrder(order)
-                    .validateOrder(order)
-                    .createOrder(lateOrder.join())
-                    .validateOrder(lateOrder.join())
+                .loginUser2(seller)
+                .createOrder(order)
+                .validateOrder(order)
+                .createOrder(lateOrder.join())
+                .validateOrder(lateOrder.join())
                 .complete();
     }
 
@@ -178,16 +179,16 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                     journeyData = {@JourneyData(VALID_ORDER)})
     })
     public void createOrderInterceptorStorage(Quest quest,
-                                @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
+                                              @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
         quest
                 .enters(FORGE)
-                    .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
-                    .createOrder(lateOrder.join())
-                    .validateOrder(lateOrder.join())
+                .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
+                .createOrder(lateOrder.join())
+                .validateOrder(lateOrder.join())
                 .then()
                 .enters(EARTH)
-                    .interceptor().validateResponseHaveStatus(
-                            BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpoint().get(), 2, true)
+                .interceptor().validateResponseHaveStatus(
+                        BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpointSubString(), 2, true)
                 .complete();
     }
 

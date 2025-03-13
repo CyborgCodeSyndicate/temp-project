@@ -29,7 +29,7 @@ public class InsertionServiceFieldImpl extends BaseInsertionService {
 
 
     @Override
-    protected Class<? extends ComponentType> getComponentType(Object annotation) {
+    protected Class<? extends ComponentType> getComponentTypeEnumClass(Object annotation) {
         InsertionField insertionField = (InsertionField) annotation;
         return insertionField.type();
     }

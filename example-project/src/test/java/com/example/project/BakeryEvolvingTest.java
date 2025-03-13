@@ -1,6 +1,7 @@
 package com.example.project;
 
 
+import com.example.project.data.CreateDB;
 import com.example.project.data.creator.TestDataCreator;
 import com.example.project.data.test.TestData;
 import com.example.project.model.bakery.Order;
@@ -21,6 +22,7 @@ import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import io.qameta.allure.Description;
 import org.aeonbits.owner.ConfigCache;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 
 import java.util.List;
@@ -39,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UI
 @DB
+@ExtendWith(CreateDB.class)
 public class BakeryEvolvingTest extends BaseTest {
 
 
@@ -219,7 +222,7 @@ public class BakeryEvolvingTest extends BaseTest {
             @Journey(value = ORDER_PRECONDITION,
                     journeyData = {@JourneyData(VALID_ORDER)})
     })
-    //@Ripper(targets = {DELETE_CREATED_ORDERS})
+    @Ripper(targets = {DELETE_CREATED_ORDERS})
     public void createOrderPreArgumentsAndRipper(Quest quest) {
         quest
                 .enters(FORGE)
