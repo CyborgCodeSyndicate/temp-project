@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
  * Provides logging functions for exception handling during Selenium WebDriver interactions.
  * This class logs detailed information for various exceptions encountered while performing
  * actions such as finding elements, clicking, sending keys, and submitting forms.
+ *
+ * @author Cyborg Code Syndicate
  */
 public class LoggingFunctions {
 

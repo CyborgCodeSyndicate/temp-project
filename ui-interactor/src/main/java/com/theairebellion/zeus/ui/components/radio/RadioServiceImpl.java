@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.components.radio;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
+import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
@@ -21,10 +22,9 @@ import java.util.List;
  *
  * <p>All public methods handle operations such as checking button states, locating elements by
  * container or locator, and selecting them by text or strategy. The {@code insertion} method also
- * implements the {@link com.theairebellion.zeus.ui.insertion.Insertion} interface for data
+ * implements the {@link Insertion} interface for data
  * insertion scenarios.</p>
  *
- * <p>
  * @author Cyborg Code Syndicate
  */
 public class RadioServiceImpl extends AbstractComponentService<RadioComponentType, Radio> implements RadioService {

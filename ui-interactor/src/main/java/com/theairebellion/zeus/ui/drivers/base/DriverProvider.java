@@ -15,7 +15,11 @@ import org.openqa.selenium.remote.AbstractDriverOptions;
  * </ul>
  * </p>
  *
- * @param <T> The type parameter extending {@link AbstractDriverOptions}, representing browser-specific configurations.
+ * <p>
+ * The generic type {@code T} represents a browser-specific configuration that extends {@link AbstractDriverOptions}.
+ * Implementations must define the specific WebDriver options required for a particular browser.
+ * </p>
+ *
  * @author Cyborg Code Syndicate
  */
 public interface DriverProvider<T extends AbstractDriverOptions<?>> {

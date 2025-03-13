@@ -17,8 +17,12 @@ import java.util.Optional;
  * This class is responsible for setting up WebDriver options, applying necessary configurations,
  * and instantiating the WebDriver either locally or remotely.
  * </p>
+ * <p>
+ * The generic type {@code T} represents browser-specific configuration options that extend
+ * {@link AbstractDriverOptions}. This allows flexibility in defining WebDriver settings
+ * for different browsers, such as Chrome, Firefox, or Edge.
+ * </p>
  *
- * @param <T> The type parameter extending {@link AbstractDriverOptions}, representing browser-specific configurations.
  * @author Cyborg Code Syndicate
  */
 public class DriverCreator<T extends AbstractDriverOptions<?>> {

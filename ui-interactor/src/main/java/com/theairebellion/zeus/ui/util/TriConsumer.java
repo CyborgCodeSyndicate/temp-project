@@ -8,9 +8,11 @@ package com.theairebellion.zeus.ui.util;
  * that require three input parameters in a functional manner.
  * </p>
  *
- * @param <T> The type of the first input argument.
- * @param <U> The type of the second input argument.
- * @param <K> The type of the third input argument.
+ * <p>
+ * The first argument, {@code T}, represents the primary entity involved in the operation.
+ * The second argument, {@code U}, provides contextual information or additional parameters.
+ * The third argument, {@code K}, captures supplementary data relevant to the action.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

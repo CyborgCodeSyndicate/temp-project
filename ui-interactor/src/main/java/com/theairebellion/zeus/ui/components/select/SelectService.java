@@ -21,11 +21,11 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  * for identifying containers (via {@link SmartWebElement}) or using direct locators
  * (via {@link By}), ensuring robust and flexible automation across various UI designs.</p>
  *
- * <p>This interface also extends the {@link com.theairebellion.zeus.ui.insertion.Insertion}
+ * <p>This interface also extends the {@link Insertion}
  * contract, thereby supporting scenarios where select components are part of
  * automated data entry flows.</p>
  *
- * author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate
  */
 public interface SelectService extends Insertion {
 

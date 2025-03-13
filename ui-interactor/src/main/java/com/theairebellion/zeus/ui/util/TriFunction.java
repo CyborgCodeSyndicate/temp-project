@@ -8,10 +8,13 @@ package com.theairebellion.zeus.ui.util;
  * where a computation or transformation requires three inputs to generate an output.
  * </p>
  *
- * @param <T> The type of the first input argument.
- * @param <U> The type of the second input argument.
- * @param <V> The type of the third input argument.
- * @param <R> The type of the result produced by the function.
+ * <p>
+ * The first argument, {@code T}, represents the primary input or entity being processed.
+ * The second argument, {@code U}, provides supporting data or configuration.
+ * The third argument, {@code V}, offers additional context necessary for computation.
+ * The function then produces a result of type {@code R}.
+ * </p>
+ *
  * @author Cyborg Code Syndicate
  */
 @FunctionalInterface

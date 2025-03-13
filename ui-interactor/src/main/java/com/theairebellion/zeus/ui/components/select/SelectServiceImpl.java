@@ -21,7 +21,7 @@ import java.util.List;
  * select-type elements, allowing test automation to manage dropdowns, multi-select fields, or
  * similar widgets in a consistent manner.</p>
  *
- * author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate
  */
 public class SelectServiceImpl extends AbstractComponentService<SelectComponentType, Select> implements SelectService {
 

@@ -8,11 +8,13 @@ package com.theairebellion.zeus.ui.util;
  * in WebElement interactions within Selenium-based test automation.
  * </p>
  *
- * @param <T> The type of the first input argument.
- * @param <U> The type of the second input argument.
- * @param <V> The type of the third input argument.
- * @param <K> The type of the fourth input argument.
- * @param <R> The type of the result produced by this function.
+ * <p>
+ * The first argument, {@code T}, represents the primary entity involved in the operation.
+ * The second argument, {@code U}, provides contextual information or additional parameters.
+ * The third argument, {@code V}, captures supplementary data relevant to the action.
+ * The fourth argument, {@code K}, is typically used for handling exceptions or other metadata.
+ * The return value, {@code R}, represents the computed result of the function.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

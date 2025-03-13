@@ -12,8 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * </p>
  *
  * <p>It utilizes a thread-safe {@link ConcurrentHashMap} to track which drivers have been downloaded.</p>
- *
- * @param <T> The type parameter extending {@link AbstractDriverOptions}, representing specific browser configurations.
+ * <p>
+ * The generic type {@code T} represents a specific browser configuration extending {@link AbstractDriverOptions}.
+ * Implementations of this class must define the WebDriver options corresponding to a particular browser.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

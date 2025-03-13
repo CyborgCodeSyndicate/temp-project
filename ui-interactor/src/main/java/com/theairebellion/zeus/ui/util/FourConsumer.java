@@ -8,15 +8,17 @@ package com.theairebellion.zeus.ui.util;
  * </p>
  *
  * <p>
+ * The first argument, {@code T}, represents the primary entity involved in the operation.
+ * The second argument, {@code U}, provides contextual information or additional parameters.
+ * The third argument, {@code V}, captures supplementary data relevant to the action.
+ * The fourth argument, {@code K}, is typically used for handling exceptions or other metadata.
+ * </p>
+ *
+ * <p>
  * This interface is primarily used for structured exception logging in Selenium WebDriver operations,
  * as seen in {@code ExceptionLogging}. It enables flexible logging of exceptions by capturing details
  * such as the affected object, action type, input parameters, and the exception itself.
  * </p>
- *
- * @param <T> The type of the first input argument.
- * @param <U> The type of the second input argument.
- * @param <V> The type of the third input argument.
- * @param <K> The type of the fourth input argument.
  *
  * @author Cyborg Code Syndicate
  */

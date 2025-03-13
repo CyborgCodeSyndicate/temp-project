@@ -13,11 +13,11 @@ import java.util.Objects;
  * It maintains a registry of component instances and ensures efficient reuse.
  * </p>
  * <p>
- * Implementing classes must define how components of type {@code C} are created based on a {@code ComponentType}.
+ * Implementing classes must define how components are created based on a {@link ComponentType}.
+ * The component type is represented by {@code T}, which is an enumeration implementing {@link ComponentType},
+ * and the actual UI component implementation is represented by {@code C}.
  * </p>
  *
- * @param <T> The component type enumeration implementing {@link ComponentType}.
- * @param <C> The concrete UI component implementation.
  * @author Cyborg Code Syndicate
  */
 public abstract class AbstractComponentService<T extends ComponentType, C> {

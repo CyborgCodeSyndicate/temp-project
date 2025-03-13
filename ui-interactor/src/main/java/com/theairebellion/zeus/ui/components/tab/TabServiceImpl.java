@@ -16,8 +16,8 @@ import org.openqa.selenium.By;
  *
  * <p>This class references {@link TabComponentType} to determine the specific tab component,
  * ensuring consistent handling of tab-based elements across different UI designs.</p>
- * <p>
- * author Cyborg Code Syndicate
+ *
+ * @author Cyborg Code Syndicate
  */
 public class TabServiceImpl extends AbstractComponentService<TabComponentType, Tab> implements TabService {
 

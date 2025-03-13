@@ -6,9 +6,10 @@ package com.theairebellion.zeus.ui.util;
  * This is a functional interface, meaning it can be used as the target for lambda expressions and method references.
  * Similar to {@link java.util.function.BiConsumer}, it allows defining custom two-parameter operations.
  * </p>
- *
- * @param <T> the type of the first input argument
- * @param <U> the type of the second input argument
+ * <p>
+ * The first input argument, {@code T}, represents the primary entity on which the operation is performed.
+ * The second input argument, {@code U}, provides additional data or context necessary for the operation.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

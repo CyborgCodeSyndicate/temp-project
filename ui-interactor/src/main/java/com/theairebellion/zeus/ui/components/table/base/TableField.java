@@ -10,8 +10,11 @@ import java.util.function.BiConsumer;
  *
  * <p>Primarily used for reading, writing, and updating table data within
  * the {@code Table} and {@code TableService} implementations.</p>
+ * <p>
+ * The row model type is represented by {@code T}, which defines the structure of a table row.
+ * The type {@code P} represents the field type being set within the table row model.
+ * </p>
  *
- * @param <T> The type of the row model that this field belongs to.
  * @author Cyborg Code Syndicate
  */
 @FunctionalInterface

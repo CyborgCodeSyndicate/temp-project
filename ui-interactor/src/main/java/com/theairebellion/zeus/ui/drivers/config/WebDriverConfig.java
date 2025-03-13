@@ -15,8 +15,10 @@ import java.util.function.Consumer;
  * This class encapsulates WebDriver-related settings such as browser version, execution mode (headless or remote),
  * custom driver option configurations, and event listeners.
  * </p>
- *
- * @param <T> The type parameter extending {@link AbstractDriverOptions}, representing browser-specific configurations.
+ * <p>
+ * The generic type {@code T} represents browser-specific configuration options that extend {@link AbstractDriverOptions}.
+ * This allows flexibility in defining WebDriver settings for different browsers, such as Chrome, Firefox, or Edge.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

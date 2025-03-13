@@ -5,7 +5,7 @@ import org.aeonbits.owner.ConfigCache;
 /**
  * Holds the database configuration instance.
  * <p>
- * This class provides a singleton-like access to the {@link DbConfig} instance,
+ * This class provides singleton-like access to the {@link DbConfig} instance,
  * ensuring that the configuration is only initialized once using the OWNER library.
  * </p>
  *

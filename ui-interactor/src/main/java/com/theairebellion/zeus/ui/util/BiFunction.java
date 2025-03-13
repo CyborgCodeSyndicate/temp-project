@@ -8,13 +8,15 @@ package com.theairebellion.zeus.ui.util;
  * </p>
  *
  * <p>
+ * The first input argument, {@code T}, represents the primary entity being processed.
+ * The second input argument, {@code U}, provides additional data or context necessary for computation.
+ * The function returns a result of type {@code V}, which represents the computed output.
+ * </p>
+ *
+ * <p>
  * This interface is commonly used for defining behavior dynamically, such as handling
  * exceptions in Selenium WebDriver operations, as seen in {@code ExceptionHandlingWebDriver}.
  * </p>
- *
- * @param <T> The type of the first input argument.
- * @param <U> The type of the second input argument.
- * @param <V> The type of the result produced by the function.
  *
  * @author Cyborg Code Syndicate
  */
