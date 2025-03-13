@@ -39,12 +39,19 @@ public class ExceptionHandlingWebElementFunctions {
     }
 
     public static Object handleElementClickIntercepted(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Exception exception, Object... args) {
-        By blocker = By.xpath(LocatorParser.extractBlockingElementLocator(exception.getMessage()));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-        try {
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
-        } catch (TimeoutException e) {
-            LogUI.warn("Blocking element did not disappear after waiting, attempting action anyway.");
+        if (exception != null && exception.getMessage() != null) {
+            String locatorString = LocatorParser.extractBlockingElementLocator(exception.getMessage());
+            if (locatorString != null) {
+                By blocker = By.xpath(locatorString);
+                try {
+                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+                    wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
+                } catch (TimeoutException e) {
+                    LogUI.warn("Blocking element did not disappear after waiting, attempting action anyway.");
+                } catch (Exception e) {
+                    LogUI.warn("Exception occurred while waiting for blocking element: " + e.getMessage());
+                }
+            }
         }
 
         return WebElementAction.performAction(driver, element.getOriginal(), webElementAction, args);
@@ -52,11 +59,19 @@ public class ExceptionHandlingWebElementFunctions {
 
     public static Object handleElementNotInteractable(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
         element = LocatorParser.updateWebElement(driver, element);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-        Actions actions = new Actions(driver);
-        actions.moveToElement(element.getOriginal());
-        WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));
 
-        return WebElementAction.performAction(driver, clickableElement, webElementAction, args);
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+            Actions actions = new Actions(driver);
+            actions.moveToElement(element.getOriginal()).perform(); // Ensure action is performed
+            WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));
+            return WebElementAction.performAction(driver, clickableElement, webElementAction, args);
+        } catch (TimeoutException e) {
+            LogUI.warn("Element not clickable after waiting, attempting action anyway.");
+            return WebElementAction.performAction(driver, element.getOriginal(), webElementAction, args);
+        } catch (Exception e) {
+            LogUI.warn("Exception occurred while trying to make element interactable: " + e.getMessage());
+            return WebElementAction.performAction(driver, element.getOriginal(), webElementAction, args);
+        }
     }
 }
