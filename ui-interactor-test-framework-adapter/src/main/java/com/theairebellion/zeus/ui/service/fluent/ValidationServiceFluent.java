@@ -8,9 +8,10 @@ import javax.swing.text.html.HTML;
 
 /**
  * Provides fluent validation methods for verifying text presence in UI fields.
- * This class allows performing soft and hard assertions on text validation inside HTML elements.
- *
- * @param <T> The generic type extending {@link UIServiceFluent} for fluent chaining.
+ * <p>
+ * This class enables performing both soft and hard assertions on text validation inside HTML elements.
+ * It ensures that expected text appears as intended in UI components, improving automated UI verification.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

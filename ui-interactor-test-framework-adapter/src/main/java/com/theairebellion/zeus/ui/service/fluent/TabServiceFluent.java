@@ -12,9 +12,11 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 /**
  * Provides a fluent API for interacting with tab UI components.
- * Supports actions such as clicking, visibility checks, selection validation, and enabling/disabling tabs.
- *
- * @param <T> The type extending {@link UIServiceFluent}, enabling method chaining.
+ * <p>
+ * This class enables interactions with tab elements, including clicking,
+ * checking visibility, validating selection, and enabling or disabling tabs.
+ * It integrates seamlessly with {@link UIServiceFluent} to support method chaining.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

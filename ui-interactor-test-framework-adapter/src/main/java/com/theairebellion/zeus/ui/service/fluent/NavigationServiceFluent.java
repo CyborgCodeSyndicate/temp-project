@@ -9,9 +9,12 @@ import java.util.Objects;
 
 /**
  * A fluent service class for handling navigation-related actions in a web automation framework.
+ * <p>
  * Provides methods to navigate between pages, handle browser tabs/windows, interact with frames, and manage alerts.
+ * </p>
  *
- * @param <T> The type of the UI service fluent interface.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * allowing method chaining for seamless interaction.
  *
  * @author Cyborg Code Syndicate
  */

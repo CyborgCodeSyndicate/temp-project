@@ -11,9 +11,19 @@ import org.assertj.core.api.Assertions;
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 /**
- * Provides fluent API methods for interacting with button components.
+ * Provides a fluent API for interacting with button components.
+ * <p>
+ * This class enables structured interactions with UI buttons, including actions such as clicking,
+ * validating visibility, and checking whether a button is enabled. It integrates with {@link ButtonService}
+ * to perform UI operations efficiently.
+ * </p>
  *
- * @param <T> The type of the fluent service interface extending {@link UIServiceFluent}
+ * <p>
+ * The fluent API design allows method chaining to improve test readability and maintainability.
+ * </p>
+ *
+ * @param <T> Represents the fluent UI service that extends {@link UIServiceFluent}.
+ * This type parameter ensures that method chaining correctly returns the calling instance type.
  *
  * @author Cyborg Code Syndicate
  */

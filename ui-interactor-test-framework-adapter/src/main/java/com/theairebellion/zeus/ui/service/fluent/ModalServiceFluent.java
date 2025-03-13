@@ -10,9 +10,12 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 /**
  * A fluent service class for interacting with modal UI elements in test automation.
+ * <p>
  * Provides methods for clicking buttons within modals, retrieving modal details, and closing modals.
+ * </p>
  *
- * @param <T> The type of the UI service fluent interface.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * allowing method chaining for seamless interaction.
  *
  * @author Cyborg Code Syndicate
  */

@@ -15,8 +15,10 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
  * <p>
  * This class enables various link-related operations such as clicking,
  * double-clicking, and validation of visibility and enablement.
+ * </p>
  *
- * @param <T> The type parameter extending {@link UIServiceFluent} for fluent chaining.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * allowing method chaining for seamless interaction.
  *
  * @author Cyborg Code Syndicate
  */

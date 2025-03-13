@@ -18,9 +18,12 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 /**
  * Fluent service for interacting with list UI elements.
- * Provides methods for selecting, validating, and interacting with lists.
+ * <p>
+ * Provides methods for selecting, validating, and interacting with lists in a structured manner.
+ * </p>
  *
- * @param <T> The type of the UI service fluent interface.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * allowing method chaining for seamless interaction.
  *
  * @author Cyborg Code Syndicate
  */

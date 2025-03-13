@@ -19,9 +19,12 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 /**
  * Fluent service class for interacting with select dropdown components.
+ * <p>
  * Provides methods for selecting, validating, and retrieving options from dropdown elements.
+ * </p>
  *
- * @param <T> The type of the fluent UI service.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * enabling method chaining for seamless interaction.
  *
  * @author Cyborg Code Syndicate
  */

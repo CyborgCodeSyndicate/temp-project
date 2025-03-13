@@ -11,9 +11,12 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 /**
  * A fluent service class for handling loader UI elements in test automation.
- * Provides methods to check visibility, validate state, and wait for loader elements.
+ * <p>
+ * Provides methods to check visibility, validate state, and wait for loader elements to disappear or become available.
+ * </p>
  *
- * @param <T> The type of the UI service fluent interface.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * allowing method chaining for seamless interaction.
  *
  * @author Cyborg Code Syndicate
  */

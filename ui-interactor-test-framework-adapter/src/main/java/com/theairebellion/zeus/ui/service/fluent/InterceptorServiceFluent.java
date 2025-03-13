@@ -16,8 +16,10 @@ import java.util.function.Consumer;
  * <p>
  * This service provides methods to validate API responses stored in the UI storage,
  * ensuring that requests contain expected status codes.
+ * </p>
  *
- * @param <T> The type parameter extending {@link UIServiceFluent}, enabling fluent method chaining.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * allowing method chaining for seamless interaction.
  *
  * @author Cyborg Code Syndicate
  */

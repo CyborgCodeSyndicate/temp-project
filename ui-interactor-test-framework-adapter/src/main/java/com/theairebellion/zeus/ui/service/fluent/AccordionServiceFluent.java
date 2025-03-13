@@ -19,7 +19,10 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
  * {@link AccordionService} to perform operations in a structured manner.
  * </p>
  *
- * @param <T> The type of the UI service fluent class that this service extends.
+ * <p>
+ * The generic type {@code T} represents the main UI service fluent class that this service extends,
+ * allowing method chaining within the fluent API structure.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

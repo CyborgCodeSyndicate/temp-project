@@ -44,10 +44,12 @@ import java.util.function.Consumer;
 
 /**
  * Provides a fluent interface for UI interactions, encapsulating various UI services
- * such as buttons, inputs, checkboxes, tables, and more. This class serves as a core
- * service for UI automation and validation.
- *
- * @param <T> The type extending {@link UIServiceFluent}, ensuring fluent chaining of methods.
+ * such as buttons, inputs, checkboxes, tables, and more.
+ * <p>
+ * This class serves as a core service for UI automation and validation, allowing
+ * seamless interaction with UI components while maintaining fluent method chaining.
+ * It extends {@link FluentService}, integrating common UI operations.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

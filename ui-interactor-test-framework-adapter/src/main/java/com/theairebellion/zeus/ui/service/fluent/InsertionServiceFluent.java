@@ -8,8 +8,10 @@ import com.theairebellion.zeus.ui.insertion.InsertionService;
  * <p>
  * This class provides a streamlined interface to facilitate data insertion while maintaining
  * fluent interactions with the UI testing framework.
+ * </p>
  *
- * @param <T> The type parameter extending {@link UIServiceFluent}, allowing method chaining.
+ * The generic type {@code T} represents the UI service fluent implementation that extends {@link UIServiceFluent},
+ * enabling method chaining.
  *
  * @author Cyborg Code Syndicate
  */

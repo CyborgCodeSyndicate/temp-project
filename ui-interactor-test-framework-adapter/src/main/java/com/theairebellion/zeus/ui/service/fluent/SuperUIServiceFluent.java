@@ -9,8 +9,10 @@ import java.util.List;
 /**
  * A specialized UI service fluent class that extends {@link UIServiceFluent}
  * and delegates its functionalities to an existing instance of {@code UIServiceFluent}.
- *
- * @param <T> The type parameter extending {@link UIServiceFluent}, ensuring fluent interface compatibility.
+ * <p>
+ * The generic type {@code T} represents a concrete implementation of {@link UIServiceFluent},
+ * ensuring fluent interface compatibility and enabling seamless method chaining.
+ * </p>
  *
  * @author Cyborg Code Syndicate
  */

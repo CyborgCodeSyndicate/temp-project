@@ -18,9 +18,14 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
 /**
  * Provides fluent methods for interacting with checkbox UI elements.
- * Supports selecting, deselecting, validation, and storing checkbox states.
+ * <p>
+ * This class enables structured interactions with checkboxes, supporting actions such as selection,
+ * deselection, validation, and state retrieval. It integrates with {@link CheckboxService} to handle
+ * operations effectively and allows method chaining for better readability.
+ * </p>
  *
- * @param <T> The type of UI service fluent implementation.
+ * The generic type {@code T} represents the fluent UI service that extends {@link UIServiceFluent},
+ * ensuring method chaining returns the correct instance type.
  *
  * @author Cyborg Code Syndicate
  */
