@@ -4,6 +4,7 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
 import org.openqa.selenium.By;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,11 +31,12 @@ public abstract class BaseInsertionService implements InsertionService {
             field.setAccessible(true);
 
             try {
-                Class<? extends ComponentType> componentTypeClass = getComponentType(annotation.get());
+                Class<? extends ComponentType> componentTypeEnumClass = getComponentTypeEnumClass(annotation.get());
+                Class<? extends ComponentType> componentTypeClass = extractComponentTypeClass(componentTypeEnumClass);
                 Insertion service = serviceRegistry.getService(componentTypeClass);
                 if (service == null) {
                     throw new IllegalStateException(
-                        "No InsertionService registered for: " + componentTypeClass.getSimpleName()
+                            "No InsertionService registered for: " + componentTypeClass.getSimpleName()
                     );
                 }
 
@@ -57,7 +59,7 @@ public abstract class BaseInsertionService implements InsertionService {
 
     protected abstract Object getFieldAnnotation(Field field);
 
-    protected abstract Class<? extends ComponentType> getComponentType(Object annotation);
+    protected abstract Class<? extends ComponentType> getComponentTypeEnumClass(Object annotation);
 
     protected abstract By buildLocator(Object annotation);
 
@@ -65,16 +67,21 @@ public abstract class BaseInsertionService implements InsertionService {
 
     protected abstract List<Field> filterAndSortFields(Field[] fields);
 
-    protected abstract ComponentType getType(Object annotation); //todo: check this, use getType or get UiElement
+    protected abstract ComponentType getType(Object annotation);
 
     protected void beforeInsertion(Object annotation) {
 
     }
 
-
     protected void afterInsertion(Object annotation) {
 
     }
 
+    private static Class<? extends ComponentType> extractComponentTypeClass(Class<? extends ComponentType> componentTypeClass) {
+        @SuppressWarnings("unchecked")
+        Class<? extends ComponentType> aClass = (Class<? extends ComponentType>) Arrays.stream(componentTypeClass.getInterfaces()).filter(inter ->
+                Arrays.asList(inter.getInterfaces()).contains(ComponentType.class)).findFirst().orElseThrow();
+        return aClass;
+    }
 
 }

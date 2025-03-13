@@ -147,43 +147,6 @@ public class Storage {
     }
 
 
-    /*private <T> T castOrNullTypeRef(Object value, ParameterizedTypeReference<T> typeReference) {
-        if (value == null) {
-            return null;
-        }
-
-        Type type = typeReference.getType();
-
-        ParameterizedType pType = (ParameterizedType) type;
-        Type rawType = pType.getRawType();
-        Type[] argTypes = pType.getActualTypeArguments();
-        Type elementType = argTypes[0];
-
-        *//*(T) value = (T) ((List<?>) value).stream()
-                .filter(((Class<?>) elementType)::isInstance)
-                .map(e -> (T) e)   // safe cast because we just tested isInstance
-                .collect(Collectors.toList());*//*
-
-
-
-        // We only check the raw type here.
-        // For a List<ApiResponse>, rawType would be `java.util.List`.
-        Class<?> rawClass = null;
-        if (type instanceof ParameterizedType) {
-            rawClass = (Class<?>) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof Class) {
-            rawClass = (Class<?>) type;
-        }
-
-        // Now just see if rawClass is assignable from value’s runtime class
-        if (rawClass != null && rawClass.isAssignableFrom(value.getClass())) {
-            return (T) value;
-        }
-
-        return null;
-    }*/
-
-
     private <T> T getLatestValue(Enum<?> key, Class<T> clazz, ParameterizedTypeReference<T> typeReference) {
         List<Object> values = data.get(key);
         if (values == null || values.isEmpty()) {

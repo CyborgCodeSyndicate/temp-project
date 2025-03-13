@@ -1,27 +1,26 @@
 package com.example.project;
 
 
+import com.example.project.data.CreateDB;
 import com.example.project.data.creator.TestDataCreator;
-import com.example.project.db.h2.H2Database;
 import com.example.project.model.bakery.Order;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
 import com.theairebellion.zeus.db.annotations.DB;
-import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.query.QueryResponse;
-import com.theairebellion.zeus.db.service.DatabaseService;
 import com.theairebellion.zeus.db.storage.StorageKeysDb;
 import com.theairebellion.zeus.framework.annotation.*;
-import com.theairebellion.zeus.framework.base.BaseTestSequential;
-import com.theairebellion.zeus.framework.base.Services;
+import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static com.example.project.base.World.*;
+import static com.example.project.base.World.FORGE;
+import static com.example.project.base.World.UNDERWORLD;
 import static com.example.project.data.cleaner.TestDataCleaner.Data.DELETE_CREATED_ORDERS;
 import static com.example.project.data.creator.TestDataCreator.Data.VALID_ORDER;
 import static com.example.project.data.creator.TestDataCreator.Data.VALID_SELLER;
@@ -35,7 +34,8 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNOR
 
 @UI
 @DB
-public class BakeryDatabaseTests extends BaseTestSequential {
+@ExtendWith(CreateDB.class)
+public class BakeryDatabaseTests extends BaseTest {
 
     @Test
     @Description("Database usage in Test")
@@ -46,7 +46,7 @@ public class BakeryDatabaseTests extends BaseTestSequential {
                     journeyData = {@JourneyData(VALID_ORDER)}, order = 2)
     })
     public void createOrderDatabaseValidation(Quest quest,
-                                    @Craft(model = VALID_ORDER) Order order) {
+                                              @Craft(model = VALID_ORDER) Order order) {
         quest
                 .enters(FORGE)
                 .validateOrder(order)
@@ -78,7 +78,7 @@ public class BakeryDatabaseTests extends BaseTestSequential {
                     journeyData = {@JourneyData(VALID_ORDER)}, order = 3)
     })
     public void createOrderPreQuestDatabase(Quest quest,
-                                              @Craft(model = VALID_ORDER) Order order) {
+                                            @Craft(model = VALID_ORDER) Order order) {
         quest
                 .enters(FORGE)
                 .validateOrder(order)
@@ -114,12 +114,12 @@ public class BakeryDatabaseTests extends BaseTestSequential {
                 .complete();
     }
 
-    @Override
+    /*@Override
     protected void beforeAll(final Services services) {
         DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
         DatabaseConfiguration dbConfig = QUERY_ORDER.config();
         H2Database.initialize(dbConfig, service);
-    }
+    }*/
 
     /*@BeforeAll
     public static void beforeAll() {

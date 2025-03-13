@@ -1,17 +1,13 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
 import com.theairebellion.zeus.validator.core.AssertionResult;
-import org.assertj.core.api.SoftAssertions;
-import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends FluentService {
+public class InterceptorServiceFluent<T extends UIServiceFluent<?>> {
 
     private final T uiServiceFluent;
     private final Storage storage;
@@ -30,9 +26,8 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
 
     public T validateResponseHaveStatus(final String requestUrlSubString, int statusPrefix,
                                         boolean soft) {
-        List<ApiResponse> apiResponses = storage.sub(StorageKeysUi.UI)
-                .get(StorageKeysUi.RESPONSES, new ParameterizedTypeReference<>() {
-                });
+        List<ApiResponse> apiResponses = (List<ApiResponse>) storage.sub(StorageKeysUi.UI)
+                .getByClass(StorageKeysUi.RESPONSES, Object.class);
 
         List<ApiResponse> filteredResponses = apiResponses.stream()
                 .filter(
@@ -46,7 +41,7 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
                 String.format("Validating api requests containing: %s has correct status: %d", requestUrlSubString,
                         statusPrefix), true, isPassed, soft);
         List<AssertionResult<Object>> validationResults = List.of((AssertionResult<Object>) result);
-        validation(validationResults);
+        uiServiceFluent.validation(validationResults);
         return uiServiceFluent;
     }
 
@@ -56,16 +51,5 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
         String statusStr = String.valueOf(status);
         return statusStr.startsWith(prefixStr);
     }
-
-    //todo: check interceptor
-    public InterceptorServiceFluent validate(Runnable assertion) {
-        return (InterceptorServiceFluent) super.validate(assertion);
-    }
-
-
-    public T validate(Consumer<SoftAssertions> assertion) {
-        return (T) super.validate(assertion);
-    }
-
 
 }
