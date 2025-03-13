@@ -174,13 +174,13 @@ public class ParametrizedEndpoint implements Endpoint {
      */
     private void validateParam(String key, Object value) {
         if (key == null || key.isEmpty()) {
-            throw new IllegalArgumentException("Parameter key must not be null or empty");
+            throw new IllegalArgumentException("Header key must not be null or empty");
         }
         if (value == null) {
-            throw new IllegalArgumentException("Parameter value must not be null for key: " + key);
+            throw new IllegalArgumentException("Header value must not be null for key: " + key);
         }
         if (value instanceof Collection && ((Collection<?>) value).isEmpty()) {
-            throw new IllegalArgumentException("Parameter value list must not be empty for key: " + key);
+            throw new IllegalArgumentException("Header value list must not be empty for key: " + key);
         }
     }
 
