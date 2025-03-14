@@ -42,8 +42,8 @@ public class ExceptionHandlingWebElementFunctions {
         if (exception != null && exception.getMessage() != null) {
             String locatorString = LocatorParser.extractBlockingElementLocator(exception.getMessage());
             if (locatorString != null) {
-                By blocker = By.xpath(locatorString);
                 try {
+                    By blocker = By.xpath(locatorString);
                     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
                     wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
                 } catch (TimeoutException e) {

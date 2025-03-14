@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.log;
 
-import com.theairebellion.zeus.logging.LogCommon;
 import com.theairebellion.zeus.logging.LogCore;
 
 public final class LogUI extends LogCore {
