@@ -236,7 +236,4 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
         buttonComponent((ButtonComponentType) componentType).clickElementInCell(cellElement);
     }
 
-    private Button buttonComponent(final ButtonComponentType componentType) {
-        return getOrCreateComponent(componentType);
-    }
 }

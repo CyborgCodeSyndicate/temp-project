@@ -33,7 +33,7 @@ import static com.theairebellion.zeus.framework.allure.StepType.PERFORMING_PRE_Q
  *
  * @author Cyborg Code Syndicate
  */
-public class ApiTestExtension implements BeforeTestExecutionCallback {
+public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
     /**
      * Executes authentication before test execution.
