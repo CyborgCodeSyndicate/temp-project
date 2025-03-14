@@ -45,6 +45,15 @@ public abstract class LogCore {
      * Custom log level for extended logs.
      */
     private static final Level EXTENDED_LEVEL = Level.forName("EXTENDED", 450);
+
+    /**
+     * Flag indicating whether the application is running in silent mode.
+     * <p>
+     * If enabled via {@code silent.mode=true}, warning, error, debug, trace, step,
+     * validation, and extended logs will be suppressed.
+     * </p>
+     * <p>Default: {@code false}</p>
+     */
     private static final Boolean SILENT_MODE = Boolean.parseBoolean(System.getProperty("silent.mode", "false"));
 
     /**
@@ -74,7 +83,7 @@ public abstract class LogCore {
     }
 
     /**
-     * Logs a warning message.
+     * Logs a warning message unless silent mode is enabled.
      *
      * @param message The log message.
      * @param args    Arguments to be formatted within the message.
@@ -86,7 +95,7 @@ public abstract class LogCore {
     }
 
     /**
-     * Logs an error message.
+     * Logs an error message unless silent mode is enabled.
      *
      * @param message The log message.
      * @param args    Arguments to be formatted within the message.
@@ -98,7 +107,7 @@ public abstract class LogCore {
     }
 
     /**
-     * Logs a debug message.
+     * Logs a debug message unless silent mode is enabled.
      *
      * @param message The log message.
      * @param args    Arguments to be formatted within the message.
@@ -110,7 +119,7 @@ public abstract class LogCore {
     }
 
     /**
-     * Logs a trace message, providing fine-grained debugging details.
+     * Logs a trace message unless silent mode is enabled.
      *
      * @param message The log message.
      * @param args    Arguments to be formatted within the message.
@@ -122,7 +131,10 @@ public abstract class LogCore {
     }
 
     /**
-     * Logs a step-based message, commonly used for tracking test steps.
+     * Logs a step-based message unless silent mode is enabled.
+     * <p>
+     * Step-based logs are commonly used for tracking test execution steps in automation frameworks.
+     * </p>
      *
      * @param message The log message.
      * @param args    Arguments to be formatted within the message.
@@ -134,7 +146,11 @@ public abstract class LogCore {
     }
 
     /**
-     * Logs a validation-related message.
+     * Logs a validation-related message unless silent mode is enabled.
+     * <p>
+     * This log level is used to indicate validation results, ensuring test assertions
+     * or expected conditions are met.
+     * </p>
      *
      * @param message The log message.
      * @param args    Arguments to be formatted within the message.
@@ -146,9 +162,10 @@ public abstract class LogCore {
     }
 
     /**
-     * Logs an extended message if extended logging is enabled.
+     * Logs an extended message unless silent mode is enabled.
      * <p>
-     * Extended logging is controlled via the system property {@code extended.logging}.
+     * Extended logs provide additional details and are useful for debugging complex behaviors.
+     * This log level can be enabled/disabled via the system property {@code extended.logging}.
      * </p>
      *
      * @param message The log message.

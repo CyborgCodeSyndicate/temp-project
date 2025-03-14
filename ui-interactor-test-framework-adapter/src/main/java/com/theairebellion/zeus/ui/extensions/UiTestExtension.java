@@ -168,8 +168,6 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         }
     }
 
-
-
     private void processAuthenticateViaUiAsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(AuthenticateViaUiAs.class))
                 .ifPresent(login -> {

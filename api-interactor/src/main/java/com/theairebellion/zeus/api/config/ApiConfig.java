@@ -52,10 +52,29 @@ public interface ApiConfig extends Config {
     @Key("api.base.url")
     String baseUrl();
 
+    /**
+     * Determines whether the full response body should be logged.
+     * <p>
+     * If set to {@code true}, the entire response body will be logged. If {@code false},
+     * the response body will be truncated based on the {@code shorten.body} configuration.
+     * </p>
+     * <p>Default: {@code true}</p>
+     *
+     * @return {@code true} if full response body logging is enabled, {@code false} otherwise.
+     */
     @DefaultValue("true")
     @Key("log.full.body")
     boolean logFullBody();
 
+    /**
+     * Specifies the maximum number of characters to display when logging a response body.
+     * <p>
+     * If {@code log.full.body} is set to {@code false}, response bodies longer than this value
+     * will be truncated with an ellipsis ({@code ...}).
+     * </p>
+     *
+     * @return The maximum number of characters to display in a logged response body.
+     */
     @Key("shorten.body")
     int shortenBody();
 

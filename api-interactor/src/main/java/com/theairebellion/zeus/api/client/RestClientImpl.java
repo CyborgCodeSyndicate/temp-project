@@ -31,6 +31,10 @@ import static com.theairebellion.zeus.api.log.LogApi.step;
 @NoArgsConstructor
 public class RestClientImpl implements RestClient {
 
+    /**
+     * This configuration provides settings for API request execution, including logging behavior,
+     * response body truncation, and other configurable options.
+     */
     ApiConfig apiConfig = ConfigCache.getOrCreate(ApiConfig.class);
 
     private static final Map<Method, Function<RequestSpecification, Response>> METHOD_EXECUTORS = Map.of(

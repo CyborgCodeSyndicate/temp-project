@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.framework.extension;
 
-import com.theairebellion.zeus.framework.log.LogTest;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;

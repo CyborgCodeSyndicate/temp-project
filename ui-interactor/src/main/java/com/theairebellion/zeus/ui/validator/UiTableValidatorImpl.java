@@ -179,12 +179,29 @@ public class UiTableValidatorImpl implements UiTableValidator {
     }
 
 
+    /**
+     * Logs the beginning of a validation process with a specified number of assertions.
+     * <p>
+     * This method provides an Allure step annotation for better test reporting
+     * and logs the validation start information using {@link LogUI}.
+     * </p>
+     *
+     * @param assertionCount the number of assertions that will be performed
+     */
     @Step("Starting validation with {0} assertion(s).")
     public void startValidation(int assertionCount) {
         LogUI.info("Starting response validation with {} assertion(s).", assertionCount);
     }
 
-
+    /**
+     * Logs and processes an assertion for a specified UI table target.
+     * <p>
+     * This method marks the assertion processing step in Allure reports
+     * and logs the assertion target using {@link LogUI}.
+     * </p>
+     *
+     * @param target the UI table assertion target being processed
+     */
     @Step("Processing assertion for target: {0}")
     public void processAssertion(UiTablesAssertionTarget target) {
         LogUI.info("Processing assertion for target: {}", target);

@@ -48,6 +48,11 @@ public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestE
                 .ifPresent(annotation -> handleAuthentication(context, annotation));
     }
 
+    /**
+     * Executes post-test cleanup after test execution.
+     *
+     * @param context The test execution context.
+     */
     @Override
     public void afterTestExecution(final ExtensionContext context) {
         CustomAllureListener.stopParentStep();
