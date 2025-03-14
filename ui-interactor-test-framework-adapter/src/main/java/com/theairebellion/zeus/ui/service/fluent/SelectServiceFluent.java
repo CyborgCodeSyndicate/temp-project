@@ -8,7 +8,6 @@ import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.SelectUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -59,8 +58,6 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T selectOptions(final SelectUIElement element, final String... values) {
-        Allure.step(String.format("Selecting options: '%s' from select component of type: '%s'.", Arrays.toString(values),
-                element.componentType().toString()));
         element.before().accept(driver);
         selectService.selectOptions(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -75,8 +72,6 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T selectOption(final SelectUIElement element, final String value) {
-        Allure.step(String.format("Selecting option: '%s' from select component of type: '%s'.", value,
-                element.componentType().toString()));
         element.before().accept(driver);
         selectService.selectOption(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -91,8 +86,6 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T selectOptions(final SelectUIElement element, final Strategy strategy) {
-        Allure.step(String.format("Selecting option with strategy: '%s' from select component of type: '%s'.", strategy.toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         selectService.selectOptions(element.componentType(), element.locator(), strategy);
         element.after().accept(driver);

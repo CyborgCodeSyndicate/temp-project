@@ -44,9 +44,9 @@ public class RelationalDbClient implements DbClient {
     @Override
     public QueryResponse executeQuery(String query) {
         try (Connection connection = connector.getConnection(dbConfig)) {
+            LogDb.info("Obtained database connection for: {}", dbConfig.getDatabase());
             return executeAndProcessQuery(connection, query);
         } catch (SQLException e) {
-            LogDb.error("Failed to execute query: {}", query, e);
             throw new DatabaseOperationException("Error executing query: " + query, e);
         }
     }
@@ -83,6 +83,11 @@ public class RelationalDbClient implements DbClient {
         long duration = System.currentTimeMillis() - startTime;
         QueryResponse response = new QueryResponse(resultList);
         printResponse(query, response, duration);
+
+        if (duration > 1000) {
+            LogDb.warn("Slow query detected: '{}' took {}ms", query, duration);
+        }
+
         return response;
     }
 
@@ -93,7 +98,11 @@ public class RelationalDbClient implements DbClient {
 
         long duration = System.currentTimeMillis() - startTime;
         QueryResponse response = new QueryResponse(resultList);
-        LogDb.step("Update query '{}' executed in {}ms, updated rows count: {}", query, duration, resultList.get(0).get("updatedRows"));
+
+        if (duration > 1000) {
+            LogDb.warn("Slow update query detected: '{}' took {}ms", query, duration);
+        }
+
         return response;
     }
 

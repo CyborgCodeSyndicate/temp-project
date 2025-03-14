@@ -27,6 +27,8 @@ public enum StoreKeys {
     /**
      * Key for storing the start time of the test execution.
      */
-    START_TIME;
+    START_TIME,
+
+    HTML;
 
 }

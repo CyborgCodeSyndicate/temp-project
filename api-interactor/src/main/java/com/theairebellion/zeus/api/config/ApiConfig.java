@@ -52,4 +52,11 @@ public interface ApiConfig extends Config {
     @Key("api.base.url")
     String baseUrl();
 
+    @DefaultValue("true")
+    @Key("log.full.body")
+    boolean logFullBody();
+
+    @Key("shorten.body")
+    int shortenBody();
+
 }

@@ -5,7 +5,6 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.selenium.ButtonUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -57,9 +56,6 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance
      */
     public T click(final ButtonUIElement element) {
-        Allure.step(String.format("Clicking button with locator: '%s' from button component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         buttonService.click(element.componentType(), element.locator());
         element.after().accept(driver);

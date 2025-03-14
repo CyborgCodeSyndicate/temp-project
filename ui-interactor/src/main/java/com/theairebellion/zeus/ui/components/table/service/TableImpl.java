@@ -21,6 +21,8 @@ import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 import lombok.Setter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
@@ -90,6 +92,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     public final <T> List<T> readTable(final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading entire table as class '%s'", clazz.getSimpleName()));
+        LogUI.step("Reading entire table as class '" + clazz.getSimpleName() + "'");
         return readTableInternal(clazz, null, null, null);
     }
 
@@ -104,6 +108,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     @SafeVarargs
     public final <T> List<T> readTable(final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading table as class '%s' with fields %s", clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading table as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readTableInternal(clazz, (fields == null) ? null : List.of(fields), null, null);
     }
 
@@ -118,6 +124,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading table rows from %d to %d as class '%s'", start, end, clazz.getSimpleName()));
+        LogUI.step("Reading table rows from " + start + " to " + end + " as class '" + clazz.getSimpleName() + "'");
         return readTableInternal(clazz, null, start, end);
     }
 
@@ -137,10 +145,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     @SafeVarargs
-    public final <T> List<T> readTable(final int start,
-                                       final int end,
-                                       final Class<T> clazz,
-                                       final TableField<T>... fields) {
+    public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading table rows from %d to %d as class '%s' with fields %s", start, end, clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading table rows from " + start + " to " + end + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readTableInternal(clazz, (fields == null) ? null : Arrays.asList(fields), start, end);
     }
 
@@ -154,6 +161,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     public final <T> T readRow(final int row, final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading row number %d as class '%s'", row, clazz.getSimpleName()));
+        LogUI.step("Reading row number " + row + " as class '" + clazz.getSimpleName() + "'");
         return readRowInternal(row - 1, clazz, null);
     }
 
@@ -167,6 +176,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     public final <T> T readRow(final List<String> searchCriteria, final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading row matching criteria %s as class '%s'", searchCriteria, clazz.getSimpleName()));
+        LogUI.step("Reading row matching criteria " + searchCriteria + " as class '" + clazz.getSimpleName() + "'");
         return readRowInternal(searchCriteria, clazz, null);
     }
 
@@ -187,6 +198,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     @SafeVarargs
     public final <T> T readRow(final int row, final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading row number %d as class '%s' with fields %s", row, clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading row number " + row + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readRowInternal(row - 1, clazz, fields);
     }
 
@@ -206,9 +219,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     @SafeVarargs
-    public final <T> T readRow(final List<String> searchCriteria,
-                               final Class<T> clazz,
-                               final TableField<T>... fields) {
+    public final <T> T readRow(final List<String> searchCriteria, final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading row matching criteria %s as class '%s' with fields %s", searchCriteria, clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading row matching criteria " + searchCriteria + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readRowInternal(searchCriteria, clazz, fields);
     }
 
@@ -228,11 +241,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @throws IndexOutOfBoundsException if the cell index is out of range.
      */
     @Override
-    public final <T> void insertCellValue(final List<String> searchCriteria,
-                                          final Class<T> rowClass,
-                                          final TableField<T> field,
-                                          final int cellIndex,
-                                          final String... values) {
+    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> rowClass, final TableField<T> field, final int cellIndex, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value in row matching criteria %s for class '%s', field '%s', cell index %d", searchCriteria, rowClass.getSimpleName(), field, cellIndex));
+        LogUI.step("Inserting cell value in row matching criteria " + searchCriteria + " for class '" + rowClass.getSimpleName() + "', field '" + field + "', cell index " + cellIndex);
         insertCellValueInternal(searchCriteria, rowClass, field, cellIndex, values);
     }
 
@@ -247,11 +258,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @param <T>       The type of the row representation.
      */
     @Override
-    public final <T> void insertCellValue(final int row,
-                                          final Class<T> rowClass,
-                                          final TableField<T> field,
-                                          final int cellIndex,
-                                          final String... values) {
+    public final <T> void insertCellValue(final int row, final Class<T> rowClass, final TableField<T> field, final int cellIndex, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value in row %d for class '%s', field '%s', cell index %d", row, rowClass.getSimpleName(), field, cellIndex));
+        LogUI.step("Inserting cell value in row " + row + " for class '" + rowClass.getSimpleName() + "', field '" + field + "', cell index " + cellIndex);
         insertCellValueInternal(row - 1, rowClass, field, cellIndex, values);
     }
 
@@ -269,6 +278,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final T data) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) using data for row matching criteria %s for class '%s'", searchCriteria, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) using data for row matching criteria " + searchCriteria + " for class '" + tClass.getSimpleName() + "'");
         processInsertCellValue((fieldInvoker, strings) -> {
             if (strings.length == 1) {
                 insertCellValue(searchCriteria, tClass, fieldInvoker, 1, strings);
@@ -294,9 +305,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @throws NotFoundException if no row matches the search criteria.
      */
     @Override
-    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass,
-                                          final TableField<T> field,
-                                          final String... values) {
+    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final TableField<T> field, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) into field '%s' for row matching criteria %s for class '%s'", field, searchCriteria, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) into field '" + field + "' for row matching criteria " + searchCriteria + " for class '" + tClass.getSimpleName() + "'");
         Table.super.insertCellValue(searchCriteria, tClass, field, values);
     }
 
@@ -314,8 +325,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @throws IndexOutOfBoundsException if the row index is out of range.
      */
     @Override
-    public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field,
-                                          final String... values) {
+    public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) into field '%s' for row %d for class '%s'", field, row, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) into field '" + field + "' for row " + row + " for class '" + tClass.getSimpleName() + "'");
         Table.super.insertCellValue(row, tClass, field, values);
     }
 
@@ -333,6 +345,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     public final <T> void insertCellValue(final int row, final Class<T> tClass, final T data) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) using data for row %d for class '%s'", row, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) using data for row " + row + " for class '" + tClass.getSimpleName() + "'");
         processInsertCellValue((fieldInvoker, strings) -> {
             if (strings.length == 1) {
                 insertCellValue(row, tClass, fieldInvoker, 1, strings);
@@ -354,16 +368,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @param <T>            The type of the row representation.
      */
     @Override
-    public final <T> void filterTable(final Class<T> tclass, final TableField<T> column,
-                                      final FilterStrategy filterStrategy,
-                                      final String... values) {
-        final Map<String, List<CellLocator>> tableSectionLocatorsMap =
-                getTableSectionLocatorsMap(tclass, List.of(column));
+    public final <T> void filterTable(final Class<T> tclass, final TableField<T> column, final FilterStrategy filterStrategy, final String... values) {
+        Allure.step(String.format("[UI - Table] Filtering table for class '%s' on column '%s' using strategy '%s' with values %s", tclass.getSimpleName(), column, filterStrategy, Arrays.toString(values)));
+        LogUI.step("Filtering table for class '" + tclass.getSimpleName() + "' on column '" + column + "' using strategy '" + filterStrategy + "' with values " + Arrays.toString(values));
+        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass, List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "No locator found for the provided field."));
+                .orElseThrow(() -> new IllegalStateException("No locator found for the provided field."));
 
         final String tableSection = firstEntry.getKey();
         final CellLocator cellLocator = firstEntry.getValue().get(0);
@@ -383,16 +395,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @param <T>             The type of the row representation.
      */
     @Override
-    public final <T> void sortTable(final Class<T> tclass, final TableField<T> column,
-                                    final SortingStrategy sortingStrategy) {
-
-        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass,
-                List.of(column));
+    public final <T> void sortTable(final Class<T> tclass, final TableField<T> column, final SortingStrategy sortingStrategy) {
+        Allure.step(String.format("[UI - Table] Sorting table for class '%s' on column '%s' using sorting strategy '%s'", tclass.getSimpleName(), column, sortingStrategy));
+        LogUI.step("Sorting table for class '" + tclass.getSimpleName() + "' on column '" + column + "' using sorting strategy '" + sortingStrategy + "'");
+        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass, List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "No locator found for the provided field."));
+                .orElseThrow(() -> new IllegalStateException("No locator found for the provided field."));
 
         final String tableSection = firstEntry.getKey();
         final CellLocator cellLocator = firstEntry.getValue().get(0);

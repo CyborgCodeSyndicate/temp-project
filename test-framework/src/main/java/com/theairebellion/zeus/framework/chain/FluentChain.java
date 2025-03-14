@@ -58,9 +58,14 @@ public interface FluentChain {
      * @return The current {@code FluentChain} instance for method chaining.
      */
     default FluentChain validate(Runnable assertion) {
-        LogTest.validation("Starting hard validation.");
-        assertion.run();
-        LogTest.validation("Hard validation has passed.");
+        LogTest.validation("Starting hard validation...");
+        try {
+            assertion.run();
+            LogTest.validation("Hard validation completed successfully.");
+        } catch (Throwable t) {
+            LogTest.validation("Hard validation failed: " + t.getMessage());
+            throw t;
+        }
         return this;
     }
 

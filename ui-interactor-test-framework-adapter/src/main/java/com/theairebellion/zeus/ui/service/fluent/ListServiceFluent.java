@@ -7,7 +7,6 @@ import com.theairebellion.zeus.ui.components.list.ItemListService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.ListUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -58,8 +57,6 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T select(final ListUIElement element, final String... values) {
-        Allure.step(String.format("Selecting items: '%s' from list component of type: '%s'.", Arrays.toString(values),
-                element.componentType().toString()));
         element.before().accept(driver);
         itemListService.select(element.componentType(), element.locator(), values);
         element.after().accept(driver);

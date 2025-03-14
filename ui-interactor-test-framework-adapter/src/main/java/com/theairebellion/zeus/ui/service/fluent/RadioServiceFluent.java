@@ -7,7 +7,6 @@ import com.theairebellion.zeus.ui.components.radio.RadioService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.RadioUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -57,9 +56,6 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T select(final RadioUIElement element) {
-        Allure.step(String.format("Selecting Radio Input with locator: '%s' from radio component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         radioService.select(element.componentType(), element.locator());
         element.after().accept(driver);

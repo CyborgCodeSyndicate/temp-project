@@ -5,7 +5,6 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.tab.TabService;
 import com.theairebellion.zeus.ui.selenium.TabUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -50,9 +49,6 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T click(final TabUIElement element) {
-        Allure.step(String.format("Clicking tab with locator: '%s' from tab component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         tabService.click(element.componentType(), element.locator());
         element.after().accept(driver);

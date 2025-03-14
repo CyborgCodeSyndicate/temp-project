@@ -4,7 +4,6 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.modal.ModalService;
 import com.theairebellion.zeus.ui.selenium.ModalUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
@@ -49,9 +48,6 @@ public class ModalServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T click(final ModalUIElement element) {
-        Allure.step(String.format("Clicking button with locator: '%s' from button component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         element.before().accept(driver);
         modalService.clickButton(element.componentType(), element.locator());
         element.after().accept(driver);

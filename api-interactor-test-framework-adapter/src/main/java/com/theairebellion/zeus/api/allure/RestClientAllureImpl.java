@@ -26,6 +26,7 @@ public class RestClientAllureImpl extends RestClientImpl {
     private static final String ATTACHMENT_STATUS_CODE = "Status Code";
     private static final String ATTACHMENT_RESPONSE_HEADERS = "Response Headers";
     private static final String ATTACHMENT_RESPONSE_BODY = "Response Body";
+    private static final int MAX_BODY_LENGTH = 10_000;
 
     /**
      * Logs API request details and attaches them to Allure reports.
@@ -69,6 +70,7 @@ public class RestClientAllureImpl extends RestClientImpl {
         Allure.step(String.format("Sending request to endpoint %s-%s.", methodName, url), () -> {
             addAttachmentIfPresent(ATTACHMENT_HTTP_METHOD, methodName);
             addAttachmentIfPresent(ATTACHMENT_URL, url);
+            addQueryParamsAttachment(url);
             addAttachmentIfPresent(ATTACHMENT_HEADERS, headers);
             addAttachmentIfPresent(ATTACHMENT_REQUEST_BODY, body);
         });
@@ -84,16 +86,20 @@ public class RestClientAllureImpl extends RestClientImpl {
      */
     private void logResponseDetails(String methodName, String url, Response response, long duration) {
         int statusCode = response.getStatusCode();
-        Allure.step(
-                String.format("Response with status: %d received from endpoint: %s-%s in %dms.", statusCode, methodName,
-                        url, duration), () -> {
-                    addAttachmentIfPresent(ATTACHMENT_HTTP_METHOD, methodName);
-                    addAttachmentIfPresent(ATTACHMENT_URL, url);
-                    addAttachmentIfPresent(ATTACHMENT_RESPONSE_TIME, String.valueOf(duration));
-                    addAttachmentIfPresent(ATTACHMENT_STATUS_CODE, String.valueOf(statusCode));
-                    addAttachmentIfPresent(ATTACHMENT_RESPONSE_HEADERS, response.getHeaders().toString());
-                    addAttachmentIfPresent(ATTACHMENT_RESPONSE_BODY, response.getBody().prettyPrint());
-                });
+        boolean isError = statusCode >= 400;
+
+        String stepTitle = isError
+                ? String.format("❌ Error Response: %d from %s-%s in %dms.", statusCode, methodName, url, duration)
+                : String.format("✅ Response: %d from %s-%s in %dms.", statusCode, methodName, url, duration);
+
+        Allure.step(stepTitle, () -> {
+            addAttachmentIfPresent(ATTACHMENT_HTTP_METHOD, methodName);
+            addAttachmentIfPresent(ATTACHMENT_URL, url);
+            addAttachmentIfPresent(ATTACHMENT_RESPONSE_TIME, String.valueOf(duration));
+            addAttachmentIfPresent(ATTACHMENT_STATUS_CODE, String.valueOf(statusCode));
+            addAttachmentIfPresent(ATTACHMENT_RESPONSE_HEADERS, response.getHeaders().toString());
+            addAttachmentIfPresent(ATTACHMENT_RESPONSE_BODY, response.getBody().prettyPrint());
+        });
     }
 
     /**
@@ -104,7 +110,17 @@ public class RestClientAllureImpl extends RestClientImpl {
      */
     private void addAttachmentIfPresent(String name, String content) {
         if (content != null && !content.trim().isEmpty()) {
+            if (content.length() > MAX_BODY_LENGTH) {
+                content = content.substring(0, MAX_BODY_LENGTH) + "... (truncated)";
+            }
             Allure.addAttachment(name, content);
+        }
+    }
+
+    private void addQueryParamsAttachment(String url) {
+        if (url.contains("?")) {
+            String queryParams = url.substring(url.indexOf("?") + 1);
+            addAttachmentIfPresent("Query Parameters", queryParams);
         }
     }
 

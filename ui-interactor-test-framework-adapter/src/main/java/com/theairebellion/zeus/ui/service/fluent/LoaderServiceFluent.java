@@ -4,7 +4,6 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.loader.LoaderService;
 import com.theairebellion.zeus.ui.selenium.LoaderUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -50,8 +49,6 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T isVisible(final LoaderUIElement element) {
-        Allure.step(String.format("Checking if loader is visible for loader component of type: '%s'.",
-                element.componentType().toString()));
         element.before().accept(driver);
         boolean visible = loaderService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);

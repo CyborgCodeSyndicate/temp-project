@@ -1,6 +1,8 @@
 package com.theairebellion.zeus.ui.insertion;
 
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.log.LogUI;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 
 import java.lang.reflect.Field;
@@ -60,6 +62,7 @@ public abstract class BaseInsertionService implements InsertionService {
      * @throws RuntimeException If field access fails.
      */
     @Override
+    @Step("Inserting data: {data}")
     public void insertData(final Object data) {
         Field[] fields = data.getClass().getDeclaredFields();
         List<Field> targetedFields = filterAndSortFields(fields);
@@ -81,7 +84,11 @@ public abstract class BaseInsertionService implements InsertionService {
                 }
 
                 By locator = buildLocator(annotation);
+                LogUI.debug("Field [{}] -> Locator: [{}]", field.getName(), locator);
+
                 Enum<?> enumValue = getEnumValue(annotation);
+                LogUI.debug("Field [{}] -> Enum component type: [{}]", field.getName(), enumValue);
+
                 Object valueForField = field.get(data);
 
                 if (valueForField != null) {
@@ -94,6 +101,7 @@ public abstract class BaseInsertionService implements InsertionService {
                 throw new RuntimeException("Failed to access field: " + field.getName(), e);
             }
         }
+        LogUI.info("Finished data insertion for [{}].", data.getClass().getSimpleName());
     }
 
     /**

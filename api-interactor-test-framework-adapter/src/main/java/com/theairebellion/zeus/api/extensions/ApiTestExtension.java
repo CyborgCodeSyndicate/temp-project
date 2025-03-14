@@ -3,11 +3,14 @@ package com.theairebellion.zeus.api.extensions;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.authentication.Credentials;
+import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.api.service.fluent.RestServiceFluent;
 import com.theairebellion.zeus.api.service.fluent.SuperRestServiceFluent;
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.theairebellion.zeus.api.storage.StorageKeysApi.*;
+import static com.theairebellion.zeus.framework.allure.StepType.PERFORMING_PRE_QUEST_AUTHENTICATION;
 
 /**
  * Handles API authentication for test execution.
@@ -42,6 +46,11 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
         context.getTestMethod()
                 .map(method -> method.getAnnotation(AuthenticateViaApiAs.class))
                 .ifPresent(annotation -> handleAuthentication(context, annotation));
+    }
+
+    @Override
+    public void afterTestExecution(final ExtensionContext context) {
+        CustomAllureListener.stopParentStep();
     }
 
     private void handleAuthentication(final ExtensionContext context, final AuthenticateViaApiAs annotation) {
@@ -69,15 +78,18 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
                                                      final String password,
                                                      final Class<? extends BaseAuthenticationClient> clientType,
                                                      final boolean cacheCredentials) {
+        CustomAllureListener.startParentStep(PERFORMING_PRE_QUEST_AUTHENTICATION);
         return (SuperQuest quest) -> {
             quest.getStorage().sub(API).put(USERNAME, username);
             quest.getStorage().sub(API).put(PASSWORD, password);
 
+            LogApi.extended("Updated quest storage with credentials for username: {}", username);
             RestServiceFluent restServiceFluent = quest.enters(RestServiceFluent.class);
             SuperRestServiceFluent superRestServiceFluent =
                     decoratorsFactory.decorate(restServiceFluent, SuperRestServiceFluent.class);
             superRestServiceFluent.getRestService().setCacheAuthentication(cacheCredentials);
             restServiceFluent.authenticate(username, password, clientType);
+            CustomAllureListener.stopParentStep();
         };
     }
 

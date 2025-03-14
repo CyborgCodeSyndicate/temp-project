@@ -1,18 +1,27 @@
 package com.theairebellion.zeus.framework.extension;
 
-import com.theairebellion.zeus.framework.log.LogTest;
-import io.qameta.allure.Allure;
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.storage.StorageKeysTest;
+import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
+import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.attachFilteredLogsToAllure;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.logTestOutcome;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.setDescription;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.setUpTestMetadata;
+import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 
 /**
  * JUnit 5 {@code AfterTestExecutionCallback} extension for logging test outcomes and attaching logs to Allure reports.
@@ -38,65 +47,28 @@ public class Epilogue implements AfterTestExecutionCallback {
      */
     @Override
     public void afterTestExecution(final ExtensionContext context) {
+        setUpTestMetadata(context);
+        SuperQuest superQuest = getSuperQuest(context);
+        Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
+        String htmlContent = new ObjectFormatter().generateHtmlContent(arguments);
+        List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML, List.class);
+        if (htmlList == null) {
+            htmlList = new ArrayList<>();
+        }
+        htmlList.add(htmlContent);
+        context.getStore(ExtensionContext.Namespace.GLOBAL).put(HTML, htmlList);
         Throwable throwable = context.getExecutionException().orElse(null);
         String status = (throwable == null) ? "SUCCESS" : "FAILED";
-
         long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);
         long durationInSeconds = (System.currentTimeMillis() - startTime) / 1000;
-
         logTestOutcome(context.getDisplayName(), status, durationInSeconds, throwable);
-
+        if(!CustomAllureListener.isParentStepActive(TEAR_DOWN)) {
+            CustomAllureListener.stopParentStep();
+            CustomAllureListener.startParentStep(TEAR_DOWN);
+        }
         attachFilteredLogsToAllure(ThreadContext.get("testName"));
         ThreadContext.remove("testName");
-    }
-
-    /**
-     * Logs the outcome of a test execution.
-     *
-     * @param testName          The name of the executed test.
-     * @param status            The test result status (SUCCESS or FAILED).
-     * @param durationInSeconds The execution duration in seconds.
-     * @param throwable         The exception thrown if the test failed, otherwise {@code null}.
-     */
-    private void logTestOutcome(String testName, String status, long durationInSeconds, Throwable throwable) {
-        if (throwable == null) {
-            LogTest.info("The quest of '{}' has concluded with glory. Status: {}. Duration: {} seconds.",
-                testName, status, durationInSeconds);
-        } else {
-            LogTest.info("The quest of '{}' has ended in defeat. Status: {}. Duration: {} seconds.",
-                testName, status, durationInSeconds);
-            LogTest.debug("Failure reason:", throwable);
-        }
-    }
-
-    /**
-     * Extracts and attaches filtered logs to the Allure report for the executed test.
-     *
-     * @param testName The name of the test for which logs should be extracted.
-     */
-    private static void attachFilteredLogsToAllure(String testName) {
-        if (testName == null || testName.isEmpty()) {
-            Allure.addAttachment("Filtered Logs", "text/plain", "Test name is not available.", ".log");
-            return;
-        }
-
-        String logFilePath = System.getProperty("logFileName", "logs/zeus.log");
-        String testIdentifier = "[scenario=" + testName + "]";
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(logFilePath))) {
-            String filteredLogs = reader.lines()
-                                      .filter(line -> line.contains(testIdentifier))
-                                      .collect(Collectors.joining(System.lineSeparator()));
-
-            if (!filteredLogs.isEmpty()) {
-                Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain", filteredLogs, ".log");
-            } else {
-                Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain",
-                    "No logs found for test: " + testName, ".log");
-            }
-        } catch (IOException e) {
-            String errorMessage = "Failed to read or filter logs for test: " + testName + ". Error: " + e.getMessage();
-            Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain", errorMessage, ".log");
-        }
+        setDescription(context);
+        CustomAllureListener.stopParentStep();
     }
 }

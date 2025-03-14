@@ -45,6 +45,7 @@ public abstract class LogCore {
      * Custom log level for extended logs.
      */
     private static final Level EXTENDED_LEVEL = Level.forName("EXTENDED", 450);
+    private static final Boolean SILENT_MODE = Boolean.parseBoolean(System.getProperty("silent.mode", "false"));
 
     /**
      * Flag indicating whether extended logging is enabled, controlled via system properties.
@@ -79,7 +80,9 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void warnLog(String message, Object... args) {
-        logger.warn(marker, message, args);
+        if (!SILENT_MODE) {
+            logger.warn(marker, message, args);
+        }
     }
 
     /**
@@ -89,7 +92,9 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void errorLog(String message, Object... args) {
-        logger.error(marker, message, args);
+        if (!SILENT_MODE) {
+            logger.error(marker, message, args);
+        }
     }
 
     /**
@@ -99,7 +104,9 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void debugLog(String message, Object... args) {
-        logger.debug(marker, message, args);
+        if (!SILENT_MODE) {
+            logger.debug(marker, message, args);
+        }
     }
 
     /**
@@ -109,7 +116,9 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void traceLog(String message, Object... args) {
-        logger.trace(marker, message, args);
+        if (!SILENT_MODE) {
+            logger.trace(marker, message, args);
+        }
     }
 
     /**
@@ -119,7 +128,9 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void stepLog(String message, Object... args) {
-        logger.log(STEP_LEVEL, marker, message, args);
+        if (!SILENT_MODE) {
+            logger.log(STEP_LEVEL, marker, message, args);
+        }
     }
 
     /**
@@ -129,7 +140,9 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void validationLog(String message, Object... args) {
-        logger.log(VALIDATION_LEVEL, marker, message, args);
+        if (!SILENT_MODE) {
+            logger.log(VALIDATION_LEVEL, marker, message, args);
+        }
     }
 
     /**
@@ -142,7 +155,7 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void extendedLog(String message, Object... args) {
-        if (extendedLoggingEnabled()) {
+        if (!SILENT_MODE && extendedLoggingEnabled()) {
             logger.log(EXTENDED_LEVEL, marker, message, args);
         }
     }

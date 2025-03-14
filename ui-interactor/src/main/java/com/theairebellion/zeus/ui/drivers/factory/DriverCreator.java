@@ -36,11 +36,17 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
      * @throws MalformedURLException If the remote WebDriver URL is invalid.
      */
     public WebDriver createDriver(WebDriverConfig<T> config, DriverProvider<T> provider) throws MalformedURLException {
+        LogUI.info("Creating driver using provider [{}]. Headless: [{}], Remote: [{}], Remote URL: [{}]",
+                provider.getClass().getSimpleName(),
+                config.isHeadless(),
+                config.isRemote(),
+                config.getRemoteUrl());
+
+
         T options = provider.createOptions();
         provider.applyDefaultArguments(options);
 
         if (config.isHeadless()) {
-            LogUI.info("Headless capability added to WebDriver");
             provider.applyHeadlessArguments(options);
         }
 
@@ -49,10 +55,8 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
         WebDriver driver;
 
         if (config.isRemote()) {
-            LogUI.info("Remote WebDriver is started");
             driver = new RemoteWebDriver(new URL(config.getRemoteUrl()), options);
         } else {
-            LogUI.info("Local WebDriver is started");
             driver = provider.createDriver(options);
         }
 

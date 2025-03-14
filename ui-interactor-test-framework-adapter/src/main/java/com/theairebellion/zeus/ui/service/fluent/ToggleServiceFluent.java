@@ -3,7 +3,6 @@ package com.theairebellion.zeus.ui.service.fluent;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.toggle.ToggleService;
 import com.theairebellion.zeus.ui.selenium.ToggleUIElement;
-import io.qameta.allure.Allure;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
@@ -39,9 +38,6 @@ public class ToggleServiceFluent {
      * @return The fluent UI service instance.
      */
     public UIServiceFluent activate(final ToggleUIElement element) {
-        Allure.step(String.format("Activating toggle with locator: '%s' from toggle component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         toggleService.activate(element.componentType(), element.locator());
         return uiServiceFluent;
     }
@@ -53,9 +49,6 @@ public class ToggleServiceFluent {
      * @return The fluent UI service instance.
      */
     public UIServiceFluent deactivate(final ToggleUIElement element) {
-        Allure.step(String.format("Deactivating toggle with locator: '%s' from toggle component of type: '%s'.",
-                element.locator().toString(),
-                element.componentType().toString()));
         toggleService.deactivate(element.componentType(), element.locator());
         return uiServiceFluent;
     }

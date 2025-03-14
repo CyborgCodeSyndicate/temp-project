@@ -7,7 +7,6 @@ import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.selenium.InputUIElement;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -57,8 +56,6 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T insert(final InputUIElement element, final String value) {
-        Allure.step(String.format("Inserting value: '%s' into input component of type: '%s'.", value,
-                element.componentType().toString()));
         element.before().accept(driver);
         inputService.insert(element.componentType(), element.locator(), value);
         element.after().accept(driver);

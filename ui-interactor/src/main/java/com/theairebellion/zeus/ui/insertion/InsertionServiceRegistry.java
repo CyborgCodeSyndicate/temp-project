@@ -43,5 +43,4 @@ public class InsertionServiceRegistry {
     public Insertion getService(Class<? extends ComponentType> type) {
         return registry.get(type);
     }
-
 }

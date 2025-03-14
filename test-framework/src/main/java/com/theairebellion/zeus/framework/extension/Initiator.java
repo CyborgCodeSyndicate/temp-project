@@ -1,14 +1,19 @@
 package com.theairebellion.zeus.framework.extension;
 
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
+import com.theairebellion.zeus.framework.allure.StepType;
 import com.theairebellion.zeus.framework.annotation.Journey;
 import com.theairebellion.zeus.framework.annotation.JourneyData;
 import com.theairebellion.zeus.framework.annotation.PreQuest;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import io.qameta.allure.Allure;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
@@ -67,9 +72,11 @@ public class Initiator implements InvocationInterceptor {
             ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
             DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
             SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
+            CustomAllureListener.startParentStep(StepType.PROCESSING_PRE_QUESTS);
             sortedPreQuestAnnotations.forEach(preQuest -> processPreQuest(preQuest, superQuest));
+            CustomAllureListener.stopParentStep();
         }
-
+        CustomAllureListener.startParentStep(StepType.TEST_EXECUTION);
         invocation.proceed();
     }
 
@@ -98,9 +105,18 @@ public class Initiator implements InvocationInterceptor {
         PreQuestJourney preQuestJourney = ReflectionUtil.findEnumImplementationsOfInterface(
                 PreQuestJourney.class, journey, getFrameworkConfig().projectPackage());
 
-        preQuestJourney.journey().accept(superQuest, Arrays.stream(journeyData)
+        Object[] processedData = Arrays.stream(journeyData)
                 .map(dataEnumStr -> processJourneyData(dataEnumStr, superQuest))
-                .toArray());
+                .toArray();
+
+        CustomAllureListener.startStep(StepType.PROCESSING_PRE_QUEST.getDisplayName() + ": " + preQuestJourney.toString());
+        String attachmentName = journey + "-Data";
+
+        String formattedData = new ObjectFormatter().formatProcessedData(journeyData, processedData);
+        Allure.addAttachment(attachmentName, formattedData);
+
+        preQuestJourney.journey().accept(superQuest, processedData);
+        CustomAllureListener.stopStep();
     }
 
     /**
@@ -114,7 +130,14 @@ public class Initiator implements InvocationInterceptor {
         DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
                 DataForge.class, journeyData.value(), getFrameworkConfig().projectPackage());
 
-        Object argument = journeyData.late() ? dataForge.dataCreator() : dataForge.dataCreator().join();
+        Object argument;
+        if (journeyData.late()) {
+            LogTest.extended("Creating data using late binding for: {}", journeyData.value());
+            argument = dataForge.dataCreator();
+        } else {
+            LogTest.extended("Joining data for: {}", journeyData.value());
+            argument = dataForge.dataCreator().join();
+        }
         quest.getStorage().sub(PRE_ARGUMENTS).put(dataForge.enumImpl(), argument);
         return argument;
     }
