@@ -1,13 +1,11 @@
 package com.bakery.project.preconditions;
 
-import com.theairebellion.zeus.framework.parameters.DataIntercept;
-
-import java.util.function.Supplier;
+import com.theairebellion.zeus.ui.parameters.DataIntercept;
 
 
 public enum BakeryInterceptRequests implements DataIntercept {
-    INTERCEPT_REQUEST_AUTH(() -> "?v-r=uidl"),
-    INTERCEPT_REQUEST_LOGIN(() -> "/login");
+    INTERCEPT_REQUEST_AUTH( "?v-r=uidl"),
+    INTERCEPT_REQUEST_LOGIN("/login");
 
 
     public static final class Data {
@@ -20,15 +18,15 @@ public enum BakeryInterceptRequests implements DataIntercept {
     }
 
 
-    private final Supplier<String> endpoint;
+    private final String endpointSubString;
 
-    BakeryInterceptRequests(final Supplier<String> endpoint) {
-        this.endpoint = endpoint;
+    BakeryInterceptRequests(final String endpointSubString) {
+        this.endpointSubString = endpointSubString;
     }
 
     @Override
-    public Supplier<String> getEndpoint() {
-        return endpoint;
+    public String getEndpointSubString() {
+        return endpointSubString;
     }
 
     @Override

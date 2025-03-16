@@ -8,6 +8,8 @@ import com.bakery.project.ui.elements.Bakery.LinkFields;
 import com.bakery.project.ui.elements.Bakery.SelectFields;
 import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.chain.FluentService;
+import com.theairebellion.zeus.framework.quest.QuestHolder;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
@@ -15,6 +17,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.bakery.project.base.World.EARTH;
 import static com.bakery.project.ui.elements.Bakery.ButtonFields.SIGN_IN_BUTTON;
@@ -168,5 +171,15 @@ public class CustomService extends FluentService {
                 })
                 .button().click(ButtonFields.CANCEL_ORDER_BUTTON);
         return this;
+    }
+
+    public static String getJSessionCookie() {
+        return Objects.requireNonNull(
+                QuestHolder.get().artifact(EARTH, SmartWebDriver.class)
+                        .getOriginal()
+                        .manage()
+                        .getCookieNamed("JSESSIONID"),
+                "JSESSIONID cookie not found!"
+        ).toString();
     }
 }
