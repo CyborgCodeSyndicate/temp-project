@@ -6,6 +6,7 @@ import com.example.project.data.creator.TestDataCreator;
 import com.example.project.model.bakery.Order;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
+import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.db.storage.StorageKeysDb;
@@ -34,6 +35,7 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNOR
 
 @UI
 @DB
+@API
 @ExtendWith(CreateDB.class)
 public class BakeryDatabaseTests extends BaseTest {
 

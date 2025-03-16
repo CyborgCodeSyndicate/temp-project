@@ -8,6 +8,7 @@ import com.example.project.model.bakery.Order;
 import com.example.project.model.bakery.Seller;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
+import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.framework.annotation.*;
 import com.theairebellion.zeus.framework.base.BaseTest;
@@ -41,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UI
 @DB
+@API
 @ExtendWith(CreateDB.class)
 public class BakeryEvolvingTest extends BaseTest {
 
