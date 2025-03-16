@@ -167,7 +167,7 @@ public class ObjectFormatter {
      * @return a string containing the generated HTML content
      */
     public String generateHtmlContent(Map<Enum<?>, LinkedList<Object>> arguments) {
-        String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-data.html");
+        String htmlTemplate = ResourceLoader.loadResourceFile("allure/html/test-data.html");
         return htmlTemplate.replace("{{argumentRows}}", buildRowsFromMap("", arguments));
     }
 
@@ -497,7 +497,7 @@ public class ObjectFormatter {
             }
         }
 
-        String templateHtml = ResourceLoader.loadHtmlTemplate("allure/html/intercepted-responses.html");
+        String templateHtml = ResourceLoader.loadResourceFile("allure/html/intercepted-responses.html");
         StringBuilder htmlBuilder = new StringBuilder(
                 templateHtml.replace("{{total}}", String.valueOf(totalRequests))
                         .replace("{{success}}", String.valueOf(successCount))

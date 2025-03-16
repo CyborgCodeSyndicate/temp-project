@@ -59,6 +59,10 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
      * @return The corresponding authentication header, or {@code null} if not found.
      */
     public Header getAuthentication(final AuthenticationKey authenticationKey) {
+        if (authenticationKey == null) {
+            LogApi.error("AuthenticationKey is null. Cannot retrieve authentication header.");
+            throw new IllegalArgumentException("AuthenticationKey cannot be null.");
+        }
         LogApi.debug("Retrieving authentication header for user: {}", authenticationKey.getUsername());
         return userAuthenticationHeaderMap.get(authenticationKey);
     }

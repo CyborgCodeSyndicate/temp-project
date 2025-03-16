@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.api.config;
 
+import com.theairebellion.zeus.config.ConfigSource;
+import com.theairebellion.zeus.config.PropertyConfig;
 import org.aeonbits.owner.Config;
 
 /**
@@ -20,9 +22,10 @@ import org.aeonbits.owner.Config;
  *
  * @author Cyborg Code Syndicate
  */
+@ConfigSource("api-config")
 @Config.LoadPolicy(Config.LoadType.MERGE)
 @Config.Sources({"system:properties", "classpath:${api.config.file}.properties"})
-public interface ApiConfig extends Config {
+public interface ApiConfig extends PropertyConfig {
 
     /**
      * Determines whether RestAssured request/response logging is enabled.

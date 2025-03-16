@@ -24,18 +24,18 @@ public class ResourceLoader {
      * If the file is not found or cannot be read, a {@link RuntimeException} is thrown.
      * </p>
      *
-     * @param templateName the name or path of the template file within the classpath
+     * @param filePath the name or path of the template file within the classpath
      * @return the content of the HTML template as a string
      * @throws RuntimeException if the template file is not found or cannot be read
      */
-    public static String loadHtmlTemplate(String templateName) {
-        try (InputStream inputStream = Craftsman.class.getClassLoader().getResourceAsStream(templateName)) {
+    public static String loadResourceFile(String filePath) {
+        try (InputStream inputStream = Craftsman.class.getClassLoader().getResourceAsStream(filePath)) {
             if (inputStream == null) {
-                throw new RuntimeException("Template file not found: " + templateName);
+                throw new RuntimeException("File not found in resources: " + filePath);
             }
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load HTML template: " + templateName, e);
+            throw new RuntimeException("Failed to load file from resources: " + filePath, e);
         }
     }
 }

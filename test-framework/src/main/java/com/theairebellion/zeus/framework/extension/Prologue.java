@@ -1,13 +1,11 @@
 package com.theairebellion.zeus.framework.extension;
 
-import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.lang.reflect.Method;
-
-import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.initializeTestEnvironment;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.setupTestContext;
 
 /**
  * JUnit 5 {@code BeforeTestExecutionCallback} extension that logs test execution start details.
@@ -32,17 +30,8 @@ public class Prologue implements BeforeTestExecutionCallback {
      */
     @Override
     public void beforeTestExecution(final ExtensionContext context) {
-        String className = context.getTestClass()
-                .map(Class::getSimpleName)
-                .orElse("UnknownClass");
-        String methodName = context.getTestMethod()
-                .map(Method::getName)
-                .orElse("UnknownMethod");
-
-        ThreadContext.put("testName", className + "." + methodName);
-
-        context.getStore(ExtensionContext.Namespace.GLOBAL).put(START_TIME, System.currentTimeMillis());
-
+        initializeTestEnvironment();
+        setupTestContext(context);
     }
 
 }

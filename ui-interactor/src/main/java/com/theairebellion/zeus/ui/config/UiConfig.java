@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.ui.config;
 
+import com.theairebellion.zeus.config.ConfigSource;
+import com.theairebellion.zeus.config.PropertyConfig;
 import org.aeonbits.owner.Config;
 
 /**
@@ -18,9 +20,10 @@ import org.aeonbits.owner.Config;
  *
  * @author Cyborg Code Syndicate
  */
+@ConfigSource("ui-config")
 @Config.LoadPolicy(Config.LoadType.MERGE)
 @Config.Sources({"system:properties", "classpath:${ui.config.file}.properties"})
-public interface UiConfig extends Config {
+public interface UiConfig extends PropertyConfig {
 
     /**
      * Retrieves the browser type used for UI testing.

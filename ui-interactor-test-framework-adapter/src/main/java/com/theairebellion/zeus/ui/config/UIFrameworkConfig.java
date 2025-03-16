@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.ui.config;
 
+import com.theairebellion.zeus.config.ConfigSource;
+import com.theairebellion.zeus.config.PropertyConfig;
 import org.aeonbits.owner.Config;
 
 /**
@@ -12,9 +14,10 @@ import org.aeonbits.owner.Config;
  *
  * @author Cyborg Code Syndicate
  */
+@ConfigSource("ui-framework-config")
 @Config.LoadPolicy(Config.LoadType.MERGE)
 @Config.Sources({"system:properties", "classpath:${ui.config.file}.properties"})
-public interface UIFrameworkConfig extends Config {
+public interface UIFrameworkConfig extends PropertyConfig {
 
     /**
      * Determines whether a screenshot should be taken when a test passes.

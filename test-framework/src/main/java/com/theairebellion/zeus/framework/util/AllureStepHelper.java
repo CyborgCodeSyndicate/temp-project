@@ -1,20 +1,34 @@
 package com.theairebellion.zeus.framework.util;
 
+import com.theairebellion.zeus.config.ConfigSource;
+import com.theairebellion.zeus.config.PropertyConfig;
 import com.theairebellion.zeus.framework.log.LogTest;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import io.qameta.allure.Allure;
+import org.aeonbits.owner.Config;
+import org.aeonbits.owner.ConfigCache;
+import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
+import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
+import static com.theairebellion.zeus.framework.util.ResourceLoader.loadResourceFile;
 
 /**
  * Utility class for managing test metadata and attaching logs to Allure reports.
@@ -31,6 +45,12 @@ import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
  * @author Cyborg Code Syndicate
  */
 public class AllureStepHelper extends ObjectFormatter {
+
+    private static final String ALLURE_RESULTS_DIR = "allure-results";
+    private static final String ENVIRONMENT_PROPERTIES_FILE = "environment.properties";
+    private static final String CATEGORIES_JSON_PATH = "allure/json/categories.json";
+    private static final String FRAMEWORK_PACKAGE = "com.theairebellion.zeus";
+    private static final String CATEGORIES_JSON = "categories.json";
 
     /**
      * Sets an HTML description for the test execution in Allure reports.
@@ -126,7 +146,7 @@ public class AllureStepHelper extends ObjectFormatter {
      * @param context The test execution context.
      */
     public static void setUpTestMetadata(ExtensionContext context) {
-        String htmlTemplate = ResourceLoader.loadHtmlTemplate("allure/html/test-details.html");
+        String htmlTemplate = ResourceLoader.loadResourceFile("allure/html/test-details.html");
 
         Map<String, String> placeholders = Map.of(
                 "{{testName}}", escapeHtml(context.getRequiredTestMethod().getName()),
@@ -146,29 +166,102 @@ public class AllureStepHelper extends ObjectFormatter {
         context.getStore(ExtensionContext.Namespace.GLOBAL).put(HTML, htmlList);
     }
 
-    /**
-     * Functional interface for supplying values within an Allure step execution context.
-     * <p>
-     * This interface is primarily used for deferred execution of test data retrieval
-     * or parameter resolution within an Allure step. Implementations can throw
-     * a {@link ParameterResolutionException} when unable to resolve the required parameter.
-     * </p>
-     *
-     * @param <T> The type of the value supplied by this function.
-     */
-    @FunctionalInterface
-    public interface AllureStepSupplier<T> {
-
-        /**
-         * Retrieves a value within an Allure step execution.
-         * <p>
-         * Implementations should handle any necessary logic for retrieving test-related
-         * data, including parameter resolution for dynamic test inputs.
-         * </p>
-         *
-         * @return The supplied value of type {@code T}.
-         * @throws ParameterResolutionException If the value cannot be resolved.
-         */
-        T get() throws ParameterResolutionException;
+    public static void initializeTestEnvironment() {
+        Map<String, String> propertiesMap = collectConfigurationProperties();
+        writeEnvironmentProperties(propertiesMap);
+        writeCategoriesJson();
     }
+
+    private static Map<String, String> collectConfigurationProperties() {
+        List<Class<? extends PropertyConfig>> allConfig = findAllPropertyConfigImplementations();
+
+        return allConfig.stream()
+                .flatMap(aClass -> {
+                    ConfigSource configSource = aClass.getAnnotation(ConfigSource.class);
+                    String configSourceValue = (configSource != null) ? configSource.value() : "unknown";
+
+                    PropertyConfig propertyConfig = ConfigCache.getOrCreate(aClass);
+                    return Arrays.stream(propertyConfig.getClass().getInterfaces())
+                            .filter(PropertyConfig.class::isAssignableFrom)
+                            .flatMap(intf -> Arrays.stream(intf.getDeclaredMethods()))
+                            .filter(method -> method.getAnnotation(Config.Key.class) != null)
+                            .map(method -> {
+                                try {
+                                    Config.Key annotation = method.getAnnotation(Config.Key.class);
+                                    String key = annotation.value();
+                                    Object value = method.invoke(propertyConfig);
+
+                                    if (value == null || value.toString().trim().isEmpty()) {
+                                        System.out.println("Skipping key '" + key + "' because value is empty or null.");
+                                        return null;
+                                    }
+
+                                    return new AbstractMap.SimpleEntry<>(key, value + " (Source: " + configSourceValue + ")");
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    System.err.println("Error invoking method: " + method.getName());
+                                    e.printStackTrace();
+                                    return null;
+                                }
+                            })
+                            .filter(Objects::nonNull);
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private static List<Class<? extends PropertyConfig>> findAllPropertyConfigImplementations() {
+        List<Class<? extends PropertyConfig>> implementationsOfInterfaceInFramework = ReflectionUtil.findImplementationsOfInterface(
+                PropertyConfig.class, FRAMEWORK_PACKAGE);
+        List<Class<? extends PropertyConfig>> implementationsOfInterfaceInProject = ReflectionUtil.findImplementationsOfInterface(
+                PropertyConfig.class, getFrameworkConfig().projectPackage());
+
+        List<Class<? extends PropertyConfig>> allConfig = new ArrayList<>();
+        allConfig.addAll(implementationsOfInterfaceInFramework);
+        allConfig.addAll(implementationsOfInterfaceInProject);
+        return allConfig;
+    }
+
+    private static void writeEnvironmentProperties(Map<String, String> propertiesMap) {
+        File allureResultsDir = new File(ALLURE_RESULTS_DIR);
+        if (!allureResultsDir.exists()) {
+            allureResultsDir.mkdirs();
+        }
+
+        File environmentFile = new File(allureResultsDir, ENVIRONMENT_PROPERTIES_FILE);
+        try (FileWriter writer = new FileWriter(environmentFile)) {
+            for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
+                writer.write(entry.getKey() + "=" + entry.getValue() + "\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write environment.properties file", e);
+        }
+    }
+
+    private static void writeCategoriesJson() {
+        String categoriesJson = loadResourceFile(CATEGORIES_JSON_PATH);
+
+        File allureResultsDir = new File(ALLURE_RESULTS_DIR);
+        if (!allureResultsDir.exists()) {
+            allureResultsDir.mkdirs();
+        }
+
+        File categoriesFile = new File(allureResultsDir, CATEGORIES_JSON);
+        try (FileWriter writer = new FileWriter(categoriesFile)) {
+            writer.write(categoriesJson);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write categories.json file", e);
+        }
+    }
+
+    public static void setupTestContext(ExtensionContext context) {
+        String className = context.getTestClass()
+                .map(Class::getSimpleName)
+                .orElse("UnknownClass");
+        String methodName = context.getTestMethod()
+                .map(Method::getName)
+                .orElse("UnknownMethod");
+
+        ThreadContext.put("testName", className + "." + methodName);
+        context.getStore(ExtensionContext.Namespace.GLOBAL).put(START_TIME, System.currentTimeMillis());
+    }
+
 }

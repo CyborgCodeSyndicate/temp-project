@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.db.config;
 
+import com.theairebellion.zeus.config.ConfigSource;
+import com.theairebellion.zeus.config.PropertyConfig;
 import org.aeonbits.owner.Config;
 
 /**
@@ -11,9 +13,10 @@ import org.aeonbits.owner.Config;
  *
  * @author Cyborg Code Syndicate
  */
+@ConfigSource("db-config")
 @Config.LoadPolicy(Config.LoadType.MERGE)
 @Config.Sources({"system:properties", "classpath:${db.config.file}.properties"})
-public interface DbConfig extends Config {
+public interface DbConfig extends PropertyConfig {
 
     /**
      * Retrieves the default database type.

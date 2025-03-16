@@ -37,4 +37,7 @@ public interface FrameworkConfig extends Config {
     @Key("default.storage")
     String defaultStorage();
 
+    @Key("test.env")
+    String testEnv();
+
 }
