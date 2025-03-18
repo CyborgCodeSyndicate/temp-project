@@ -57,7 +57,7 @@ public abstract class BaseLoginClient implements LoginClient {
                 .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
             //todo create custom exception
-            throw new RuntimeException("Logging was not successful");
+            throw new RuntimeException("Logging in was not successful");
         }
 
         urlAfterLogging = smartWebDriver.getCurrentUrl();

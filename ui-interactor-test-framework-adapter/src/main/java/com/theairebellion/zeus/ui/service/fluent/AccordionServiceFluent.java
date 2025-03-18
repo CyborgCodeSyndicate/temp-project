@@ -60,33 +60,6 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
     }
 
 
-    public T getExpanded(final AccordionUIElement element) {
-        element.before().accept(driver);
-        List<String> expanded = accordionService.getExpanded(element.componentType()); //todo
-        element.after().accept(driver);
-        storage.sub(UI).put(element.enumImpl(), expanded);
-        return uiServiceFluent;
-    }
-
-
-    public T getCollapsed(final AccordionUIElement element) {
-        element.before().accept(driver);
-        List<String> collapsed = accordionService.getCollapsed(element.componentType()); //todo
-        element.after().accept(driver);
-        storage.sub(UI).put(element.enumImpl(), collapsed);
-        return uiServiceFluent;
-    }
-
-
-    public T getAll(final AccordionUIElement element) {
-        element.before().accept(driver);
-        List<String> all = accordionService.getAll(element.componentType()); //todo
-        element.after().accept(driver);
-        storage.sub(UI).put(element.enumImpl(), all);
-        return uiServiceFluent;
-    }
-
-
     public T getTitle(final AccordionUIElement element) {
         element.before().accept(driver);
         String title = accordionService.getTitle(element.componentType(), element.locator());
