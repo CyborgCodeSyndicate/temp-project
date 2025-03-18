@@ -23,6 +23,8 @@
         <module>commons</module>
         <module>reqres-test-framework</module>
         <module>test-allocator-maven-plugin</module>
+        <module>ai-navigator-maven-plugin</module>
+        <module>ai-instuctions-uploader-maven-plugin</module>
     </modules>
 
     <properties>
@@ -166,6 +168,27 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <inherited>false</inherited>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 
 </project>

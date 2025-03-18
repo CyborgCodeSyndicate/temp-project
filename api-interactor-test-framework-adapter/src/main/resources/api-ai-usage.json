@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.request(com.theairebellion.zeus.api.core.Endpoint)",
+      "value": [
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Ping the endpoint defines in enum class Endpoints",
+          "example": "request(Endpoints.GET_ALL_USERS)"
+        },
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Ping the endpoint defines in enum class Endpoints and add query param for page with value 2",
+          "example": "request(Endpoints.GET_ALL_USERS.withQueryParam(\"page\", 2))"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.requestAndValidate(com.theairebellion.zeus.api.core.Endpoint, com.theairebellion.zeus.validator.core.Assertion[])",
+      "value": [
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Ping the GET_USER endpoint defined in enum class Endpoints with path parameter for id with value 3 and validate that status of the response is OK as soft assertion and the body has email field with some value as soft assertion and the body has field url with some value as soft assertion",
+          "example": "requestAndValidate(Endpoints.GET_USER.withPathParam(\"id\", 3), Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).soft(true).build(), Assertion.builder().target(BODY).key(\"data.email\").type(IS).expected(\"emma.wong@reqres.in\").soft(true).build(), Assertion.builder().target(BODY).key(\"support.url\").type(IS).expected(\"https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral\").soft(true).build());"
+        },
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Ping the GET_USER endpoint defined in enum class Endpoints with path parameter for id with value 23 and validate that status is 404 Not Found as hard assertion",
+          "example": "requestAndValidate(Endpoints. GET_USER.withPathParam(\"id\", 23), Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).build());"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.validator.core.Assertion.AssertionTarget.target",
+      "value": [
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Validates the body of an Response object from Rest Assured",
+          "example": "RestAssertionTarget.BODY"
+        },
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Validates the Status of an Response object from Rest Assured",
+          "example": "RestAssertionTarget.STATUS"
+        },
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Validates the HEADERS of an Response object from Rest Assured",
+          "example": "RestAssertionTarget.HEADER"
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,7 @@
         <db.config.file>config</db.config.file>
         <ui.config.file>config</ui.config.file>
         <test.data.file>test_data</test.data.file>
+        <ai.usage.config.file>config</ai.usage.config.file>
         <framework.config.file>config</framework.config.file>
         <include.tags>Regression</include.tags>
         <exclude.tags></exclude.tags>
@@ -67,24 +68,13 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
-                        <properties>
-                            <groups>${include.tags}</groups>
-                            <excludedGroups>${exclude.tags}</excludedGroups>
-                        </properties>
+                    <properties>
+                        <groups>${include.tags}</groups>
+                        <excludedGroups>${exclude.tags}</excludedGroups>
+                    </properties>
                 </configuration>
             </plugin>
         </plugins>
@@ -107,6 +97,32 @@
                                 <goals>
                                     <goal>split</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>ai-navigator</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.theairebellion.zeus</groupId>
+                        <artifactId>ai-navigator-maven-plugin</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>navigate-ai</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>navigate-ai</goal>
+                                </goals>
+                                <configuration>
+                                    <awsAccessKey>AKIARK6LBQBXWAF6KMWR</awsAccessKey>
+                                    <awsSecretKey>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</awsSecretKey>
+                                    <s3Bucket>ring-of-automation-ai-instructions</s3Bucket>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

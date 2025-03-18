@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.framework.base;
 
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.framework.annotation.Odyssey;
 import com.theairebellion.zeus.framework.config.TestConfig;
 import com.theairebellion.zeus.framework.log.LogTest;
@@ -17,13 +19,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Properties;
 
-import java.util.List;
-
 @Odyssey
 @SpringBootTest(
-        classes = {TestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.NONE
+    classes = {TestConfig.class},
+    webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
+@InfoAIClass(description = "All test classes extend from BaseTest class and each test method has quest object")
 public class BaseTest {
 
     static {
@@ -35,6 +36,7 @@ public class BaseTest {
     }
 
 
+    @InfoAI(description = "Retrieves data from storage by key")
     protected <T> T retrieve(Enum<?> key, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
@@ -48,10 +50,11 @@ public class BaseTest {
         return quest.getStorage().sub(subKey).get(key, clazz);
     }
 
+
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-                clazz.getName());
+            clazz.getName());
         return quest.getStorage().get(extractor, clazz);
     }
 
@@ -59,7 +62,7 @@ public class BaseTest {
     protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-                clazz.getName());
+            clazz.getName());
         return quest.getStorage().get(extractor, clazz, index);
     }
 

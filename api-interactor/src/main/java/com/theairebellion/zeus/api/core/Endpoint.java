@@ -1,10 +1,10 @@
 package com.theairebellion.zeus.api.core;
 
-import com.theairebellion.zeus.api.config.ApiConfig;
+import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.annotations.InfoAIClass;
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
-import org.aeonbits.owner.ConfigCache;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +12,10 @@ import java.util.Map;
 
 import static com.theairebellion.zeus.api.config.ApiConfigHolder.getApiConfig;
 
+@InfoAIClass(
+    description = "Interface representing endpoints. Should be implemented as enum and methods to be overridden",
+    creationType = CreationType.ENUM,
+    useAsKeyInStorage = true)
 public interface Endpoint {
 
     Method method();
@@ -78,5 +82,12 @@ public interface Endpoint {
             throw new IllegalStateException("HTTP method must not be null for endpoint: " + enumImpl().name());
         }
     }
+
+    // default String aiPrint() {
+    //     return enumImpl().name() + "{" +
+    //                "method=" + method() +
+    //                ", url='" + url() + '\'' +
+    //                '}';
+    // }
 
 }

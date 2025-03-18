@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "key": "com.theairebellion.zeus.ui.service.fluent.InputServiceFluent.insert(com.theairebellion.zeus.ui.selenium.InputUIElement, java.lang.String)",
+      "value": [
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Insert into input field PASSWORD_FIELD declared in enum class InputFields value barista",
+          "example": "insert(InputFields.PASSWORD_FIELD, \"barista\")"
+        }
+      ]
+    }
+  ]
+}

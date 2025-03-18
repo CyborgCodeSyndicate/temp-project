@@ -1,11 +1,13 @@
 package com.theairebellion.zeus.framework.chain;
 
+import com.theairebellion.zeus.framework.annotation.AIDisableUsage;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import lombok.experimental.Delegate;
 
 import java.util.List;
 
+@AIDisableUsage
 public class FluentServiceDecorator extends FluentService {
 
     @Delegate

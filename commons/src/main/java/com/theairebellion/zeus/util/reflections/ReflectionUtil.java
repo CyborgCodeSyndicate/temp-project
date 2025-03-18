@@ -4,13 +4,17 @@ import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class ReflectionUtil {
 
     @SuppressWarnings("unchecked")
     public static <T> Class<? extends Enum<?>> findEnumClassImplementationsOfInterface(
-            Class<T> interfaceClass, String packagePrefix) {
+        Class<T> interfaceClass, String packagePrefix) {
 
         validateInputs(interfaceClass, packagePrefix);
 
@@ -18,26 +22,26 @@ public class ReflectionUtil {
         Set<Class<? extends T>> result = reflections.getSubTypesOf(interfaceClass);
 
         return result.stream()
-                .filter(Class::isEnum)
-                .map(clazz -> (Class<? extends Enum<?>>) clazz)
-                .findFirst()
-                .orElseThrow(() -> new ReflectionException(String.format(
-                        "No Enum implementing interface '%s' found in package '%s'.",
-                        interfaceClass.getName(), packagePrefix)));
+                   .filter(Class::isEnum)
+                   .map(clazz -> (Class<? extends Enum<?>>) clazz)
+                   .findFirst()
+                   .orElseThrow(() -> new ReflectionException(String.format(
+                       "No Enum implementing interface '%s' found in package '%s'.",
+                       interfaceClass.getName(), packagePrefix)));
     }
 
 
     @SuppressWarnings("unchecked")
     public static <T> T findEnumImplementationsOfInterface(
-            Class<T> interfaceClass, String enumName, String packagePrefix) {
+        Class<T> interfaceClass, String enumName, String packagePrefix) {
 
         Class<? extends Enum<?>> enumClass = findEnumClassImplementationsOfInterface(interfaceClass, packagePrefix);
 
         return (T) Arrays.stream(enumClass.getEnumConstants())
-                .filter(e -> e.name().equals(enumName))
-                .findFirst()
-                .orElseThrow(() -> new ReflectionException(String.format(
-                        "Enum value '%s' not found in Enum '%s'.", enumName, enumClass.getName())));
+                       .filter(e -> e.name().equals(enumName))
+                       .findFirst()
+                       .orElseThrow(() -> new ReflectionException(String.format(
+                           "Enum value '%s' not found in Enum '%s'.", enumName, enumClass.getName())));
     }
 
 
@@ -65,26 +69,26 @@ public class ReflectionUtil {
             }
 
             Field field = allFields.stream()
-                    .filter(f -> {
-                        f.setAccessible(true);
-                        return fieldType.isAssignableFrom(f.getType());
-                    })
-                    .findFirst()
-                    .orElseThrow(() -> new ReflectionException(
-                            String.format("No field of type '%s' found in class '%s'.",
-                                    fieldType.getName(), instance.getClass().getName())));
+                              .filter(f -> {
+                                  f.setAccessible(true);
+                                  return fieldType.isAssignableFrom(f.getType());
+                              })
+                              .findFirst()
+                              .orElseThrow(() -> new ReflectionException(
+                                  String.format("No field of type '%s' found in class '%s'.",
+                                      fieldType.getName(), instance.getClass().getName())));
 
             Object value = field.get(instance);
             if (!fieldType.isInstance(value)) {
                 throw new ReflectionException(String.format(
-                        "Field value is not of the expected type '%s'. Actual value type: '%s'.",
-                        fieldType.getName(), value != null ? value.getClass().getName() : "null"));
+                    "Field value is not of the expected type '%s'. Actual value type: '%s'.",
+                    fieldType.getName(), value != null ? value.getClass().getName() : "null"));
             }
             return fieldType.cast(value);
         } catch (IllegalAccessException e) {
             throw new ReflectionException(
-                    String.format("Cannot access field of type '%s' in class '%s'.",
-                            fieldType.getName(), instance.getClass().getName()), e);
+                String.format("Cannot access field of type '%s' in class '%s'.",
+                    fieldType.getName(), instance.getClass().getName()), e);
         }
     }
 
@@ -99,23 +103,24 @@ public class ReflectionUtil {
 
             if (!returnType.isInstance(value)) {
                 throw new ReflectionException(String.format(
-                        "Field '%s' value is not of expected type '%s'. Actual value type: '%s'.",
-                        fieldName, returnType.getName(), value != null ? value.getClass().getName() : "null"));
+                    "Field '%s' value is not of expected type '%s'. Actual value type: '%s'.",
+                    fieldName, returnType.getName(), value != null ? value.getClass().getName() : "null"));
             }
             return returnType.cast(value);
         } catch (NoSuchFieldException e) {
             throw new ReflectionException(String.format(
-                    "Field '%s' not found in class hierarchy of '%s'.",
-                    fieldName, object.getClass().getName()), e);
+                "Field '%s' not found in class hierarchy of '%s'.",
+                fieldName, object.getClass().getName()), e);
         } catch (IllegalAccessException e) {
             throw new ReflectionException(
-                    String.format("Cannot access field '%s' in class hierarchy of '%s'.",
-                            fieldName, object.getClass().getName()), e);
+                String.format("Cannot access field '%s' in class hierarchy of '%s'.",
+                    fieldName, object.getClass().getName()), e);
         }
     }
 
+
     public static <T> Class<? extends T> findClassThatExtendsClass(
-            Class<T> parentClass, String packagePrefix) {
+        Class<T> parentClass, String packagePrefix) {
 
         validateInputs(parentClass, packagePrefix);
 
@@ -123,7 +128,7 @@ public class ReflectionUtil {
         Set<Class<? extends T>> result = reflections.getSubTypesOf(parentClass);
 
         Optional<Class<? extends T>> match = result.stream()
-                .findFirst();
+                                                 .findFirst();
         return match.orElse(null);
     }
 

@@ -1,11 +1,14 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
 
+import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
-import com.theairebellion.zeus.ui.selenium.InputUIElement;
 import com.theairebellion.zeus.ui.insertion.Insertion;
+import com.theairebellion.zeus.ui.selenium.InputUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
@@ -13,6 +16,8 @@ import org.openqa.selenium.By;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
+@InfoAIClass(level = Level.LAST,
+    description = "InputServiceFluent has all the functions needed for manipulation of input fields")
 public class InputServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
 
     private final InputService inputService;
@@ -30,9 +35,11 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
 
-    public T insert(final InputUIElement element, final String value) {
+    @InfoAI(description = "Inserts text value into InputUIElement declared in a enum")
+    public T insert(final InputUIElement element,
+                    final @InfoAI(description = "Thr value to be inserted") String value) {
         Allure.step(String.format("Inserting value: '%s' into input component of type: '%s'.", value,
-                element.componentType().toString()));
+            element.componentType().toString()));
         element.before().accept(driver);
         inputService.insert(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -69,12 +76,12 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         storage.sub(UI).put(element.enumImpl(), value);
         if (soft) {
             return (T) uiServiceFluent.validate(
-                    softAssertions -> softAssertions.assertThat(value).as("Validating Input value")
-                            .isEqualTo(expectedValue));
+                softAssertions -> softAssertions.assertThat(value).as("Validating Input value")
+                                      .isEqualTo(expectedValue));
         } else {
             return (T) uiServiceFluent.validate(
-                    () -> Assertions.assertThat(value).as("Validating Input value")
-                            .isEqualTo(expectedValue));
+                () -> Assertions.assertThat(value).as("Validating Input value")
+                          .isEqualTo(expectedValue));
         }
     }
 
@@ -115,28 +122,28 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         storage.sub(UI).put(element.enumImpl(), enabled);
 
         String assertionMessage = shouldBeEnabled
-                ? "Validating Input is enabled"
-                : "Validating Input is disabled";
+                                      ? "Validating Input is enabled"
+                                      : "Validating Input is disabled";
 
         if (soft) {
             return (T) uiServiceFluent.validate(
-                    softAssertions -> {
-                        if (shouldBeEnabled) {
-                            softAssertions.assertThat(enabled).as(assertionMessage).isTrue();
-                        } else {
-                            softAssertions.assertThat(enabled).as(assertionMessage).isFalse();
-                        }
+                softAssertions -> {
+                    if (shouldBeEnabled) {
+                        softAssertions.assertThat(enabled).as(assertionMessage).isTrue();
+                    } else {
+                        softAssertions.assertThat(enabled).as(assertionMessage).isFalse();
                     }
+                }
             );
         } else {
             return (T) uiServiceFluent.validate(
-                    () -> {
-                        if (shouldBeEnabled) {
-                            Assertions.assertThat(enabled).as(assertionMessage).isTrue();
-                        } else {
-                            Assertions.assertThat(enabled).as(assertionMessage).isFalse();
-                        }
+                () -> {
+                    if (shouldBeEnabled) {
+                        Assertions.assertThat(enabled).as(assertionMessage).isTrue();
+                    } else {
+                        Assertions.assertThat(enabled).as(assertionMessage).isFalse();
                     }
+                }
             );
         }
     }
@@ -163,13 +170,13 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         storage.sub(UI).put(element.enumImpl(), errorMessage);
         if (soft) {
             return (T) uiServiceFluent.validate(
-                    softAssertions -> softAssertions.assertThat(errorMessage)
-                            .as("Validating UI Message")
-                            .isEqualTo(expectedMessage));
+                softAssertions -> softAssertions.assertThat(errorMessage)
+                                      .as("Validating UI Message")
+                                      .isEqualTo(expectedMessage));
         } else {
             return (T) uiServiceFluent.validate(
-                    () -> Assertions.assertThat(errorMessage).as("Validating UI Message")
-                            .isEqualTo(expectedMessage));
+                () -> Assertions.assertThat(errorMessage).as("Validating UI Message")
+                          .isEqualTo(expectedMessage));
         }
     }
 
@@ -178,4 +185,5 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
         inputService.insertion(componentType, locator, values);
     }
+
 }

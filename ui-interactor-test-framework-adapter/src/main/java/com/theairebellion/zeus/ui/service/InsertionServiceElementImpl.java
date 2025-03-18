@@ -1,13 +1,12 @@
 package com.theairebellion.zeus.ui.service;
 
+import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.insertion.BaseInsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
-import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.FindBy;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -45,8 +44,8 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
         InsertionElement insertionElement = (InsertionElement) annotation;
         UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
             insertionElement.elementEnum());
-        FindBy.FindByBuilder findByBuilder = new FindBy.FindByBuilder();
-        return findByBuilder.buildIt(uiElement.locator(), null);
+
+        return uiElement.locator();
     }
 
 

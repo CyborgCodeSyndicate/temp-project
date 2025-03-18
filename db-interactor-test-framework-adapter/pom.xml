@@ -25,20 +25,40 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <profiles>
+        <profile>
+            <id>upload-ai-data</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.theairebellion.zeus</groupId>
+                        <artifactId>ai-instuctions-uploader-maven-plugin</artifactId>
+                        <version>${project.version}</version> <!-- match your plugin version -->
+                        <executions>
+                            <execution>
+                                <id>upload-json</id>
+                                <phase>verify</phase> <!-- or whichever phase you want -->
+                                <goals>
+                                    <goal>upload-ai</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceFile>${project.basedir}/src/main/resources/db-ai-usage.json</sourceFile>
+                                    <filePrefix>db-ai-usage</filePrefix>
+                                    <bucketName>ring-of-automation-ai-instructions</bucketName>
+                                    <awsRegion>eu-north-1</awsRegion>
+                                    <filterEnabled>true</filterEnabled>
+                                    <awsAccessKey>AKIARK6LBQBXVEONO473</awsAccessKey>
+                                    <awsSecretKey>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</awsSecretKey>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
