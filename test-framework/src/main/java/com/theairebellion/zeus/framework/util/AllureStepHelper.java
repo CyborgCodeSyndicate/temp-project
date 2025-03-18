@@ -10,19 +10,10 @@ import org.aeonbits.owner.ConfigCache;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
@@ -35,11 +26,17 @@ import static com.theairebellion.zeus.framework.util.ResourceLoader.loadResource
  * <p>
  * This class provides helper methods to:
  * <ul>
- *     <li>Set HTML descriptions in Allure reports</li>
- *     <li>Attach filtered logs based on test execution</li>
- *     <li>Log test outcomes with structured messages</li>
- *     <li>Generate and inject metadata into test reports</li>
+ *     <li>Set HTML descriptions in Allure reports.</li>
+ *     <li>Attach filtered logs based on test execution.</li>
+ *     <li>Log test outcomes with structured messages.</li>
+ *     <li>Generate and inject metadata into test reports.</li>
+ *     <li>Initialize the test environment by writing configuration properties and categories.</li>
+ *     <li>Set up the test context with start time and a unique test identifier.</li>
  * </ul>
+ * </p>
+ * <p>
+ * The class leverages Allure for report attachments, the OWNER library for configuration management,
+ * and reflection for dynamic retrieval of configuration properties.
  * </p>
  *
  * @author Cyborg Code Syndicate
@@ -55,9 +52,9 @@ public class AllureStepHelper extends ObjectFormatter {
     /**
      * Sets an HTML description for the test execution in Allure reports.
      * <p>
-     * This method retrieves the HTML content stored under the {@code HTML} key
-     * in {@code ExtensionContext.Namespace.GLOBAL}, filters for valid table-based
-     * content, and appends it as a formatted description in Allure.
+     * This method retrieves HTML content stored under the {@code HTML} key in the global store of the
+     * provided {@link ExtensionContext}, filters for valid table-based content, and appends it as a formatted
+     * HTML description in Allure.
      * </p>
      *
      * @param context The test execution context.
@@ -76,8 +73,8 @@ public class AllureStepHelper extends ObjectFormatter {
     /**
      * Attaches filtered logs to Allure based on the test name.
      * <p>
-     * This method scans the system log file for log entries containing the test
-     * scenario identifier. If no logs are found, a fallback message is attached.
+     * This method reads a system log file and filters for entries containing a test scenario identifier.
+     * If the test name is unavailable or if no matching log entries are found, a fallback message is attached.
      * </p>
      *
      * @param testName The name of the test scenario to filter logs for.
@@ -110,15 +107,14 @@ public class AllureStepHelper extends ObjectFormatter {
     /**
      * Logs the test outcome after execution.
      * <p>
-     * This method logs whether the test concluded successfully or failed,
-     * along with the duration of execution. If the test failed, additional
-     * debugging details are logged.
+     * This method logs whether the test concluded successfully or failed, along with the duration
+     * of execution. If the test failed, additional debugging details are logged.
      * </p>
      *
-     * @param testName         The name of the test that was executed.
-     * @param status           The test execution status ("SUCCESS" or "FAILED").
+     * @param testName          The name of the test that was executed.
+     * @param status            The test execution status (e.g., "SUCCESS" or "FAILED").
      * @param durationInSeconds The duration of the test execution in seconds.
-     * @param throwable        The exception thrown (if any) during execution.
+     * @param throwable         The exception thrown during execution (if any).
      */
     public static void logTestOutcome(String testName, String status, long durationInSeconds, Throwable throwable) {
         String logMessage = "The quest of '{}' has " +
@@ -136,11 +132,12 @@ public class AllureStepHelper extends ObjectFormatter {
      * <p>
      * This method loads a predefined HTML template and dynamically populates it with:
      * <ul>
-     *     <li>Test name and class details</li>
-     *     <li>Annotations applied at the class and method levels</li>
-     *     <li>Test argument values</li>
+     *     <li>Test name and class details.</li>
+     *     <li>Annotations applied at the class and method levels.</li>
+     *     <li>Test argument values.</li>
      * </ul>
-     * The formatted HTML is then stored under the {@code HTML} key in {@code ExtensionContext.Namespace.GLOBAL}.
+     * The formatted HTML is then stored under the {@code HTML} key in the global store of the
+     * provided {@link ExtensionContext} for later attachment to the Allure report.
      * </p>
      *
      * @param context The test execution context.
@@ -166,12 +163,33 @@ public class AllureStepHelper extends ObjectFormatter {
         context.getStore(ExtensionContext.Namespace.GLOBAL).put(HTML, htmlList);
     }
 
+    /**
+     * Initializes the test environment by collecting configuration properties and writing them to files.
+     * <p>
+     * This method performs the following actions:
+     * <ul>
+     *     <li>Collects configuration properties from all implementations of {@link PropertyConfig}.</li>
+     *     <li>Writes the collected properties to an environment properties file.</li>
+     *     <li>Writes a JSON file containing category definitions for Allure reports.</li>
+     * </ul>
+     * </p>
+     */
     public static void initializeTestEnvironment() {
         Map<String, String> propertiesMap = collectConfigurationProperties();
         writeEnvironmentProperties(propertiesMap);
         writeCategoriesJson();
     }
 
+    /**
+     * Collects configuration properties from all implementations of {@link PropertyConfig}.
+     * <p>
+     * This method uses reflection to find all classes implementing {@link PropertyConfig} in both the
+     * framework package and the project package. It then retrieves configuration key-value pairs from each
+     * implementation and returns them as a map.
+     * </p>
+     *
+     * @return A map containing configuration keys and their corresponding values, annotated with their source.
+     */
     private static Map<String, String> collectConfigurationProperties() {
         List<Class<? extends PropertyConfig>> allConfig = findAllPropertyConfigImplementations();
 
@@ -208,6 +226,15 @@ public class AllureStepHelper extends ObjectFormatter {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    /**
+     * Finds all implementations of the {@link PropertyConfig} interface within the framework and project packages.
+     * <p>
+     * This method leverages the {@link ReflectionUtil} to search for classes that implement {@link PropertyConfig}
+     * in both the framework's base package and the project-specific package defined in the framework configuration.
+     * </p>
+     *
+     * @return A list of classes implementing {@link PropertyConfig}.
+     */
     private static List<Class<? extends PropertyConfig>> findAllPropertyConfigImplementations() {
         List<Class<? extends PropertyConfig>> implementationsOfInterfaceInFramework = ReflectionUtil.findImplementationsOfInterface(
                 PropertyConfig.class, FRAMEWORK_PACKAGE);
@@ -220,6 +247,16 @@ public class AllureStepHelper extends ObjectFormatter {
         return allConfig;
     }
 
+    /**
+     * Writes the collected configuration properties to the environment properties file.
+     * <p>
+     * The file is written to the {@code allure-results} directory. If the directory does not exist,
+     * it is created.
+     * </p>
+     *
+     * @param propertiesMap A map containing configuration keys and values.
+     * @throws RuntimeException if writing to the file fails.
+     */
     private static void writeEnvironmentProperties(Map<String, String> propertiesMap) {
         File allureResultsDir = new File(ALLURE_RESULTS_DIR);
         if (!allureResultsDir.exists()) {
@@ -236,6 +273,15 @@ public class AllureStepHelper extends ObjectFormatter {
         }
     }
 
+    /**
+     * Writes the categories JSON file for Allure reports.
+     * <p>
+     * This method loads the JSON content from a resource file and writes it to a file named
+     * {@code categories.json} in the {@code allure-results} directory.
+     * </p>
+     *
+     * @throws RuntimeException if writing to the file fails.
+     */
     private static void writeCategoriesJson() {
         String categoriesJson = loadResourceFile(CATEGORIES_JSON_PATH);
 
@@ -252,6 +298,16 @@ public class AllureStepHelper extends ObjectFormatter {
         }
     }
 
+    /**
+     * Sets up the test context by storing the test name and start time.
+     * <p>
+     * This method extracts the simple names of the test class and method from the provided
+     * {@link ExtensionContext} and stores them in the {@link ThreadContext} under the key "testName".
+     * Additionally, it stores the current system time in milliseconds as the test start time in the global store.
+     * </p>
+     *
+     * @param context The test execution context.
+     */
     public static void setupTestContext(ExtensionContext context) {
         String className = context.getTestClass()
                 .map(Class::getSimpleName)

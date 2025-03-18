@@ -37,6 +37,11 @@ public interface FrameworkConfig extends Config {
     @Key("default.storage")
     String defaultStorage();
 
+    /**
+     * Retrieves the test environment configuration.
+     *
+     * @return The configured test environment name.
+     */
     @Key("test.env")
     String testEnv();
 

@@ -22,8 +22,14 @@ public class Prologue implements BeforeTestExecutionCallback {
     /**
      * Executes before the test method starts.
      * <p>
-     * This method records the start time of the test, assigns a unique identifier
-     * to the test execution context, and logs the initiation of the test scenario.
+     * This method performs the following steps before executing a test:
+     * <ul>
+     *     <li>Initializes the test environment by collecting and storing configuration properties.</li>
+     *     <li>Writes environment properties and category-related data for reporting.</li>
+     *     <li>Extracts and logs the test class and method names.</li>
+     *     <li>Assigns a unique identifier to the test execution context.</li>
+     *     <li>Stores the test start time for later use in reporting.</li>
+     * </ul>
      * </p>
      *
      * @param context The test execution context containing metadata about the test.
