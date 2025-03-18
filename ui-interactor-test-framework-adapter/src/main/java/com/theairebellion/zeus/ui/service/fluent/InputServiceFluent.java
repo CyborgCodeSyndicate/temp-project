@@ -16,6 +16,19 @@ import org.openqa.selenium.By;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
+/**
+ * Provides fluent methods for interacting with input elements in a UI test automation framework.
+ * <p>
+ * This class enables structured interactions with input fields, supporting actions such as inserting,
+ * clearing, retrieving, and validating input values. It also allows checking input element states,
+ * including enabled/disabled states and error messages.
+ * </p>
+ *
+ * The generic type {@code T} represents the fluent UI service that extends {@link UIServiceFluent},
+ * ensuring method chaining returns the correct instance type.
+ *
+ * @author Cyborg Code Syndicate
+ */
 @InfoAIClass(level = Level.LAST,
     description = "InputServiceFluent has all the functions needed for manipulation of input fields")
 public class InputServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
@@ -25,7 +38,14 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     private final Storage storage;
     private final SmartWebDriver driver;
 
-
+    /**
+     * Constructs an instance of {@link InputServiceFluent}.
+     *
+     * @param uiServiceFluent The UI service fluent instance for chaining method calls.
+     * @param storage         The storage instance for persisting input-related data.
+     * @param inputService    The service handling input interactions.
+     * @param webDriver       The smart WebDriver instance for executing Selenium operations.
+     */
     public InputServiceFluent(T uiServiceFluent, Storage storage, InputService inputService,
                               SmartWebDriver webDriver) {
         this.inputService = inputService;
@@ -34,7 +54,13 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         driver = webDriver;
     }
 
-
+    /**
+     * Inserts the specified value into the given input element.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @param value   The value to insert.
+     * @return The UI service fluent instance for method chaining.
+     */
     @InfoAI(description = "Inserts text value into InputUIElement declared in a enum")
     public T insert(final InputUIElement element,
                     final @InfoAI(description = "Thr value to be inserted") String value) {
@@ -46,7 +72,12 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         return uiServiceFluent;
     }
 
-
+    /**
+     * Clears the content of the given input element.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T clear(final InputUIElement element) {
         element.before().accept(driver);
         inputService.clear(element.componentType(), element.locator());
@@ -54,7 +85,12 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         return uiServiceFluent;
     }
 
-
+    /**
+     * Retrieves the current value from the given input element and stores it in {@link Storage}.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T getValue(final InputUIElement element) {
         element.before().accept(driver);
         String value = inputService.getValue(element.componentType(), element.locator());
@@ -63,12 +99,25 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the given input element contains the expected value.
+     *
+     * @param element       The {@link InputUIElement} representing the input field.
+     * @param expectedValue The expected value to validate.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateValue(final InputUIElement element, String expectedValue) {
         return validateValue(element, expectedValue, false);
     }
 
-
+    /**
+     * Validates that the given input element contains the expected value, with an option for soft assertions.
+     *
+     * @param element       The {@link InputUIElement} representing the input field.
+     * @param expectedValue The expected value to validate.
+     * @param soft          Whether to use soft assertions.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateValue(final InputUIElement element, String expectedValue, boolean soft) {
         element.before().accept(driver);
         String value = inputService.getValue(element.componentType(), element.locator());
@@ -85,7 +134,12 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         }
     }
 
-
+    /**
+     * Checks if the given input element is enabled.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T isEnabled(final InputUIElement element) {
         element.before().accept(driver);
         boolean enabled = inputService.isEnabled(element.componentType(), element.locator());
@@ -94,26 +148,47 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the input element is enabled.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateIsEnabled(final InputUIElement element) {
         return validateIsEnabled(element, true, false);
     }
 
-
+    /**
+     * Validates that the given input element is enabled or disabled, with an option for soft assertions.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @param soft    Whether to use soft assertions.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateIsEnabled(final InputUIElement element, boolean soft) {
         return validateIsEnabled(element, true, soft);
     }
 
-
+    /**
+     * Validates that the given input element is disabled.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateIsDisabled(final InputUIElement element) {
         return validateIsEnabled(element, false, false);
     }
 
-
+    /**
+     * Validates that the given input element is disabled, with an option for soft assertions.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @param soft    Whether to use soft assertions.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateIsDisabled(final InputUIElement element, boolean soft) {
         return validateIsEnabled(element, false, soft);
     }
-
 
     private T validateIsEnabled(final InputUIElement element, boolean shouldBeEnabled, boolean soft) {
         element.before().accept(driver);
@@ -148,7 +223,12 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         }
     }
 
-
+    /**
+     * Retrieves and stores the error message associated with the given input element.
+     *
+     * @param element The {@link InputUIElement} representing the input field.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T getErrorMessage(final InputUIElement element) {
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.componentType(), element.locator());
@@ -157,12 +237,25 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         return uiServiceFluent;
     }
 
-
+    /**
+     * Validates that the input element displays the expected error message.
+     *
+     * @param element         The {@link InputUIElement} representing the input field.
+     * @param expectedMessage The expected error message.
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateErrorMessage(final InputUIElement element, String expectedMessage) {
         return validateErrorMessage(element, expectedMessage, false);
     }
 
-
+    /**
+     * Validates that the error message displayed for the given input element matches the expected value.
+     *
+     * @param element         The {@link InputUIElement} representing the input field.
+     * @param expectedMessage The expected error message.
+     * @param soft            Whether to use soft assertions (non-blocking validation).
+     * @return The UI service fluent instance for method chaining.
+     */
     public T validateErrorMessage(final InputUIElement element, String expectedMessage, boolean soft) {
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.componentType(), element.locator());
@@ -180,7 +273,13 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
         }
     }
 
-
+    /**
+     * Inserts a value into an input field using the component type and locator.
+     *
+     * @param componentType The component type of the input field.
+     * @param locator       The locator of the input field.
+     * @param values        The values to be inserted.
+     */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
         inputService.insertion(componentType, locator, values);

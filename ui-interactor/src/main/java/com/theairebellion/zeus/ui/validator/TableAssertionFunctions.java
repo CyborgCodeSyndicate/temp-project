@@ -2,10 +2,29 @@ package com.theairebellion.zeus.ui.validator;
 
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
+/**
+ * Provides a set of validation functions for asserting table data integrity.
+ * <p>
+ * This class includes various validation methods to check the state of table elements,
+ * such as row counts, uniqueness, presence of values, and cell properties (e.g., enabled, clickable).
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class TableAssertionFunctions {
 
+    /**
+     * Validates if a table is not empty.
+     *
+     * @param actual   The table data (expected to be a {@code List}).
+     * @param expected The expected result (a {@code Boolean}).
+     * @return {@code true} if the table is not empty and matches the expected state; otherwise, {@code false}.
+     */
     public static boolean validateTableNotEmpty(Object actual, Object expected) {
         if (!(actual instanceof List)) {
             return false;
@@ -20,6 +39,13 @@ public class TableAssertionFunctions {
         return notEmpty == (Boolean) expected;
     }
 
+    /**
+     * Validates the row count of a table.
+     *
+     * @param actual   The table data (expected to be a {@code List}).
+     * @param expected The expected row count (an {@code Integer}).
+     * @return {@code true} if the table has the expected number of rows; otherwise, {@code false}.
+     */
     public static boolean validateTableRowCount(Object actual, Object expected) {
         if (!(actual instanceof List) || !(expected instanceof Integer)) {
             return false;
@@ -31,6 +57,13 @@ public class TableAssertionFunctions {
         return table.size() == expectedRowCount;
     }
 
+    /**
+     * Validates if every row in the table contains the expected values.
+     *
+     * @param actual   The table data (expected to be a {@code List} of rows).
+     * @param expected The expected values (a {@code List} of items that should be present in each row).
+     * @return {@code true} if every row contains all the expected values; otherwise, {@code false}.
+     */
     public static boolean validateEveryRowContainsValues(Object actual, Object expected) {
         if (!(actual instanceof List) || !(expected instanceof List)) {
             return false;
@@ -47,6 +80,13 @@ public class TableAssertionFunctions {
                 .allMatch(row -> row instanceof List<?> && new HashSet<>((List<?>) row).containsAll(expectedValues));
     }
 
+    /**
+     * Validates that a specific row is not present in the table.
+     *
+     * @param actual   The table data (expected to be a {@code List} of rows).
+     * @param expected The row that should not be present (a {@code List} representing the row).
+     * @return {@code true} if the row is absent; otherwise, {@code false}.
+     */
     public static boolean validateTableDoesNotContainRow(Object actual, Object expected) {
         if (!(actual instanceof List<?> && expected instanceof List<?>)) {
             return false;
@@ -71,6 +111,13 @@ public class TableAssertionFunctions {
         return true;
     }
 
+    /**
+     * Validates that all rows in the table are unique.
+     *
+     * @param actual   The table data (expected to be a {@code List} of rows).
+     * @param expected The expected uniqueness state (a {@code Boolean}).
+     * @return {@code true} if all rows are unique and match the expected uniqueness state; otherwise, {@code false}.
+     */
     public static boolean validateAllRowsAreUnique(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
@@ -93,6 +140,13 @@ public class TableAssertionFunctions {
         return unique == (Boolean) expected;
     }
 
+    /**
+     * Validates that there are no empty cells in the table.
+     *
+     * @param actual   The table data (expected to be a {@code List} of rows).
+     * @param expected The expected state (a {@code Boolean}).
+     * @return {@code true} if there are no empty cells and matches the expected state; otherwise, {@code false}.
+     */
     public static boolean validateNoEmptyCells(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
@@ -127,6 +181,13 @@ public class TableAssertionFunctions {
         return noEmptyCells == (Boolean) expected;
     }
 
+    /**
+     * Validates that a column contains only unique values.
+     *
+     * @param actual   The table data (expected to be a {@code List} of rows).
+     * @param expected The column index (an {@code Integer}, 1-based index).
+     * @return {@code true} if all values in the specified column are unique; otherwise, {@code false}.
+     */
     public static boolean validateColumnValuesAreUnique(Object actual, Object expected) {
         if (!(actual instanceof List<?>) || !(expected instanceof Integer)) {
             return false;
@@ -160,6 +221,13 @@ public class TableAssertionFunctions {
         return true;
     }
 
+    /**
+     * Validates that the actual table data matches the expected table data.
+     *
+     * @param actual   The table data (expected to be a {@code List} of rows).
+     * @param expected The expected table data (a {@code List} of rows).
+     * @return {@code true} if both tables match exactly; otherwise, {@code false}.
+     */
     public static boolean validateTableDataMatchesExpected(Object actual, Object expected) {
         if (!(actual instanceof List<?>) || !(expected instanceof List<?>)) {
             return false;
@@ -187,6 +255,16 @@ public class TableAssertionFunctions {
         return table.equals(expectedTable);
     }
 
+    /**
+     * Validates whether a row is not empty.
+     * <p>
+     * A row is considered non-empty if it contains at least one non-blank string value.
+     * </p>
+     *
+     * @param actual   The row data (expected to be a {@code List} of objects representing table cells).
+     * @param expected The expected state (a {@code Boolean}, where {@code true} means the row should be non-empty).
+     * @return {@code true} if the row is non-empty and matches the expected state; otherwise, {@code false}.
+     */
     public static boolean validateRowNotEmpty(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
@@ -203,6 +281,17 @@ public class TableAssertionFunctions {
         return rowNotEmpty == (Boolean) expected;
     }
 
+    /**
+     * Validates whether a row contains specific expected values.
+     * <p>
+     * The validation checks if all expected values are present within the row.
+     * Comparison is performed in a case-insensitive manner, ignoring leading and trailing spaces.
+     * </p>
+     *
+     * @param actual   The row data (expected to be a {@code List} of objects representing table cells).
+     * @param expected The expected values (a {@code List} of objects that should be found in the row).
+     * @return {@code true} if the row contains all the expected values; otherwise, {@code false}.
+     */
     public static boolean validateRowContainsValues(Object actual, Object expected) {
         if (!(actual instanceof List<?>) || !(expected instanceof List<?>)) {
             return false;
@@ -228,6 +317,13 @@ public class TableAssertionFunctions {
         return new HashSet<>(rowValues).containsAll(expectedValues);
     }
 
+    /**
+     * Validates that all table cells are enabled.
+     *
+     * @param actual   The table data (expected to be a {@code List} of rows containing {@link SmartWebElement}).
+     * @param expected The expected enabled state (a {@code Boolean}).
+     * @return {@code true} if all cells are enabled and match the expected state; otherwise, {@code false}.
+     */
     public static boolean validateAllCellsEnabled(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;
@@ -247,6 +343,17 @@ public class TableAssertionFunctions {
         return allCellsEnabled == (Boolean) expected;
     }
 
+    /**
+     * Validates whether all cells in the table are clickable.
+     * <p>
+     * A cell is considered clickable if it is a {@link SmartWebElement}, is displayed, and is enabled.
+     * This method ensures that every row in the table contains only clickable elements.
+     * </p>
+     *
+     * @param actual   The table data (expected to be a {@code List} of lists, where each inner list represents a row).
+     * @param expected The expected state (a {@code Boolean}, where {@code true} means all cells should be clickable).
+     * @return {@code true} if all cells in the table are clickable and match the expected state; otherwise, {@code false}.
+     */
     public static boolean validateAllCellsClickable(Object actual, Object expected) {
         if (!(actual instanceof List<?>)) {
             return false;

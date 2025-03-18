@@ -21,6 +21,8 @@ import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 import lombok.Setter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
@@ -35,112 +37,249 @@ import java.util.stream.Collectors;
 
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
+/**
+ * Base implementation of the {@link Table} interface, providing core functionalities
+ * for reading, filtering, sorting, and inserting values into table elements in the UI.
+ * <p>
+ * This class defines an abstraction over table interactions and supports table-specific
+ * operations such as row retrieval, cell value insertion, and custom filtering.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public abstract class TableImpl extends BaseComponent implements Table {
 
     @Setter
     protected TableServiceRegistry serviceRegistry;
     private final List<Object> acceptedValues;
 
-
+    /**
+     * Constructs a {@code TableImpl} instance with the specified {@link SmartWebDriver}.
+     *
+     * @param smartWebDriver The WebDriver instance for interacting with the table.
+     */
     protected TableImpl(final SmartWebDriver smartWebDriver) {
         super(smartWebDriver);
         this.acceptedValues = List.of(
-            new TableCell(""),
-            List.of()
+                new TableCell(""),
+                List.of()
         );
     }
 
-
+    /**
+     * Constructs a {@code TableImpl} instance with the specified {@link SmartWebDriver}
+     * and {@link TableServiceRegistry}.
+     *
+     * @param smartWebDriver  The WebDriver instance for interacting with the table.
+     * @param serviceRegistry The service registry for managing table insertions and filters.
+     */
     protected TableImpl(final SmartWebDriver smartWebDriver,
                         final TableServiceRegistry serviceRegistry) {
         super(smartWebDriver);
         this.serviceRegistry = serviceRegistry;
         this.acceptedValues = List.of(
-            new TableCell(""),
-            List.of()
+                new TableCell(""),
+                List.of()
         );
     }
 
-
+    /**
+     * Reads all rows from the table and maps them to objects of the specified class type.
+     *
+     * @param clazz The class type representing the table rows.
+     * @param <T>   The type of the row representation.
+     * @return A list of objects representing the table rows.
+     */
     @Override
     public final <T> List<T> readTable(final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading entire table as class '%s'", clazz.getSimpleName()));
+        LogUI.step("Reading entire table as class '" + clazz.getSimpleName() + "'");
         return readTableInternal(clazz, null, null, null);
     }
 
-
+    /**
+     * Reads the table with only the specified fields.
+     *
+     * @param clazz  The class type representing the table rows.
+     * @param fields The fields to be extracted from the table.
+     * @param <T>    The type of the row representation.
+     * @return A list of objects representing the table rows with selected fields.
+     */
     @Override
     @SafeVarargs
     public final <T> List<T> readTable(final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading table as class '%s' with fields %s", clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading table as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readTableInternal(clazz, (fields == null) ? null : List.of(fields), null, null);
     }
 
-
+    /**
+     * Reads a specific range of rows from the table.
+     *
+     * @param start The starting row index (inclusive).
+     * @param end   The ending row index (exclusive).
+     * @param clazz The class type representing the table rows.
+     * @param <T>   The type of the row representation.
+     * @return A list of objects representing the selected rows.
+     */
     @Override
     public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading table rows from %d to %d as class '%s'", start, end, clazz.getSimpleName()));
+        LogUI.step("Reading table rows from " + start + " to " + end + " as class '" + clazz.getSimpleName() + "'");
         return readTableInternal(clazz, null, start, end);
     }
 
-
+    /**
+     * Reads a specific range of rows from the table with only the specified fields.
+     *
+     * <p>This method allows extracting a subset of rows from the table between the given indices,
+     * and retrieves only the specified fields from each row.</p>
+     *
+     * @param start  The starting row index (inclusive, 1-based index).
+     * @param end    The ending row index (exclusive, 1-based index).
+     * @param clazz  The class type representing the table rows.
+     * @param fields The fields to be extracted from the table. If not provided, all fields are retrieved.
+     * @param <T>    The type of the row representation.
+     * @return A list of objects representing the selected rows with chosen fields.
+     * @throws IndexOutOfBoundsException if the start or end indices are invalid.
+     */
     @Override
     @SafeVarargs
-    public final <T> List<T> readTable(final int start,
-                                       final int end,
-                                       final Class<T> clazz,
-                                       final TableField<T>... fields) {
+    public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading table rows from %d to %d as class '%s' with fields %s", start, end, clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading table rows from " + start + " to " + end + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readTableInternal(clazz, (fields == null) ? null : Arrays.asList(fields), start, end);
     }
 
-
+    /**
+     * Reads a single row from the table based on the row index.
+     *
+     * @param row   The row index (1-based index).
+     * @param clazz The class type representing the table row.
+     * @param <T>   The type of the row representation.
+     * @return An object representing the row.
+     */
     @Override
     public final <T> T readRow(final int row, final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading row number %d as class '%s'", row, clazz.getSimpleName()));
+        LogUI.step("Reading row number " + row + " as class '" + clazz.getSimpleName() + "'");
         return readRowInternal(row - 1, clazz, null);
     }
 
-
+    /**
+     * Reads a row that matches the provided search criteria.
+     *
+     * @param searchCriteria A list of values to match in the row.
+     * @param clazz          The class type representing the table row.
+     * @param <T>            The type of the row representation.
+     * @return The first matching row.
+     */
     @Override
     public final <T> T readRow(final List<String> searchCriteria, final Class<T> clazz) {
+        Allure.step(String.format("[UI - Table] Reading row matching criteria %s as class '%s'", searchCriteria, clazz.getSimpleName()));
+        LogUI.step("Reading row matching criteria " + searchCriteria + " as class '" + clazz.getSimpleName() + "'");
         return readRowInternal(searchCriteria, clazz, null);
     }
 
-
+    /**
+     * Reads a specific row from the table, retrieving only the specified fields.
+     *
+     * <p>This method fetches a single row from the table based on its index (1-based),
+     * and extracts only the specified fields if provided. If no fields are provided,
+     * all fields of the row are retrieved.</p>
+     *
+     * @param row    The row index to be read (1-based index).
+     * @param clazz  The class type representing the table row structure.
+     * @param fields The specific fields to be extracted from the row. If not provided, all fields are retrieved.
+     * @param <T>    The type representing the table row.
+     * @return An object representing the row with the selected fields.
+     * @throws IndexOutOfBoundsException if the row index is out of range.
+     */
     @Override
     @SafeVarargs
     public final <T> T readRow(final int row, final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading row number %d as class '%s' with fields %s", row, clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading row number " + row + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readRowInternal(row - 1, clazz, fields);
     }
 
-
+    /**
+     * Reads a row from the table that matches the provided search criteria, retrieving only specified fields.
+     *
+     * <p>This method searches for a row in the table that contains all the specified search criteria.
+     * It then extracts only the specified fields if provided. If no fields are provided,
+     * all fields of the row are retrieved.</p>
+     *
+     * @param searchCriteria A list of strings representing the criteria that must be matched within the row.
+     * @param clazz          The class type representing the table row structure.
+     * @param fields         The specific fields to be extracted from the matched row.
+     * @param <T>            The type representing the table row.
+     * @return An object representing the matching row with the selected fields.
+     * @throws NotFoundException if no row matches the search criteria.
+     */
     @Override
     @SafeVarargs
-    public final <T> T readRow(final List<String> searchCriteria,
-                               final Class<T> clazz,
-                               final TableField<T>... fields) {
+    public final <T> T readRow(final List<String> searchCriteria, final Class<T> clazz, final TableField<T>... fields) {
+        Allure.step(String.format("[UI - Table] Reading row matching criteria %s as class '%s' with fields %s", searchCriteria, clazz.getSimpleName(), Arrays.toString(fields)));
+        LogUI.step("Reading row matching criteria " + searchCriteria + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
         return readRowInternal(searchCriteria, clazz, fields);
     }
 
-
+    /**
+     * Inserts a value into a specific cell in the table row that matches the given search criteria.
+     *
+     * <p>This method locates a row in the table based on the provided search criteria and
+     * inserts the specified values into a particular field in that row.</p>
+     *
+     * @param searchCriteria A list of strings used to identify the target row.
+     * @param rowClass       The class type representing the table row structure.
+     * @param field          The specific field within the row where the value should be inserted.
+     * @param cellIndex      The index of the cell (1-based) where the value should be inserted.
+     * @param values         The values to be inserted into the specified cell.
+     * @param <T>            The type representing the table row.
+     * @throws NotFoundException         if no row matches the search criteria.
+     * @throws IndexOutOfBoundsException if the cell index is out of range.
+     */
     @Override
-    public final <T> void insertCellValue(final List<String> searchCriteria,
-                                          final Class<T> rowClass,
-                                          final TableField<T> field,
-                                          final int cellIndex,
-                                          final String... values) {
+    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> rowClass, final TableField<T> field, final int cellIndex, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value in row matching criteria %s for class '%s', field '%s', cell index %d", searchCriteria, rowClass.getSimpleName(), field, cellIndex));
+        LogUI.step("Inserting cell value in row matching criteria " + searchCriteria + " for class '" + rowClass.getSimpleName() + "', field '" + field + "', cell index " + cellIndex);
         insertCellValueInternal(searchCriteria, rowClass, field, cellIndex, values);
     }
 
-
+    /**
+     * Inserts a value into a specific cell within a row.
+     *
+     * @param row       The row index (1-based index).
+     * @param rowClass  The class type representing the table row.
+     * @param field     The table field to insert the value into.
+     * @param cellIndex The index of the cell in the row (1-based index).
+     * @param values    The values to be inserted.
+     * @param <T>       The type of the row representation.
+     */
     @Override
-    public final <T> void insertCellValue(final int row,
-                                          final Class<T> rowClass,
-                                          final TableField<T> field,
-                                          final int cellIndex,
-                                          final String... values) {
+    public final <T> void insertCellValue(final int row, final Class<T> rowClass, final TableField<T> field, final int cellIndex, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value in row %d for class '%s', field '%s', cell index %d", row, rowClass.getSimpleName(), field, cellIndex));
+        LogUI.step("Inserting cell value in row " + row + " for class '" + rowClass.getSimpleName() + "', field '" + field + "', cell index " + cellIndex);
         insertCellValueInternal(row - 1, rowClass, field, cellIndex, values);
     }
 
-
+    /**
+     * Inserts values into multiple cells in the table row that matches the given search criteria.
+     *
+     * <p>This method locates a row in the table based on the provided search criteria and inserts values
+     * into multiple fields of that row by iterating over the fields of the provided data object.</p>
+     *
+     * @param searchCriteria A list of strings used to identify the target row.
+     * @param tClass         The class type representing the table row structure.
+     * @param data           The object containing the values to be inserted into the corresponding row fields.
+     * @param <T>            The type representing the table row.
+     * @throws NotFoundException if no row matches the search criteria.
+     */
     @Override
     public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final T data) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) using data for row matching criteria %s for class '%s'", searchCriteria, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) using data for row matching criteria " + searchCriteria + " for class '" + tClass.getSimpleName() + "'");
         processInsertCellValue((fieldInvoker, strings) -> {
             if (strings.length == 1) {
                 insertCellValue(searchCriteria, tClass, fieldInvoker, 1, strings);
@@ -152,24 +291,62 @@ public abstract class TableImpl extends BaseComponent implements Table {
         }, tClass, data);
     }
 
-
+    /**
+     * Inserts values into a specific cell in the table row that matches the given search criteria.
+     *
+     * <p>This method finds a row in the table based on the provided search criteria and inserts values
+     * into the specified field of that row.</p>
+     *
+     * @param searchCriteria A list of strings used to identify the target row.
+     * @param tClass         The class type representing the table row structure.
+     * @param field          The specific field within the row where the values should be inserted.
+     * @param values         The values to be inserted into the specified field.
+     * @param <T>            The type representing the table row.
+     * @throws NotFoundException if no row matches the search criteria.
+     */
     @Override
-    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass,
-                                          final TableField<T> field,
-                                          final String... values) {
+    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final TableField<T> field, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) into field '%s' for row matching criteria %s for class '%s'", field, searchCriteria, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) into field '" + field + "' for row matching criteria " + searchCriteria + " for class '" + tClass.getSimpleName() + "'");
         Table.super.insertCellValue(searchCriteria, tClass, field, values);
     }
 
-
+    /**
+     * Inserts values into a specific cell in the table row at the given row index.
+     *
+     * <p>This method finds the row in the table based on the provided row index (1-based)
+     * and inserts values into the specified field of that row.</p>
+     *
+     * @param row    The row index where the values should be inserted (1-based index).
+     * @param tClass The class type representing the table row structure.
+     * @param field  The specific field within the row where the values should be inserted.
+     * @param values The values to be inserted into the specified field.
+     * @param <T>    The type representing the table row.
+     * @throws IndexOutOfBoundsException if the row index is out of range.
+     */
     @Override
-    public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field,
-                                          final String... values) {
+    public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field, final String... values) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) into field '%s' for row %d for class '%s'", field, row, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) into field '" + field + "' for row " + row + " for class '" + tClass.getSimpleName() + "'");
         Table.super.insertCellValue(row, tClass, field, values);
     }
 
-
+    /**
+     * Inserts values into multiple cells in the table row at the given row index.
+     *
+     * <p>This method finds the row in the table based on the provided row index (1-based)
+     * and inserts values into multiple fields of that row by iterating over the fields of the provided data object.</p>
+     *
+     * @param row    The row index where the values should be inserted (1-based index).
+     * @param tClass The class type representing the table row structure.
+     * @param data   The object containing the values to be inserted into the corresponding row fields.
+     * @param <T>    The type representing the table row.
+     * @throws IndexOutOfBoundsException if the row index is out of range.
+     */
     @Override
     public final <T> void insertCellValue(final int row, final Class<T> tClass, final T data) {
+        Allure.step(String.format("[UI - Table] Inserting cell value(s) using data for row %d for class '%s'", row, tClass.getSimpleName()));
+        LogUI.step("Inserting cell value(s) using data for row " + row + " for class '" + tClass.getSimpleName() + "'");
         processInsertCellValue((fieldInvoker, strings) -> {
             if (strings.length == 1) {
                 insertCellValue(row, tClass, fieldInvoker, 1, strings);
@@ -181,18 +358,24 @@ public abstract class TableImpl extends BaseComponent implements Table {
         }, tClass, data);
     }
 
-
+    /**
+     * Filters a table column based on a specified filtering strategy.
+     *
+     * @param tclass         The class type representing the table row.
+     * @param column         The table field representing the column to be filtered.
+     * @param filterStrategy The filtering strategy to be applied.
+     * @param values         The values used for filtering.
+     * @param <T>            The type of the row representation.
+     */
     @Override
-    public final <T> void filterTable(final Class<T> tclass, final TableField<T> column,
-                                      final FilterStrategy filterStrategy,
-                                      final String... values) {
-        final Map<String, List<CellLocator>> tableSectionLocatorsMap =
-            getTableSectionLocatorsMap(tclass, List.of(column));
+    public final <T> void filterTable(final Class<T> tclass, final TableField<T> column, final FilterStrategy filterStrategy, final String... values) {
+        Allure.step(String.format("[UI - Table] Filtering table for class '%s' on column '%s' using strategy '%s' with values %s", tclass.getSimpleName(), column, filterStrategy, Arrays.toString(values)));
+        LogUI.step("Filtering table for class '" + tclass.getSimpleName() + "' on column '" + column + "' using strategy '" + filterStrategy + "' with values " + Arrays.toString(values));
+        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass, List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
-                                                                    .findFirst()
-                                                                    .orElseThrow(() -> new IllegalStateException(
-                                                                        "No locator found for the provided field."));
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No locator found for the provided field."));
 
         final String tableSection = firstEntry.getKey();
         final CellLocator cellLocator = firstEntry.getValue().get(0);
@@ -203,18 +386,23 @@ public abstract class TableImpl extends BaseComponent implements Table {
         filterCells(cellLocator, headerRow, filterStrategy, values);
     }
 
-
+    /**
+     * Sorts a table column based on a specified sorting strategy.
+     *
+     * @param tclass          The class type representing the table row.
+     * @param column          The table field representing the column to be sorted.
+     * @param sortingStrategy The sorting strategy to be applied.
+     * @param <T>             The type of the row representation.
+     */
     @Override
-    public final <T> void sortTable(final Class<T> tclass, final TableField<T> column,
-                                    final SortingStrategy sortingStrategy) {
-
-        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass,
-            List.of(column));
+    public final <T> void sortTable(final Class<T> tclass, final TableField<T> column, final SortingStrategy sortingStrategy) {
+        Allure.step(String.format("[UI - Table] Sorting table for class '%s' on column '%s' using sorting strategy '%s'", tclass.getSimpleName(), column, sortingStrategy));
+        LogUI.step("Sorting table for class '" + tclass.getSimpleName() + "' on column '" + column + "' using sorting strategy '" + sortingStrategy + "'");
+        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass, List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
-                                                                    .findFirst()
-                                                                    .orElseThrow(() -> new IllegalStateException(
-                                                                        "No locator found for the provided field."));
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No locator found for the provided field."));
 
         final String tableSection = firstEntry.getKey();
         final CellLocator cellLocator = firstEntry.getValue().get(0);
@@ -225,23 +413,59 @@ public abstract class TableImpl extends BaseComponent implements Table {
         sortTable(headerRow.findSmartElement(cellLocator.getHeaderCellLocator()), sortingStrategy);
     }
 
-
+    /**
+     * Retrieves the table container element using the specified locator.
+     *
+     * <p>This method is protected to allow subclasses to modify or override the way the table container is located.
+     * It ensures that the SmartWebElement representing the table container is retrieved correctly.</p>
+     *
+     * @param tableContainerLocator The locator used to find the table container.
+     * @return A {@link SmartWebElement} representing the table container.
+     */
     protected SmartWebElement getTableContainer(By tableContainerLocator) {
         return driver.findSmartElement(tableContainerLocator);
     }
 
-
+    /**
+     * Retrieves all rows from the specified table container.
+     *
+     * <p>This method waits until all rows are visible before retrieving them. It can be overridden by subclasses
+     * to customize how table rows are retrieved.</p>
+     *
+     * @param tableContainer   The SmartWebElement representing the table container.
+     * @param tableRowsLocator The locator used to find the table rows.
+     * @param section          The table section from which rows should be retrieved (optional).
+     * @return A list of {@link SmartWebElement} representing the table rows.
+     */
     protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
         driver.getWait().until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(tableContainer, tableRowsLocator));
         return tableContainer.findSmartElements(tableRowsLocator);
     }
 
-
+    /**
+     * Retrieves the header row of a table.
+     *
+     * <p>This method locates and returns the header row within the given table container. It can be
+     * overridden by subclasses to implement custom header retrieval logic.</p>
+     *
+     * @param tableContainer   The SmartWebElement representing the table container.
+     * @param headerRowLocator The locator used to find the header row.
+     * @param tableSection     The section of the table where the header row is located (optional).
+     * @return A {@link SmartWebElement} representing the header row.
+     */
     protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
         return tableContainer.findSmartElement(headerRowLocator);
     }
 
-
+    /**
+     * Sorts the table based on the given header cell and sorting strategy.
+     *
+     * <p>This method provides an extension point for subclasses to define how sorting is applied to a table.
+     * It can be overridden to implement specific sorting logic.</p>
+     *
+     * @param headerCell      The SmartWebElement representing the header cell to be clicked for sorting.
+     * @param sortingStrategy The {@link SortingStrategy} defining the sorting direction (e.g., ascending or descending).
+     */
     protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
 
     }
@@ -255,14 +479,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
         SmartWebElement tableContainer = getTableContainer(tableLocators.getTableContainerLocator());
 
         final Map<String, List<CellLocator>> tableSectionLocatorsMap =
-            getTableSectionLocatorsMap(rowClass, fields);
+                getTableSectionLocatorsMap(rowClass, fields);
 
         final Map<String, List<SmartWebElement>> rowsMap =
-            tableSectionLocatorsMap.keySet().stream()
-                .collect(Collectors.toMap(
-                    Function.identity(),
-                    section -> readRowsInRange(tableContainer, tableLocators.getTableRowsLocator(), section, start, end)
-                ));
+                tableSectionLocatorsMap.keySet().stream()
+                        .collect(Collectors.toMap(
+                                Function.identity(),
+                                section -> readRowsInRange(tableContainer, tableLocators.getTableRowsLocator(), section, start, end)
+                        ));
 
         return mergeRowsAcrossSections(rowsMap, tableSectionLocatorsMap, rowClass);
     }
@@ -315,16 +539,16 @@ public abstract class TableImpl extends BaseComponent implements Table {
         TableLocators tableLocators = getTableLocators(rowClass);
         SmartWebElement tableContainer = getTableContainer(tableLocators.getTableContainerLocator());
         final Map<String, List<CellLocator>> locatorsMap =
-            getTableSectionLocatorsMap(rowClass, (fields == null) ? null : Arrays.asList(fields));
+                getTableSectionLocatorsMap(rowClass, (fields == null) ? null : Arrays.asList(fields));
 
         final Map<String, SmartWebElement> rowElementMap = locatorsMap.keySet()
-                                                               .stream()
-                                                               .collect(Collectors.toMap(
-                                                                   Function.identity(),
-                                                                   section -> findRowElement(tableContainer,
-                                                                       tableLocators.getTableRowsLocator(),
-                                                                       rowIdentifier, section)
-                                                               ));
+                .stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        section -> findRowElement(tableContainer,
+                                tableLocators.getTableRowsLocator(),
+                                rowIdentifier, section)
+                ));
 
         T mergedRow = null;
         for (Map.Entry<String, SmartWebElement> entry : rowElementMap.entrySet()) {
@@ -344,7 +568,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
         if (rowIdentifier instanceof Integer rowIndex) {
             if (rowIndex < 0 || rowIndex >= rows.size()) {
                 throw new IndexOutOfBoundsException(String.format(
-                    "Requested row index %d is out of valid range [1..%d]", rowIndex + 1, rows.size()
+                        "Requested row index %d is out of valid range [1..%d]", rowIndex + 1, rows.size()
                 ));
             }
             return rows.get(rowIndex);
@@ -358,15 +582,15 @@ public abstract class TableImpl extends BaseComponent implements Table {
 
     private SmartWebElement findRowByCriteria(final List<?> searchCriteria, final List<SmartWebElement> rows) {
         return rows.stream()
-                   .filter(row -> searchCriteria.stream().allMatch(
-                       criterion -> Optional.ofNullable(row.getAttribute("innerText"))
-                                        .orElse("")
-                                        .contains(String.valueOf(criterion))
-                   ))
-                   .findFirst()
-                   .orElseThrow(() -> new NotFoundException(
-                       "No row found containing all criteria: " + searchCriteria
-                   ));
+                .filter(row -> searchCriteria.stream().allMatch(
+                        criterion -> Optional.ofNullable(row.getAttribute("innerText"))
+                                .orElse("")
+                                .contains(String.valueOf(criterion))
+                ))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "No row found containing all criteria: " + searchCriteria
+                ));
     }
 
 
@@ -395,8 +619,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
         } else {
             final List<SmartWebElement> cellElements = rowElement.findSmartElements(locator);
             final List<TableCell> tableCells = cellElements.stream()
-                                                   .map(elem -> buildTableCell(elem, null, textLocator))
-                                                   .collect(Collectors.toList());
+                    .map(elem -> buildTableCell(elem, null, textLocator))
+                    .collect(Collectors.toList());
             invokeSetter(rowInstance, fieldName, tableCells);
         }
     }
@@ -406,8 +630,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                      final By cellLocator,
                                      final By textLocator) {
         final SmartWebElement cellElement = (cellLocator == null)
-                                                ? container
-                                                : container.findSmartElement(cellLocator);
+                ? container
+                : container.findSmartElement(cellLocator);
 
         final String text = cellElement.findSmartElement(textLocator).getText();
         return new TableCell(cellElement, text);
@@ -470,17 +694,17 @@ public abstract class TableImpl extends BaseComponent implements Table {
             setter.invoke(targetObject, value);
         } catch (NoSuchMethodException e) {
             final String message = String.format(
-                "Setter not found: %s(%s) in class %s",
-                setterName,
-                paramType.getSimpleName(),
-                targetObject.getClass().getName()
+                    "Setter not found: %s(%s) in class %s",
+                    setterName,
+                    paramType.getSimpleName(),
+                    targetObject.getClass().getName()
             );
             LogUI.error(message, e);
         } catch (IllegalAccessException | InvocationTargetException e) {
             final String message = String.format(
-                "Failed to invoke setter: %s on %s",
-                setterName,
-                targetObject.getClass().getName()
+                    "Failed to invoke setter: %s on %s",
+                    setterName,
+                    targetObject.getClass().getName()
             );
             LogUI.error(message, e);
         }
@@ -497,7 +721,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
         }
 
         return cellLocators.stream()
-                   .collect(Collectors.groupingBy(CellLocator::getTableSection));
+                .collect(Collectors.groupingBy(CellLocator::getTableSection));
     }
 
 
@@ -513,40 +737,40 @@ public abstract class TableImpl extends BaseComponent implements Table {
         final List<Field> validFields;
         if (fields.isEmpty()) {
             validFields = Arrays.stream(declaredFields)
-                              .filter(f -> f.isAnnotationPresent(TableCellLocator.class))
-                              .toList();
+                    .filter(f -> f.isAnnotationPresent(TableCellLocator.class))
+                    .toList();
         } else {
             validFields = Arrays.stream(declaredFields)
-                              .filter(f -> {
-                                  boolean hasValue = false;
-                                  try {
-                                      f.setAccessible(true);
-                                      hasValue = (f.get(rowInstance) != null);
-                                      if (hasValue && !f.isAnnotationPresent(TableCellLocator.class)) {
-                                          throw new IllegalArgumentException(
-                                              "Field " + f.getName()
-                                                  + " is missing a @TableCellLocator annotation."
-                                          );
-                                      }
-                                  } catch (IllegalAccessException ex) {
-                                      LogUI.error("Cannot access field: {}", f.getName(), ex);
-                                  }
-                                  return hasValue;
-                              })
-                              .toList();
+                    .filter(f -> {
+                        boolean hasValue = false;
+                        try {
+                            f.setAccessible(true);
+                            hasValue = (f.get(rowInstance) != null);
+                            if (hasValue && !f.isAnnotationPresent(TableCellLocator.class)) {
+                                throw new IllegalArgumentException(
+                                        "Field " + f.getName()
+                                                + " is missing a @TableCellLocator annotation."
+                                );
+                            }
+                        } catch (IllegalAccessException ex) {
+                            LogUI.error("Cannot access field: {}", f.getName(), ex);
+                        }
+                        return hasValue;
+                    })
+                    .toList();
         }
 
         final boolean validSyntax = validFields.stream()
-                                        .allMatch(
-                                            f -> isListOfTableCell(f) || TableCell.class.isAssignableFrom(f.getType()));
+                .allMatch(
+                        f -> isListOfTableCell(f) || TableCell.class.isAssignableFrom(f.getType()));
         if (!validSyntax) {
             LogUI.error("Some fields are not TableCell or List<TableCell>.");
             throw new RuntimeException("Invalid field type for table cell usage.");
         }
 
         return validFields.stream()
-                   .map(this::mapToCellLocator)
-                   .toList();
+                .map(this::mapToCellLocator)
+                .toList();
     }
 
 
@@ -572,37 +796,37 @@ public abstract class TableImpl extends BaseComponent implements Table {
         final By cellHeaderBy = builder.buildIt(annotation.headerCellLocator(), null);
 
         final CellInsertionComponent cellInsertionComponent = Optional.ofNullable(
-                field.getAnnotation(CellInsertion.class)
-            ).map(ci -> new CellInsertionComponent(ci.type(), ci.componentType(), ci.order()))
-                                                                  .orElse(null);
+                        field.getAnnotation(CellInsertion.class)
+                ).map(ci -> new CellInsertionComponent(ci.type(), ci.componentType(), ci.order()))
+                .orElse(null);
 
         final Class<? extends CellInsertionFunction> customCellInsertion = Optional.ofNullable(
-            field.getAnnotation(CustomCellInsertion.class)
+                field.getAnnotation(CustomCellInsertion.class)
         ).map(CustomCellInsertion::insertionFunction).orElse(null);
 
 
         final CellFilterComponent cellFilterComponent = Optional.ofNullable(
-                field.getAnnotation(CellFilter.class)
-            ).map(ci -> new CellFilterComponent(ci.type(), ci.componentType()))
-                                                            .orElse(null);
+                        field.getAnnotation(CellFilter.class)
+                ).map(ci -> new CellFilterComponent(ci.type(), ci.componentType()))
+                .orElse(null);
 
         final Class<? extends CellFilterFunction> customCellFilter = Optional.ofNullable(
-            field.getAnnotation(CustomCellFilter.class)
+                field.getAnnotation(CustomCellFilter.class)
         ).map(CustomCellFilter::cellFilterFunction).orElse(null);
 
         final boolean isCollection = Collection.class.isAssignableFrom(field.getType());
 
         return new CellLocator(
-            field.getName(),
-            cellBy,
-            cellTextBy,
-            cellHeaderBy,
-            isCollection,
-            annotation.tableSection(),
-            cellInsertionComponent,
-            customCellInsertion,
-            cellFilterComponent,
-            customCellFilter
+                field.getName(),
+                cellBy,
+                cellTextBy,
+                cellHeaderBy,
+                isCollection,
+                annotation.tableSection(),
+                cellInsertionComponent,
+                customCellInsertion,
+                cellFilterComponent,
+                customCellFilter
         );
     }
 
@@ -621,7 +845,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
             }
             if (!success) {
                 final String msg = "No accepted value could be applied via FieldInvoker. "
-                                       + "Possible illegal field or setter in " + instance.getClass().getName();
+                        + "Possible illegal field or setter in " + instance.getClass().getName();
                 LogUI.error(msg);
                 throw new IllegalArgumentException(msg);
             }
@@ -637,11 +861,11 @@ public abstract class TableImpl extends BaseComponent implements Table {
         TableLocators tableLocators = getTableLocators(rowClass);
         SmartWebElement tableContainer = getTableContainer(tableLocators.getTableContainerLocator());
         final Map<String, List<CellLocator>> tableSectionLocatorsMap =
-            getTableSectionLocatorsMap(rowClass, List.of(field));
+                getTableSectionLocatorsMap(rowClass, List.of(field));
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
-                                                                    .findFirst()
-                                                                    .orElseThrow(() -> new IllegalStateException(
-                                                                        "No locator found for the provided field."));
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "No locator found for the provided field."));
 
         final String tableSection = firstEntry.getKey();
         final CellLocator cellLocator = firstEntry.getValue().get(0);
@@ -649,13 +873,13 @@ public abstract class TableImpl extends BaseComponent implements Table {
         final SmartWebElement rowElement;
         if (rowIdentifier instanceof List<?> criteria) {
             rowElement = findRowByCriteria(criteria,
-                getRows(tableContainer, tableLocators.getTableRowsLocator(), tableSection));
+                    getRows(tableContainer, tableLocators.getTableRowsLocator(), tableSection));
         } else if (rowIdentifier instanceof Integer rowIndex) {
             final List<SmartWebElement> rows = getRows(tableContainer, tableLocators.getTableRowsLocator(),
-                tableSection);
+                    tableSection);
             if (rowIndex < 0 || rowIndex >= rows.size()) {
                 throw new IndexOutOfBoundsException(String.format(
-                    "Requested row index %d is out of valid range [1..%d]", rowIndex + 1, rows.size()
+                        "Requested row index %d is out of valid range [1..%d]", rowIndex + 1, rows.size()
                 ));
             }
             rowElement = rows.get(rowIndex);
@@ -676,14 +900,14 @@ public abstract class TableImpl extends BaseComponent implements Table {
 
         if (component == null && customFunction == null) {
             throw new RuntimeException(
-                "No table cell insertion method provided for field: " + cellLocator.getFieldName()
+                    "No table cell insertion method provided for field: " + cellLocator.getFieldName()
             );
         }
 
         final List<SmartWebElement> cells = rowElement.findSmartElements(cellLocator.getCellLocator());
         if (cells.isEmpty() || cellIndex <= 0 || cellIndex > cells.size()) {
             throw new RuntimeException(String.format(
-                "Invalid cell index: %d for locator: %s", cellIndex, cellLocator.getCellLocator()
+                    "Invalid cell index: %d for locator: %s", cellIndex, cellLocator.getCellLocator()
             ));
         }
 
@@ -702,19 +926,19 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                       final String[] values) {
         if (serviceRegistry == null) {
             throw new IllegalStateException(
-                "Your instance of table is not having registered services. You can't use CellInsertion annotation.");
+                    "Your instance of table is not having registered services. You can't use CellInsertion annotation.");
         }
         try {
             final Class<? extends ComponentType> type = component.getType();
             final Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
-                type, getUiConfig().projectPackage()
+                    type, getUiConfig().projectPackage()
             );
             final Enum<?> componentInstance = Enum.valueOf(enumClass, component.getComponentType());
             final TableInsertion service = serviceRegistry.getTableService(type);
             service.tableInsertion(targetCell, (ComponentType) componentInstance, values);
         } catch (Exception e) {
             throw new RuntimeException(
-                "Failed to insert using component: " + component.getComponentType(), e
+                    "Failed to insert using component: " + component.getComponentType(), e
             );
         }
     }
@@ -730,7 +954,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
             functionInstance.accept(targetCell, values);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(
-                "Failed to instantiate custom cell insertion function: " + customFunction.getName(), e
+                    "Failed to instantiate custom cell insertion function: " + customFunction.getName(), e
             );
         }
     }
@@ -745,7 +969,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
 
         if (component == null && customFunction == null) {
             throw new RuntimeException(
-                "No table cell insertion method provided for field: " + cellLocator.getFieldName()
+                    "No table cell insertion method provided for field: " + cellLocator.getFieldName()
             );
         }
 
@@ -765,19 +989,19 @@ public abstract class TableImpl extends BaseComponent implements Table {
                                            final String[] values) {
         if (serviceRegistry == null) {
             throw new IllegalStateException(
-                "Your instance of table is not having registered services. You can't use CellFilter annotation.");
+                    "Your instance of table is not having registered services. You can't use CellFilter annotation.");
         }
         try {
             final Class<? extends ComponentType> type = component.getType();
             final Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
-                type, getUiConfig().projectPackage()
+                    type, getUiConfig().projectPackage()
             );
             final Enum<?> componentInstance = Enum.valueOf(enumClass, component.getComponentType());
             final TableFilter service = serviceRegistry.getFilterService(type);
             service.tableFilter(targetCell, (ComponentType) componentInstance, filterStrategy, values);
         } catch (Exception e) {
             throw new RuntimeException(
-                "Failed to filter using component: " + component.getComponentType(), e
+                    "Failed to filter using component: " + component.getComponentType(), e
             );
         }
     }
@@ -791,7 +1015,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
             functionInstance.accept(targetCell, filterStrategy, values);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(
-                "Failed to instantiate custom cell filter function: " + customFunction.getName(), e
+                    "Failed to instantiate custom cell filter function: " + customFunction.getName(), e
             );
         }
     }
@@ -805,30 +1029,30 @@ public abstract class TableImpl extends BaseComponent implements Table {
 
     private <T> Map<TableField<T>, String[]> prepareFieldInvokersMap(Class<T> tClass, T data) {
         return Arrays.stream(tClass.getDeclaredFields())
-                   .filter(field -> field.isAnnotationPresent(CellInsertion.class) || field.isAnnotationPresent(
-                       CustomCellInsertion.class))
-                   .filter(field -> isListOfTableCell(field) || TableCell.class.isAssignableFrom(field.getType()))
-                   .map(field -> {
-                       int order = field.isAnnotationPresent(CellInsertion.class)
-                                       ? field.getAnnotation(CellInsertion.class).order()
-                                       : field.getAnnotation(CustomCellInsertion.class).order();
+                .filter(field -> field.isAnnotationPresent(CellInsertion.class) || field.isAnnotationPresent(
+                        CustomCellInsertion.class))
+                .filter(field -> isListOfTableCell(field) || TableCell.class.isAssignableFrom(field.getType()))
+                .map(field -> {
+                    int order = field.isAnnotationPresent(CellInsertion.class)
+                            ? field.getAnnotation(CellInsertion.class).order()
+                            : field.getAnnotation(CustomCellInsertion.class).order();
 
-                       TableField<T> fieldInvoker = (instance, value) -> {
-                           field.setAccessible(true);
-                           field.set(instance, value);
-                       };
+                    TableField<T> fieldInvoker = (instance, value) -> {
+                        field.setAccessible(true);
+                        field.set(instance, value);
+                    };
 
-                       String[] stringValues = convertFieldValueToStrings(field, data);
+                    String[] stringValues = convertFieldValueToStrings(field, data);
 
-                       return new OrderedFieldInvokerAndValues<>(fieldInvoker, order, stringValues);
-                   })
-                   .sorted(Comparator.comparingInt(OrderedFieldInvokerAndValues::order))
-                   .collect(Collectors.toMap(
-                       OrderedFieldInvokerAndValues::fieldInvoker,
-                       OrderedFieldInvokerAndValues::stringValues,
-                       (v1, v2) -> v1,
-                       LinkedHashMap::new
-                   ));
+                    return new OrderedFieldInvokerAndValues<>(fieldInvoker, order, stringValues);
+                })
+                .sorted(Comparator.comparingInt(OrderedFieldInvokerAndValues::order))
+                .collect(Collectors.toMap(
+                        OrderedFieldInvokerAndValues::fieldInvoker,
+                        OrderedFieldInvokerAndValues::stringValues,
+                        (v1, v2) -> v1,
+                        LinkedHashMap::new
+                ));
     }
 
 
@@ -840,11 +1064,11 @@ public abstract class TableImpl extends BaseComponent implements Table {
                 return cell.getText() == null ? new String[0] : new String[]{cell.getText()};
             } else if (value instanceof List<?> list) {
                 return list.stream()
-                           .filter(TableCell.class::isInstance)
-                           .map(TableCell.class::cast)
-                           .map(TableCell::getText)
-                           .filter(Objects::nonNull)
-                           .toArray(String[]::new);
+                        .filter(TableCell.class::isInstance)
+                        .map(TableCell.class::cast)
+                        .map(TableCell::getText)
+                        .filter(Objects::nonNull)
+                        .toArray(String[]::new);
             }
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Unable to access field: " + field.getName(), e);
@@ -854,9 +1078,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
 
 
     private record OrderedFieldInvokerAndValues<T>(
-        TableField<T> fieldInvoker,
-        int order,
-        String[] stringValues
+            TableField<T> fieldInvoker,
+            int order,
+            String[] stringValues
     ) {
 
     }
@@ -866,7 +1090,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
         TableInfo annotation = clazz.getAnnotation(TableInfo.class);
         if (annotation == null) {
             throw new IllegalArgumentException(
-                "Your class: " + clazz.getSimpleName() + "is missing @TableInfo annotation for the table container");
+                    "Your class: " + clazz.getSimpleName() + "is missing @TableInfo annotation for the table container");
         }
         final FindBy.FindByBuilder builder = new FindBy.FindByBuilder();
         By tableContainerLocator = builder.buildIt(annotation.tableContainerLocator(), null);

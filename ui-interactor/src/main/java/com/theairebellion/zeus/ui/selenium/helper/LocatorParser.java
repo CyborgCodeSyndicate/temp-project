@@ -14,11 +14,27 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for parsing and handling locators in Selenium.
+ * <p>
+ * This class provides methods for extracting locators from exception messages,
+ * updating WebElement references, and converting locator strings into By objects.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class LocatorParser {
 
     private static final String LOCATOR_NOT_FOUND_MESSAGE = "Locator not found";
     private static final String NO_MESSAGE_AVAILABLE = "No message available";
 
+    /**
+     * Updates the WebElement reference by parsing locators from the element string representation.
+     *
+     * @param driver  The WebDriver instance.
+     * @param element The SmartWebElement to relocate.
+     * @return A newly located SmartWebElement.
+     */
     public static SmartWebElement updateWebElement(WebDriver driver, SmartWebElement element) {
         LogUI.extended("Element: '{}' is being relocated.", element.toString());
         List<By> locatorsList = parseLocators(element.toString());
@@ -26,6 +42,12 @@ public class LocatorParser {
                 new ByChained(locatorsList.toArray(new By[0])), 10);
     }
 
+    /**
+     * Extracts the blocking element locator from an exception message.
+     *
+     * @param exceptionMessage The exception message containing locator details.
+     * @return The XPath locator of the blocking element.
+     */
     public static String extractBlockingElementLocator(String exceptionMessage) {
         String pattern = "Other element would receive the click: <(\\w+)([^>]*)>";
         Matcher matcher = Pattern.compile(pattern).matcher(exceptionMessage);
@@ -54,6 +76,12 @@ public class LocatorParser {
         return null;
     }
 
+    /**
+     * Extracts a locator from a given array of arguments.
+     *
+     * @param args The array containing locator arguments.
+     * @return The extracted By locator, or null if not found.
+     */
     public static By extractLocator(Object[] args) {
         if (args != null && args.length > 0 && args[0] instanceof By) {
             return (By) args[0];
@@ -61,6 +89,12 @@ public class LocatorParser {
         return null;
     }
 
+    /**
+     * Extracts a locator from an exception message.
+     *
+     * @param message The exception message.
+     * @return The extracted locator string, or a default message if not found.
+     */
     public static String extractLocatorFromMessage(String message) {
         if (message == null) return NO_MESSAGE_AVAILABLE;
         String locatorPattern = "By\\.(\\w+)\\((.*?)\\)";
@@ -69,6 +103,14 @@ public class LocatorParser {
         return matcher.find() ? matcher.group() : LOCATOR_NOT_FOUND_MESSAGE;
     }
 
+    /**
+     * Retrieves detailed information about a WebElement.
+     *
+     * @param element   The target WebElement.
+     * @param outerHTML The outer HTML representation of the element.
+     * @param innerHTML The inner HTML representation of the element.
+     * @return A formatted string with element details.
+     */
     public static String getElementDetails(WebElement element, String outerHTML, String innerHTML) {
         String tag = element.getTagName();
         String text = element.getText();
@@ -76,6 +118,12 @@ public class LocatorParser {
                 tag, text, outerHTML, innerHTML);
     }
 
+    /**
+     * Parses locators from a locator string representation.
+     *
+     * @param locatorString The string representation of locators.
+     * @return A list of By locators extracted from the string.
+     */
     private static List<By> parseLocators(String locatorString) {
         String[] parts = locatorString.split("->");
         List<By> byList = new ArrayList<>();
@@ -93,6 +141,14 @@ public class LocatorParser {
         return byList;
     }
 
+    /**
+     * Adds a locator to the list if the given key matches a known locator type.
+     *
+     * @param locatorList    The list to which the locator should be added.
+     * @param locatorText    The locator text representation.
+     * @param key            The key representing a locator type.
+     * @param locatorFunction The function to generate a By locator.
+     */
     private static void addLocatorIfMatches(List<By> locatorList, String locatorText, String key,
                                             Function<String, By> locatorFunction) {
         if (locatorText.split(":")[0].equals(key)) {
@@ -101,6 +157,12 @@ public class LocatorParser {
         }
     }
 
+    /**
+     * Extracts the value of a locator from its text representation.
+     *
+     * @param locatorText The text containing the locator value.
+     * @return The extracted locator value.
+     */
     private static String extractLocatorValue(String locatorText) {
         String[] parts = locatorText.split(":");
         String value = parts[1].trim();

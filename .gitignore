@@ -19,3 +19,7 @@ build/
 
 **/allure-results/*
 **/instructions.json
+
+
+# Logs
+*.log

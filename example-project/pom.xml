@@ -23,6 +23,7 @@
         <framework.config.file>config</framework.config.file>
         <include.tags>Regression</include.tags>
         <exclude.tags></exclude.tags>
+        <test.env></test.env>
     </properties>
 
     <dependencies>

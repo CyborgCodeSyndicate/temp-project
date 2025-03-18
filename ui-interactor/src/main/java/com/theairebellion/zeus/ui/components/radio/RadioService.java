@@ -11,7 +11,15 @@ import java.util.List;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with radio button elements within a web interface using Selenium.
+ * Provides an interface for interacting with radio button elements in a UI automation framework,
+ * enabling operations like selection, state verification, and retrieving lists of available radios.
+ * By referencing a {@link RadioComponentType} and the {@link #DEFAULT_TYPE}, implementations can
+ * uniformly identify and control radio buttons in various application contexts.
+ *
+ * <p>Classes implementing this interface typically leverage Selenium-based approaches for
+ * container/locator handling, ensuring consistent behavior across different UI designs.</p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface RadioService extends Insertion {
 

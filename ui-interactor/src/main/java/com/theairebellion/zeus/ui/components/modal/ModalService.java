@@ -7,7 +7,19 @@ import org.openqa.selenium.By;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with modal elements within a web interface.
+ * Provides an interface for interacting with modal dialog elements in a UI automation framework,
+ * enabling checks for their presence, retrieval of key content, and closure mechanisms. By using
+ * a {@link ModalComponentType} and the {@link #DEFAULT_TYPE}, implementations can standardize
+ * how modal dialogs are located and controlled.
+ *
+ * <p>Classes implementing this interface will typically rely on Selenium-based operations for
+ * interacting with UI elements, ensuring consistent modal handling regardless of application
+ * structure.</p>
+ *
+ * <p>This interface is suitable for a wide range of modal types and styles, from simple alerts
+ * to more complex dialogs with multiple buttons and sections.</p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface ModalService {
 
