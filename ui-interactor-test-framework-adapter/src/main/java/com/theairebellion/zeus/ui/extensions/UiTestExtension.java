@@ -1,16 +1,20 @@
 package com.theairebellion.zeus.ui.extensions;
 
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.assertion.CustomSoftAssertion;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
+import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
 import com.theairebellion.zeus.ui.authentication.LoginCredentials;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
+import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
@@ -36,16 +40,39 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
+import static com.theairebellion.zeus.framework.allure.StepType.TEST_EXECUTION;
+import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
 
+/**
+ * JUnit 5 test extension for managing UI-related test execution lifecycle.
+ * <p>
+ * This extension provides support for:
+ * <ul>
+ *     <li>Intercepting UI-related HTTP requests using {@link InterceptRequests}.</li>
+ *     <li>Automating login via UI authentication using {@link AuthenticateViaUiAs}.</li>
+ *     <li>Capturing screenshots on test failures and optionally on passed tests.</li>
+ *     <li>Registering UI assertions and handling WebDriver session cleanup.</li>
+ *     <li>Intercepting backend requests in Chrome DevTools.</li>
+ * </ul>
+ * <p>
+ * It integrates with {@link SmartWebDriver} for Selenium interactions and works
+ * with {@link Quest} for structured test execution.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
         TestExecutionExceptionHandler {
 
@@ -67,7 +94,16 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_CLICKABLE, TableAssertionFunctions::validateAllCellsClickable);
     }
 
-
+    /**
+     * Executes actions before the test runs, such as:
+     * <ul>
+     *     <li>Intercepting UI-related requests.</li>
+     *     <li>Setting up authentication via UI.</li>
+     *     <li>Registering custom assertions.</li>
+     * </ul>
+     *
+     * @param context The current test execution context.
+     */
     @Override
     public void beforeTestExecution(final ExtensionContext context) {
         context.getTestMethod().ifPresent(method -> {
@@ -95,6 +131,42 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                 });
     }
 
+    private static void postQuestCreationIntercept(final SuperQuest quest, final String[] urlsForIntercepting) {
+        SmartWebDriver artifact = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
+        WebDriver driver = unwrapDriver(artifact.getOriginal());
+        if (driver instanceof ChromeDriver) {
+            DevTools chromeDevTools = ((ChromeDriver) driver).getDevTools();
+            chromeDevTools.createSession();
+            chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+            chromeDevTools.addListener(Network.responseReceived(), entry -> {
+                int statusCode = entry.getResponse().getStatus();
+                String url = entry.getResponse().getUrl();
+                ApiResponse response = new ApiResponse(url, statusCode);
+
+                if (checkUrl(urlsForIntercepting, url)) {
+                    try {
+                        String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
+
+                        if (body != null && body.length() > 10000) {
+                            response.setBody(String.format(
+                                    "Response body truncated. Original length: %d characters. " +
+                                            "First 100 characters: %s",
+                                    body.length(),
+                                    body.substring(0, 100)
+                            ));
+                        } else {
+                            response.setBody(body);
+                        }
+                    } catch (Exception e) {
+                        response.setBody("Error retrieving response body: " + e.getMessage());
+                    }
+                }
+                addResponseInStorage(quest.getStorage(), response);
+            });
+        } else {
+            throw new IllegalArgumentException("Intercepting Backend Requests is only acceptable with Chrome browser");
+        }
+    }
 
     private void processAuthenticateViaUiAsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(AuthenticateViaUiAs.class))
@@ -135,14 +207,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
 
     private static void addResponseInStorage(Storage storage, ApiResponse apiResponse) {
-
         List<ApiResponse> responses = storage.sub(UI).get(RESPONSES, new ParameterizedTypeReference<>() {
         });
         if (responses == null) {
             responses = new ArrayList<>();
         }
         responses.add(apiResponse);
-        storage.sub(UI).put(RESPONSES, responses);
+        storage.sub(UI).put(RESPONSES, apiResponse);
+
+        LogUI.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
     }
 
 
@@ -150,23 +223,44 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         return Arrays.stream(urlsForIntercepting).anyMatch(url::contains);
     }
 
-
+    /**
+     * Executes actions after the test completes, such as:
+     * <ul>
+     *     <li>Taking screenshots if enabled.</li>
+     *     <li>Cleaning up the WebDriver session.</li>
+     * </ul>
+     *
+     * @param context The current test execution context.
+     */
     @Override
     public void afterTestExecution(ExtensionContext context) {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
         WebDriver driver = getWebDriver(decoratorsFactory, context);
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
+            LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName());
+        }
+        List<Object> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES, Object.class);
+        if (!responses.isEmpty()) {
+            String formattedResponses = new ObjectFormatter().formatResponses(Collections.singletonList(responses));
+            Allure.addAttachment("Intercepted Requests", "text/html",
+                    new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
         }
         driver.close();
         driver.quit();
+        LogUI.info("WebDriver closed successfully.");
     }
 
-
+    /**
+     * Handles test execution exceptions by capturing a screenshot and throwing the error.
+     *
+     * @param context   The current test execution context.
+     * @param throwable The exception that occurred during test execution.
+     * @throws Throwable The rethrown exception.
+     */
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        System.err.println("Exception during UI test: " + throwable.getMessage());
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
@@ -190,27 +284,6 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             }
         }
 
-    }
-
-
-    private static void postQuestCreationIntercept(final SuperQuest quest, final String[] urlsForIntercepting) {
-        SmartWebDriver artifact = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
-        WebDriver driver = unwrapDriver(artifact.getOriginal());
-        if (driver instanceof ChromeDriver) {
-            DevTools chromeDevTools = ((ChromeDriver) driver).getDevTools();
-            chromeDevTools.createSession();
-            chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
-            chromeDevTools.addListener(Network.responseReceived(), entry -> {
-                ApiResponse response = new ApiResponse(entry.getResponse().getUrl(), entry.getResponse().getStatus());
-                if (checkUrl(urlsForIntercepting, entry.getResponse().getUrl())) {
-                    String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
-                    response.setBody(body);
-                }
-                addResponseInStorage(quest.getStorage(), response);
-            });
-        } else {
-            throw new IllegalArgumentException("Intercepting Backend Requests is only acceptable with Chrome browser");
-        }
     }
 
 
@@ -246,18 +319,20 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         );
     }
 
-
     private static void takeScreenshot(WebDriver driver, String testName) {
+        if(CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
+            CustomAllureListener.stopParentStep();
+            CustomAllureListener.startParentStep(TEAR_DOWN);
+        }
         try {
             TakesScreenshot screenshot = (TakesScreenshot) driver;
             byte[] screenshotBytes = screenshot.getScreenshotAs(OutputType.BYTES);
             Allure.addAttachment(testName, new ByteArrayInputStream(screenshotBytes));
-            System.out.println("Screenshot taken for: " + testName);
+            LogTest.info("Screenshot taken and stored for: " + testName);
         } catch (Exception e) {
-            System.err.println("Failed to take screenshot: " + e.getMessage());
+            LogUI.error("Failed to take screenshot for test '{}': {}", testName, e.getMessage());
         }
     }
-
 
     private WebDriver getWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
         Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(StoreKeys.QUEST);
@@ -265,7 +340,6 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         SmartWebDriver artifact = superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
         return unwrapDriver(artifact.getOriginal());
     }
-
 
     private static WebDriver unwrapDriver(WebDriver maybeProxy) {
         try {
@@ -275,6 +349,5 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             throw new RuntimeException("Failed to unwrap WebDriver", e);
         }
     }
-
 
 }

@@ -10,7 +10,25 @@ import java.util.List;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with accordion elements within a web interface.
+ * Provides high-level service operations for accordion UI components.
+ * <p>
+ * This interface extends the functionality of {@link Accordion} by offering
+ * default methods that rely on a {@link AccordionComponentType}—either a
+ * user-specified type or a globally configured default. Service methods
+ * include expanding and collapsing accordion panels, checking whether panels
+ * are enabled, and retrieving their text content.
+ * </p>
+ *
+ * <p>
+ * An implementation such as {@code AccordionServiceImpl} internally delegates
+ * to the framework’s {@link com.theairebellion.zeus.ui.components.factory.ComponentFactory}
+ * to create the correct {@code Accordion} instance based on the chosen
+ * {@code AccordionComponentType}. This design enables easy swapping of
+ * accordion implementations (e.g., Bootstrap-based, Material-based)
+ * without changing test code.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface AccordionService {
 

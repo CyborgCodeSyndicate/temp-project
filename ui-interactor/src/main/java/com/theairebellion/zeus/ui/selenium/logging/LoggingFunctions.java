@@ -3,18 +3,33 @@ package com.theairebellion.zeus.ui.selenium.logging;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.LocatorParser;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+/**
+ * Provides logging functions for exception handling during Selenium WebDriver interactions.
+ * This class logs detailed information for various exceptions encountered while performing
+ * actions such as finding elements, clicking, sending keys, and submitting forms.
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class LoggingFunctions {
 
     private static final int MAX_LENGTH = 1000;
     private static final String PAGE_SOURCE_UNAVAILABLE = "Page source unavailable.";
 
+    /**
+     * Logs a {@link NoSuchElementException} when an element cannot be found from the root level.
+     *
+     * @param target The WebDriver instance.
+     * @param action The WebElement action being performed.
+     * @param args   The method arguments.
+     * @param e      The thrown exception.
+     */
     public static void logFindElementFromRootNoSuchElementException(final Object target, final WebElementAction action,
                                                                     final Object[] args, final InvocationTargetException e) {
         By locator = LocatorParser.extractLocator(args);
@@ -29,6 +44,14 @@ public class LoggingFunctions {
         logException(cause.getClass(), target, action.getMethodName(), args, additionalInfo);
     }
 
+    /**
+     * Logs a {@link NoSuchElementException} when an element cannot be found from another element.
+     *
+     * @param target The target WebElement.
+     * @param action The WebElement action being performed.
+     * @param args   The method arguments.
+     * @param e      The thrown exception.
+     */
     public static void logNoSuchElementException(final Object target, final WebElementAction action,
                                                  final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();
@@ -61,6 +84,14 @@ public class LoggingFunctions {
         logException(cause.getClass(), target, action.getMethodName(), args, additionalInfo);
     }
 
+    /**
+     * Logs an {@link ElementNotInteractableException} when an element cannot be interacted with.
+     *
+     * @param target The target WebElement.
+     * @param action The WebElement action being performed.
+     * @param args   The method arguments.
+     * @param e      The thrown exception.
+     */
     public static void logElementNotInteractableException(final Object target, final WebElementAction action,
                                                           final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();
@@ -80,6 +111,14 @@ public class LoggingFunctions {
         logException(cause.getClass(), target, action.getMethodName(), args, additionalInfo);
     }
 
+    /**
+     * Logs an {@link org.openqa.selenium.InvalidSelectorException} when an invalid selector is used.
+     *
+     * @param target The WebDriver or WebElement instance where the action occurred.
+     * @param action The WebElement action being performed.
+     * @param args   The method arguments, expected to contain a locator.
+     * @param e      The thrown exception.
+     */
     public static void logClickInvalidSelectorException(final Object target, final WebElementAction action,
                                                         final Object[] args, final InvocationTargetException e) {
         By locator = LocatorParser.extractLocator(args);
@@ -89,6 +128,14 @@ public class LoggingFunctions {
         logException(cause.getClass(), target, action.getMethodName(), args, additionalInfo);
     }
 
+    /**
+     * Logs an {@link ElementClickInterceptedException} when an element cannot be clicked.
+     *
+     * @param target The target WebElement.
+     * @param action The WebElement action being performed.
+     * @param args   The method arguments.
+     * @param e      The thrown exception.
+     */
     public static void logElementClickInterceptedException(final Object target, final WebElementAction action,
                                                            final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();
@@ -108,6 +155,14 @@ public class LoggingFunctions {
         logException(cause.getClass(), target, action.getMethodName(), args, additionalInfo);
     }
 
+    /**
+     * Logs a {@link TimeoutException} when an element is not found within a given time frame.
+     *
+     * @param target The WebDriver or WebElement instance where the action occurred.
+     * @param action The WebElement action being performed.
+     * @param args   The method arguments, expected to contain a locator and an optional timeout duration.
+     * @param e      The thrown exception.
+     */
     public static void logClickTimeoutException(final Object target, final WebElementAction action,
                                                 final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();

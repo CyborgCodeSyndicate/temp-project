@@ -5,6 +5,9 @@ import com.theairebellion.zeus.ui.components.alert.AlertServiceImpl;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.components.button.ButtonServiceImpl;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxService;
+import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
 import com.theairebellion.zeus.ui.components.input.InputServiceImpl;
@@ -19,11 +22,6 @@ import com.theairebellion.zeus.ui.components.loader.LoaderServiceImpl;
 import com.theairebellion.zeus.ui.components.radio.RadioComponentType;
 import com.theairebellion.zeus.ui.components.radio.RadioService;
 import com.theairebellion.zeus.ui.components.radio.RadioServiceImpl;
-import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
-import com.theairebellion.zeus.ui.components.checkbox.CheckboxService;
-import com.theairebellion.zeus.ui.components.checkbox.CheckboxServiceImpl;
-import com.theairebellion.zeus.ui.components.toggle.ToggleService;
-import com.theairebellion.zeus.ui.components.toggle.ToggleServiceImpl;
 import com.theairebellion.zeus.ui.components.select.SelectComponentType;
 import com.theairebellion.zeus.ui.components.select.SelectService;
 import com.theairebellion.zeus.ui.components.select.SelectServiceImpl;
@@ -31,9 +29,11 @@ import com.theairebellion.zeus.ui.components.tab.TabService;
 import com.theairebellion.zeus.ui.components.tab.TabServiceImpl;
 import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
 import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
+import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.components.table.service.TableService;
 import com.theairebellion.zeus.ui.components.table.service.TableServiceImpl;
-import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
+import com.theairebellion.zeus.ui.components.toggle.ToggleService;
+import com.theairebellion.zeus.ui.components.toggle.ToggleServiceImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionService;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceFieldImpl;
 import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
@@ -42,9 +42,19 @@ import com.theairebellion.zeus.ui.validator.UiTableValidator;
 import com.theairebellion.zeus.ui.validator.UiTableValidatorImpl;
 import lombok.Getter;
 
+/**
+ * Centralized UI service facade that provides access to various UI component services.
+ * <p>
+ * This class serves as a single entry point for interacting with different UI components
+ * such as input fields, buttons, checkboxes, toggles, tables, and more.
+ * It initializes and manages instances of these services, allowing simplified access
+ * throughout the application.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Getter
 public class UIService {
-
 
     private final SmartWebDriver driver;
     private final InputService inputField;
@@ -60,11 +70,15 @@ public class UIService {
     private final TabService tabField;
     private final InsertionServiceRegistry serviceRegistry;
     private final InsertionService insertionService;
-
     private final TableServiceRegistry tableServiceRegistry;
     private final TableService tableService;
     private final UiTableValidator uiTableValidator;
 
+    /**
+     * Constructs the UI service, initializing various UI component services.
+     *
+     * @param driver The {@link SmartWebDriver} instance used for UI interactions.
+     */
     public UIService(SmartWebDriver driver) {
         this.driver = driver;
         inputField = new InputServiceImpl(driver);
@@ -86,7 +100,14 @@ public class UIService {
         tableService = new TableServiceImpl(driver, tableServiceRegistry, uiTableValidator);
     }
 
-
+    /**
+     * Registers various UI component services to the respective registries.
+     * <p>
+     * This method ensures that UI components such as input fields, radio buttons,
+     * checkboxes, select fields, item lists, and table components are registered
+     * so they can be properly managed and accessed throughout the application.
+     * </p>
+     */
     private void registerInsertionServices() {
         serviceRegistry.registerService(InputComponentType.class, inputField);
         serviceRegistry.registerService(RadioComponentType.class, radioField);

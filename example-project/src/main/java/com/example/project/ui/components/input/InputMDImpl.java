@@ -7,6 +7,7 @@ import com.theairebellion.zeus.ui.components.input.Input;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NotFoundException;
@@ -33,6 +34,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Inserting value '{value}' into input field")
     public void insert(final SmartWebElement container, final String value) {
         SmartWebElement inputFieldContainer = findInputField(container, null);
         insertIntoInputField(inputFieldContainer, value);
@@ -40,6 +42,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Inserting value '{value}' into input field with label '{inputFieldLabel}'")
     public void insert(final SmartWebElement container, final String inputFieldLabel, final String value) {
         SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         insertIntoInputField(inputFieldContainer, value);
@@ -47,6 +50,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Inserting value '{value}' into input field with label '{inputFieldLabel}'")
     public void insert(final String inputFieldLabel, final String value) {
         SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         insertIntoInputField(inputFieldContainer, value);
@@ -54,6 +58,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Inserting value '{value}' using locator '{inputFieldContainerLocator}'")
     public void insert(final By inputFieldContainerLocator, final String value) {
         SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         insertIntoInputField(inputFieldContainer, value);
@@ -61,6 +66,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Clearing input field")
     public void clear(final SmartWebElement container) {
         SmartWebElement inputFieldContainer = findInputField(container, null);
         clearInputField(inputFieldContainer);
@@ -68,6 +74,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Clearing input field with label '{inputFieldLabel}'")
     public void clear(final SmartWebElement container, final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         clearInputField(inputFieldContainer);
@@ -75,6 +82,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Clearing input field with label '{inputFieldLabel}'")
     public void clear(final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         clearInputField(inputFieldContainer);
@@ -82,6 +90,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Clearing input field using locator '{inputFieldContainerLocator}'")
     public void clear(final By inputFieldContainerLocator) {
 
         SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
@@ -90,6 +99,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving value from input field")
     public String getValue(final SmartWebElement container) {
         SmartWebElement inputFieldContainer = findInputField(container, null);
         return getInputFieldValue(inputFieldContainer);
@@ -97,6 +107,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving value from input field with label '{inputFieldLabel}'")
     public String getValue(final SmartWebElement container, final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         return getInputFieldValue(inputFieldContainer);
@@ -104,6 +115,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving value from input field with label '{inputFieldLabel}'")
     public String getValue(final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         return getInputFieldValue(inputFieldContainer);
@@ -111,6 +123,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving value from input field using locator '{inputFieldContainerLocator}'")
     public String getValue(final By inputFieldContainerLocator) {
         SmartWebElement inputFieldContainer =
                 driver.findSmartElement(inputFieldContainerLocator);
@@ -119,6 +132,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Checking if input field is enabled")
     public boolean isEnabled(final SmartWebElement container) {
         SmartWebElement inputFieldContainer = findInputField(container, null);
         return isInputFieldEnabled(inputFieldContainer);
@@ -126,6 +140,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Checking if input field with label '{inputFieldLabel}' is enabled")
     public boolean isEnabled(final SmartWebElement container, final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         return isInputFieldEnabled(inputFieldContainer);
@@ -133,6 +148,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Checking if input field with label '{inputFieldLabel}' is enabled")
     public boolean isEnabled(final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         return isInputFieldEnabled(inputFieldContainer);
@@ -140,6 +156,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Checking if input field is enabled using locator '{inputFieldContainerLocator}'")
     public boolean isEnabled(final By inputFieldContainerLocator) {
         SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         return isInputFieldEnabled(inputFieldContainer);
@@ -147,6 +164,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving error message from input field")
     public String getErrorMessage(final SmartWebElement container) {
         SmartWebElement inputFieldContainer = findInputField(container, null);
         return getInputFieldErrorMessage(inputFieldContainer);
@@ -154,6 +172,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving error message from input field with label '{inputFieldLabel}'")
     public String getErrorMessage(final SmartWebElement container, final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(container, inputFieldLabel);
         return getInputFieldErrorMessage(inputFieldContainer);
@@ -161,6 +180,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving error message from input field with label '{inputFieldLabel}'")
     public String getErrorMessage(final String inputFieldLabel) {
         SmartWebElement inputFieldContainer = findInputField(null, inputFieldLabel);
         return getInputFieldErrorMessage(inputFieldContainer);
@@ -168,6 +188,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Retrieving error message from input field using locator '{inputFieldContainerLocator}'")
     public String getErrorMessage(final By inputFieldContainerLocator) {
         SmartWebElement inputFieldContainer = driver.findSmartElement(inputFieldContainerLocator);
         return getInputFieldErrorMessage(inputFieldContainer);
@@ -236,6 +257,7 @@ public class InputMDImpl extends BaseComponent implements Input {
 
 
     @Override
+    @Step("Performing table insertion")
     public void tableInsertion(final SmartWebElement cell, final String... values) {
         Input.super.tableInsertion(cell, values);
     }

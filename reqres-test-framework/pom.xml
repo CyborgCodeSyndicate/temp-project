@@ -18,6 +18,7 @@
         <api.config.file>config</api.config.file>
         <test.data.file>test_data</test.data.file>
         <framework.config.file>config</framework.config.file>
+        <test.env></test.env>
     </properties>
 
     <dependencies>

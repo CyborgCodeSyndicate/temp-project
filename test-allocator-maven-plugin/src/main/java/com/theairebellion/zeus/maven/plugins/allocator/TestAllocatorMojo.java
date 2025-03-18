@@ -13,7 +13,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.testng.internal.collections.Pair;
 
 import java.io.File;
 import java.util.Arrays;
@@ -22,52 +21,102 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+/**
+ * Maven plugin that allocates and splits tests into multiple execution groups.
+ * <p>
+ * This plugin helps distribute test methods across multiple execution buckets
+ * for parallel execution based on the selected test engine (JUnit or TestNG).
+ * </p>
+ *
+ * <p>Supports filtering by tags (JUnit) and suite names (TestNG), and allows
+ * configuring the number of methods per group and parallel execution settings.</p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Mojo(
-    name = "split",
-    defaultPhase = LifecyclePhase.TEST_COMPILE,
-    requiresDependencyResolution = ResolutionScope.TEST
+        name = "split",
+        defaultPhase = LifecyclePhase.TEST_COMPILE,
+        requiresDependencyResolution = ResolutionScope.TEST
 )
 public class TestAllocatorMojo extends AbstractMojo {
 
+    /**
+     * Enables or disables test splitting.
+     */
     @Parameter(property = "testSplitter.enabled", defaultValue = "false")
     private boolean enabled;
 
+    /**
+     * Defines the test framework to use (JUnit or TestNG).
+     */
     @Parameter(property = "testSplitter.test.engine", required = true, defaultValue = "junit")
     private String testEngine;
 
+    /**
+     * Comma-separated list of included JUnit tags.
+     */
     @Parameter(property = "testSplitter.junit.tags.include")
     private String tagsInclude;
 
+    /**
+     * Comma-separated list of excluded JUnit tags.
+     */
     @Parameter(property = "testSplitter.junit.tags.exclude")
     private String tagsExclude;
 
+    /**
+     * Comma-separated list of TestNG suite names.
+     */
     @Parameter(property = "testSplitter.testng.suites")
     private String suites;
 
+    /**
+     * Maximum number of test methods per execution bucket.
+     */
     @Parameter(property = "testSplitter.maxMethods", defaultValue = "20")
     private int maxMethods;
 
+    /**
+     * Directory containing compiled test classes.
+     */
     @Parameter(defaultValue = "${project.build.testOutputDirectory}", readonly = true)
     private File testOutputDir;
 
+    /**
+     * Reference to the current Maven project.
+     */
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
+    /**
+     * Name of the output JSON file that stores the test allocation results.
+     */
     @Parameter(property = "testSplitter.json.output", defaultValue = "grouped-tests")
     private String outputJsonFile;
 
+    /**
+     * Root directory of the project.
+     */
     @Parameter(defaultValue = "${project.basedir}", readonly = true, required = true)
     private File projectBaseDir;
 
+    /**
+     * Enables or disables parallel test execution.
+     */
     @Parameter(property = "testSplitter.parallel.methods", defaultValue = "true", required = true)
     private Boolean parallelMethods;
 
+    /**
+     * Maximum number of parallel test runners.
+     */
     @Parameter(property = "testSplitter.max.number.runners", defaultValue = "20", required = true)
     private int maxNumberOfParallelRunners;
 
-
-
+    /**
+     * Executes the test allocation process.
+     *
+     * @throws MojoExecutionException if an error occurs during test allocation.
+     */
     @Override
     public void execute() throws MojoExecutionException {
         if (!enabled) {
@@ -83,28 +132,32 @@ public class TestAllocatorMojo extends AbstractMojo {
         testAllocatorService.allocateTests(config);
     }
 
-
+    /**
+     * Creates the appropriate test configuration and service based on the selected test engine.
+     *
+     * @return A pair containing the test configuration and the test allocation service.
+     */
     private Pair<TestSplitterConfiguration, TestAllocatorService> createConfigurationAndService() {
         TestSplitterConfiguration config;
         TestAllocatorService service;
         switch (testEngine.toLowerCase()) {
             case "junit":
                 config = new TestSplitterConfigurationJunit(
-                    enabled, maxMethods, testOutputDir, project, outputJsonFile,
-                    projectBaseDir.getAbsolutePath(), parallelMethods, maxNumberOfParallelRunners, parseInput(tagsInclude), parseInput(tagsExclude)
+                        enabled, maxMethods, testOutputDir, project, outputJsonFile,
+                        projectBaseDir.getAbsolutePath(), parallelMethods, maxNumberOfParallelRunners, parseInput(tagsInclude), parseInput(tagsExclude)
                 );
                 service = new JUnitAllocatorService(getLog());
                 break;
             case "testng":
                 config = new TestSplitterConfigurationTestng(
-                    enabled, maxMethods, testOutputDir, project, outputJsonFile,
-                    projectBaseDir.getAbsolutePath(), this.parallelMethods, maxNumberOfParallelRunners, parseInput(suites)
+                        enabled, maxMethods, testOutputDir, project, outputJsonFile,
+                        projectBaseDir.getAbsolutePath(), this.parallelMethods, maxNumberOfParallelRunners, parseInput(suites)
                 );
                 service = new TestNgAllocatorService(getLog());
                 break;
             default:
                 throw new IllegalArgumentException(
-                    "Invalid test engine: " + testEngine + ". Supported: junit, testng."
+                        "Invalid test engine: " + testEngine + ". Supported: junit, testng."
                 );
         }
 
@@ -131,12 +184,12 @@ public class TestAllocatorMojo extends AbstractMojo {
 
     private static Set<String> parseInput(String input) {
         return Optional.ofNullable(input)
-                   .map(str -> str.split(","))
-                   .map(arr -> Arrays.stream(arr)
-                                   .map(String::trim)
-                                   .filter(s -> !s.isEmpty())
-                                   .collect(Collectors.toSet()))
-                   .orElse(new HashSet<>());
+                .map(str -> str.split(","))
+                .map(arr -> Arrays.stream(arr)
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toSet()))
+                .orElse(new HashSet<>());
     }
 
 

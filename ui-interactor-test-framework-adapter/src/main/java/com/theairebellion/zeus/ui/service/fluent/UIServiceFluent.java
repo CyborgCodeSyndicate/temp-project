@@ -42,6 +42,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Provides a fluent interface for UI interactions, encapsulating various UI services
+ * such as buttons, inputs, checkboxes, tables, and more.
+ * <p>
+ * This class serves as a core service for UI automation and validation, allowing
+ * seamless interaction with UI components while maintaining fluent method chaining.
+ * It extends {@link FluentService}, integrating common UI operations.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @TestService("UI")
 @Getter
 public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService {
@@ -67,23 +78,40 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
     private TableServiceRegistry tableServiceRegistry;
     private InsertionServiceFluent<T> insertionService;
 
-
+    /**
+     * Constructs a new {@code UIServiceFluent} instance with the specified WebDriver.
+     *
+     * @param driver The {@link SmartWebDriver} instance used for UI interactions.
+     */
     @Autowired
     public UIServiceFluent(SmartWebDriver driver) {
         this.driver = driver;
     }
 
-
+    /**
+     * Executes a validation assertion.
+     *
+     * @param assertion The assertion to validate.
+     * @return The current instance of {@code UIServiceFluent} for method chaining.
+     */
     public T validate(Runnable assertion) {
         return (T) super.validate(assertion);
     }
 
-
+    /**
+     * Executes a validation assertion using a soft assertion approach.
+     *
+     * @param assertion The assertion to validate with soft assertions.
+     * @return The current instance of {@code UIServiceFluent} for method chaining.
+     */
     public T validate(Consumer<SoftAssertions> assertion) {
         return (T) super.validate(assertion);
     }
 
-
+    /**
+     * Initializes the necessary UI services and registers them for UI interactions.
+     * This method is automatically called after setup.
+     */
     @Override
     protected void postQuestSetupInitialization() {
         ButtonServiceImpl buttonService = new ButtonServiceImpl(driver);
@@ -116,7 +144,11 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
                 quest.getStorage());
     }
 
-
+    /**
+     * Registers insertion services for different UI components.
+     *
+     * @param inputService The input service to register.
+     */
     private void registerInsertionServices(InputService inputService) {
         serviceRegistry.registerService(RadioComponentType.class, radioField);
         serviceRegistry.registerService(CheckboxComponentType.class, checkboxField);
@@ -125,22 +157,38 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
         serviceRegistry.registerService(InputComponentType.class, inputService);
     }
 
-
+    /**
+     * Registers table services for different UI components.
+     *
+     * @param inputService  The input service to register.
+     * @param buttonService The button service to register.
+     * @param linkService   The link service to register.
+     */
     private void registerTableServices(InputService inputService, ButtonService buttonService,
                                        LinkService linkService) {
         tableServiceRegistry.registerService(InputComponentType.class, (TableFilter) inputService);
         tableServiceRegistry.registerService(InputComponentType.class, (TableInsertion) inputService);
         tableServiceRegistry.registerService(ButtonComponentType.class, buttonService);
         tableServiceRegistry.registerService(LinkComponentType.class, linkService);
-
     }
 
+    /**
+     * Retrieves the {@link SmartWebDriver} instance used for UI interactions.
+     *
+     * @return The {@link SmartWebDriver} instance.
+     */
     protected SmartWebDriver getDriver() {
         return driver;
     }
 
+    /**
+     * Executes validation assertions on a list of results.
+     *
+     * @param assertionResults The list of assertion results.
+     */
     @Override
     protected void validation(List<AssertionResult<Object>> assertionResults) {
         super.validation(assertionResults);
     }
+
 }
