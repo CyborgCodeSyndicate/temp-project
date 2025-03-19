@@ -8,84 +8,76 @@ import com.theairebellion.zeus.ui.selenium.UIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class InsertionServiceElementImpl extends BaseInsertionService {
+public class InsertionServiceElementImpl extends BaseInsertionService<InsertionElement> {
 
     private final SmartWebDriver webDriver;
 
-    public InsertionServiceElementImpl(final InsertionServiceRegistry serviceRegistry, final SmartWebDriver webDriver) {
+
+    public InsertionServiceElementImpl(final InsertionServiceRegistry serviceRegistry,
+                                       final SmartWebDriver webDriver) {
         super(serviceRegistry);
         this.webDriver = webDriver;
     }
 
 
     @Override
-    protected Object getFieldAnnotation(Field field) {
-        return field.getAnnotation(InsertionElement.class);
+    protected Class<InsertionElement> getAnnotationClass() {
+        return InsertionElement.class;
     }
 
 
     @Override
-    protected Class<? extends ComponentType> getComponentTypeEnumClass(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-                insertionElement.elementEnum());
+    protected int getOrder(final InsertionElement annotation) {
+        return annotation.order();
+    }
+
+
+    @Override
+    protected Class<? extends ComponentType> getComponentTypeEnumClass(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
+        );
         return uiElement.componentType().getClass();
     }
 
 
     @Override
-    protected By buildLocator(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-                insertionElement.elementEnum());
+    protected By buildLocator(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
+        );
         return uiElement.locator();
     }
 
 
     @Override
-    protected ComponentType getType(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-                insertionElement.elementEnum());
+    protected ComponentType getType(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
+        );
         return uiElement.componentType();
     }
 
 
     @Override
-    protected Enum<?> getEnumValue(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        return Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(), insertionElement.elementEnum());
-    }
-
-    @Override
-    protected List<Field> filterAndSortFields(final Field[] fields) {
-        return Arrays.stream(fields)
-                .filter(field -> field.isAnnotationPresent(InsertionElement.class))
-                .sorted(Comparator.comparing(field -> field.getAnnotation(InsertionElement.class).order()))
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
-    protected void beforeInsertion(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-                insertionElement.elementEnum());
+    protected void beforeInsertion(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
+        );
         uiElement.before().accept(webDriver);
     }
 
 
     @Override
-    protected void afterInsertion(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf((Class<? extends Enum>) insertionElement.locatorClass(),
-                insertionElement.elementEnum());
+    protected void afterInsertion(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
+        );
         uiElement.after().accept(webDriver);
     }
 

@@ -6,16 +6,9 @@ import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
-public class InsertionServiceFieldImpl extends BaseInsertionService {
-
+public class InsertionServiceFieldImpl extends BaseInsertionService<InsertionField> {
 
     public InsertionServiceFieldImpl(final InsertionServiceRegistry serviceRegistry) {
         super(serviceRegistry);
@@ -23,47 +16,36 @@ public class InsertionServiceFieldImpl extends BaseInsertionService {
 
 
     @Override
-    protected Object getFieldAnnotation(Field field) {
-        return field.getAnnotation(InsertionField.class);
+    protected Class<InsertionField> getAnnotationClass() {
+        return InsertionField.class;
     }
 
 
     @Override
-    protected Class<? extends ComponentType> getComponentTypeEnumClass(Object annotation) {
-        InsertionField insertionField = (InsertionField) annotation;
-        return insertionField.type();
+    protected int getOrder(final InsertionField annotation) {
+        return annotation.order();
     }
 
 
     @Override
-    protected By buildLocator(Object annotation) {
-        InsertionField insertionField = (InsertionField) annotation;
-        FindBy.FindByBuilder findByBuilder = new FindBy.FindByBuilder();
-        return findByBuilder.buildIt(insertionField.locator(), null);
+    protected Class<? extends ComponentType> getComponentTypeEnumClass(final InsertionField annotation) {
+        return annotation.type();
     }
 
 
     @Override
-    protected Enum<?> getEnumValue(Object annotation) {
-        InsertionField insertionField = (InsertionField) annotation;
-        Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
-            insertionField.type(), getUiConfig().projectPackage()
+    protected By buildLocator(final InsertionField annotation) {
+        return new FindBy.FindByBuilder().buildIt(annotation.locator(), null);
+    }
+
+
+    @Override
+    protected ComponentType getType(final InsertionField annotation) {
+        final String componentTypeEnumName = annotation.componentType();
+        final Class<? extends ComponentType> typeClass = annotation.type();
+        return ReflectionUtil.findEnumImplementationsOfInterface(
+            typeClass, componentTypeEnumName, getUiConfig().projectPackage()
         );
-        return Enum.valueOf(enumClass, insertionField.componentType());
-    }
-
-
-    @Override
-    protected List<Field> filterAndSortFields(final Field[] fields) {
-        return Arrays.stream(fields)
-                   .filter(field -> field.isAnnotationPresent(InsertionField.class))
-                   .sorted(Comparator.comparing(field -> field.getAnnotation(InsertionField.class).order()))
-                   .collect(Collectors.toList());
-    }
-
-    @Override
-    protected ComponentType getType(Object annotation) { //todo: check this
-        return null;
     }
 
 }
