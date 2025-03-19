@@ -17,12 +17,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Properties;
 
-import java.util.List;
-
 @Odyssey
 @SpringBootTest(
-        classes = {TestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.NONE
+    classes = {TestConfig.class},
+    webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 public class BaseTest {
 
@@ -48,10 +46,11 @@ public class BaseTest {
         return quest.getStorage().sub(subKey).get(key, clazz);
     }
 
+
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-                clazz.getName());
+            clazz.getName());
         return quest.getStorage().get(extractor, clazz);
     }
 
@@ -59,8 +58,16 @@ public class BaseTest {
     protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-                clazz.getName());
+            clazz.getName());
         return quest.getStorage().get(extractor, clazz, index);
+    }
+
+
+    protected <T> T hookData(Object value, Class<T> clazz) {
+        SuperQuest quest = QuestHolder.get();
+        LogTest.extended("Fetching data from before hooks storage by key: '{}' and type: '{}'", value,
+            clazz.getName());
+        return quest.getStorage().getHookData(value, clazz);
     }
 
 

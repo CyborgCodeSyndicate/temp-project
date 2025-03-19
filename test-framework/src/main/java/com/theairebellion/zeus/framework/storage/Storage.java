@@ -3,15 +3,12 @@ package com.theairebellion.zeus.framework.storage;
 import com.theairebellion.zeus.framework.parameters.Late;
 import org.springframework.core.ParameterizedTypeReference;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 
@@ -43,6 +40,7 @@ public class Storage {
 
         return clazz.cast(extractor.extract(result));
     }
+
 
     public <T> T get(DataExtractor<T> extractor, Class<T> clazz) {
         Object result = (extractor.getSubKey() != null)
@@ -134,6 +132,15 @@ public class Storage {
     }
 
 
+    public <T> T getHookData(Object value, Class<T> clazz) {
+        Map<Object, Object> values = get(StorageKeysTest.HOOKS, Map.class);
+        if (values == null || values.get(values) == null) {
+            return null;
+        }
+        return clazz.cast(values.get(value));
+    }
+
+
     @SuppressWarnings("unchecked")
     private <T> T castOrNull(Object value, Class<T> clazz) {
         return (clazz.isInstance(value)) ? (T) value : null;
@@ -142,7 +149,8 @@ public class Storage {
 
     @SuppressWarnings("unchecked")
     private <T> T castOrNullTypeRef(Object value, ParameterizedTypeReference<T> typeReference) {
-        return (value != null /*&& typeReference.getType().getTypeName().equals(value.getClass().getTypeName())*/) ? //todo: check this
+        return (value != null /*&& typeReference.getType().getTypeName().equals(value.getClass().getTypeName())*/) ?
+                   //todo: check this
                    (T) value : null;
     }
 
@@ -196,7 +204,6 @@ public class Storage {
         }
         return result;
     }
-
 
 
 }

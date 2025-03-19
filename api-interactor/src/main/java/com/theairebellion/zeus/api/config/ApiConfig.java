@@ -6,6 +6,9 @@ import org.aeonbits.owner.Config;
 @Config.Sources({"system:properties", "classpath:${api.config.file}.properties"})
 public interface ApiConfig extends Config {
 
+    @Key("project.package")
+    String projectPackage();
+
     @DefaultValue("true")
     @Key("api.restassured.logging.enabled")
     boolean restAssuredLoggingEnabled();

@@ -31,6 +31,7 @@ public class H2Database {
         InputStream dataStream = H2Database.class.getClassLoader().getResourceAsStream(DB_H2_FILES_DATA_SQL);
         LogDb.debug(dataStream != null ? "data.sql found" : "data.sql NOT found");
 
+
         Connection connection = service.getDbClientManager().getConnector().getConnection(dbConfig);
         executeScript(connection, DB_H2_FILES_SCHEMA_SQL);
         executeScript(connection, DB_H2_FILES_DATA_SQL);
