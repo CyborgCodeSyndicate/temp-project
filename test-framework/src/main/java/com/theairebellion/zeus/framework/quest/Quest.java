@@ -27,8 +27,10 @@ import static com.theairebellion.zeus.util.reflections.ReflectionUtil.getFieldVa
  *
  * @author Cyborg Code Syndicate
  */
-@InfoAIClass(level = Level.FIRST,
-    description = "Quest is the main instance in all test methods. There is single quest instance for each test method from that one all methods are chained")
+@InfoAIClass(
+        level = Level.FIRST,
+        description = "Quest is the core instance in all test methods. " +
+                "Each test method has a unique Quest instance that manages the execution flow, transitions between different testing contexts (worlds), and ensures proper validation.")
 public class Quest {
 
     /**
@@ -65,13 +67,13 @@ public class Quest {
      * @return The corresponding fluent service instance.
      * @throws IllegalArgumentException If the specified world is not registered.
      */
-
-    @InfoAI(description = "The enters method enables using specific service that has different capabilities")
+    @InfoAI(description = "Switches the execution context to a specific test service (world). " +
+            "This enables using specialized functionalities provided by different services in the test execution flow.")
     @SuppressWarnings("unchecked")
     public <T extends FluentService> T enters(
-        @InfoAI(description = "Class that needs to extends from FluentService.") Class<T> worldType) {
+            @InfoAI(description = "The class representing a test service that extends FluentService.") Class<T> worldType) {
         Optional<Class<? extends FluentService>> match =
-            worlds.keySet().stream().filter(worldType::isAssignableFrom).findFirst();
+                worlds.keySet().stream().filter(worldType::isAssignableFrom).findFirst();
         if (match.isEmpty()) {
             throw new IllegalArgumentException("World not initialized: " + worldType.getName());
         }
@@ -80,8 +82,8 @@ public class Quest {
             worldName = worldType.getAnnotation(TestService.class);
         }
         String message = worldName == null
-                             ? "The quest has undertaken a journey through: '" + worldType.getName() + "'"
-                             : "The quest has undertaken a journey through: '" + worldName.value() + "'";
+                ? "The quest has undertaken a journey through: '" + worldType.getName() + "'"
+                : "The quest has undertaken a journey through: '" + worldName.value() + "'";
 
         LogTest.info(message);
         return (T) worlds.get(match.get());
@@ -95,10 +97,13 @@ public class Quest {
      * @return The corresponding service instance.
      * @throws IllegalArgumentException If the specified world is not registered.
      */
+    @InfoAI(description = "Retrieves an instance of a registered test service without switching the execution context. " +
+            "This allows accessing service-specific functionalities while maintaining the current flow.")
     @SuppressWarnings("unchecked")
-    protected <T extends FluentService> T cast(Class<T> worldType) {
+    protected <T extends FluentService> T cast(
+            @InfoAI(description = "The class representing a registered test service that extends FluentService.") Class<T> worldType) {
         Optional<Class<? extends FluentService>> match =
-            worlds.keySet().stream().filter(worldType::isAssignableFrom).findFirst();
+                worlds.keySet().stream().filter(worldType::isAssignableFrom).findFirst();
         if (match.isEmpty()) {
             throw new IllegalArgumentException("World not initialized: " + worldType.getName());
         }
@@ -112,9 +117,8 @@ public class Quest {
      * soft assertions collected during the test execution.
      * </p>
      */
-
-    @InfoAI(
-        description = "The complete method is the last method for each test where. If there are soft assertions it validate them all")
+    @InfoAI(description = "Finalizes the test execution by clearing the test state and validating all accumulated soft assertions. " +
+            "This method must be called at the end of each test to ensure all validations are processed.")
     public void complete() {
         LogTest.info("The quest has reached his end");
         QuestHolder.clear();
@@ -136,7 +140,11 @@ public class Quest {
      * @throws IllegalArgumentException If input parameters are null.
      * @throws IllegalStateException    If the requested world is not available.
      */
-    protected <T extends FluentService, K> K artifact(Class<T> worldType, Class<K> artifactType) {
+    @InfoAI(description = "Retrieves a specific artifact from a test service instance. " +
+            "The artifact is an object extracted from the given service type.")
+    protected <T extends FluentService, K> K artifact(
+            @InfoAI(description = "The test service class from which the artifact should be retrieved.") Class<T> worldType,
+            @InfoAI(description = "The class type of the artifact to extract from the test service.") Class<K> artifactType) {
         if (worldType == null || artifactType == null) {
             throw new IllegalArgumentException("Parameters worldType and artifactType must not be null.");
         }
@@ -144,7 +152,7 @@ public class Quest {
         T world = cast(worldType);
         if (world == null) {
             throw new IllegalStateException(
-                "Could not retrieve an instance of the specified worldType: " + worldType.getName());
+                    "Could not retrieve an instance of the specified worldType: " + worldType.getName());
         }
 
         return getFieldValue(world, artifactType);
@@ -156,7 +164,11 @@ public class Quest {
      * @param worldType The class type of the test service.
      * @param world     The instance of the test service.
      */
-    protected void registerWorld(Class<? extends FluentService> worldType, FluentService world) {
+    @InfoAI(description = "Registers a new test service instance in the execution context, " +
+            "making it available for use in the current test session.")
+    protected void registerWorld(
+            @InfoAI(description = "The class type of the test service to be registered.") Class<? extends FluentService> worldType,
+            @InfoAI(description = "The instance of the test service being registered.") FluentService world) {
         worlds.put(worldType, world);
     }
 
@@ -165,7 +177,10 @@ public class Quest {
      *
      * @param worldType The class type of the test service to remove.
      */
-    protected void removeWorld(Class<? extends FluentService> worldType) {
+    @InfoAI(description = "Removes a previously registered test service from the execution context, " +
+            "making it unavailable for further use in the current test session.")
+    protected void removeWorld(
+            @InfoAI(description = "The class type of the test service to be removed.") Class<? extends FluentService> worldType) {
         worlds.remove(worldType);
     }
 
@@ -174,6 +189,7 @@ public class Quest {
      *
      * @return The storage instance.
      */
+    @InfoAI(description = "Retrieves the storage instance used for temporarily holding test data within a test execution.")
     protected Storage getStorage() {
         return storage;
     }
@@ -183,9 +199,10 @@ public class Quest {
      *
      * @return The soft assertion handler.
      */
+    @InfoAI(description = "Retrieves the soft assertion handler used for managing test validations, " +
+            "allowing multiple assertions to be checked without stopping execution.")
     protected CustomSoftAssertion getSoftAssertions() {
         return softAssertions;
     }
 
 }
-

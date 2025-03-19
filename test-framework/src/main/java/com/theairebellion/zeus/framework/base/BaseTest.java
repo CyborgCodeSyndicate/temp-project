@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.framework.base;
 
+import com.theairebellion.zeus.ai.metadata.model.Level;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.framework.annotation.Odyssey;
@@ -32,10 +33,14 @@ import java.util.Properties;
  */
 @Odyssey
 @SpringBootTest(
-    classes = {TestConfig.class},
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
+        classes = {TestConfig.class},
+        webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
-@InfoAIClass(description = "All test classes extend from BaseTest class and each test method has quest object")
+@InfoAIClass(
+        level = Level.LAST,
+        description = "Base test class that all test classes extend from. Provides global test configurations, " +
+                "logging setup, and utility methods for retrieving stored test data. Each test method has access to a quest object for interacting with the test storage system."
+)
 public class BaseTest {
 
     static {
@@ -54,9 +59,10 @@ public class BaseTest {
      * @param <T>   The type parameter corresponding to the retrieved object.
      * @return The stored test data of the specified type.
      */
-
-    @InfoAI(description = "Retrieves data from storage by key")
-    protected <T> T retrieve(Enum<?> key, Class<T> clazz) {
+    @InfoAI(description = "Fetches stored test data by key from the test storage system. " +
+            "The key must be an enum value representing a stored entity, and the returned object will be of the specified type.")
+    protected <T> T retrieve(@InfoAI(description = "The key representing the stored data in the test storage system.") Enum<?> key,
+                             @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
         return quest.getStorage().get(key, clazz);
@@ -71,7 +77,11 @@ public class BaseTest {
      * @param <T>    The type parameter corresponding to the retrieved object.
      * @return The stored test data from the specified sub-key.
      */
-    protected <T> T retrieve(Enum<?> subKey, Enum<?> key, Class<T> clazz) {
+    @InfoAI(description = "Fetches stored test data from a nested storage structure using a sub-key and a main key. " +
+            "The sub-key represents a subset of stored data, and the main key identifies the specific entity within that subset.")
+    protected <T> T retrieve(@InfoAI(description = "The sub-key representing a specific subset of stored data.") Enum<?> subKey,
+                             @InfoAI(description = "The key representing the stored data entity within the sub-key subset.") Enum<?> key,
+                             @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
         return quest.getStorage().sub(subKey).get(key, clazz);
@@ -85,10 +95,13 @@ public class BaseTest {
      * @param <T>       The type parameter corresponding to the retrieved object.
      * @return The extracted test data of the specified type.
      */
-    protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
+    @InfoAI(description = "Fetches stored test data using a DataExtractor. " +
+            "The extractor defines how the data is retrieved, and the returned object is of the specified type.")
+    protected <T> T retrieve(@InfoAI(description = "The data extractor defining the retrieval logic for stored test data.") DataExtractor<T> extractor,
+                             @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-            clazz.getName());
+                clazz.getName());
         return quest.getStorage().get(extractor, clazz);
     }
 
@@ -101,10 +114,14 @@ public class BaseTest {
      * @param <T>       The type parameter corresponding to the retrieved object.
      * @return The extracted test data of the specified type at the given index.
      */
-    protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
+    @InfoAI(description = "Fetches stored test data using a DataExtractor at a specified index. " +
+            "The extractor defines how the data is retrieved, and the index determines which specific entry is returned.")
+    protected <T> T retrieve(@InfoAI(description = "The data extractor defining the retrieval logic for stored test data.") DataExtractor<T> extractor,
+                             @InfoAI(description = "The index position of the extracted data entry.") int index,
+                             @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-            clazz.getName());
+                clazz.getName());
         return quest.getStorage().get(extractor, clazz, index);
     }
 
@@ -135,6 +152,9 @@ public class BaseTest {
     /**
      * Provides static utility methods for retrieving stored test data.
      */
+    @InfoAIClass(
+            level = Level.LAST,
+            description = "Provides utility methods for retrieving stored test data within a sub-storage context, making it accessible in test cases.")
     public static final class DefaultStorage {
 
         /**
@@ -145,7 +165,9 @@ public class BaseTest {
          * @param <T>   The type parameter corresponding to the retrieved object.
          * @return The stored test data of the specified type.
          */
-        public static <T> T retrieve(Enum<?> key, Class<T> clazz) {
+        @InfoAI(description = "Retrieves stored test data from a sub-storage system using a key.")
+        public static <T> T retrieve(@InfoAI(description = "The key representing the stored data entity.") Enum<?> key,
+                                     @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
             SuperQuest quest = QuestHolder.get();
             return quest.getStorage().sub().get(key, clazz);
         }
@@ -158,7 +180,10 @@ public class BaseTest {
          * @param <T>       The type parameter corresponding to the retrieved object.
          * @return The extracted test data of the specified type.
          */
-        public static <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
+        @InfoAI(description = "Fetches stored test data from a sub-storage context using a DataExtractor. " +
+                "The extractor defines how the data is retrieved, and the returned object is of the specified type.")
+        public static <T> T retrieve(@InfoAI(description = "The data extractor defining the retrieval logic for stored test data.") DataExtractor<T> extractor,
+                                     @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
             SuperQuest quest = QuestHolder.get();
             return quest.getStorage().sub().get(extractor, clazz);
         }

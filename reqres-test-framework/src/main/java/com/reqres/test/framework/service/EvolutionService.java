@@ -3,6 +3,9 @@ package com.reqres.test.framework.service;
 import com.reqres.test.framework.rest.ApiResponsesJsonPaths;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
+import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.chain.FluentService;
@@ -26,8 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestService("Gondor")
+@InfoAIClass(
+        level = Level.LAST,
+        description = "Provides reusable test logic for interacting with the API. " +
+                "Methods in this service perform actions such as sending requests, validating responses, and retrieving stored data. " +
+                "Used in multiple test cases to avoid code duplication.")
 public class EvolutionService extends FluentService {
 
+    @InfoAI(description = "Sends a request to retrieve all users from the API and validates the response. " +
+            "The request includes a query parameter to fetch users from page 2, and the response is validated to ensure the status is HTTP 200 OK.")
     public EvolutionService getAllUsersAndValidateResponse() {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
@@ -37,7 +47,9 @@ public class EvolutionService extends FluentService {
         return this;
     }
 
-    public EvolutionService createJuniorUserAndValidateResponse(User juniorUser) {
+    @InfoAI(description = "Creates a new junior user in the system and validates the response. " +
+            "The user details are provided as input, and the response is checked for a successful creation (HTTP 201), correct content type, and expected name and job values.")
+    public EvolutionService createJuniorUserAndValidateResponse(@InfoAI(description = "The user object containing details of the junior user to be created.") User juniorUser) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         CREATE_USER,
@@ -50,7 +62,9 @@ public class EvolutionService extends FluentService {
         return this;
     }
 
-    public EvolutionService createLeaderUserAndValidateResponse(User leaderUser) {
+    @InfoAI(description = "Creates a new leader user in the system and validates the response. " +
+            "The user details are provided as input, and the response is checked for a successful creation (HTTP 201), expected name 'Morpheus', and job title 'Leader'.")
+    public EvolutionService createLeaderUserAndValidateResponse(@InfoAI(description = "The user object containing details of the leader user to be created.") User leaderUser) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         CREATE_USER,
@@ -62,7 +76,9 @@ public class EvolutionService extends FluentService {
         return this;
     }
 
-    public EvolutionService createSeniorUserAndValidateResponse(User seniorUser) {
+    @InfoAI(description = "Creates a new senior user in the system and validates the response. " +
+            "The user details are provided as input, and the response is checked for a successful creation (HTTP 201), expected name 'Mr. Morpheus', and job title 'Senior Leader'.")
+    public EvolutionService createSeniorUserAndValidateResponse(@InfoAI(description = "The user object containing details of the senior user to be created.") User seniorUser) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
                         CREATE_USER,
@@ -74,6 +90,7 @@ public class EvolutionService extends FluentService {
         return this;
     }
 
+    @InfoAI(description = "Validates the details of a previously created user by retrieving the stored response and verifying the name, job title, and creation date.")
     public EvolutionService validateCreatedUser() {
         quest.enters(OLYMPYS)
                 .validate(() -> {

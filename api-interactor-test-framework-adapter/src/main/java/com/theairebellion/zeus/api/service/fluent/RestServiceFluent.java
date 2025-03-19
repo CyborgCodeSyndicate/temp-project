@@ -1,8 +1,8 @@
 package com.theairebellion.zeus.api.service.fluent;
 
 import com.theairebellion.zeus.ai.metadata.model.Level;
-import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.core.Endpoint;
 import com.theairebellion.zeus.api.service.RestService;
@@ -33,8 +33,10 @@ import static com.theairebellion.zeus.api.storage.StorageKeysApi.API;
  * @author Cyborg Code Syndicate
  */
 @TestService("API")
-@InfoAIClass(level = Level.LAST,
-    description = "RestServiceFluent can be called from Quest object and provides methods for Rest actions and validations")
+@InfoAIClass(
+        level = Level.LAST,
+        description = "Provides fluent API interactions for sending requests, handling authentication, and validating responses. " +
+                "Methods allow executing requests to defined endpoints, adding payloads, applying assertions, and managing retries.")
 public class RestServiceFluent extends FluentService implements ClassLevelHook {
 
     private final RestService restService;
@@ -55,9 +57,10 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param endpoint The API endpoint.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
-    @InfoAI(description = "Method for sending requests to endpoints that add the response in storage")
+    @InfoAI(description = "Sends a request to a specified API endpoint and stores the response. " +
+            "The endpoint must be defined in an enum implementing the Endpoint interface.")
     public RestServiceFluent request(
-        final Endpoint endpoint) {
+            final Endpoint endpoint) {
         final Response response = restService.request(endpoint);
         quest.getStorage().sub(API).put(endpoint.enumImpl(), response);
         return this;
@@ -70,9 +73,9 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param body     The request body.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
-    @InfoAI(
-        description = "Method for sending requests to endpoints with body object as payload that add the response in storage")
-    public RestServiceFluent request(final Endpoint endpoint, final @InfoAI(description = "The body object that will be sent as payload") Object body) {
+    @InfoAI(description = "Sends a request with a payload to a specified API endpoint and stores the response. " +
+            "The endpoint must be an enum implementing the Endpoint interface, and the body represents the request payload.")
+    public RestServiceFluent request(final Endpoint endpoint, @InfoAI(description = "The payload object to be sent in the request body.") final Object body) {
         final Response response = restService.request(endpoint, body);
         quest.getStorage().sub(API).put(endpoint.enumImpl(), response);
         return this;
@@ -85,10 +88,9 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param assertions The assertions to validate.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
-
-    @InfoAI(
-        description = "Method for validating the response by the assertions sent as arguments")
-    public RestServiceFluent validateResponse(final Response response, final Assertion<?>... assertions) {
+    @InfoAI(description = "Validates an API response using the provided assertions. " +
+            "The response is checked against multiple conditions, ensuring expected API behavior.")
+    public RestServiceFluent validateResponse(@InfoAI(description = "The API response object to be validated.") final Response response, final Assertion<?>... assertions) {
         final List<AssertionResult<Object>> assertionResults = restService.validate(response, assertions);
         validation(assertionResults);
         return this;
@@ -101,9 +103,8 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param assertions The assertions to validate.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
-
-    @InfoAI(
-        description = "Method for sending requests to endpoint and validating the received response by the assertions sent as arguments")
+    @InfoAI(description = "Sends a request to a specified API endpoint, stores the response, and validates it using provided assertions. " +
+            "The endpoint must be an enum implementing the Endpoint interface.")
     public RestServiceFluent requestAndValidate(final Endpoint endpoint, final Assertion<?>... assertions) {
         final Response response = restService.request(endpoint);
         quest.getStorage().sub(API).put(endpoint.enumImpl(), response);
@@ -119,10 +120,10 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
     @Step("Request and validations for endpoint: {endpoint}")
-    @InfoAI(
-        description = "Method for sending requests to endpoint with body as payload and validating the received response by the assertions sent as arguments")
+    @InfoAI(description = "Sends a request with a payload to a specified API endpoint, stores the response, and validates it using provided assertions. " +
+            "The endpoint must be an enum implementing the Endpoint interface, and the body represents the request payload.")
     public RestServiceFluent requestAndValidate(final Endpoint endpoint,
-                                                final Object body,
+                                                @InfoAI(description = "The payload object to be sent in the request body.") final Object body,
                                                 final Assertion<?>... assertions) {
         final Response response = restService.request(endpoint, body);
         quest.getStorage().sub(API).put(endpoint.enumImpl(), response);
@@ -137,12 +138,11 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param authenticationClient The authentication client class.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
-
-    @InfoAI(
-        description = "Method for authenticating by sending username and password and type of authentication. All next request will have the authentication")
-    public RestServiceFluent authenticate(final String username,
-                                          final String password,
-                                          final Class<? extends BaseAuthenticationClient> authenticationClient) {
+    @InfoAI(description = "Authenticates the user by sending a username, password, and authentication client type. " +
+            "Once authenticated, all subsequent requests will include authentication.")
+    public RestServiceFluent authenticate(@InfoAI(description = "The username used for authentication.") final String username,
+                                          @InfoAI(description = "The password associated with the username for authentication.") final String password,
+                                          @InfoAI(description = "The authentication client class that defines the authentication mechanism.") Class<? extends BaseAuthenticationClient> authenticationClient) {
         restService.authenticate(username, password, authenticationClient);
         return this;
     }
@@ -153,8 +153,10 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param assertion The assertion to validate.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
+    @InfoAI(description = "Executes a validation using the provided assertion logic. " +
+            "The assertion is executed as a runnable task.")
     @Override
-    public RestServiceFluent validate(final Runnable assertion) {
+    public RestServiceFluent validate(@InfoAI(description = "A runnable assertion task that executes validation logic.") final Runnable assertion) {
         return (RestServiceFluent) super.validate(assertion);
     }
 
@@ -164,8 +166,10 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param assertion The assertion to validate.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
+    @InfoAI(description = "Executes a validation using the provided assertion logic with SoftAssertions. " +
+            "This allows multiple assertions to be verified within a single validation step.")
     @Override
-    public RestServiceFluent validate(final Consumer<SoftAssertions> assertion) {
+    public RestServiceFluent validate(@InfoAI(description = "A consumer function that applies multiple assertions using SoftAssertions.") final Consumer<SoftAssertions> assertion) {
         return (RestServiceFluent) super.validate(assertion);
     }
 
@@ -174,6 +178,8 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      *
      * @return The {@code RestService} instance.
      */
+    @InfoAI(description = "Retrieves the underlying RestService instance, " +
+            "which handles API request execution and validation.")
     protected RestService getRestService() {
         return restService;
     }
@@ -187,8 +193,11 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      * @param <T>            The type used in the retry condition function.
      * @return The current {@code RestServiceFluent} instance for method chaining.
      */
-    public <T> RestServiceFluent retryUntil(final RetryCondition<T> retryCondition, final Duration maxWait,
-                                            final Duration retryInterval) {
+    @InfoAI(description = "Executes a retry mechanism until the specified condition is met. " +
+            "Retries execution at a fixed interval and stops when the condition is satisfied or the maximum wait time is reached.")
+    public <T> RestServiceFluent retryUntil(@InfoAI(description = "The condition that determines whether the retry should continue or stop.") final RetryCondition<T> retryCondition,
+                                            @InfoAI(description = "The maximum duration to wait before stopping retries.") final Duration maxWait,
+                                            @InfoAI(description = "The interval between each retry attempt.") final Duration retryInterval) {
         return (RestServiceFluent) super.retryUntil(retryCondition, maxWait, retryInterval, restService);
     }
 

@@ -2,6 +2,9 @@ package com.reqres.test.framework.service;
 
 import com.reqres.test.framework.rest.ApiResponsesJsonPaths;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
+import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.chain.FluentService;
@@ -19,10 +22,18 @@ import static com.reqres.test.framework.rest.Endpoints.*;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.*;
 
+
 @TestService("Rivendell")
+@InfoAIClass(
+        level = Level.LAST,
+        description = "Provides reusable test logic for API interactions, including user authentication and validation of API responses. " +
+                "This service is directly used in test cases to streamline common test operations."
+)
 public class CustomService extends FluentService {
 
-    public CustomService loginUserAndAddSpecificHeader(LoginUser loginUser) {
+    @InfoAI(description = "Logs in a user using the provided credentials and retrieves the authentication token. " +
+            "The token is then used as a specific header in a request to fetch user details.")
+    public CustomService loginUserAndAddSpecificHeader(@InfoAI(description = "The login credentials of the user, including email and password.") LoginUser loginUser) {
         quest.enters(OLYMPYS)
                 .request(LOGIN_USER, loginUser)
                 .requestAndValidate(
@@ -37,6 +48,8 @@ public class CustomService extends FluentService {
         return this;
     }
 
+    @InfoAI(description = "Sends a request to retrieve all users from the API and validates the response. " +
+            "The response is checked for correct HTTP status, content type, and multiple business rules including user count, pagination, avatar format, and specific user attributes.")
     public CustomService requestAndValidateGetAllUsers() {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
