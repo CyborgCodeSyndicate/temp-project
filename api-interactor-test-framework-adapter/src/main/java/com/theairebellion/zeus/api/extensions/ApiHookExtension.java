@@ -18,8 +18,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.theairebellion.zeus.api.config.ApiConfigHolder.getApiConfig;
+import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemProperties;
 
 public class ApiHookExtension implements BeforeAllCallback, AfterAllCallback {
+
+    static {
+        synchronized (ApiHookExtension.class) {
+            addSystemProperties();
+        }
+    }
 
     private RestService restService;
 

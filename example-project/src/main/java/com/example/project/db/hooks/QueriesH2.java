@@ -1,11 +1,36 @@
 package com.example.project.db.hooks;
 
-import com.example.project.db.MyDatabases;
-import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.query.DbQuery;
 
 public enum QueriesH2 implements DbQuery {
-    QUERY("fdsfsd");
+    QUERY_H2("fdsfsd"),
+    CREATE_TABLE_ORDERS(
+            "CREATE TABLE orders ("
+                    + "id INT PRIMARY KEY, "
+                    + "customerName VARCHAR(255), "
+                    + "customerDetails VARCHAR(255), "
+                    + "phoneNumber VARCHAR(50), "
+                    + "location VARCHAR(255), "
+                    + "product VARCHAR(255)"
+                    + ")"
+    ),
+    CREATE_TABLE_SELLERS(
+            "CREATE TABLE sellers ("
+                    + "id INT PRIMARY KEY, "
+                    + "email VARCHAR(255), "
+                    + "password VARCHAR(255)"
+                    + ")"
+    ),
+    INSERT_ORDERS(
+            "INSERT INTO orders (id, customerName, customerDetails, phoneNumber, location, product) VALUES " +
+                    "(1, 'John Terry', 'Address', '+1-555-7777', 'Bakery', 'Strawberry Bun'), " +
+                    "(2, 'Petar Terry', 'Address', '+1-222-7778', 'Store', 'Strawberry Bun')"
+    ),
+    INSERT_SELLERS(
+            "INSERT INTO sellers (id, email, password) VALUES " +
+                    "(1, 'barista@vaadin.com', 'barista'), " +
+                    "(2, 'admin@vaadin.com', 'admin')"
+    );
 
     private final String query;
 
@@ -18,14 +43,6 @@ public enum QueriesH2 implements DbQuery {
     @Override
     public String query() {
         return query;
-    }
-
-
-    @Override
-    public DatabaseConfiguration config() {
-        DatabaseConfiguration.builder().dbType(MyDatabases.H2);
-        //todo override this to use from config for h2
-        return null;
     }
 
 

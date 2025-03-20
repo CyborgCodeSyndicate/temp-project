@@ -1,14 +1,10 @@
 package com.example.project;
 
-
-import com.example.project.data.CreateDB;
 import com.example.project.data.creator.TestDataCreator;
 import com.example.project.db.hooks.DbHookFlows;
 import com.example.project.model.bakery.Order;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
-import com.theairebellion.zeus.api.annotations.ApiHook;
-import com.theairebellion.zeus.api.annotations.ApiHooks;
 import com.theairebellion.zeus.db.annotations.DB;
 import com.theairebellion.zeus.db.annotations.DbHook;
 import com.theairebellion.zeus.db.annotations.DbHooks;
@@ -26,7 +22,6 @@ import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.example.project.base.World.FORGE;
 import static com.example.project.base.World.UNDERWORLD;
@@ -47,9 +42,8 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNOR
 @UI
 @DB
 @DbHooks({
-    @DbHook(when = BEFORE, type = DbHookFlows.Data.INITIALIZE_H2, arguments = {"5", "src/resources"}, order = 1)
+    @DbHook(when = BEFORE, type = DbHookFlows.Data.INITIALIZE_H2)
 })
-@ExtendWith(CreateDB.class)
 public class BakeryDatabaseTests extends BaseTest {
 
     @Test
@@ -129,19 +123,5 @@ public class BakeryDatabaseTests extends BaseTest {
             .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
             .complete();
     }
-
-    /*@Override
-    protected void beforeAll(final Services services) {
-        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
-        DatabaseConfiguration dbConfig = QUERY_ORDER.config();
-        H2Database.initialize(dbConfig, service);
-    }*/
-
-    /*@BeforeAll
-    public static void beforeAll() {
-        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
-        DatabaseConfiguration dbConfig = QUERY_ORDER.config();
-        H2Database.initialize(dbConfig, service);
-    }*/
 
 }

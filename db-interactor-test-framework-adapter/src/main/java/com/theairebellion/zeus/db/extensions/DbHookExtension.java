@@ -21,8 +21,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.theairebellion.zeus.db.config.DbConfigHolder.getDbConfig;
+import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemProperties;
 
 public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
+
+    static {
+        synchronized (DbHookExtension.class) {
+            addSystemProperties();
+        }
+    }
 
     private DatabaseService databaseService;
 
@@ -71,7 +78,6 @@ public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
                     new QueryResponseValidatorAllureImpl(jsonPathExtractor));
         }
         return databaseService;
-
     }
 
 }

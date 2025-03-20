@@ -1,19 +1,17 @@
 package com.example.project;
 
-
 import com.example.project.data.creator.TestDataCreator;
-import com.example.project.db.h2.H2Database;
+import com.example.project.db.hooks.DbHookFlows;
 import com.example.project.model.bakery.Order;
 import com.example.project.model.bakery.Seller;
 import com.example.project.preconditions.BakeryInterceptRequests;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
 import com.theairebellion.zeus.db.annotations.DB;
-import com.theairebellion.zeus.db.config.DatabaseConfiguration;
-import com.theairebellion.zeus.db.service.DatabaseService;
+import com.theairebellion.zeus.db.annotations.DbHook;
+import com.theairebellion.zeus.db.annotations.DbHooks;
 import com.theairebellion.zeus.framework.annotation.*;
 import com.theairebellion.zeus.framework.base.BaseTestSequential;
-import com.theairebellion.zeus.framework.base.Services;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
@@ -28,19 +26,24 @@ import java.util.List;
 
 import static com.example.project.base.World.*;
 import static com.example.project.data.cleaner.TestDataCleaner.Data.DELETE_CREATED_ORDERS;
-import static com.example.project.data.creator.TestDataCreator.Data.*;
-import static com.example.project.db.Queries.QUERY_ORDER;
+import static com.example.project.data.creator.TestDataCreator.Data.VALID_LATE_ORDER;
+import static com.example.project.data.creator.TestDataCreator.Data.VALID_ORDER;
+import static com.example.project.data.creator.TestDataCreator.Data.VALID_SELLER;
 import static com.example.project.preconditions.BakeryInterceptRequests.Data.INTERCEPT_REQUEST_AUTH;
 import static com.example.project.preconditions.BakeryQuestPreconditions.Data.LOGIN_PRECONDITION;
 import static com.example.project.preconditions.BakeryQuestPreconditions.Data.ORDER_PRECONDITION;
 import static com.example.project.ui.elements.Bakery.ButtonFields.*;
 import static com.example.project.ui.elements.Bakery.SelectFields.LOCATION_DDL;
+import static com.theairebellion.zeus.framework.hooks.HookExecution.BEFORE;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UI
 @DB
+@DbHooks({
+        @DbHook(when = BEFORE, type = DbHookFlows.Data.INITIALIZE_H2)
+})
 public class BakeryFeaturesTest extends BaseTestSequential {
 
 
@@ -190,14 +193,6 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                 .interceptor().validateResponseHaveStatus(
                         BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpointSubString(), 2, true)
                 .complete();
-    }
-
-
-    @Override
-    protected void beforeAll(final Services services) {
-        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
-        DatabaseConfiguration dbConfig = QUERY_ORDER.config();
-        H2Database.initialize(dbConfig, service);
     }
 
 }
