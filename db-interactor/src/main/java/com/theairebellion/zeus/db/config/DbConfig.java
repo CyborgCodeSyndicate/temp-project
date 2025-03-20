@@ -17,7 +17,7 @@ public interface DbConfig extends Config {
     String host();
 
     @Key("db.default.port")
-    String port();
+    Integer port();
 
     @Key("db.default.name")
     String name();
@@ -27,5 +27,8 @@ public interface DbConfig extends Config {
 
     @Key("db.default.password")
     String password();
+
+    @Key("db.full.connection.string")
+    String fullConnectionString();
 
 }

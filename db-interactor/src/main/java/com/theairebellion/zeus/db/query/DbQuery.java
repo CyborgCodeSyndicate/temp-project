@@ -12,13 +12,14 @@ public interface DbQuery {
     default DatabaseConfiguration config() {
         DbConfig dbConfig = getDbConfig();
         return DatabaseConfiguration.builder()
-                   .dbType(dbConfig.type())
-                   .host(dbConfig.host())
-                   .port(dbConfig.port())
-                   .database(dbConfig.name())
-                   .dbUser(dbConfig.username())
-                   .dbPassword(dbConfig.password())
-                   .build();
+                .dbType(dbConfig.type())
+                .host(dbConfig.host())
+                .port(dbConfig.port())
+                .database(dbConfig.name())
+                .dbUser(dbConfig.username())
+                .dbPassword(dbConfig.password())
+                .fullConnectionString(dbConfig.fullConnectionString())
+                .build();
     }
 
     Enum<?> enumImpl();

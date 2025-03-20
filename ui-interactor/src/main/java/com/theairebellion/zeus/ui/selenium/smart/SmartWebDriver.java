@@ -207,10 +207,20 @@ public class SmartWebDriver extends WebDriverDecorator {
                         .findFirst();
 
         if (exceptionHandlingOptional.isPresent()) {
-            return (T) exceptionHandlingOptional.get()
-                    .getExceptionHandlingMap()
-                    .get(cause.getClass())
-                    .apply(this.getOriginal(), params);
+            try {
+                return (T) exceptionHandlingOptional.get()
+                        .getExceptionHandlingMap()
+                        .get(cause.getClass())
+                        .apply(this.getOriginal(), params);
+            } catch (Exception handlerException) {
+                LogUI.error("Framework attempted to handle an exception in method '" + methodName
+                        + "', but the handler failed with: " + handlerException.getClass().getSimpleName() + ": "
+                        + handlerException.getMessage(), handlerException);
+                exception.addSuppressed(handlerException);
+                LogUI.error("Propagating original exception: " + exception.getClass().getSimpleName()
+                        + ": " + exception.getMessage(), exception);
+                throw exception;
+            }
         } else {
             LogUI.error("No exception handling for this specific exception.");
             throw exception;
