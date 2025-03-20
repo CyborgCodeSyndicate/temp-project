@@ -201,4 +201,5 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
         return (RestServiceFluent) super.retryUntil(retryCondition, maxWait, retryInterval, restService);
     }
 
+
 }

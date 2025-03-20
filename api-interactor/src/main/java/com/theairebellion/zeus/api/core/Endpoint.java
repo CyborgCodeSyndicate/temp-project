@@ -22,9 +22,9 @@ import static com.theairebellion.zeus.api.config.ApiConfigHolder.getApiConfig;
  * @author Cyborg Code Syndicate
  */
 @InfoAIClass(
-    description = "Interface representing endpoints. Should be implemented as enum and methods to be overridden",
-    creationType = CreationType.ENUM,
-    useAsKeyInStorage = true)
+        description = "Represents an API endpoint definition used to define HTTP methods, paths, and configurations. Implemented as an ENUM.",
+        creationType = CreationType.ENUM,
+        useAsKeyInStorage = true)
 public interface Endpoint {
 
     /**
@@ -170,11 +170,16 @@ public interface Endpoint {
         }
     }
 
+    /**
+     * Generates a string representation of the endpoint for AI usage.
+     *
+     * @return A formatted string representation of the endpoint.
+     */
     default String aiPrint() {
         return enumImpl().name() + "{" +
-                   "method=" + method() +
-                   ", url='" + url() + '\'' +
-                   '}';
+                "method=" + method() +
+                ", url='" + url() + '\'' +
+                '}';
     }
 
 }

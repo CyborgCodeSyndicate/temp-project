@@ -60,7 +60,6 @@ public class ArgumentInfoExtractor {
         if (annotation.creationType() == CreationType.ENUM && type.isInterface()) {
             argumentAiInfo.setUseAsKeyInStorage(true);
             argumentAiInfo.setAvailableOptions(fieldInfoExtractor.getEnumOptions(type));
-            argumentAiInfo.setAvailableOptions(fieldInfoExtractor.getEnumOptions(type));
         }
     }
 

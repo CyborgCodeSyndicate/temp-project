@@ -22,8 +22,9 @@ import lombok.Setter;
 @Getter
 @Builder
 @InfoAIClass(
-    description = "Class representing assertion objects. Based on how the class is built different assertion will be performed",
-    creationType = CreationType.BUILDER)
+        description = "Class representing assertion objects. Used to define validation logic in test automation, " +
+                "specifying validation targets, assertion types, and expected values.",
+        creationType = CreationType.BUILDER)
 public class Assertion<T> {
 
     /**
@@ -35,7 +36,7 @@ public class Assertion<T> {
      * Provides a supplementary identifier for targeted validation.
      */
     @Setter
-    @InfoAI(description = "The key used to specify what from the target should be extracted. Not mandatory.")
+    @InfoAI(description = "The key used to specify what specific part of the target should be validated (e.g., JSON path, field name). Not mandatory.")
     private String key;
 
     /**
@@ -46,13 +47,13 @@ public class Assertion<T> {
     /**
      * The reference value expected by this assertion.
      */
-    @InfoAI(description = "The expected value for assertion")
+    @InfoAI(description = "Defines the expected value that the assertion should compare against.")
     private final T expected;
 
     /**
      * Determines if the assertion is a soft assertion.
      */
-    @InfoAI(description = "Specify if the assertion should be soft or hard")
+    @InfoAI(description = "Specifies whether the assertion should be soft (non-blocking) or hard (test fails immediately on failure).")
     private final boolean soft;
 
 }

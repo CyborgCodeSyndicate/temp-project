@@ -1,5 +1,9 @@
 package com.theairebellion.zeus.validator.core;
 
+import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.annotations.InfoAIClass;
+
 /**
  * Defines a contract for specifying the target of an assertion.
  * <p>
@@ -10,12 +14,10 @@ package com.theairebellion.zeus.validator.core;
  *
  * @author Cyborg Code Syndicate
  */
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
-import com.theairebellion.zeus.annotations.InfoAIClass;
-
 @InfoAIClass(
-    description = "Interface representing what part of specific object should be asserted. Implemented in Enums",
-    creationType = CreationType.ENUM)
+        description = "Interface representing assertion targets. Defines which part of an " +
+                "object (e.g., API response, UI element, database field) should be validated. Implemented in Enums.",
+        creationType = CreationType.ENUM)
 public interface AssertionTarget {
 
     /**

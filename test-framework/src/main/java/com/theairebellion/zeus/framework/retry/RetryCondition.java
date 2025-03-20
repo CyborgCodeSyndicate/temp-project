@@ -1,5 +1,9 @@
 package com.theairebellion.zeus.framework.retry;
 
+import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.annotations.InfoAIClass;
+
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -21,9 +25,11 @@ import java.util.function.Predicate;
  * </p>
  *
  * <p>
+ *
  * @author Cyborg Code Syndicate
  * </p>
  */
+// todo: add logic for AI handling
 public interface RetryCondition<T> {
 
     /**
