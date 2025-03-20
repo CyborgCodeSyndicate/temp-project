@@ -9,20 +9,13 @@ import com.theairebellion.zeus.framework.storage.DataExtractor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Properties;
-
-import java.util.List;
+import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemProperties;
 
 @Odyssey
 @SpringBootTest(
-        classes = {TestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.NONE
+    classes = {TestConfig.class},
+    webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 public class BaseTest {
 
@@ -48,10 +41,11 @@ public class BaseTest {
         return quest.getStorage().sub(subKey).get(key, clazz);
     }
 
+
     protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-                clazz.getName());
+            clazz.getName());
         return quest.getStorage().get(extractor, clazz);
     }
 
@@ -59,26 +53,16 @@ public class BaseTest {
     protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
-                clazz.getName());
+            clazz.getName());
         return quest.getStorage().get(extractor, clazz, index);
     }
 
 
-    private static void addSystemProperties() {
-        Resource resource = new ClassPathResource("system.properties");
-        if (resource.exists()) {
-            try {
-                Properties props = PropertiesLoaderUtils.loadProperties(resource);
-                for (String propName : props.stringPropertyNames()) {
-                    String propValue = props.getProperty(propName);
-                    if (System.getProperty(propName) == null) {
-                        System.setProperty(propName, propValue);
-                    }
-                }
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to load system.properties", e);
-            }
-        }
+    protected <T> T hookData(Object value, Class<T> clazz) {
+        SuperQuest quest = QuestHolder.get();
+        LogTest.extended("Fetching data from before hooks storage by key: '{}' and type: '{}'", value,
+            clazz.getName());
+        return quest.getStorage().getHookData(value, clazz);
     }
 
 
@@ -96,6 +80,5 @@ public class BaseTest {
         }
 
     }
-
 
 }

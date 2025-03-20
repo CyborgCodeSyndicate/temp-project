@@ -5,8 +5,10 @@ import lombok.Getter;
 @Getter
 public enum StoreKeys {
 
+
     QUEST,
     QUEST_CONSUMERS,
-    START_TIME;
+    START_TIME,
+    HOOKS_PARAMS;
 
 }

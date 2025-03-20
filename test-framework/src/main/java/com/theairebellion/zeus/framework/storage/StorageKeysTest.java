@@ -6,6 +6,7 @@ public enum StorageKeysTest {
     ARGUMENTS,
     PRE_ARGUMENTS,
     STATIC_DATA,
+    HOOKS,
 
 
 

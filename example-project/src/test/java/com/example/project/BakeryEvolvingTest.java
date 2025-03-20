@@ -1,16 +1,20 @@
 package com.example.project;
 
-
-import com.example.project.data.CreateDB;
 import com.example.project.data.creator.TestDataCreator;
 import com.example.project.data.test.TestData;
+import com.example.project.db.hooks.DbHookFlows;
 import com.example.project.model.bakery.Order;
 import com.example.project.model.bakery.Seller;
 import com.example.project.ui.authentication.AdminUI;
 import com.example.project.ui.authentication.BakeryUILogging;
-import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.db.annotations.DB;
-import com.theairebellion.zeus.framework.annotation.*;
+import com.theairebellion.zeus.db.annotations.DbHook;
+import com.theairebellion.zeus.db.annotations.DbHooks;
+import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.annotation.Journey;
+import com.theairebellion.zeus.framework.annotation.JourneyData;
+import com.theairebellion.zeus.framework.annotation.PreQuest;
+import com.theairebellion.zeus.framework.annotation.Ripper;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
@@ -23,7 +27,6 @@ import com.theairebellion.zeus.ui.util.strategy.Strategy;
 import io.qameta.allure.Description;
 import org.aeonbits.owner.ConfigCache;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 
 import java.util.List;
@@ -36,14 +39,16 @@ import static com.example.project.ui.elements.Bakery.ButtonFields.*;
 import static com.example.project.ui.elements.Bakery.InputFields.*;
 import static com.example.project.ui.elements.Bakery.SelectFields.LOCATION_DDL;
 import static com.example.project.ui.elements.Bakery.SelectFields.PRODUCTS_DDL;
+import static com.theairebellion.zeus.framework.hooks.HookExecution.BEFORE;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UI
 @DB
-@API
-@ExtendWith(CreateDB.class)
+@DbHooks({
+        @DbHook(when = BEFORE, type = DbHookFlows.Data.INITIALIZE_H2)
+})
 public class BakeryEvolvingTest extends BaseTest {
 
 
@@ -151,8 +156,8 @@ public class BakeryEvolvingTest extends BaseTest {
     @Test
     @Description("Insertion and Craft usage")
     public void createOrderInsertion(Quest quest,
-                                 @Craft(model = VALID_SELLER) Seller seller,
-                                 @Craft(model = VALID_ORDER) Order order) {
+                                     @Craft(model = VALID_SELLER) Seller seller,
+                                     @Craft(model = VALID_ORDER) Order order) {
         quest
                 .enters(EARTH)
                 .browser().navigate(getUiConfig().baseUrl())

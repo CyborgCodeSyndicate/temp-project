@@ -6,9 +6,15 @@ import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestFactory;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.storage.Storage;
+import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -31,7 +37,7 @@ public class Oracle implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
-            throws ParameterResolutionException {
+        throws ParameterResolutionException {
         var parameterType = parameterContext.getParameter().getType();
         return Quest.class.isAssignableFrom(parameterType);
     }
@@ -39,7 +45,7 @@ public class Oracle implements ParameterResolver {
 
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
-            throws ParameterResolutionException {
+        throws ParameterResolutionException {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
         QuestFactory questFactory = appCtx.getBean(QuestFactory.class);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
@@ -47,16 +53,16 @@ public class Oracle implements ParameterResolver {
         Quest quest = questFactory.createQuest();
         SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
         Map<String, Object> staticTestData = getStaticTestData(extensionContext);
-        superQuest.getStorage().put(STATIC_DATA, staticTestData);
-
-
+        Storage storage = superQuest.getStorage();
+        storage.put(STATIC_DATA, staticTestData);
+        addHooksDataInTestStorage(storage, extensionContext);
         LogTest.info("Quest crafted for scenario: '{}'.", extensionContext.getDisplayName());
         ExtensionContext.Store store = extensionContext.getStore(GLOBAL);
         @SuppressWarnings("unchecked")
         List<Consumer<SuperQuest>> consumers = (List<Consumer<SuperQuest>>) store.get(StoreKeys.QUEST_CONSUMERS);
         if (Objects.nonNull(consumers)) {
             consumers.forEach(
-                    questConsumer -> questConsumer.accept(decoratorsFactory.decorate(quest, SuperQuest.class)));
+                questConsumer -> questConsumer.accept(decoratorsFactory.decorate(quest, SuperQuest.class)));
         }
         store.put(QUEST, quest);
         return quest;
@@ -70,7 +76,7 @@ public class Oracle implements ParameterResolver {
             if (staticDataAnnotation != null) {
                 try {
                     return staticDataAnnotation.value().getDeclaredConstructor()
-                            .newInstance().testStaticData();
+                               .newInstance().testStaticData();
 
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
@@ -79,6 +85,14 @@ public class Oracle implements ParameterResolver {
             }
         }
         return null;
+    }
+
+
+    private static void addHooksDataInTestStorage(Storage storage, ExtensionContext context) {
+        Map<Object, Object> hooksStorage = context.getStore(GLOBAL).get(StoreKeys.HOOKS_PARAMS, Map.class);
+        if (hooksStorage != null) {
+            storage.put(StorageKeysTest.HOOKS, hooksStorage);
+        }
     }
 
 }

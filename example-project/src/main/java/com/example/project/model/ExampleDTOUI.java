@@ -14,7 +14,7 @@ import org.openqa.selenium.support.FindBy;
 public class ExampleDTOUI {
 
     @InsertionField(locator = @FindBy(css = "locator"), type = InputComponentType.class,
-        componentType = "MD_INPUT_TYPE",
+        componentType = "MD_INPUT",
         order = 1)
     private String textName;
 

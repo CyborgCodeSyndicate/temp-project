@@ -25,7 +25,7 @@ public class BaseDbConnectorService {
 
         registerDriverIfNecessary(dbType);
 
-        String url = dbType.protocol().contains("h2") ? dbConfig.getHost() : buildConnectionUrl(dbType, dbConfig);
+        String url = buildConnectionUrl(dbConfig);
 
         return connectionMap.computeIfAbsent(url, u -> createConnection(u, dbConfig));
     }
@@ -47,12 +47,10 @@ public class BaseDbConnectorService {
         }
     }
 
-    private String buildConnectionUrl(DbType dbType, DatabaseConfiguration dbConfig) {
-        String url = String.format("%s://%s:%s/%s",
-                dbType.protocol(),
-                dbConfig.getHost(),
-                dbConfig.getPort(),
-                dbConfig.getDatabase());
+    private String buildConnectionUrl(DatabaseConfiguration dbConfig) {
+        String url = dbConfig.getFullConnectionString() != null
+                ? dbConfig.getFullConnectionString()
+                : dbConfig.buildUrlKey();
         LogDb.debug("Built connection URL: {}", url);
         return url;
     }
