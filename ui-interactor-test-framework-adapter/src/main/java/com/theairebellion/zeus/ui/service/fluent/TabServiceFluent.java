@@ -5,6 +5,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.tab.TabService;
 import com.theairebellion.zeus.ui.selenium.TabUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -49,6 +50,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T click(final TabUIElement element) {
+        Allure.step("[UI - Tab] Clicking on the tab " + element);
         element.before().accept(driver);
         tabService.click(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -62,6 +64,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T isEnabled(final TabUIElement element) {
+        Allure.step("[UI - Tab] Checking if the tab " + element + " is enabled.");
         element.before().accept(driver);
         boolean enabled = tabService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -112,6 +115,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     private T validateIsEnabled(final TabUIElement element, boolean shouldBeEnabled, boolean soft) {
+        Allure.step("[UI - Tab] Validating if the tab " + element + " is " + (shouldBeEnabled ? "enabled" : "disabled"));
         element.before().accept(driver);
         boolean enabled = tabService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -122,6 +126,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
                 : "Validating Tab is disabled";
 
         if (soft) {
+            Allure.step("[UI - Tab] Performing soft validation for the tab " + element);
             return (T) uiServiceFluent.validate(
                     softAssertions -> {
                         if (shouldBeEnabled) {
@@ -132,6 +137,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
                     }
             );
         } else {
+            Allure.step("[UI - Tab] Performing strict validation for the tab " + element);
             return (T) uiServiceFluent.validate(
                     () -> {
                         if (shouldBeEnabled) {
@@ -151,6 +157,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T isVisible(final TabUIElement element) {
+        Allure.step("[UI - Tab] Checking if the tab " + element + " is visible.");
         element.before().accept(driver);
         boolean visible = tabService.isVisible(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), visible);
@@ -201,6 +208,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     private T validateIsVisible(final TabUIElement element, boolean shouldBeVisible, boolean soft) {
+        Allure.step("[UI - Tab] Validating if the tab " + element + " is " + (shouldBeVisible ? "visible" : "hidden"));
         element.before().accept(driver);
         boolean visible = tabService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -211,6 +219,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
                 : "Validating Tab is hidden";
 
         if (soft) {
+            Allure.step("[UI - Tab] Performing soft validation for the tab " + element);
             return (T) uiServiceFluent.validate(
                     softAssertions -> {
                         if (shouldBeVisible) {
@@ -221,6 +230,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
                     }
             );
         } else {
+            Allure.step("[UI - Tab] Performing strict validation for the tab " + element);
             return (T) uiServiceFluent.validate(
                     () -> {
                         if (shouldBeVisible) {
@@ -240,6 +250,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T isSelected(final TabUIElement element) {
+        Allure.step("[UI - Tab] Checking if the tab " + element + " is selected.");
         element.before().accept(driver);
         boolean selected = tabService.isSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
@@ -292,6 +303,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     private T validateIsSelected(final TabUIElement element, boolean shouldBeSelected, boolean soft) {
+        Allure.step("[UI - Tab] Validating if the tab " + element + " is " + (shouldBeSelected ? "selected" : "not selected"));
         element.before().accept(driver);
         boolean selected = tabService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -302,6 +314,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
                 : "Validating Tab is not selected";
 
         if (soft) {
+            Allure.step("[UI - Tab] Performing soft validation for the tab " + element);
             return (T) uiServiceFluent.validate(
                     softAssertions -> {
                         if (shouldBeSelected) {
@@ -312,6 +325,7 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
                     }
             );
         } else {
+            Allure.step("[UI - Tab] Performing strict validation for the tab " + element);
             return (T) uiServiceFluent.validate(
                     () -> {
                         if (shouldBeSelected) {
@@ -323,5 +337,6 @@ public class TabServiceFluent<T extends UIServiceFluent<?>> {
             );
         }
     }
+
 
 }

@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import com.theairebellion.zeus.validator.util.AssertionUtil;
-import io.qameta.allure.Step;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
@@ -92,7 +91,6 @@ public class UiTableValidatorImpl implements UiTableValidator {
      * @return A list of extracted string values from the row.
      */
     //todo handle duplicate code
-    @Step("Extracting values for row: {0}")
     private static List<String> getRowValues(Object row) {
         return Arrays.stream(row.getClass().getDeclaredFields())
                 .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
@@ -158,7 +156,6 @@ public class UiTableValidatorImpl implements UiTableValidator {
      * @return {@code true} if the field is a list of TableCell instances, otherwise {@code false}.
      */
     //todo handle duplicate code
-    @Step("Checking if field is a List of TableCell: {0}")
     private static boolean isListOfTableCell(final Field field) {
         if (!List.class.isAssignableFrom(field.getType())) {
             return false;
@@ -188,7 +185,6 @@ public class UiTableValidatorImpl implements UiTableValidator {
      *
      * @param assertionCount the number of assertions that will be performed
      */
-    @Step("Starting validation with {0} assertion(s).")
     public void startValidation(int assertionCount) {
         LogUI.info("Starting response validation with {} assertion(s).", assertionCount);
     }
@@ -202,7 +198,6 @@ public class UiTableValidatorImpl implements UiTableValidator {
      *
      * @param target the UI table assertion target being processed
      */
-    @Step("Processing assertion for target: {0}")
     public void processAssertion(UiTablesAssertionTarget target) {
         LogUI.info("Processing assertion for target: {}", target);
     }

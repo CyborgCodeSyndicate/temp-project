@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;
@@ -11,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import io.qameta.allure.Allure;
 
 /**
  * Provides fluent methods for interacting with input elements in a UI test automation framework.
@@ -56,6 +56,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T insert(final InputUIElement element, final String value) {
+        Allure.step("[UI - Input] Insert value '" + value + "' into input element: " + element);
         element.before().accept(driver);
         inputService.insert(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -69,6 +70,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T clear(final InputUIElement element) {
+        Allure.step("[UI - Input] Clear input element: " + element);
         element.before().accept(driver);
         inputService.clear(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -82,6 +84,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T getValue(final InputUIElement element) {
+        Allure.step("[UI - Input] Get value from input element: " + element);
         element.before().accept(driver);
         String value = inputService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -109,6 +112,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T validateValue(final InputUIElement element, String expectedValue, boolean soft) {
+        Allure.step("[UI - Input] Validate value of input element: " + element + " is equal to: " + expectedValue);
         element.before().accept(driver);
         String value = inputService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -131,6 +135,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T isEnabled(final InputUIElement element) {
+        Allure.step("[UI - Input] Check if input element is enabled: " + element);
         element.before().accept(driver);
         boolean enabled = inputService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -181,6 +186,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
     private T validateIsEnabled(final InputUIElement element, boolean shouldBeEnabled, boolean soft) {
+        Allure.step("[UI - Input] Validate if input element " + element + " is " + (shouldBeEnabled ? "enabled" : "disabled"));
         element.before().accept(driver);
         boolean enabled = inputService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -220,6 +226,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T getErrorMessage(final InputUIElement element) {
+        Allure.step("[UI - Input] Get error message for input element: " + element);
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -247,6 +254,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The UI service fluent instance for method chaining.
      */
     public T validateErrorMessage(final InputUIElement element, String expectedMessage, boolean soft) {
+        Allure.step("[UI - Input] Validate error message for input element: " + element + " is equal to: " + expectedMessage);
         element.before().accept(driver);
         String errorMessage = inputService.getErrorMessage(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -272,6 +280,7 @@ public class InputServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        Allure.step("[UI - Input] Insert values into input field with locator: " + locator);
         inputService.insertion(componentType, locator, values);
     }
 }

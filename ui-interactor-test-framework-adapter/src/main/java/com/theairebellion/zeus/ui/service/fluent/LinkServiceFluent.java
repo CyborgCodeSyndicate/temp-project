@@ -1,10 +1,10 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.link.LinkService;
 import com.theairebellion.zeus.ui.selenium.LinkUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -51,6 +51,7 @@ public class LinkServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T click(final LinkUIElement element) {
+        Allure.step("[UI - Link] Clicking on the link element: " + element);
         element.before().accept(driver);
         linkService.click(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -64,6 +65,7 @@ public class LinkServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T doubleClick(final LinkUIElement element) {
+        Allure.step("[UI - Link] Double-clicking on the link element: " + element);
         element.before().accept(driver);
         linkService.doubleClick(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -77,6 +79,7 @@ public class LinkServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T isEnabled(final LinkUIElement element) {
+        Allure.step("[UI - Link] Checking if the link element is enabled: " + element);
         element.before().accept(driver);
         boolean enabled = linkService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -127,6 +130,7 @@ public class LinkServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     private T validateIsEnabled(final LinkUIElement element, boolean shouldBeEnabled, boolean soft) {
+        Allure.step("[UI - Link] Validating if the link element should be " + (shouldBeEnabled ? "enabled" : "disabled") + ": " + element);
         element.before().accept(driver);
         boolean enabled = linkService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -166,6 +170,7 @@ public class LinkServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T isVisible(final LinkUIElement element) {
+        Allure.step("[UI - Link] Checking if the link element is visible: " + element);
         element.before().accept(driver);
         boolean visible = linkService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -216,6 +221,7 @@ public class LinkServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     private T validateIsVisible(final LinkUIElement element, boolean shouldBeVisible, boolean soft) {
+        Allure.step("[UI - Link] Validating if the link element should be " + (shouldBeVisible ? "visible" : "hidden") + ": " + element);
         element.before().accept(driver);
         boolean visible = linkService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);

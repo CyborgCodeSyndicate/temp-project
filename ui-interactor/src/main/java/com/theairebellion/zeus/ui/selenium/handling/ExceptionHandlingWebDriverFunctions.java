@@ -3,8 +3,6 @@ package com.theairebellion.zeus.ui.selenium.handling;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
-import io.qameta.allure.Allure;
-import io.qameta.allure.model.Status;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -50,8 +48,6 @@ public class ExceptionHandlingWebDriverFunctions {
                 "[BROKEN] WebElement action '%s' could not be executed - Element with locator '%s' not found.",
                 webElementAction.getMethodName(), args[0]
         );
-
-        Allure.step(errorMessage, Status.BROKEN);
         throw new NoSuchElementException("Element not found in the main DOM or any iframe.");
     }
 }

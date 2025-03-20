@@ -7,6 +7,7 @@ import com.theairebellion.zeus.ui.components.radio.RadioService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.RadioUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -56,6 +57,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T select(final RadioUIElement element) {
+        Allure.step("[UI - Radio] Selecting radio button: " + element.enumImpl());
         element.before().accept(driver);
         radioService.select(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -69,6 +71,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T isEnabled(final RadioUIElement element) {
+        Allure.step("[UI - Radio] Checking if radio button is enabled: " + element.enumImpl());
         element.before().accept(driver);
         boolean enabled = radioService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -119,6 +122,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
     private T validateIsEnabled(final RadioUIElement element, boolean shouldBeEnabled, boolean soft) {
+        Allure.step("[UI - Radio] Validating if radio button is " + (shouldBeEnabled ? "enabled" : "disabled") + ": " + element.enumImpl());
         element.before().accept(driver);
         boolean enabled = radioService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -158,6 +162,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T isSelected(final RadioUIElement element) {
+        Allure.step("[UI - Radio] Checking if radio button is selected: " + element.enumImpl());
         element.before().accept(driver);
         boolean selected = radioService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -210,6 +215,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
     private T validateIsSelected(final RadioUIElement element, boolean shouldBeSelected, boolean soft) {
+        Allure.step("[UI - Radio] Validating if radio button is " + (shouldBeSelected ? "selected" : "not selected") + ": " + element.enumImpl());
         element.before().accept(driver);
         boolean selected = radioService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -249,6 +255,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T isVisible(final RadioUIElement element) {
+        Allure.step("[UI - Radio] Checking if radio button is visible: " + element.enumImpl());
         element.before().accept(driver);
         boolean visible = radioService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -301,6 +308,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
     private T validateIsVisible(final RadioUIElement element, boolean shouldBeVisible, boolean soft) {
+        Allure.step("[UI - Radio] Validating if radio button is " + (shouldBeVisible ? "visible" : "hidden") + ": " + element.enumImpl());
         element.before().accept(driver);
         boolean visible = radioService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -340,6 +348,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T getSelected(final RadioUIElement element) {
+        Allure.step("[UI - Radio] Retrieving selected value for radio button: " + element.enumImpl());
         element.before().accept(driver);
         String selectedValue = radioService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -355,6 +364,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T validateSelected(final RadioUIElement element, String expected) {
+        Allure.step("[UI - Radio] Validating selected value for radio button: " + element.enumImpl() + " (Expected: " + expected + ")");
         return validateSelected(element, expected, false);
     }
 
@@ -367,6 +377,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T validateSelected(final RadioUIElement element, String expected, boolean soft) {
+        Allure.step("[UI - Radio] Validating selected value for radio button: " + element.enumImpl() + " (Expected: " + expected + ", Soft: " + soft + ")");
         element.before().accept(driver);
         String selectedRadioInput = radioService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -392,6 +403,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T getAll(final RadioUIElement element) {
+        Allure.step("[UI - Radio] Retrieving all radio button options for: " + element.enumImpl());
         element.before().accept(driver);
         radioService.getAll(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -406,6 +418,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      * @return The fluent UI service instance.
      */
     public T validateAllRadioInputs(final RadioUIElement element, final String... expectedValues) {
+        Allure.step("[UI - Radio] Validating all radio inputs for: " + element.enumImpl() + " (Expected Values: " + Arrays.toString(expectedValues) + ")");
         return validateAllRadioInputs(element, false, expectedValues);
     }
 
@@ -419,6 +432,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      */
     public T validateAllRadioInputs(final RadioUIElement element, boolean soft,
                                     final String... expectedValues) {
+        Allure.step("[UI - Radio] Validating all radio inputs for: " + element.enumImpl() + " (Soft: " + soft + ", Expected Values: " + Arrays.toString(expectedValues) + ")");
         element.before().accept(driver);
         List<String> selectedRadioInputs = radioService.getAll(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -446,6 +460,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
      */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        Allure.step("[UI - Radio] Performing insertion on radio button (ComponentType: " + componentType + ", Locator: " + locator + ")");
         radioService.insertion(componentType, locator, values);
     }
 

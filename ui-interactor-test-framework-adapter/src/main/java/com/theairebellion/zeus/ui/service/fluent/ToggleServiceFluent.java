@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.toggle.ToggleService;
 import com.theairebellion.zeus.ui.selenium.ToggleUIElement;
+import io.qameta.allure.Allure;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
@@ -38,6 +39,7 @@ public class ToggleServiceFluent {
      * @return The fluent UI service instance.
      */
     public UIServiceFluent activate(final ToggleUIElement element) {
+        Allure.step("[UI - Toggle] Activating the toggle element: " + element);
         toggleService.activate(element.componentType(), element.locator());
         return uiServiceFluent;
     }
@@ -49,6 +51,7 @@ public class ToggleServiceFluent {
      * @return The fluent UI service instance.
      */
     public UIServiceFluent deactivate(final ToggleUIElement element) {
+        Allure.step("[UI - Toggle] Deactivating the toggle element: " + element);
         toggleService.deactivate(element.componentType(), element.locator());
         return uiServiceFluent;
     }
@@ -60,6 +63,7 @@ public class ToggleServiceFluent {
      * @return The fluent UI service instance.
      */
     public UIServiceFluent isActivated(final ToggleUIElement element) {
+        Allure.step("[UI - Toggle] Checking if the toggle element is activated: " + element);
         boolean enabled = toggleService.isActivated(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
@@ -72,6 +76,7 @@ public class ToggleServiceFluent {
      * @return The fluent UI service instance.
      */
     public UIServiceFluent isEnabled(final ToggleUIElement element) {
+        Allure.step("[UI - Toggle] Checking if the toggle element is enabled: " + element);
         boolean enabled = toggleService.isEnabled(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;

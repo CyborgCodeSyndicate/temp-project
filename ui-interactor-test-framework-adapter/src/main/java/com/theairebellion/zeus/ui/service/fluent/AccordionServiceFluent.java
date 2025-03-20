@@ -5,6 +5,7 @@ import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
 import com.theairebellion.zeus.ui.components.accordion.AccordionService;
 import com.theairebellion.zeus.ui.selenium.AccordionUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 
 import java.util.List;
 
@@ -55,6 +56,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T expand(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Expanding accordion with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         accordionService.expand((AccordionComponentType) element.componentType(), element.locator());
         element.after().accept(driver);
@@ -68,6 +71,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T collapse(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Collapsing accordion with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         accordionService.collapse((AccordionComponentType) element.componentType(), element.locator());
         element.after().accept(driver);
@@ -81,6 +86,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T areEnabled(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Checking if accordion is enabled with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         boolean enabled = accordionService.areEnabled((AccordionComponentType) element.componentType(), element.locator());
         element.after().accept(driver);
@@ -95,6 +102,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T getExpanded(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Getting expanded accordions for componentType: %s",
+                element.componentType()));
         element.before().accept(driver);
         List<String> expanded = accordionService.getExpanded(element.componentType()); // TODO: Implement further validation
         element.after().accept(driver);
@@ -109,6 +118,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T getCollapsed(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Getting collapsed accordions for componentType: %s",
+                element.componentType()));
         element.before().accept(driver);
         List<String> collapsed = accordionService.getCollapsed(element.componentType()); // TODO: Implement further validation
         element.after().accept(driver);
@@ -123,6 +134,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T getAll(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Getting all accordions for componentType: %s",
+                element.componentType()));
         element.before().accept(driver);
         List<String> all = accordionService.getAll(element.componentType()); // TODO: Implement further validation
         element.after().accept(driver);
@@ -137,6 +150,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T getTitle(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Getting title for componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         String title = accordionService.getTitle(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -151,6 +166,8 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T getText(final AccordionUIElement element) {
+        Allure.step(String.format("[UI - Accordion] Getting text for componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         String text = accordionService.getText(element.componentType(), element.locator());
         element.after().accept(driver);

@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import io.qameta.allure.Allure;
 import org.openqa.selenium.By;
 
 /**
@@ -51,7 +50,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     @Override
     public void click(final ButtonComponentType componentType, final SmartWebElement container,
                       final String buttonText) {
-        Allure.step(String.format("[UI - Button] Clicking button: %s in container", buttonText));
         LogUI.step("Clicking button: " + buttonText + " in container");
         buttonComponent(componentType).click(container, buttonText);
     }
@@ -64,7 +62,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public void click(final ButtonComponentType componentType, final SmartWebElement container) {
-        Allure.step("[UI - Button] Clicking button in container");
         LogUI.step("Clicking button in container");
         buttonComponent(componentType).click(container);
     }
@@ -77,7 +74,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public void click(final ButtonComponentType componentType, final String buttonText) {
-        Allure.step(String.format("[UI - Button] Clicking button: %s", buttonText));
         LogUI.step("Clicking button: " + buttonText);
         buttonComponent(componentType).click(buttonText);
     }
@@ -90,7 +86,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public void click(final ButtonComponentType componentType, final By buttonLocator) {
-        Allure.step(String.format("[UI - Button] Clicking button using locator: %s", buttonLocator));
         LogUI.step("Clicking button using locator: " + buttonLocator);
         buttonComponent(componentType).click(buttonLocator);
     }
@@ -106,7 +101,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final SmartWebElement container,
                              final String buttonText) {
-        Allure.step(String.format("[UI - Button] Checking if button is enabled: %s", buttonText));
         LogUI.step("Checking if button is enabled: " + buttonText);
         return buttonComponent(componentType).isEnabled(container, buttonText);
     }
@@ -120,7 +114,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final SmartWebElement container) {
-        Allure.step("[UI - Button] Checking if button is enabled in container");
         LogUI.step("Checking if button is enabled in container");
         return buttonComponent(componentType).isEnabled(container);
     }
@@ -134,7 +127,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final String buttonText) {
-        Allure.step(String.format("[UI - Button] Checking if button is enabled: %s", buttonText));
         LogUI.step("Checking if button is enabled: " + buttonText);
         return buttonComponent(componentType).isEnabled(buttonText);
     }
@@ -148,7 +140,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final By buttonLocator) {
-        Allure.step(String.format("[UI - Button] Checking if button is enabled using locator: %s", buttonLocator));
         LogUI.step("Checking if button is enabled using locator: " + buttonLocator);
         return buttonComponent(componentType).isEnabled(buttonLocator);
     }
@@ -164,7 +155,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final SmartWebElement container,
                              final String buttonText) {
-        Allure.step(String.format("[UI - Button] Checking if button is visible: %s", buttonText));
         LogUI.step("Checking if button is visible: " + buttonText);
         return buttonComponent(componentType).isVisible(container, buttonText);
     }
@@ -178,7 +168,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final SmartWebElement container) {
-        Allure.step("[UI - Button] Checking if button is visible in container");
         LogUI.step("Checking if button is visible in container");
         return buttonComponent(componentType).isVisible(container);
     }
@@ -192,7 +181,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final String buttonText) {
-        Allure.step(String.format("[UI - Button] Checking if button is visible: %s", buttonText));
         LogUI.step("Checking if button is visible: " + buttonText);
         return buttonComponent(componentType).isVisible(buttonText);
     }
@@ -206,7 +194,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final By buttonLocator) {
-        Allure.step(String.format("[UI - Button] Checking if button is visible using locator: %s", buttonLocator));
         LogUI.step("Checking if button is visible using locator: " + buttonLocator);
         return buttonComponent(componentType).isVisible(buttonLocator);
     }
@@ -231,7 +218,6 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     @Override
     public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
                                final String... values) {
-        Allure.step("[UI - Button] Performing table insertion");
         LogUI.step("Performing table insertion in cell element");
         buttonComponent((ButtonComponentType) componentType).clickElementInCell(cellElement);
     }

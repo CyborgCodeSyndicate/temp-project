@@ -5,8 +5,6 @@ import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
 import com.theairebellion.zeus.ui.selenium.helper.LocatorParser;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import io.qameta.allure.Allure;
-import io.qameta.allure.model.Status;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -45,7 +43,6 @@ public class ExceptionHandlingWebElementFunctions {
             String errorMessage = String.format(
                     "[BROKEN] WebElement action '%s' failed for stale element exception",
                     webElementAction.getMethodName());
-            Allure.step(errorMessage, Status.BROKEN);
             LogUI.error(errorMessage);
             throw e;
         }
@@ -77,7 +74,6 @@ public class ExceptionHandlingWebElementFunctions {
                 webElementAction.getMethodName(), args[0]
         );
 
-        Allure.step(errorMessage, Status.BROKEN);
         LogUI.error(errorMessage);
         throw new NoSuchElementException("Element not found in any iframe.");
     }
@@ -108,7 +104,6 @@ public class ExceptionHandlingWebElementFunctions {
                     "[BROKEN] WebElement action '%s' failed due to intercepted click with locator '%s'. Exception: '%s'",
                     webElementAction.getMethodName(), LocatorParser.extractBlockingElementLocator(exception.getMessage()), e.getClass().getSimpleName()
             );
-            Allure.step(errorMessage, Status.BROKEN);
             LogUI.error(errorMessage);
             throw e;
         }
@@ -137,7 +132,6 @@ public class ExceptionHandlingWebElementFunctions {
                     "[BROKEN] WebElement action '%s' failed because element was not interactable. Exception: '%s'",
                     webElementAction.getMethodName(), e.getClass().getSimpleName()
             );
-            Allure.step(errorMessage, Status.BROKEN);
             LogUI.error(errorMessage);
             throw e;
         }
