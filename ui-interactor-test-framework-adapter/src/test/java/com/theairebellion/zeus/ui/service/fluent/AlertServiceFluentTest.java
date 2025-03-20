@@ -418,4 +418,140 @@ class AlertServiceFluentTest extends BaseUnitUITest {
         }
     }
 
+    @Test
+    void validateValueWithLambdaExecution() {
+        mockService.reset();
+
+        // For soft assertions (soft=true)
+        doAnswer(invocation -> {
+            java.util.function.Consumer<org.assertj.core.api.SoftAssertions> assertionConsumer = invocation.getArgument(0);
+            org.assertj.core.api.SoftAssertions softAssertions = new org.assertj.core.api.SoftAssertions();
+            assertionConsumer.accept(softAssertions);
+            return uiServiceFluent;
+        }).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+
+        sut.validateValue(element, "ExpectedValue", true);
+        verify(storageUI).put(element.enumImpl(), MockAlertService.VALUE_LOCATOR);
+
+        // For hard assertions (soft=false)
+        reset(uiServiceFluent);
+        doReturn(uiServiceFluent).when(uiServiceFluent).validate(any(Runnable.class));
+        doAnswer(invocation -> {
+            Runnable assertionRunnable = invocation.getArgument(0);
+            try {
+                assertionRunnable.run();
+            } catch (AssertionError ignored) {
+                // Expected, we just want to execute the lambda
+            }
+            return uiServiceFluent;
+        }).when(uiServiceFluent).validate(any(Runnable.class));
+
+        sut.validateValue(element, "ExpectedValue", false);
+        verify(storageUI, times(2)).put(element.enumImpl(), MockAlertService.VALUE_LOCATOR);
+    }
+
+    @Test
+    void validateIsVisibleWithLambdaExecution() {
+        // Test all combinations of visible, shouldBeVisible, and soft
+
+        // Case 1: visible=true, shouldBeVisible=true, soft=true
+        mockService.reset();
+        doAnswer(invocation -> {
+            java.util.function.Consumer<org.assertj.core.api.SoftAssertions> assertionConsumer = invocation.getArgument(0);
+            org.assertj.core.api.SoftAssertions softAssertions = new org.assertj.core.api.SoftAssertions();
+            assertionConsumer.accept(softAssertions);
+            return uiServiceFluent;
+        }).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+
+        sut.validateIsVisible(element, true);
+        verify(storageUI).put(element.enumImpl(), true);
+
+        // Case 2: visible=true, shouldBeVisible=true, soft=false
+        reset(uiServiceFluent);
+        when(storage.sub(StorageKeysUi.UI)).thenReturn(storageUI);
+        doReturn(uiServiceFluent).when(uiServiceFluent).validate(any(Runnable.class));
+        doAnswer(invocation -> {
+            Runnable assertionRunnable = invocation.getArgument(0);
+            try {
+                assertionRunnable.run();
+            } catch (AssertionError ignored) {
+                // Expected, we just want to execute the lambda
+            }
+            return uiServiceFluent;
+        }).when(uiServiceFluent).validate(any(Runnable.class));
+
+        sut.validateIsVisible(element);
+        verify(storageUI, times(2)).put(element.enumImpl(), true);
+
+        // Case 3: visible=false, shouldBeVisible=false, soft=true
+        MockAlertService hiddenService = new MockAlertService() {
+            @Override
+            public boolean isVisible(AlertComponentType componentType, By containerLocator) {
+                lastComponentType = componentType;
+                lastLocator = containerLocator;
+                return false;
+            }
+        };
+
+        reset(uiServiceFluent);
+        when(storage.sub(StorageKeysUi.UI)).thenReturn(storageUI);
+        doReturn(uiServiceFluent).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+        doAnswer(invocation -> {
+            java.util.function.Consumer<org.assertj.core.api.SoftAssertions> assertionConsumer = invocation.getArgument(0);
+            org.assertj.core.api.SoftAssertions softAssertions = new org.assertj.core.api.SoftAssertions();
+            assertionConsumer.accept(softAssertions);
+            return uiServiceFluent;
+        }).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+
+        AlertServiceFluent<UIServiceFluent<?>> hiddenSut =
+                new AlertServiceFluent<>(uiServiceFluent, storage, hiddenService, driver);
+
+        hiddenSut.validateIsHidden(element, true);
+        verify(storageUI).put(element.enumImpl(), false);
+
+        // Case 4: visible=false, shouldBeVisible=false, soft=false
+        reset(uiServiceFluent);
+        when(storage.sub(StorageKeysUi.UI)).thenReturn(storageUI);
+        doReturn(uiServiceFluent).when(uiServiceFluent).validate(any(Runnable.class));
+        doAnswer(invocation -> {
+            Runnable assertionRunnable = invocation.getArgument(0);
+            try {
+                assertionRunnable.run();
+            } catch (AssertionError ignored) {
+                // Expected, we just want to execute the lambda
+            }
+            return uiServiceFluent;
+        }).when(uiServiceFluent).validate(any(Runnable.class));
+
+        hiddenSut = new AlertServiceFluent<>(uiServiceFluent, storage, hiddenService, driver);
+
+        hiddenSut.validateIsHidden(element);
+        verify(storageUI, times(2)).put(element.enumImpl(), false);
+
+        // Case 5: visible=true, shouldBeVisible=false, soft=true
+        reset(uiServiceFluent);
+        when(storage.sub(StorageKeysUi.UI)).thenReturn(storageUI);
+        doReturn(uiServiceFluent).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+        doAnswer(invocation -> {
+            java.util.function.Consumer<org.assertj.core.api.SoftAssertions> assertionConsumer = invocation.getArgument(0);
+            org.assertj.core.api.SoftAssertions softAssertions = new org.assertj.core.api.SoftAssertions();
+            assertionConsumer.accept(softAssertions);
+            return uiServiceFluent;
+        }).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+
+        try {
+            sut.validateIsHidden(element, true);
+        } catch (AssertionError ignored) {
+            // Expected to fail, but we want to execute the lambda
+        }
+
+        // Case 6: visible=false, shouldBeVisible=true, soft=true
+        try {
+            hiddenSut = new AlertServiceFluent<>(uiServiceFluent, storage, hiddenService, driver);
+            hiddenSut.validateIsVisible(element, true);
+        } catch (AssertionError ignored) {
+            // Expected to fail, but we want to execute the lambda
+        }
+    }
+
 }

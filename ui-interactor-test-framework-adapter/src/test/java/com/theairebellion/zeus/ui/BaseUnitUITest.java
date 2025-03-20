@@ -18,8 +18,7 @@ public class BaseUnitUITest {
         System.setProperty("radio.default.type", "DUMMY");
         System.setProperty("select.default.type", "DUMMY");
         System.setProperty("tab.default.type", "DUMMY");
-        System.setProperty("table.default.type", "DUMMY");
+        System.setProperty("table.default.type", "DEFAULT");
         System.setProperty("toggle.default.type", "DUMMY");
-
     }
 }

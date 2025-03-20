@@ -483,8 +483,12 @@ public interface CheckboxService extends Insertion {
      * @return The default CheckboxComponentType.
      */
     private static CheckboxComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(CheckboxComponentType.class,
-                getUiConfig().checkboxDefaultType(),
-                getUiConfig().projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(CheckboxComponentType.class,
+                    getUiConfig().checkboxDefaultType(),
+                    getUiConfig().projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }
