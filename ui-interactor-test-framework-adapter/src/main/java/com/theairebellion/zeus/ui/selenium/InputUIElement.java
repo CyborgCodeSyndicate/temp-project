@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.selenium;
 
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.input.InputService;

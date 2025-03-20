@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.maven.plugins.navigator.controller;
 
-import com.theairebellion.zeus.ai.metadata.model.AiUsage;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiUsage;
 import com.theairebellion.zeus.maven.plugins.navigator.model.ServiceType;
 import com.theairebellion.zeus.maven.plugins.navigator.usage.AIUsageService;
 

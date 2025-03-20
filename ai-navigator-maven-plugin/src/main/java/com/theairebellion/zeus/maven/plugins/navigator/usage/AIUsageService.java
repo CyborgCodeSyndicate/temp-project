@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.theairebellion.zeus.ai.metadata.extractor.AnnotationExtractor;
 import com.theairebellion.zeus.ai.metadata.extractor.JsonFileUsageProvider;
-import com.theairebellion.zeus.ai.metadata.model.AiClassInfo;
-import com.theairebellion.zeus.ai.metadata.model.AiUsage;
+import com.theairebellion.zeus.ai.metadata.model.annotations.AiAnnotationInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiClassInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiUsage;
 import com.theairebellion.zeus.ai.metadata.service.AIMetadataService;
 import com.theairebellion.zeus.framework.annotation.TestService;
 import com.theairebellion.zeus.framework.base.BaseTest;
@@ -34,14 +36,17 @@ public class AIUsageService {
 
     private final AIMetadataService metadataService;
     private final MetadataCollector metadataCollector;
+    private final AnnotationExtractor annotationExtractor;
     private final Log log;
     private final S3Client s3Client;
     private final String bucket;
 
 
-    public AIUsageService(AIMetadataService metadataService, Reflections reflections, Log log,
+    public AIUsageService(AIMetadataService metadataService, Reflections reflections,
+                          final AnnotationExtractor annotationExtractor, Log log,
                           S3Client s3Client, String bucket) {
         this.metadataService = Objects.requireNonNull(metadataService, "MetadataService cannot be null");
+        this.annotationExtractor = annotationExtractor;
         this.log = Objects.requireNonNull(log, "Log cannot be null");
         this.s3Client = Objects.requireNonNull(s3Client, "S3Client cannot be null");
         this.bucket = Objects.requireNonNull(bucket, "Bucket cannot be null");
@@ -52,8 +57,10 @@ public class AIUsageService {
     public AiUsage generateUsage(Set<ServiceType> serviceTypes) {
         AiUsage aiUsage = new AiUsage();
         List<AiClassInfo> classInfoList = new ArrayList<>();
+        List<AiAnnotationInfo> annotationInfoList = new ArrayList<>();
 
         classInfoList.add(metadataService.extractMetadata(BaseTest.class));
+
         serviceTypes.forEach(serviceType -> metadataCollector.collectServiceMetadata(serviceType, classInfoList));
         metadataCollector.collectFluentServiceMetadata(classInfoList);
 
@@ -74,6 +81,11 @@ public class AIUsageService {
         classInfoList.add(questInfo);
         aiUsage.setAiClassInfo(classInfoList);
 
+        serviceTypes.stream().flatMap(serviceType -> serviceType.getAnnotationClasses().stream()).forEach(aClass -> {
+            annotationInfoList.add(annotationExtractor.extract(aClass));
+        });
+
+        aiUsage.setAiAnnotationInfos(annotationInfoList);
         return aiUsage;
     }
 

@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ai.metadata.extractor;
 
-import com.theairebellion.zeus.ai.metadata.model.Usage;
+import com.theairebellion.zeus.ai.metadata.model.classes.Usage;
 
 import java.util.List;
 

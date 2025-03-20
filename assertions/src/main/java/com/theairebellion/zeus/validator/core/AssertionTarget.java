@@ -10,7 +10,7 @@ package com.theairebellion.zeus.validator.core;
  *
  * @author Cyborg Code Syndicate
  */
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 
 @InfoAIClass(

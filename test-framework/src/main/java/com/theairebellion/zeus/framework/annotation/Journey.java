@@ -1,6 +1,14 @@
 package com.theairebellion.zeus.framework.annotation;
 
-import java.lang.annotation.*;
+import com.theairebellion.zeus.annotations.AvailableOptionsAI;
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Defines a pre-test setup step ("journey") to be executed before the test runs.
@@ -17,6 +25,7 @@ import java.lang.annotation.*;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Annotation added on test method for specific before test method action")
 @Repeatable(PreQuest.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -31,6 +40,8 @@ public @interface Journey {
      *
      * @return The name of the journey.
      */
+    @InfoAI(description = "Add the string value representing the enum name of the Before Action")
+    @AvailableOptionsAI(interfaceClass = PreQuestJourney.class)
     String value();
 
     /**
@@ -52,6 +63,7 @@ public @interface Journey {
      *
      * @return The execution order of the journey.
      */
+    @InfoAI(description = "In what order to execute the Journeys of there are multiple in PreQuest for a specific test")
     int order() default 0;
 
 }

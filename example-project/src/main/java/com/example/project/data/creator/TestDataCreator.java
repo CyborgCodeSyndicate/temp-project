@@ -1,5 +1,6 @@
 package com.example.project.data.creator;
 
+import com.theairebellion.zeus.annotations.UseEnumInAnnotation;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 
@@ -9,6 +10,7 @@ public enum TestDataCreator implements DataForge {
     USERNAME_JOHN(DataCreationFunctions::usernameJohn),
     PASSWORD_JOHN(DataCreationFunctions::passwordJohn);
 
+    @UseEnumInAnnotation
     public static final class Data {
 
         public static final String VALID_STUDENT = "VALID_STUDENT";

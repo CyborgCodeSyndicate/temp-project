@@ -2,11 +2,10 @@ package com.theairebellion.zeus.ai.metadata.service;
 
 import com.theairebellion.zeus.ai.metadata.extractor.ArgumentInfoExtractor;
 import com.theairebellion.zeus.ai.metadata.extractor.FieldInfoExtractor;
-import com.theairebellion.zeus.ai.metadata.extractor.JsonFileUsageProvider;
 import com.theairebellion.zeus.ai.metadata.extractor.MethodInfoExtractor;
 import com.theairebellion.zeus.ai.metadata.extractor.UsageProvider;
-import com.theairebellion.zeus.ai.metadata.model.AiClassInfo;
-import com.theairebellion.zeus.ai.metadata.model.AiMethodInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiClassInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiMethodInfo;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import org.reflections.Reflections;
 
@@ -26,8 +25,7 @@ public class AIMetadataService {
     private final MethodInfoExtractor methodInfoExtractor;
 
 
-    public AIMetadataService(Reflections reflections) {
-        UsageProvider usageProvider = new JsonFileUsageProvider();
+    public AIMetadataService(Reflections reflections, final UsageProvider usageProvider) {
         FieldInfoExtractor fieldInfoExtractor = new FieldInfoExtractor(reflections, usageProvider);
         ArgumentInfoExtractor argumentInfoExtractor = new ArgumentInfoExtractor(fieldInfoExtractor);
         this.methodInfoExtractor = new MethodInfoExtractor(argumentInfoExtractor, usageProvider);

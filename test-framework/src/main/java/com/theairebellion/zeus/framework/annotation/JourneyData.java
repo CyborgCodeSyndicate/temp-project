@@ -1,5 +1,9 @@
 package com.theairebellion.zeus.framework.annotation;
 
+import com.theairebellion.zeus.annotations.AvailableOptionsAI;
+import com.theairebellion.zeus.annotations.InfoAI;
+import com.theairebellion.zeus.framework.parameters.DataForge;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -19,6 +23,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(
+    description = "Annotation representing data needed for the methods for each Journey. Use enum for data generation")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
 public @interface JourneyData {
@@ -32,6 +38,8 @@ public @interface JourneyData {
      *
      * @return The name of the test data model.
      */
+    @InfoAI(description = "Add the string value representing the enum name of the Data Object")
+    @AvailableOptionsAI(interfaceClass = DataForge.class)
     String value();
 
     /**
@@ -48,6 +56,7 @@ public @interface JourneyData {
      * @return {@code true} if the test data should be created lazily and requires
      * explicit resolution before use, otherwise {@code false}.
      */
+    @InfoAI(description = "Set to true if this data object for creation is requesting something from previous journey")
     boolean late() default false;
 
 }

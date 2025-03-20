@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.ai.metadata.extractor;
 
-import com.theairebellion.zeus.ai.metadata.model.AiMethodInfo;
-import com.theairebellion.zeus.ai.metadata.model.ArgumentAiInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiMethodInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.ArgumentAiInfo;
 import com.theairebellion.zeus.ai.metadata.util.SignatureGenerator;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.annotations.InfoAI;

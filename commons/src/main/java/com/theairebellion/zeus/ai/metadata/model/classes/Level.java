@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.ai.metadata.model;
+package com.theairebellion.zeus.ai.metadata.model.classes;
 
 public enum Level {
 

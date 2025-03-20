@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.theairebellion.zeus.ai.metadata.model.UsageLevel.COMPREHENSIVE;
-import static com.theairebellion.zeus.ai.metadata.model.UsageLevel.EXTENDED;
-import static com.theairebellion.zeus.ai.metadata.model.UsageLevel.MANDATORY;
+import static com.theairebellion.zeus.ai.metadata.model.classes.UsageLevel.COMPREHENSIVE;
+import static com.theairebellion.zeus.ai.metadata.model.classes.UsageLevel.EXTENDED;
+import static com.theairebellion.zeus.ai.metadata.model.classes.UsageLevel.MANDATORY;
 
 @Mojo(name = "upload-ai", defaultPhase = LifecyclePhase.NONE, threadSafe = true)
 public class AiInstructionsJsonUploaderMojo extends AbstractMojo {

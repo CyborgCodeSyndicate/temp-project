@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.api.core;
 
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
