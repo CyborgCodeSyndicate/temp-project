@@ -6,6 +6,18 @@ import org.openqa.selenium.By;
 
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
+/**
+ * Provides an interface for interacting with toggle components in a UI automation
+ * framework, supporting operations to activate, deactivate, and verify toggle states.
+ * By leveraging {@link ToggleComponentType} and the {@link #DEFAULT_TYPE}, implementations
+ * can manage various toggle behaviors (e.g., switches, checkboxes) with consistent
+ * methods across different UI designs.
+ *
+ * <p>Commonly relies on Selenium-based strategies to locate and manipulate toggles
+ * identified by container elements ({@link SmartWebElement}), text, or {@link By} locators.</p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public interface ToggleService {
 
     ToggleComponentType DEFAULT_TYPE = getDefaultType();

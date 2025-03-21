@@ -1,0 +1,100 @@
+[
+  {
+    "name": "Timing-Related Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(StaleElementReferenceException|TimeoutException|ElementClickInterceptedException).*"
+  },
+  {
+    "name": "Element State & Visibility Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(ElementNotInteractableException|NoSuchElementException).*"
+  },
+  {
+    "name": "Multi-Window & Frame Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(NoSuchWindowException|NoSuchFrameException).*"
+  },
+  {
+    "name": "JavaScript & Browser Interaction Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(JavascriptException|MoveTargetOutOfBoundsException).*"
+  },
+  {
+    "name": "WebDriver & Session Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(WebDriverException|SessionNotCreatedException).*"
+  },
+  {
+    "name": "Unexpected Popups & Alerts",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(UnexpectedAlertPresentException).*"
+  },
+  {
+    "name": "Network & Server Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(ConnectException|NoHttpResponseException|SocketTimeoutException).*"
+  },
+  {
+    "name": "Response Handling Failures",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(HttpResponseException|ResponseDeserializationException|JsonPathException).*"
+  },
+  {
+    "name": "Authentication & Authorization Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(AuthenticationException|AuthorizationException).*"
+  },
+  {
+    "name": "Content Type & Encoding Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(ContentTypeExtractionException|CharsetMismatchException).*"
+  },
+  {
+    "name": "Invalid Argument Issues",
+    "matchedStatuses": [
+      "failed",
+      "broken"
+    ],
+    "traceRegex": ".*(IllegalArgumentException).*"
+  },
+  {
+    "name": "Database Operation Issues",
+    "matchedStatuses": ["failed", "broken"],
+    "traceRegex": ".*(DatabaseOperationException).*"
+  },
+  {
+    "name": "Data Parsing & Extraction Issues",
+    "matchedStatuses": ["failed", "broken"],
+    "traceRegex": ".*(JsonPathExtractionException).*"
+  }
+]

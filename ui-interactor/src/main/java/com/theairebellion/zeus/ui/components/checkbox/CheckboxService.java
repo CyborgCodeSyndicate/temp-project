@@ -10,6 +10,16 @@ import java.util.List;
 
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
+/**
+ * Provides service-level methods for interacting with checkbox UI components.
+ * <p>
+ * This interface defines operations to select, deselect, and verify the state
+ * of checkboxes, delegating the actual interactions to specific implementations
+ * based on the configured {@link CheckboxComponentType}.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public interface CheckboxService extends Insertion {
 
     CheckboxComponentType DEFAULT_TYPE = getDefaultType();

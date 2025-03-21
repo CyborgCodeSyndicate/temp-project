@@ -13,10 +13,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implements response validation for API tests.
+ * <p>
+ * This class validates HTTP responses against assertions, ensuring compliance with expected
+ * values in status codes, headers, and body content.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Component
 @NoArgsConstructor
 public class RestResponseValidatorImpl implements RestResponseValidator {
 
+    /**
+     * Validates an API response against the provided assertions.
+     * <p>
+     * Extracts response status, headers, and body values based on defined assertions and
+     * performs validation using {@link AssertionUtil}.
+     * </p>
+     *
+     * @param response   The API response to validate.
+     * @param assertions The assertions used to verify response correctness.
+     * @param <T>        The expected data type for assertion validation.
+     * @return A list of assertion results indicating pass or failure for each assertion.
+     * @throws IllegalArgumentException  If response or assertions are null.
+     * @throws InvalidAssertionException If assertion targets or keys are invalid.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <T> List<AssertionResult<T>> validateResponse(final Response response, Assertion<?>... assertions) {
@@ -27,7 +50,6 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
         for (Assertion<?> assertion : assertions) {
             switch ((RestAssertionTarget) assertion.getTarget()) {
                 case STATUS -> {
-                    // todo: check if it can be improved
                     final String ASSERTION_KEY_FOR_STATUS = "AssertionKeyForStatus";
                     data.put(ASSERTION_KEY_FOR_STATUS, (T) Integer.valueOf(response.getStatusCode()));
                     assertion.setKey(ASSERTION_KEY_FOR_STATUS);
@@ -36,27 +58,25 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
                     String key = assertion.getKey();
                     if (key == null) {
                         throw new InvalidAssertionException(
-                                "Assertion must have a non-null key. Key must contain a valid Jsonpath expression.");
+                                "Assertion must have a non-null key. Key must contain a valid JsonPath expression.");
                     }
 
                     T value = response.jsonPath().get(key);
                     if (value == null) {
                         throw new IllegalArgumentException(
-                                "Jsonpath expression: '" + key + "' not found in response body.");
+                                "JsonPath expression: '" + key + "' not found in response body.");
                     }
                     data.put(key, value);
                 }
                 case HEADER -> {
                     String key = assertion.getKey();
                     if (key == null) {
-                        throw new InvalidAssertionException(
-                                "Assertion must have a non-null key.");
+                        throw new InvalidAssertionException("Assertion must have a non-null key.");
                     }
 
                     String header = response.getHeader(key);
                     if (header == null) {
-                        throw new IllegalArgumentException(
-                                "Header '" + key + "' not found in response.");
+                        throw new IllegalArgumentException("Header '" + key + "' not found in response.");
                     }
                     data.put(key, (T) header);
                 }
@@ -67,9 +87,12 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
         return AssertionUtil.validate(data, assertions);
     }
 
-
+    /**
+     * Logs the extracted validation targets for debugging purposes.
+     *
+     * @param data The extracted response data mapped to assertion keys.
+     */
     protected void printAssertionTarget(Map<String, Object> data) {
         LogApi.extended("Validation target: [{}]", data.toString());
     }
-
 }

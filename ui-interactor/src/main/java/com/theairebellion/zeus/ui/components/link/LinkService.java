@@ -8,7 +8,14 @@ import org.openqa.selenium.By;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with link elements within a web interface.
+ * Provides service-level methods for interacting with link UI components.
+ * <p>
+ * This interface defines operations for performing actions on links, such as
+ * clicking and double-clicking, while delegating the actual interactions to
+ * specific implementations based on the configured {@link LinkComponentType}.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface LinkService extends ButtonService {
 

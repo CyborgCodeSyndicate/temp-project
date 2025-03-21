@@ -7,7 +7,20 @@ import org.openqa.selenium.By;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with alert components in a web interface.
+ * Provides service-level methods for retrieving and checking the visibility
+ * of alert components, either by a user-specified type or a default configuration.
+ * <p>
+ * Each method resolves the appropriate {@link AlertComponentType}—for instance,
+ * corresponding to a particular UI framework—and delegates to the correct
+ * {@link Alert} implementation under the hood.
+ * </p>
+ *
+ * <p>
+ * The default alert type can be overridden by specifying an {@link AlertComponentType} parameter,
+ * allowing different UI implementations (e.g., Bootstrap, Material Design, etc.).
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface AlertService {
 

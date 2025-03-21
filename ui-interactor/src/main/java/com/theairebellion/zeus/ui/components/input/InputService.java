@@ -10,7 +10,14 @@ import org.openqa.selenium.By;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface defining operations for interacting with input elements within a web interface using Selenium.
+ * Provides service-level methods for interacting with input UI components.
+ * <p>
+ * This interface defines operations for inserting, clearing, retrieving values,
+ * and verifying the state of input fields, delegating the actual interactions
+ * to specific implementations based on the configured {@link InputComponentType}.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface InputService extends Insertion, TableInsertion, TableFilter {
 
