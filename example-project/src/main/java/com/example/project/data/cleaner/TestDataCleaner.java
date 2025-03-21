@@ -6,12 +6,10 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 import java.util.function.Consumer;
 
 public enum TestDataCleaner implements DataRipper {
-    ALL_CREATED_STUDENTS(DataCleanUpFunctions::cleanAllStudents),
-    DELETE_CREATED_ORDERS(DataCleanUpFunctions::cleanAllOrders);
+    ALL_CREATED_STUDENTS(DataCleanUpFunctions::cleanAllStudents);
 
     public static final class Data {
         public static final String ALL_CREATED_STUDENTS = "ALL_CREATED_STUDENTS";
-        public static final String DELETE_CREATED_ORDERS = "DELETE_CREATED_ORDERS";
 
         private Data() {
         }

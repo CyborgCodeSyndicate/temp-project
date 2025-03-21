@@ -12,13 +12,14 @@ import com.theairebellion.zeus.validator.core.Assertion;
 import org.apache.http.HttpStatus;
 
 
-import static com.bakery.project.base.World.*;
+import static com.bakery.project.base.World.FORGE;
+import static com.bakery.project.base.World.OLYMPYS;
+import static com.bakery.project.base.World.UNDERWORLD;
 import static com.bakery.project.db.Queries.QUERY_SELLER;
 import static com.bakery.project.rest.Endpoints.ENDPOINT_BAKERY;
-import static com.bakery.project.rest.Endpoints.ENDPOINT_BAKERY_LOGIN;
 import static com.bakery.project.service.CustomService.getJSessionCookie;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
-import static com.theairebellion.zeus.db.validator.DbAssertionTarget.*;
+import static com.theairebellion.zeus.db.validator.DbAssertionTarget.COLUMNS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNORE_CASE;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 
@@ -31,11 +32,6 @@ public class BakeryQuestPreconditionFunctions {
                 .loginUser(seller)
                 .then()
                 .enters(OLYMPYS)
-                //.request(
-                //        ENDPOINT_BAKERY_LOGIN,
-                //        seller
-                //)
-                //.request(Endpoints.ENDPOINT_BAKERY);
                 .requestAndValidate(
                         ENDPOINT_BAKERY.withHeader("Cookie", getJSessionCookie()),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build());

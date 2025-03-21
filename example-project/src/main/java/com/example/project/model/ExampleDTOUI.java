@@ -1,6 +1,5 @@
 package com.example.project.model;
 
-import com.example.project.ui.elements.Bakery.ButtonFields;
 import com.example.project.ui.elements.InputFields;
 import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.annotations.InsertionField;
@@ -20,8 +19,5 @@ public class ExampleDTOUI {
 
     @InsertionElement(locatorClass = InputFields.class, elementEnum = InputFields.Data.USERNAME, order = 1)
     private String textNameOther;
-
-    @InsertionElement(locatorClass = ButtonFields.class, elementEnum = ButtonFields.Data.SIGN_IN_BUTTON, order = 2)
-    private String buttonElement;
 
 }

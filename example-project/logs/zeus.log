@@ -1,14 +1,40 @@
-Driver of type: CHROME has been registered
-{"@version":1,"source_host":"EN310578","message":"Driver of type: CHROME has been registered","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-03-01T08:50:05.056+0100","level":"INFO","logger_name":"Zeus.UI"}
-Driver of type: EDGE has been registered
-{"@version":1,"source_host":"EN310578","message":"Driver of type: EDGE has been registered","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-03-01T08:50:05.060+0100","level":"INFO","logger_name":"Zeus.UI"}
-Using chromedriver 133.0.6943.141 (resolved driver for Chrome 133)
-{"@version":1,"source_host":"EN310578","message":"Using chromedriver 133.0.6943.141 (resolved driver for Chrome 133)","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-03-01T08:50:05.325+0100","level":"INFO","logger_name":"io.github.bonigarcia.wdm.WebDriverManager"}
-Exporting webdriver.chrome.driver as C:\Users\vsushelski\.cache\selenium\chromedriver\win64\133.0.6943.141\chromedriver.exe
-{"@version":1,"source_host":"EN310578","message":"Exporting webdriver.chrome.driver as C:\\Users\\vsushelski\\.cache\\selenium\\chromedriver\\win64\\133.0.6943.141\\chromedriver.exe","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-03-01T08:50:05.367+0100","level":"INFO","logger_name":"io.github.bonigarcia.wdm.WebDriverManager"}
-Chrome driver is downloaded with compatible version for the installed browser
-{"@version":1,"source_host":"EN310578","message":"Chrome driver is downloaded with compatible version for the installed browser","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-03-01T08:50:05.368+0100","level":"INFO","logger_name":"Zeus.UI"}
-Headless capability added to webdriver
-{"@version":1,"source_host":"EN310578","message":"Headless capability added to webdriver","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-03-01T08:50:05.375+0100","level":"INFO","logger_name":"Zeus.UI"}
-Webdriver is started
-{"@version":1,"source_host":"EN310578","message":"Webdriver is started","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-03-01T08:50:05.376+0100","level":"INFO","logger_name":"Zeus.UI"}
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:01,807 WARN  [] - Support for convention-based stereotype names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:02,176 INFO  [] - Starting ZeroBankTest using Java 17.0.12 with PID 30224 (started by Master in C:\Users\Master\IdeaRepos\temp-project\example-project)
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:02,191 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:02,998 INFO  [] - Started ZeroBankTest in 1.851 seconds (process running for 5.211)
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:04,104 [scenario=ZeroBankTest.radioButtonTest] INFO  [TEST] - The quest: 'radioButtonTest(Quest)' has begun.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:04,240 [scenario=ZeroBankTest.radioButtonTest] INFO  [UI] - Driver of type: CHROME has been registered
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:04,253 [scenario=ZeroBankTest.radioButtonTest] INFO  [UI] - Driver of type: EDGE has been registered
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:05,533 [scenario=ZeroBankTest.radioButtonTest] INFO  [] - Using chromedriver 134.0.6998.88 (resolved driver for Chrome 134)
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:05,580 [scenario=ZeroBankTest.radioButtonTest] INFO  [] - Exporting webdriver.chrome.driver as C:\Users\Master\.cache\selenium\chromedriver\win64\134.0.6998.88\chromedriver.exe
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:05,602 [scenario=ZeroBankTest.radioButtonTest] INFO  [UI] - Chrome driver is downloaded with compatible version for the installed browser
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:05,617 [scenario=ZeroBankTest.radioButtonTest] INFO  [UI] - Webdriver is started
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:06,796 [scenario=ZeroBankTest.radioButtonTest] WARN  [] - Unable to find CDP implementation matching 134
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:06,807 [scenario=ZeroBankTest.radioButtonTest] WARN  [] - Unable to find version of CDP to use for 134.0.6998.89. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:07,697 [scenario=ZeroBankTest.radioButtonTest] INFO  [TEST] - Quest crafted for scenario: 'radioButtonTest(Quest)'.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:07,749 [scenario=ZeroBankTest.radioButtonTest] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:09,962 [scenario=ZeroBankTest.radioButtonTest] INFO  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:10,255 [scenario=ZeroBankTest.radioButtonTest] INFO  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:16,080 [scenario=ZeroBankTest.radioButtonTest] INFO  [UI] - Inserting value: '100' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:17,193 [scenario=ZeroBankTest.radioButtonTest] VALIDATION [TEST] - Starting hard validation.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:17,274 [scenario=ZeroBankTest.radioButtonTest] VALIDATION [TEST] - Hard validation has passed.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:17,280 [scenario=ZeroBankTest.radioButtonTest] INFO  [TEST] - The quest has left the journey.
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:17,285 [scenario=ZeroBankTest.radioButtonTest] INFO  [TEST] - The quest has reached his end
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:17,633 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:979) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:934) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:934) ~[java.net.http:?]
+⚡️ ZEUS ⚡️ 2025-03-18T16:18:17,796 [scenario=ZeroBankTest.radioButtonTest] INFO  [TEST] - The quest of 'radioButtonTest(Quest)' has concluded with glory. Status: SUCCESS. Duration: 13 seconds.

@@ -41,13 +41,15 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public void selectOptions(final SmartWebElement container, final String... values) {
         openDdl(container);
-        SharedUIFunctions.waitForTimeout(driver);
+        //todo: Remove this
+        //SharedUIFunctions.waitForTimeout(driver);
         List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
         for (String value : values) {
             SmartWebElement option = findOptionByText(options, value);
             selectIfNotChecked(option);
         }
         closeDdl(container);
+        //closeDdl(container);
     }
 
     @Override
@@ -69,7 +71,8 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public List<String> getAvailableOptions(SmartWebElement container) {
         openDdl(container);
-        SharedUIFunctions.waitForTimeout(driver);
+        //todo: Remove this
+        //SharedUIFunctions.waitForTimeout(driver);
         List<SmartWebElement> options = getAllOptionsElements();
         System.out.println("All Options: " + options.size());
         List<String> availableOptions = options.stream()
@@ -158,12 +161,12 @@ public class SelectVAImpl extends BaseComponent implements Select {
         if (!"true".equals(ddlButton.getAttribute("opened"))) {
             SmartWebElement toggleButton = findDdlButton(ddlButton);
             toggleButton.click();
-            SharedUIFunctions.waitForLoading(driver); //todo: test loading
+            SharedUIFunctions.waitForElementLoading(driver, ddlButton);
         }
     }
 
     protected void closeDdl(SmartWebElement ddlButton) {
-        if ("true".equals(ddlButton.getAttribute("opened"))) {
+        if ("true".equals(ddlButton.getAttribute("opened"))) { //todo- getAttribute: StaleElementReferenceException
             SmartWebElement toggleButton = findDdlButton(ddlButton);
             System.out.println("here: close");
             toggleButton.click();
@@ -189,9 +192,6 @@ public class SelectVAImpl extends BaseComponent implements Select {
         return option.getAttribute("selected") != null;
     }
 
-    protected void waitForDropDownToBeClosed() {
-        driver.waitUntilElementIsRemoved(OPTIONS_CONTAINER_LOCATOR, 3);
-    }
 
     protected boolean isOptionEnabled(SmartWebElement option) {
         return option.getAttribute(DISABLED_CLASS_INDICATOR) == null; //todo: check
@@ -202,7 +202,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
         openDdl(container);
         List<SmartWebElement> options = getAllOptionsElements();
         List<String> selectedOptionsText = selectOptionByStrategy(options, strategy);
-        closeDdl(container);
+        //closeDdl(container);
         return selectedOptionsText;
     }
 
@@ -233,7 +233,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
 
     protected void selectIfNotChecked(SmartWebElement option) {
         if (!checkIfOptionIsSelected(option)) {
-            option.click();
+            option.click(); //todo- ElementNotInteractableException
         }
     }
 }
