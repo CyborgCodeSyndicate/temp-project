@@ -1,16 +1,21 @@
 package com.bakery.project;
 
-
-import com.bakery.project.data.CreateDB;
 import com.bakery.project.data.creator.TestDataCreator;
+import com.bakery.project.db.hooks.DbHookFlows;
 import com.bakery.project.model.bakery.Order;
 import com.bakery.project.ui.authentication.AdminUI;
 import com.bakery.project.ui.authentication.BakeryUILogging;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.db.annotations.DB;
+import com.theairebellion.zeus.db.annotations.DbHook;
+import com.theairebellion.zeus.db.annotations.DbHooks;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.db.storage.StorageKeysDb;
-import com.theairebellion.zeus.framework.annotation.*;
+import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.annotation.Journey;
+import com.theairebellion.zeus.framework.annotation.JourneyData;
+import com.theairebellion.zeus.framework.annotation.PreQuest;
+import com.theairebellion.zeus.framework.annotation.Ripper;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
@@ -18,7 +23,6 @@ import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.bakery.project.base.World.FORGE;
 import static com.bakery.project.base.World.UNDERWORLD;
@@ -27,16 +31,21 @@ import static com.bakery.project.data.creator.TestDataCreator.Data.VALID_ORDER;
 import static com.bakery.project.data.creator.TestDataCreator.Data.VALID_SELLER;
 import static com.bakery.project.db.Queries.QUERY_ORDER;
 import static com.bakery.project.db.Queries.QUERY_ORDER_PRODUCT;
-import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.*;
+import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.LOGIN_PRECONDITION;
+import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.ORDER_PRECONDITION;
+import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.SELLER_PRECONDITION;
 import static com.theairebellion.zeus.db.validator.DbAssertionTarget.COLUMNS;
 import static com.theairebellion.zeus.db.validator.DbAssertionTarget.QUERY_RESULT;
+import static com.theairebellion.zeus.framework.hooks.HookExecution.BEFORE;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNORE_CASE;
 
 @UI
 @DB
 @API
-@ExtendWith(CreateDB.class)
+@DbHooks({
+        @DbHook(when = BEFORE, type = DbHookFlows.Data.INITIALIZE_H2)
+})
 public class BakeryDatabaseTests extends BaseTest {
 
     @Test
@@ -49,6 +58,7 @@ public class BakeryDatabaseTests extends BaseTest {
     })
     public void createOrderDatabaseValidation(Quest quest,
                                               @Craft(model = VALID_ORDER) Order order) {
+
         quest
                 .enters(FORGE)
                 .validateOrder(order)
@@ -115,19 +125,5 @@ public class BakeryDatabaseTests extends BaseTest {
                 .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))
                 .complete();
     }
-
-    /*@Override
-    protected void beforeAll(final Services services) {
-        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
-        DatabaseConfiguration dbConfig = QUERY_ORDER.config();
-        H2Database.initialize(dbConfig, service);
-    }*/
-
-    /*@BeforeAll
-    public static void beforeAll() {
-        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
-        DatabaseConfiguration dbConfig = QUERY_ORDER.config();
-        H2Database.initialize(dbConfig, service);
-    }*/
 
 }

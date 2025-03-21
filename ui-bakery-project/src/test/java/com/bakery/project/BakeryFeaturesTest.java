@@ -1,8 +1,7 @@
 package com.bakery.project;
 
-
 import com.bakery.project.data.creator.TestDataCreator;
-import com.bakery.project.db.h2.H2Database;
+import com.bakery.project.db.hooks.DbHookFlows;
 import com.bakery.project.model.bakery.Order;
 import com.bakery.project.model.bakery.Seller;
 import com.bakery.project.preconditions.BakeryInterceptRequests;
@@ -10,11 +9,14 @@ import com.bakery.project.ui.authentication.AdminUI;
 import com.bakery.project.ui.authentication.BakeryUILogging;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.db.annotations.DB;
-import com.theairebellion.zeus.db.config.DatabaseConfiguration;
-import com.theairebellion.zeus.db.service.DatabaseService;
-import com.theairebellion.zeus.framework.annotation.*;
+import com.theairebellion.zeus.db.annotations.DbHook;
+import com.theairebellion.zeus.db.annotations.DbHooks;
+import com.theairebellion.zeus.framework.annotation.Craft;
+import com.theairebellion.zeus.framework.annotation.Journey;
+import com.theairebellion.zeus.framework.annotation.JourneyData;
+import com.theairebellion.zeus.framework.annotation.PreQuest;
+import com.theairebellion.zeus.framework.annotation.Ripper;
 import com.theairebellion.zeus.framework.base.BaseTestSequential;
-import com.theairebellion.zeus.framework.base.Services;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
@@ -29,17 +31,25 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.bakery.project.base.World.*;
+import static com.bakery.project.base.World.EARTH;
+import static com.bakery.project.base.World.FORGE;
+import static com.bakery.project.base.World.OLYMPYS;
 import static com.bakery.project.data.cleaner.TestDataCleaner.Data.DELETE_CREATED_ORDERS;
-import static com.bakery.project.data.creator.TestDataCreator.Data.*;
-import static com.bakery.project.db.Queries.QUERY_ORDER;
+import static com.bakery.project.data.creator.TestDataCreator.Data.VALID_LATE_ORDER;
+import static com.bakery.project.data.creator.TestDataCreator.Data.VALID_ORDER;
+import static com.bakery.project.data.creator.TestDataCreator.Data.VALID_SELLER;
 import static com.bakery.project.preconditions.BakeryInterceptRequests.Data.INTERCEPT_REQUEST_AUTH;
-import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.*;
+import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.LOGIN_PRECONDITION;
+import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.ORDER_PRECONDITION;
 import static com.bakery.project.rest.Endpoints.ENDPOINT_BAKERY;
 import static com.bakery.project.service.CustomService.getJSessionCookie;
-import static com.bakery.project.ui.elements.Bakery.ButtonFields.*;
+import static com.bakery.project.ui.elements.Bakery.ButtonFields.NEW_ORDER_BUTTON;
+import static com.bakery.project.ui.elements.Bakery.ButtonFields.PLACE_ORDER_BUTTON;
+import static com.bakery.project.ui.elements.Bakery.ButtonFields.REVIEW_ORDER_BUTTON;
+import static com.bakery.project.ui.elements.Bakery.ButtonFields.SIGN_IN_BUTTON;
 import static com.bakery.project.ui.elements.Bakery.SelectFields.LOCATION_DDL;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
+import static com.theairebellion.zeus.framework.hooks.HookExecution.BEFORE;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
@@ -48,6 +58,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @UI
 @DB
 @API
+@DbHooks({
+        @DbHook(when = BEFORE, type = DbHookFlows.Data.INITIALIZE_H2)
+})
 public class BakeryFeaturesTest extends BaseTestSequential {
 
 
@@ -215,14 +228,6 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                 .interceptor().validateResponseHaveStatus(
                         BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpointSubString(), 2, true)
                 .complete();
-    }
-
-
-    @Override
-    protected void beforeAll(final Services services) {
-        DatabaseService service = services.service(UNDERWORLD, DatabaseService.class);
-        DatabaseConfiguration dbConfig = QUERY_ORDER.config();
-        H2Database.initialize(dbConfig, service);
     }
 
 }

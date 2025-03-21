@@ -1,6 +1,5 @@
 package com.bakery.project.data.cleaner;
 
-
 import com.bakery.project.model.bakery.Order;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.db.service.fluent.DatabaseServiceFluent;
@@ -12,7 +11,8 @@ import java.util.List;
 
 import static com.bakery.project.base.World.UNDERWORLD;
 import static com.bakery.project.data.creator.TestDataCreator.VALID_ORDER;
-import static com.bakery.project.db.Queries.*;
+import static com.bakery.project.db.Queries.QUERY_ORDER;
+import static com.bakery.project.db.Queries.QUERY_ORDER_DELETE;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.ARGUMENTS;
 
 public class DataCleanUpFunctions {
@@ -36,7 +36,6 @@ public class DataCleanUpFunctions {
                                     .type(IS).expected(0).soft(true) //todo: check how to validate null result
                                     .build()
                     );*/
-            System.out.println("Delete order");
         });
     }
 

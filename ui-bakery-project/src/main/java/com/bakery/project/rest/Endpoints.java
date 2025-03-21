@@ -1,19 +1,15 @@
 package com.bakery.project.rest;
 
 import com.theairebellion.zeus.api.core.Endpoint;
-import io.restassured.http.ContentType;
 import io.restassured.http.Method;
-import io.restassured.specification.RequestSpecification;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public enum Endpoints implements Endpoint {
-    ENDPOINT_BAKERY(Method.POST, "/storefront"),
-    ENDPOINT_BAKERY_LOGIN(Method.POST, "/login"),
     ENDPOINT_EXAMPLE(Method.POST, "/create/{campaignId}/get"),
-    CREATE_PET(Method.POST, "/pet");
+    ENDPOINT_BAKERY(Method.POST, "/storefront"),
+    ENDPOINT_BAKERY_LOGIN(Method.POST, "/login");
 
     private final Method method;
     private final String url;
@@ -23,8 +19,6 @@ public enum Endpoints implements Endpoint {
         this.method = method;
         this.url = url;
     }
-
-
 
 
     @Override
@@ -52,6 +46,5 @@ public enum Endpoints implements Endpoint {
             "Accept", List.of("application/json")
         );
     }
-
 
 }

@@ -105,7 +105,7 @@ public class SharedUIFunctions {
                 try {
                     SmartWebElement element = smartWebDriver.findSmartElement(locator);
                     return element.isDisplayed() && element.isEnabled();
-                } catch (StaleElementReferenceException e) {
+                } catch (NullPointerException | StaleElementReferenceException e) {
                     return false;
                 }
             }
