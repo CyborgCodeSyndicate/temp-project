@@ -12,21 +12,49 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * Custom WebDriver event listener for logging and exception handling.
+ * <p>
+ * This class implements {@link WebDriverListener} to provide logging before and after element interactions
+ * and manage exception handling for WebDriver actions.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class WebDriverEventListener implements WebDriverListener {
 
-
+    /**
+     * Logs an informational message before an element is clicked.
+     *
+     * @param element The WebElement that is about to be clicked.
+     */
     @Override
     public void beforeClick(final WebElement element) {
         LogUI.extended("Element: '{}' is about to get clicked", element.toString());
     }
 
-
+    /**
+     * Logs an informational message after an element is clicked.
+     *
+     * @param element The WebElement that was clicked.
+     */
     @Override
     public void afterClick(final WebElement element) {
         LogUI.extended("Element: '{}' was clicked", element.toString());
     }
 
-
+    /**
+     * Handles errors occurring during WebDriver method executions.
+     * <p>
+     * This method logs the exception details and determines if the exception should be handled by
+     * the framework or logged as unhandled.
+     * </p>
+     *
+     * @param target The object on which the method was invoked.
+     * @param method The method that caused the exception.
+     * @param args   The arguments passed to the method.
+     * @param e      The invocation target exception.
+     */
     @Override
     public void onError(final Object target, final Method method, final Object[] args,
                         final InvocationTargetException e) {
@@ -52,7 +80,15 @@ public class WebDriverEventListener implements WebDriverListener {
 
     }
 
-
+    /**
+     * Logs and handles exceptions based on predefined criteria.
+     *
+     * @param target The object on which the method was invoked.
+     * @param method The method that caused the exception.
+     * @param args   The arguments passed to the method.
+     * @param e      The invocation target exception.
+     * @param cause  The root cause of the exception.
+     */
     private static void exceptionLogging(final Object target, final Method method, final Object[] args,
                                          final InvocationTargetException e, final Throwable cause) {
         Optional<ExceptionLogging> matched = Arrays.stream(ExceptionLogging.values())
@@ -64,6 +100,16 @@ public class WebDriverEventListener implements WebDriverListener {
         });
     }
 
+    /**
+     * Checks whether an exception matches the criteria for logging and handling.
+     *
+     * @param log    The exception logging configuration.
+     * @param target The object on which the method was invoked.
+     * @param method The method that caused the exception.
+     * @param args   The arguments passed to the method.
+     * @param cause  The root cause of the exception.
+     * @return True if the exception matches the criteria, false otherwise.
+     */
     private static boolean matchesLogCriteria(final ExceptionLogging log, final Object target, final Method method,
                                               final Object[] args, final Throwable cause) {
         if (!log.getTargetClass().isAssignableFrom(target.getClass())) {

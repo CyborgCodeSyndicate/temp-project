@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,22 +31,50 @@ import static com.theairebellion.zeus.framework.storage.StorageKeysTest.STATIC_D
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
+/**
+ * JUnit 5 {@code ParameterResolver} extension for injecting a {@code Quest} instance
+ * into test methods, handling static test data provisioning via {@code @TestStaticData}.
+ * <p>
+ * This extension resolves and provides a test execution context ({@code Quest})
+ * for parameter injection and initializes static test data before test execution.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Order(Integer.MIN_VALUE)
 @ExtendWith(SpringExtension.class)
 public class Oracle implements ParameterResolver {
 
-
+    /**
+     * Determines whether the parameter is eligible for resolution by checking if it is of type {@code Quest}.
+     *
+     * @param parameterContext The context of the parameter to resolve.
+     * @param extensionContext The context of the test execution.
+     * @return {@code true} if the parameter type is assignable to {@code Quest}, otherwise {@code false}.
+     * @throws ParameterResolutionException If an error occurs while resolving the parameter.
+     */
     @Override
     public boolean supportsParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
-        throws ParameterResolutionException {
+            throws ParameterResolutionException {
         var parameterType = parameterContext.getParameter().getType();
         return Quest.class.isAssignableFrom(parameterType);
     }
 
-
+    /**
+     * Resolves and injects a {@code Quest} instance into the test method.
+     * <p>
+     * This method initializes a new {@code Quest} instance, decorates it with additional
+     * test utilities, and loads any static test data if defined by {@code @TestStaticData}.
+     * </p>
+     *
+     * @param parameterContext The context of the parameter to resolve.
+     * @param extensionContext The context of the test execution.
+     * @return The resolved {@code Quest} instance.
+     * @throws ParameterResolutionException If the required test context cannot be instantiated.
+     */
     @Override
     public Object resolveParameter(final ParameterContext parameterContext, final ExtensionContext extensionContext)
-        throws ParameterResolutionException {
+            throws ParameterResolutionException {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
         QuestFactory questFactory = appCtx.getBean(QuestFactory.class);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
@@ -56,19 +85,28 @@ public class Oracle implements ParameterResolver {
         Storage storage = superQuest.getStorage();
         storage.put(STATIC_DATA, staticTestData);
         addHooksDataInTestStorage(storage, extensionContext);
-        LogTest.info("Quest crafted for scenario: '{}'.", extensionContext.getDisplayName());
+        LogTest.info("The quest: '{}' has begun and is crafted.", extensionContext.getDisplayName());
         ExtensionContext.Store store = extensionContext.getStore(GLOBAL);
         @SuppressWarnings("unchecked")
         List<Consumer<SuperQuest>> consumers = (List<Consumer<SuperQuest>>) store.get(StoreKeys.QUEST_CONSUMERS);
         if (Objects.nonNull(consumers)) {
             consumers.forEach(
-                questConsumer -> questConsumer.accept(decoratorsFactory.decorate(quest, SuperQuest.class)));
+                    questConsumer -> questConsumer.accept(decoratorsFactory.decorate(quest, SuperQuest.class)));
         }
         store.put(QUEST, quest);
         return quest;
     }
 
-
+    /**
+     * Retrieves and instantiates static test data defined via {@code @TestStaticData}.
+     * <p>
+     * If a test method is annotated with {@code @TestStaticData}, this method
+     * dynamically instantiates the specified data provider and extracts its test data.
+     * </p>
+     *
+     * @param extensionContext The context of the test execution.
+     * @return A map containing static test data, or {@code null} if no provider is defined.
+     */
     private static Map<String, Object> getStaticTestData(final ExtensionContext extensionContext) {
         Optional<Method> testMethod = extensionContext.getTestMethod();
         if (testMethod.isPresent()) {
@@ -76,7 +114,7 @@ public class Oracle implements ParameterResolver {
             if (staticDataAnnotation != null) {
                 try {
                     return staticDataAnnotation.value().getDeclaredConstructor()
-                               .newInstance().testStaticData();
+                            .newInstance().testStaticData();
 
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
@@ -87,7 +125,7 @@ public class Oracle implements ParameterResolver {
         return null;
     }
 
-
+    //todo: javaDocs
     private static void addHooksDataInTestStorage(Storage storage, ExtensionContext context) {
         Map<Object, Object> hooksStorage = context.getStore(GLOBAL).get(StoreKeys.HOOKS_PARAMS, Map.class);
         if (hooksStorage != null) {

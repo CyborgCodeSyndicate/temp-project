@@ -1,0 +1,63 @@
+<style>
+  .metadata-container { margin: 20px 0; }
+  .metadata-toggle {
+      background-color: #2c3e50;
+      color: white;
+      padding: 8px 12px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: 150px;
+  }
+  .metadata-toggle:hover { background-color: #34495e; }
+  .metadata-toggle::before {
+      content: '▶';
+      display: inline-block;
+      transition: transform 0.3s;
+  }
+  details[open] .metadata-toggle::before { transform: rotate(90deg); }
+  .metadata-content { display: none; margin-top: 10px; }
+  details[open] .metadata-content { display: block; }
+  .metadata-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  .metadata-table th {
+      background-color: #2c3e50;
+      color: white;
+      text-transform: uppercase;
+      font-size: 14px;
+      padding: 15px;
+      text-align: left;
+  }
+  .metadata-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ecf0f1;
+      font-size: 14px;
+      background-color: white;
+  }
+  .metadata-table tr:nth-child(even) td { background-color: #f8f9fa; }
+  .metadata-table tr:hover td { background-color: #f1f4f6; }
+  .annotation { display: block; margin: 5px 0; padding: 8px 12px; background-color: #f7f9fc; border-left: 3px solid #3498db; border-radius: 3px; }
+  .test-arguments { word-break: break-word; max-width: 600px; line-height: 1.5; }
+</style>
+
+<details class="metadata-container">
+  <summary class="metadata-toggle">Test Details</summary>
+  <div class="metadata-content">
+    <table class="metadata-table">
+      <tr><th style="width: 30%">Property</th><th>Value</th></tr>
+      <tr><td>Test Name</td><td>{{testName}}</td></tr>
+      <tr><td>Class Name</td><td>{{className}}</td></tr>
+      <tr><td>Class Annotations</td><td>{{classAnnotations}}</td></tr>
+      <tr><td>Method Annotations</td><td>{{methodAnnotations}}</td></tr>
+      <tr><td>Test Arguments</td><td class="test-arguments">{{testArguments}}</td></tr>
+    </table>
+  </div>
+</details>

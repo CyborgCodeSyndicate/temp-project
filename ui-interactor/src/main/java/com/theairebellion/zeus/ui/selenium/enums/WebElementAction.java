@@ -8,9 +8,21 @@ import org.openqa.selenium.WebElement;
 
 import java.util.stream.Collectors;
 
+/**
+ * Enum representing different WebElement actions that can be performed.
+ * <p>
+ * Each action provides an implementation for executing the respective WebElement operation
+ * and wrapping elements in {@link SmartWebElement} where applicable.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Getter
 public enum WebElementAction {
 
+    /**
+     * Action to find a single WebElement and wrap it in a {@link SmartWebElement}.
+     */
     FIND_ELEMENT("findElement") {
         @Override
         public Object performActionWebElement(WebDriver driver, WebElement element, Object... args) {
@@ -23,6 +35,9 @@ public enum WebElementAction {
         }
     },
 
+    /**
+     * Action to find multiple WebElements and wrap them in {@link SmartWebElement} instances.
+     */
     FIND_ELEMENTS("findElements") {
         @Override
         public Object performActionWebElement(WebDriver driver, WebElement element, Object... args) {
@@ -39,6 +54,9 @@ public enum WebElementAction {
         }
     },
 
+    /**
+     * Action to perform a click operation on a WebElement.
+     */
     CLICK("click") {
         @Override
         public Void performActionWebElement(WebDriver driver, WebElement element, Object... args) {
@@ -52,6 +70,9 @@ public enum WebElementAction {
         }
     },
 
+    /**
+     * Action to send keys (text input) to a WebElement.
+     */
     SEND_KEYS("sendKeys") {
         @Override
         public Void performActionWebElement(WebDriver driver, WebElement element, Object... args) {
@@ -65,6 +86,9 @@ public enum WebElementAction {
         }
     },
 
+    /**
+     * Action to submit a WebElement (commonly used for forms).
+     */
     SUBMIT("submit") {
         @Override
         public Void performActionWebElement(WebDriver driver, WebElement element, Object... args) {
@@ -78,6 +102,9 @@ public enum WebElementAction {
         }
     },
 
+    /**
+     * Action to clear the content of a WebElement (commonly input fields).
+     */
     CLEAR("clear") {
         @Override
         public Void performActionWebElement(WebDriver driver, WebElement element, Object... args) {
@@ -91,16 +118,48 @@ public enum WebElementAction {
         }
     };
 
+    /**
+     * Performs the defined action on a WebElement.
+     *
+     * @param driver  The WebDriver instance.
+     * @param element The target WebElement.
+     * @param args    Additional arguments required for the action.
+     * @return The result of the action, if applicable.
+     */
     public abstract Object performActionWebElement(WebDriver driver, WebElement element, Object... args);
 
+    /**
+     * Performs the defined action using only a WebDriver instance.
+     *
+     * @param driver The WebDriver instance.
+     * @param args   Additional arguments required for the action.
+     * @return The result of the action, if applicable.
+     */
     public abstract Object performActionWebDriver(WebDriver driver, Object... args);
 
+    /**
+     * Performs the given action on a WebElement.
+     *
+     * @param driver  The WebDriver instance.
+     * @param element The target WebElement.
+     * @param action  The action to perform.
+     * @param args    Additional arguments for the action.
+     * @return The result of the action, if applicable.
+     */
     public static Object performAction(WebDriver driver, WebElement element, WebElementAction action, Object... args) {
         return action.performActionWebElement(driver, element, args);
     }
 
+    /**
+     * The method name associated with the action.
+     */
     private final String methodName;
 
+    /**
+     * Constructor to associate a method name with the enum constant.
+     *
+     * @param methodName The method name as a string.
+     */
     WebElementAction(String methodName) {
         this.methodName = methodName;
     }

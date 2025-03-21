@@ -17,20 +17,48 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * Allocates TestNG test classes into execution groups based on suite configurations and method count.
+ * <p>
+ * This service extends {@link BaseAllocatorService} and applies TestNG-specific logic for allocating test classes.
+ * It parses TestNG XML suite files to determine which test methods belong to which suites and organizes them
+ * accordingly into execution groups.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class TestNgAllocatorService extends BaseAllocatorService {
 
+    /**
+     * Constructs a new {@code TestNgAllocatorService} instance.
+     *
+     * @param log The Maven logger instance for recording allocation details.
+     */
     public TestNgAllocatorService(final Log log) {
         super(log);
     }
 
-
+    /**
+     * Calculates the number of matching test methods per TestNG test class.
+     * <p>
+     * This method:
+     * <ul>
+     *   <li>Parses TestNG suite XML files to identify relevant test classes.</li>
+     *   <li>Loads each test class using the {@link TestClassLoader}.</li>
+     *   <li>Counts the number of test methods within each class based on TestNG annotations.</li>
+     *   <li>Filters test methods according to the suites specified in the configuration.</li>
+     *   <li>Returns a map of class names and their respective test method counts.</li>
+     * </ul>
+     * </p>
+     *
+     * @param classFiles      List of test class files.
+     * @param testClassLoader The test class loader used to dynamically load test classes.
+     * @param config          The TestNG-specific test allocation configuration.
+     * @return A mapping of test class names to their number of executable test methods.
+     */
     @Override
     public Map<String, Integer> calculateClassMethodCounts(final List<File> classFiles,
                                                            final TestClassLoader testClassLoader,
@@ -97,18 +125,23 @@ public class TestNgAllocatorService extends BaseAllocatorService {
         return classMethodCounts;
     }
 
-
     /**
-     * Example helper method for finding .xml files anywhere in your project.
-     * Adjust to your real directory structure.
+     * Scans the project directory for TestNG XML suite files.
+     * <p>
+     * This method searches for all `.xml` files under the given project root directory.
+     * It is primarily used to locate TestNG suite configurations for test allocation.
+     * </p>
+     *
+     * @param projectRoot The root directory of the project.
+     * @return A list of {@link File} objects representing TestNG XML suite files.
      */
     private List<File> findAllXmlFilesInProject(Path projectRoot) {
         List<File> result = new ArrayList<>();
         try (Stream<Path> pathStream = Files.walk(projectRoot)) {
             pathStream
-                .filter(Files::isRegularFile)
-                .filter(p -> p.getFileName().toString().endsWith(".xml"))
-                .forEach(p -> result.add(p.toFile()));
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.getFileName().toString().endsWith(".xml"))
+                    .forEach(p -> result.add(p.toFile()));
         } catch (IOException e) {
             // handle exception
         }

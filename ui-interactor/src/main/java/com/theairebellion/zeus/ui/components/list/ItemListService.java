@@ -11,7 +11,12 @@ import java.util.List;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
 /**
- * Interface for interacting with item lists in a web context.
+ * Provides an interface for interacting with item lists in a web context. This service offers methods
+ * to select, deselect, verify, and retrieve items, supporting both default and custom item list
+ * component types. By extending {@link Insertion}, it integrates seamlessly with broader test
+ * automation workflows.
+ *
+ * @author Cyborg Code Syndicate
  */
 public interface ItemListService extends Insertion {
 

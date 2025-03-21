@@ -18,9 +18,27 @@ import java.util.Arrays;
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 
+/**
+ * JUnit 5 {@code AfterTestExecutionCallback} extension that handles post-test execution cleanup.
+ * <p>
+ * This extension processes test data cleanup using the {@code Ripper} annotation, ensuring
+ * that any specified targets are properly eliminated after the test execution.
+ * </p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class RipperMan implements AfterTestExecutionCallback {
 
-
+    /**
+     * Executes after the test method finishes execution.
+     * <p>
+     * This method checks if the test method is annotated with {@code Ripper} and invokes the
+     * corresponding cleanup logic for the specified targets.
+     * </p>
+     *
+     * @param context The test execution context containing metadata about the test.
+     * @throws Exception If any error occurs during post-test execution cleanup.
+     */
     @Override
     public void afterTestExecution(final ExtensionContext context) throws Exception {
         context.getTestMethod().ifPresent(method -> {
@@ -31,7 +49,16 @@ public class RipperMan implements AfterTestExecutionCallback {
         });
     }
 
-
+    /**
+     * Executes cleanup logic for the specified targets defined in the {@code Ripper} annotation.
+     * <p>
+     * This method retrieves the necessary test context, resolves dependencies,
+     * and invokes the corresponding data elimination operations.
+     * </p>
+     *
+     * @param context The test execution context.
+     * @param targets The targets specified in the {@code Ripper} annotation for cleanup.
+     */
     private void executeRipperLogic(ExtensionContext context, String[] targets) {
         LogTest.info("The ripper has arrived");
 
@@ -53,7 +80,6 @@ public class RipperMan implements AfterTestExecutionCallback {
             LogTest.info("DataRipper processed target: '{}'.", target);
         });
     }
-
 
 }
 

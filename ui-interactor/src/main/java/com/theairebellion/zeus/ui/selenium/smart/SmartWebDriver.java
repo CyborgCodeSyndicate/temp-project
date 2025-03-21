@@ -26,7 +26,15 @@ import java.util.stream.Collectors;
 
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 
-
+/**
+ * A custom wrapper for {@link WebDriver} that enhances element handling,
+ * adds exception management, and provides built-in support for Shadow DOM elements.
+ *
+ * <p>It integrates with Selenium functions while allowing configuration-based
+ * handling of standard and shadow root elements.</p>
+ *
+ * @author Cyborg Code Syndicate
+ */
 @Getter
 public class SmartWebDriver extends WebDriverDecorator {
 
@@ -34,20 +42,44 @@ public class SmartWebDriver extends WebDriverDecorator {
     @Setter
     private boolean keepDriverForSession;
 
+    /**
+     * Constructs a {@code SmartWebDriver} wrapping the given {@link WebDriver}.
+     *
+     * @param original The original Selenium WebDriver instance to wrap.
+     */
     public SmartWebDriver(WebDriver original) {
         super(original);
         this.wait = new WebDriverWait(original, Duration.ofSeconds(getUiConfig().waitDuration()));
     }
 
+    /**
+     * Finds a single element using {@link By} and returns a wrapped {@link SmartWebElement}.
+     *
+     * @param by The {@link By} locator to find the element.
+     * @return A {@link SmartWebElement} instance.
+     */
     @HandleUIException
     public SmartWebElement findSmartElement(By by) {
         return findSmartElementInternal(by, null);
     }
 
+    /**
+     * Finds a single element with a specified wait time.
+     *
+     * @param by           The {@link By} locator.
+     * @param waitInMillis The wait time in milliseconds.
+     * @return A {@link SmartWebElement} instance.
+     */
     public SmartWebElement findSmartElement(By by, long waitInMillis) {
         return findSmartElementInternal(by, waitInMillis);
     }
 
+    /**
+     * Finds multiple elements matching the given {@link By} locator.
+     *
+     * @param by The {@link By} locator to find elements.
+     * @return A list of {@link SmartWebElement}.
+     */
     @HandleUIException
     public List<SmartWebElement> findSmartElements(By by) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
@@ -66,6 +98,12 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
+    /**
+     * Overrides Selenium's {@link WebDriver#findElement(By)} to support both normal and Shadow DOM elements.
+     *
+     * @param by The {@link By} locator to find an element.
+     * @return The found {@link WebElement}.
+     */
     @Override
     @NonNull
     public WebElement findElement(@NonNull By by) {
@@ -84,6 +122,12 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
+    /**
+     * Overrides Selenium's {@link WebDriver#findElements(By)} to support both normal and Shadow DOM elements.
+     *
+     * @param by The {@link By} locator to find elements.
+     * @return A list of found {@link WebElement}.
+     */
     @Override
     @NonNull
     public List<WebElement> findElements(@NonNull By by) {
@@ -108,7 +152,13 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
-
+    /**
+     * Finds a single {@link SmartWebElement} with optional wait time, supporting both standard and Shadow DOM searches.
+     *
+     * @param by           The {@link By} locator used to find the element.
+     * @param waitInMillis The optional wait duration in milliseconds. If null, a default wait function is used.
+     * @return The found {@link SmartWebElement}, or handles the exception if the element is not found.
+     */
     private SmartWebElement findSmartElementInternal(By by, Long waitInMillis) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
             return SmartFinder.findElementNoWrap(getOriginal(), by);
@@ -135,7 +185,12 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
-
+    /**
+     * Checks if an action can be performed without throwing an exception.
+     *
+     * @param runnable The action to execute.
+     * @return {@code true} if no exception occurs, {@code false} otherwise.
+     */
     public boolean checkNoException(Runnable runnable) {
         try {
             runnable.run();
@@ -145,7 +200,12 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
-
+    /**
+     * Waits until a specific {@link SmartWebElement} becomes visible.
+     *
+     * @param element The element to wait for.
+     * @param seconds Maximum wait time in seconds.
+     */
     public void waitUntilElementIsShown(SmartWebElement element, int seconds) {
         WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
         try {
@@ -155,7 +215,12 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
-
+    /**
+     * Waits until an element located by {@link By} becomes visible.
+     *
+     * @param by      The locator.
+     * @param seconds Maximum wait time in seconds.
+     */
     public void waitUntilElementIsShown(By by, int seconds) {
         WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
         try {
@@ -165,7 +230,12 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
-
+    /**
+     * Waits until a specific {@link SmartWebElement} is no longer visible.
+     *
+     * @param element The element to wait for.
+     * @param seconds Maximum wait time in seconds.
+     */
     public void waitUntilElementIsRemoved(SmartWebElement element, int seconds) {
         WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
         try {
@@ -175,7 +245,12 @@ public class SmartWebDriver extends WebDriverDecorator {
         }
     }
 
-
+    /**
+     * Waits until an element located by {@link By} is no longer visible.
+     *
+     * @param by      The locator.
+     * @param seconds Maximum wait time in seconds.
+     */
     public void waitUntilElementIsRemoved(By by, int seconds) {
         WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
         try {
@@ -222,7 +297,14 @@ public class SmartWebDriver extends WebDriverDecorator {
                 throw exception;
             }
         } else {
-            LogUI.error("No exception handling for this specific exception.");
+            String locator = (params.length > 0 && params[0] instanceof By) ? params[0].toString() : "Unknown locator";
+            String exceptionMessage = exception.getClass().getSimpleName();
+
+            String errorMessage = String.format(
+                    "Exception handling failed for method '%s'. Exception: '%s'. Parameters: Locator - '%s'.",
+                    methodName, exceptionMessage, locator
+            );
+            LogUI.error(errorMessage);
             throw exception;
         }
     }
