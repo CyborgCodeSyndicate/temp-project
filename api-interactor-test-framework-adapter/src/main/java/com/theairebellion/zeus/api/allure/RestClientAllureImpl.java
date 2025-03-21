@@ -97,8 +97,17 @@ public class RestClientAllureImpl extends RestClientImpl {
             addAttachmentIfPresent(ATTACHMENT_URL, url);
             addAttachmentIfPresent(ATTACHMENT_RESPONSE_TIME, String.valueOf(duration));
             addAttachmentIfPresent(ATTACHMENT_STATUS_CODE, String.valueOf(statusCode));
-            addAttachmentIfPresent(ATTACHMENT_RESPONSE_HEADERS, response.getHeaders().toString());
-            addAttachmentIfPresent(ATTACHMENT_RESPONSE_BODY, response.getBody().prettyPrint());
+
+            // Safely handle null headers
+            String headers = response.getHeaders() != null ? response.getHeaders().toString() : "";
+            addAttachmentIfPresent(ATTACHMENT_RESPONSE_HEADERS, headers);
+
+            // Safely handle null body
+            String body = "";
+            if (response.getBody() != null) {
+                body = response.getBody().prettyPrint();
+            }
+            addAttachmentIfPresent(ATTACHMENT_RESPONSE_BODY, body);
         });
     }
 

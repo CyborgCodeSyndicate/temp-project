@@ -13,4 +13,9 @@ public class MockConfig implements FrameworkConfig {
     public String defaultStorage() {
         return "dummyStorage";
     }
+
+    @Override
+    public String testEnv() {
+        return "dummyTestEnv";
+    }
 }

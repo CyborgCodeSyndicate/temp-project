@@ -89,25 +89,23 @@ public class ExceptionHandlingWebElementFunctions {
      * @return The result of the attempted action.
      */
     public static Object handleElementClickIntercepted(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Exception exception, Object... args) {
-        if (exception != null && exception.getMessage() != null) {
+        try {
+            By blocker = By.xpath(LocatorParser.extractBlockingElementLocator(exception.getMessage()));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
             try {
-                By blocker = By.xpath(LocatorParser.extractBlockingElementLocator(exception.getMessage()));
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-                try {
-                    wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
-                } catch (TimeoutException e) {
-                    LogUI.warn("Blocking element did not disappear after waiting, attempting action anyway.");
-                }
-
-                return WebElementAction.performAction(driver, element.getOriginal(), webElementAction, args);
-            } catch (Exception e) {
-                String errorMessage = String.format(
-                        "[BROKEN] WebElement action '%s' failed due to intercepted click with locator '%s'. Exception: '%s'",
-                        webElementAction.getMethodName(), LocatorParser.extractBlockingElementLocator(exception.getMessage()), e.getClass().getSimpleName()
-                );
-                LogUI.error(errorMessage);
-                throw e;
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(blocker));
+            } catch (TimeoutException e) {
+                LogUI.warn("Blocking element did not disappear after waiting, attempting action anyway.");
             }
+
+            return WebElementAction.performAction(driver, element.getOriginal(), webElementAction, args);
+        } catch (Exception e) {
+            String errorMessage = String.format(
+                    "[BROKEN] WebElement action '%s' failed due to intercepted click with locator '%s'. Exception: '%s'",
+                    webElementAction.getMethodName(), LocatorParser.extractBlockingElementLocator(exception.getMessage()), e.getClass().getSimpleName()
+            );
+            LogUI.error(errorMessage);
+            throw e;
         }
     }
 
@@ -129,12 +127,10 @@ public class ExceptionHandlingWebElementFunctions {
             WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));
 
             return WebElementAction.performAction(driver, clickableElement, webElementAction, args);
-        }
-        catch (TimeoutException e) {
+        } catch (TimeoutException e) {
             LogUI.warn("Element not clickable after waiting, attempting action anyway.");
             return WebElementAction.performAction(driver, element.getOriginal(), webElementAction, args);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String errorMessage = String.format(
                     "[BROKEN] WebElement action '%s' failed because element was not interactable. Exception: '%s'",
                     webElementAction.getMethodName(), e.getClass().getSimpleName()

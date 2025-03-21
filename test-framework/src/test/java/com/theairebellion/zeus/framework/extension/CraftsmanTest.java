@@ -12,6 +12,7 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
+import com.theairebellion.zeus.framework.util.TestContextManager;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,8 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Optional;
 
@@ -54,7 +55,10 @@ class CraftsmanTest {
     private ExtensionContext extensionContext;
 
     @Mock
-    private ExtensionContext.Store store;
+    private ExtensionContext.Store globalStore;
+
+    @Mock
+    private ExtensionContext.Store parametersStore;
 
     @Mock
     private ApplicationContext applicationContext;
@@ -89,15 +93,35 @@ class CraftsmanTest {
     @Mock
     private Parameter parameter;
 
+    @Mock
+    private Method testMethod;
+
+    private Class<?> paramType;
+
     @BeforeEach
     void setup() {
         craftsman = new Craftsman();
+        paramType = String.class; // Default parameter type
 
+        // Setup parameter context
         when(parameterContext.getParameter()).thenReturn(parameter);
+        doReturn(String.class).when(parameter).getType();
 
         // Common mocks setup
-        when(extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
-        when(store.get(StoreKeys.QUEST)).thenReturn(quest);
+        when(extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(globalStore);
+        when(globalStore.get(StoreKeys.QUEST)).thenReturn(quest);
+
+        // Mock required test method
+        when(extensionContext.getRequiredTestMethod()).thenReturn(testMethod);
+        when(testMethod.getParameters()).thenReturn(new Parameter[]{parameter});
+
+        // Mock for the parameter tracking namespace
+        when(extensionContext.getUniqueId()).thenReturn("test-unique-id");
+        ExtensionContext.Namespace customNamespace = ExtensionContext.Namespace.create(TestContextManager.class, "test-unique-id");
+        when(extensionContext.getStore(customNamespace)).thenReturn(parametersStore);
+
+        // Mock for any namespace to avoid NPE
+        when(extensionContext.getStore(any(ExtensionContext.Namespace.class))).thenReturn(parametersStore);
 
         when(decoratorsFactory.decorate(any(Quest.class), eq(SuperQuest.class))).thenReturn(superQuest);
         when(superQuest.getStorage()).thenReturn(storage);
@@ -158,46 +182,49 @@ class CraftsmanTest {
         void shouldThrowExceptionWhenCraftAnnotationNotPresent() {
             // Given
             when(parameterContext.findAnnotation(Craft.class)).thenReturn(Optional.empty());
+            when(parameter.getName()).thenReturn("testParam");
 
             // When/Then
             assertThatThrownBy(() -> craftsman.resolveParameter(parameterContext, extensionContext))
                     .isInstanceOf(ParameterResolutionException.class)
-                    .hasMessageContaining("@Craft annotation not found");
+                    .hasMessageContaining("Failed to resolve parameter")
+                    .hasCauseInstanceOf(ParameterResolutionException.class)
+                    .cause()
+                    .hasMessageContaining("Missing @Craft annotation");
         }
 
         @Test
         @DisplayName("Should throw exception when Quest is not present in the store")
         void shouldThrowExceptionWhenQuestNotPresent() {
             // Given
-            when(store.get(StoreKeys.QUEST)).thenReturn(null);
+            when(globalStore.get(StoreKeys.QUEST)).thenReturn(null);
 
-            // Setup static mocking just for this test
-            try (MockedStatic<SpringExtension> springExtMock = mockStatic(SpringExtension.class)) {
-                springExtMock.when(() -> SpringExtension.getApplicationContext(any())).thenReturn(applicationContext);
-                when(applicationContext.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
-
-                // When/Then
-                assertThatThrownBy(() -> craftsman.resolveParameter(parameterContext, extensionContext))
-                        .isInstanceOf(IllegalStateException.class)
-                        .hasMessageContaining("Quest not found in the global store");
-            }
+            // When/Then
+            assertThatThrownBy(() -> craftsman.resolveParameter(parameterContext, extensionContext))
+                    .isInstanceOf(ParameterResolutionException.class)
+                    .hasMessageContaining("Failed to resolve parameter")
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .cause()
+                    .hasMessageContaining("Quest not found");
         }
 
         @Test
         @DisplayName("Should return Late instance when parameter type is Late")
         void shouldReturnLateInstanceWhenParameterTypeIsLate() {
             // Given
+            paramType = Late.class;
             doReturn(Late.class).when(parameter).getType();
 
             // Setup static mocking
-            try (MockedStatic<SpringExtension> springExtMock = mockStatic(SpringExtension.class);
+            try (MockedStatic<TestContextManager> testContextManagerMock = mockStatic(TestContextManager.class);
                  MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
                  MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
-                springExtMock.when(() -> SpringExtension.getApplicationContext(any())).thenReturn(applicationContext);
-                when(applicationContext.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+                testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext))
+                        .thenReturn(superQuest);
 
-                frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
+                frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig)
+                        .thenReturn(frameworkConfig);
 
                 reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
                         eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE)
@@ -208,7 +235,13 @@ class CraftsmanTest {
 
                 // Then
                 assertThat(result).isSameAs(late);
-                verify(subStorage).put(eq(MockEnum.VALUE), eq(late));
+
+                // Verify the correct methods were called
+                testContextManagerMock.verify(() ->
+                        TestContextManager.initializeParameterTracking(extensionContext));
+
+                testContextManagerMock.verify(() ->
+                        TestContextManager.storeArgument(superQuest, dataForge, late, extensionContext));
             }
         }
 
@@ -217,18 +250,20 @@ class CraftsmanTest {
         void shouldReturnJoinedObjectWhenParameterTypeIsNotLate() {
             // Given
             Object joinedObject = new Object();
+            paramType = String.class;
             doReturn(String.class).when(parameter).getType();
             when(late.join()).thenReturn(joinedObject);
 
             // Setup static mocking
-            try (MockedStatic<SpringExtension> springExtMock = mockStatic(SpringExtension.class);
+            try (MockedStatic<TestContextManager> testContextManagerMock = mockStatic(TestContextManager.class);
                  MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
                  MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
-                springExtMock.when(() -> SpringExtension.getApplicationContext(any())).thenReturn(applicationContext);
-                when(applicationContext.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+                testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext))
+                        .thenReturn(superQuest);
 
-                frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
+                frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig)
+                        .thenReturn(frameworkConfig);
 
                 reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
                         eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE)
@@ -240,21 +275,10 @@ class CraftsmanTest {
                 // Then
                 assertThat(result).isSameAs(joinedObject);
                 verify(late).join();
-                verify(subStorage).put(eq(MockEnum.VALUE), eq(joinedObject));
+
+                testContextManagerMock.verify(() ->
+                        TestContextManager.storeArgument(superQuest, dataForge, joinedObject, extensionContext));
             }
-        }
-
-        @Test
-        @DisplayName("Should properly capture the lambda for exception throwing")
-        void shouldProperlyCaptureLambdaForExceptionThrowing() {
-            // Given
-            when(parameterContext.findAnnotation(Craft.class)).thenReturn(Optional.empty());
-
-            // When/Then
-            // This will test the lambda function that throws the exception
-            assertThatThrownBy(() -> craftsman.resolveParameter(parameterContext, extensionContext))
-                    .isInstanceOf(ParameterResolutionException.class)
-                    .hasMessageContaining("@Craft annotation not found");
         }
 
         @Test
@@ -262,18 +286,20 @@ class CraftsmanTest {
         void shouldVerifyAllMethodCallsAndInteractions() {
             // Given
             Object joinedObject = new Object();
+            paramType = String.class;
             doReturn(String.class).when(parameter).getType();
             when(late.join()).thenReturn(joinedObject);
 
             // Setup static mocking
-            try (MockedStatic<SpringExtension> springExtMock = mockStatic(SpringExtension.class);
+            try (MockedStatic<TestContextManager> testContextManagerMock = mockStatic(TestContextManager.class);
                  MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
                  MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
-                springExtMock.when(() -> SpringExtension.getApplicationContext(any())).thenReturn(applicationContext);
-                when(applicationContext.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+                testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext))
+                        .thenReturn(superQuest);
 
-                frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
+                frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig)
+                        .thenReturn(frameworkConfig);
 
                 reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
                         eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE)
@@ -283,25 +309,28 @@ class CraftsmanTest {
                 craftsman.resolveParameter(parameterContext, extensionContext);
 
                 // Then - verify the entire method execution flow
-                verify(parameterContext).getParameter();
-                verify(parameter).getType();
+                verify(parameterContext, atLeastOnce()).getParameter(); // Changed to atLeastOnce
                 verify(parameterContext).findAnnotation(Craft.class);
                 verify(craft).model();
-                verify(extensionContext).getStore(ExtensionContext.Namespace.GLOBAL);
-                verify(store).get(StoreKeys.QUEST);
-                verify(applicationContext).getBean(DecoratorsFactory.class);
-                verify(decoratorsFactory).decorate(quest, SuperQuest.class);
-                verify(superQuest).getStorage();
-                verify(storage).sub(StorageKeysTest.ARGUMENTS);
-                verify(dataForge, times(1)).dataCreator();
                 verify(late).join();
-                verify(subStorage).put(eq(MockEnum.VALUE), eq(joinedObject));
 
-                // Verify static method interactions
+                // Verify TestContextManager static method calls
+                testContextManagerMock.verify(() ->
+                        TestContextManager.initializeParameterTracking(extensionContext));
+
+                testContextManagerMock.verify(() ->
+                        TestContextManager.getSuperQuest(extensionContext));
+
+                testContextManagerMock.verify(() ->
+                        TestContextManager.storeArgument(superQuest, dataForge, joinedObject, extensionContext));
+
+                // Verify FrameworkConfigHolder and ReflectionUtil calls
                 frameworkConfigHolderMock.verify(FrameworkConfigHolder::getFrameworkConfig);
-                reflectionUtilMock.verify(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                        eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE)
-                ));
+
+                reflectionUtilMock.verify(() ->
+                        ReflectionUtil.findEnumImplementationsOfInterface(
+                                eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE)
+                        ));
             }
         }
     }
