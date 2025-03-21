@@ -41,15 +41,12 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public void selectOptions(final SmartWebElement container, final String... values) {
         openDdl(container);
-        //todo: Remove this
-        //SharedUIFunctions.waitForTimeout(driver);
         List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
         for (String value : values) {
             SmartWebElement option = findOptionByText(options, value);
             selectIfNotChecked(option);
         }
         closeDdl(container);
-        //closeDdl(container);
     }
 
     @Override
@@ -71,8 +68,6 @@ public class SelectVAImpl extends BaseComponent implements Select {
     @Override
     public List<String> getAvailableOptions(SmartWebElement container) {
         openDdl(container);
-        //todo: Remove this
-        //SharedUIFunctions.waitForTimeout(driver);
         List<SmartWebElement> options = getAllOptionsElements();
         System.out.println("All Options: " + options.size());
         List<String> availableOptions = options.stream()
@@ -180,7 +175,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
     protected List<SmartWebElement> getAllOptionsElements() {
         List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
         return options.stream()
-                .filter(element -> element.getAttribute("hidden") == null) //todo: not needed
+                .filter(element -> element.getAttribute("hidden") == null)
                 .collect(Collectors.toList());
     }
 
@@ -194,7 +189,7 @@ public class SelectVAImpl extends BaseComponent implements Select {
 
 
     protected boolean isOptionEnabled(SmartWebElement option) {
-        return option.getAttribute(DISABLED_CLASS_INDICATOR) == null; //todo: check
+        return option.getAttribute(DISABLED_CLASS_INDICATOR) == null;
     }
 
 

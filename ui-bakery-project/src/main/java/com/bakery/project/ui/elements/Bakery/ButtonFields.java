@@ -16,7 +16,7 @@ public enum ButtonFields implements ButtonUIElement {
 
 
     SIGN_IN_BUTTON(By.tagName("vaadin-button"), ButtonFieldTypes.VA_BUTTON_TYPE,
-            SharedUI.WAIT_FOR_LOADING), //todo: test the loading
+            SharedUI.WAIT_FOR_LOADING),
     NEW_ORDER_BUTTON(By.cssSelector("vaadin-button#action"), ButtonFieldTypes.VA_BUTTON_TYPE,
             SharedUI.WAIT_TO_BE_CLICKABLE,
             //SharedUI.WAIT_FOR_LOADING), //todo: test the loading

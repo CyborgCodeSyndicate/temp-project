@@ -17,7 +17,7 @@ public enum InputFields implements InputUIElement {
     PASSWORD_FIELD(By.id("vaadinLoginPassword"), InputFieldTypes.VA_INPUT_TYPE),
     SEARCH_BAR_FIELD(By.cssSelector("search-bar#search"), InputFieldTypes.VA_INPUT_TYPE,
             SharedUI.WAIT_FOR_PRESENCE,
-            SharedUI.WAIT_FOR_LOADING), //todo: test the loading
+            SharedUI.WAIT_FOR_LOADING),
     CUSTOMER_FIELD(By.id("customerName"), InputFieldTypes.VA_INPUT_TYPE,
             SharedUI.WAIT_FOR_PRESENCE),
     DETAILS_FIELD(By.id("customerDetails"), InputFieldTypes.VA_INPUT_TYPE,
