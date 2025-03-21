@@ -12,14 +12,6 @@ public class BakeryUILogging extends BaseLoginClient {
 
     @Override
     protected <T extends UIServiceFluent<?>> void loginImpl(T uiService, String username, String password) {
-
-        /*UIServiceFluent<?> actualService = uiService;
-        if (uiService instanceof SuperUIServiceFluent) {
-            actualService = ((SuperUIServiceFluent<?>) uiService).getOriginal();
-        }*/
-
-        //UIServiceFluent<UiServiceCustom> uiServiceCustom = (UIServiceFluent<UiServiceCustom>) uiService;
-
         uiService
                 .getNavigation().navigate("https://bakery-flow.demo.vaadin.com/")
                 .getInputField().insert(InputFields.USERNAME_FIELD, username)

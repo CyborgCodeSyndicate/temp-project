@@ -1,27 +1,17 @@
 package com.bakery.project.ui.elements;
 
-import com.bakery.project.model.*;
-import com.bakery.project.ui.functions.SharedUIFunctions;
+import com.bakery.project.model.TableEntry;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.tables.TableElement;
-import org.openqa.selenium.By;
 
 import java.util.function.Consumer;
 
 import static com.bakery.project.ui.elements.TableTypes.SIMPLE;
-import static com.theairebellion.zeus.ui.service.tables.DefaultTableTypes.DEFAULT;
 
 public enum Tables implements TableElement {
 
     CAMPAIGNS(TableEntry.class),
-    FILTERED_TRANSACTIONS(FilteredTransactionEntry.class),
-    ALL_TRANSACTIONS(AllTransactionEntry.class),
-    CREDIT_ACCOUNTS(CreditAccounts.class),
-    OUTFLOW(OutFlow.class, DEFAULT,
-            driver -> SharedUIFunctions.waitForPresence(driver, By.id("report-1016"))),
-    DETAILED_REPORT(DetailedReport.class, DEFAULT,
-            driver -> SharedUIFunctions.waitForPresence(driver, By.id("detailedreport-1041"))),
     ORDERS(TableEntry.class, SIMPLE);
 
 

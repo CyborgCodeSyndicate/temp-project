@@ -69,11 +69,9 @@ public class SelectVAImpl extends BaseComponent implements Select {
     public List<String> getAvailableOptions(SmartWebElement container) {
         openDdl(container);
         List<SmartWebElement> options = getAllOptionsElements();
-        System.out.println("All Options: " + options.size());
         List<String> availableOptions = options.stream()
                 .map(option -> option.findSmartElement(OPTION_TEXT_LOCATOR).getText().trim())
                 .collect(Collectors.toList());
-        System.out.println("All Text Options: " + availableOptions.size());
         closeDdl(container);
         return availableOptions;
     }
@@ -88,12 +86,10 @@ public class SelectVAImpl extends BaseComponent implements Select {
     public List<String> getSelectedOptions(SmartWebElement container) {
         openDdl(container);
         List<SmartWebElement> options = driver.findSmartElements(OPTIONS_ROOT_LOCATOR);
-        System.out.println("All Options: " + options.size());
         List<String> checkedOptions = options.stream()
                 .filter(this::checkIfOptionIsSelected)
                 .map(SmartWebElement::getText)
                 .collect(Collectors.toList());
-        System.out.println("Checked Options: " + checkedOptions.size());
         closeDdl(container);
         return checkedOptions;
     }
@@ -163,7 +159,6 @@ public class SelectVAImpl extends BaseComponent implements Select {
     protected void closeDdl(SmartWebElement ddlButton) {
         if ("true".equals(ddlButton.getAttribute("opened"))) { //todo- getAttribute: StaleElementReferenceException
             SmartWebElement toggleButton = findDdlButton(ddlButton);
-            System.out.println("here: close");
             toggleButton.click();
         }
     }

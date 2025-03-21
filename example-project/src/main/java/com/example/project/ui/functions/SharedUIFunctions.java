@@ -1,11 +1,9 @@
 package com.example.project.ui.functions;
 
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
-import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import static com.example.project.ui.functions.ExpectedConditionsStore.attributeLoadingToBeRemovedCustom;
 import static com.example.project.ui.functions.ExpectedConditionsStore.elementToBeClickableCustom;
 import static com.example.project.ui.functions.ExpectedConditionsStore.invisibilityOfElementLocatedCustom;
 import static com.example.project.ui.functions.ExpectedConditionsStore.visibilityOfElementLocatedCustom;
@@ -23,9 +21,6 @@ public class SharedUIFunctions {
     public static void waitForLoading(SmartWebDriver smartWebDriver) {
         smartWebDriver.getWait().until(
                 ExpectedConditions.invisibilityOfElementLocated(By.className("loader")));
-        smartWebDriver.getWait().until(
-                ExpectedConditions.attributeToBe(By.cssSelector(".v-loading-indicator.first"),
-                        "style", "display: none;"));
     }
 
     public static void waitForPresence(SmartWebDriver smartWebDriver, By locator) {
@@ -37,11 +32,6 @@ public class SharedUIFunctions {
     }
 
     public static void waitToBeRemoved(SmartWebDriver smartWebDriver, By locator) {
-        System.out.println("waitToBeRemoved: " + locator.toString());
         smartWebDriver.getWait().until(invisibilityOfElementLocatedCustom(locator));
-    }
-
-    public static void waitForElementLoading(SmartWebDriver smartWebDriver, SmartWebElement element) {
-        smartWebDriver.getWait().until(attributeLoadingToBeRemovedCustom(element));
     }
 }

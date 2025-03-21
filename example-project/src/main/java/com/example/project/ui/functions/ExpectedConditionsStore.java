@@ -83,26 +83,4 @@ public class ExpectedConditionsStore {
             }
         };
     }
-
-    /**
-     * Returns an ExpectedCondition that checks for the 'loading'
-     * attribute on the specified SmartWebElement to be "false" or removed.
-     */
-    public static ExpectedCondition<Boolean> attributeLoadingToBeRemovedCustom(final SmartWebElement element) {
-        return new ExpectedCondition<>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                try {
-                    return "false".equals(element.getAttribute("loading"));
-                } catch (StaleElementReferenceException e) {
-                    return false;
-                }
-            }
-
-            @Override
-            public String toString() {
-                return "Waiting for loading attribute to be removed from element: " + element;
-            }
-        };
-    }
 }

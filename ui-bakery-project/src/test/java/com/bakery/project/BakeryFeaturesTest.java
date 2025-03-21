@@ -20,7 +20,6 @@ import com.theairebellion.zeus.framework.base.BaseTestSequential;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
-import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
 import com.theairebellion.zeus.validator.core.Assertion;
@@ -171,7 +170,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
 
     @Test
     @Description("Interceptor raw usage")
-    @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
+    @com.theairebellion.zeus.ui.annotations.InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
     public void createOrderInterceptor(Quest quest,
                                        @Craft(model = VALID_SELLER) Seller seller) {
         quest
@@ -191,7 +190,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
 
     @Test()
     @Description("Late data created with interceptor and ripper data cleanup usage")
-    @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
+    @com.theairebellion.zeus.ui.annotations.InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
     @Ripper(targets = {DELETE_CREATED_ORDERS})
     public void createOrderInterceptorLateDataAndRipper(Quest quest,
                                                         @Craft(model = VALID_SELLER) Seller seller,
@@ -210,7 +209,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
 
     @Test
     @Description("Interceptor with Storage and Late data re-usage")
-    @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
+    @com.theairebellion.zeus.ui.annotations.InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
     @AuthenticateViaUiAs(credentials = AdminUI.class, type = BakeryUILogging.class, cacheCredentials = true)
     @PreQuest({
             @Journey(value = ORDER_PRECONDITION,

@@ -37,7 +37,6 @@ public class SharedUIFunctions {
     }
 
     public static void waitToBeRemoved(SmartWebDriver smartWebDriver, By locator) {
-        System.out.println("waitToBeRemoved: " + locator.toString());
         smartWebDriver.getWait().until(invisibilityOfElementLocatedCustom(locator));
     }
 

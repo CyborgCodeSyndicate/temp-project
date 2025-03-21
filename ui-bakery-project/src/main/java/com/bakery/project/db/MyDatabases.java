@@ -4,7 +4,7 @@ import com.theairebellion.zeus.db.config.DbType;
 
 import java.sql.Driver;
 
-public enum MyBakeryDatabases implements DbType {
+public enum MyDatabases implements DbType {
     POSTGRESQL(new org.postgresql.Driver(), "jdbc:postgresql"),
     H2(new org.h2.Driver(), "jdbc:h2");
 
@@ -12,7 +12,7 @@ public enum MyBakeryDatabases implements DbType {
     private final String protocol;
 
 
-    MyBakeryDatabases(final Driver driver, final String protocol) {
+    MyDatabases(final Driver driver, final String protocol) {
         this.driver = driver;
         this.protocol = protocol;
     }
