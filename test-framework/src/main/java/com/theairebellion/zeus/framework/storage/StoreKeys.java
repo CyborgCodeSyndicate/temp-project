@@ -23,8 +23,15 @@ public enum StoreKeys {
      * Key for storing a list of consumers that modify or interact with the quest instance.
      */
     QUEST_CONSUMERS,
-    
+
+    /**
+     * Key for storing the start time of the test execution.
+     */
     START_TIME,
+
+    HTML,
+
+    //todo: JavaDocs
     HOOKS_PARAMS;
 
 }

@@ -175,9 +175,10 @@ public class AllureStepHelper extends ObjectFormatter {
      * </p>
      */
     public static void initializeTestEnvironment() {
-        Map<String, String> propertiesMap = collectConfigurationProperties();
+        //todo: Duplicate key issue with project.package
+        /*Map<String, String> propertiesMap = collectConfigurationProperties();
         writeEnvironmentProperties(propertiesMap);
-        writeCategoriesJson();
+        writeCategoriesJson();*/
     }
 
     /**
