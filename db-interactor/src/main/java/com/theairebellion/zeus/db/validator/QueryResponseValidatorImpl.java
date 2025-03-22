@@ -73,7 +73,7 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
                         throw new InvalidAssertionException(
                                 "Assertion value must have a non-null key. Key must contain a valid JsonPath expression.");
                     }
-                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0), key, Object.class);
+                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0), key, Object.class); //todo: investigate and revert to original
                     if (value == null) {
                         throw new IllegalArgumentException("JsonPath expression: '" + key + "' not found in query result.");
                     }
@@ -88,7 +88,7 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
                     if (queryResponse.getRows().isEmpty()) {
                         throw new IllegalArgumentException("Query result is empty; cannot validate columns.");
                     }
-                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0), key, Object.class);
+                    Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0), key, Object.class); //todo: investigate and revert to original
                     if (value == null) {
                         throw new IllegalArgumentException("Column: '" + key + "' not found in query result.");
                     }
