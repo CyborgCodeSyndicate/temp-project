@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.framework.chain;
 
+import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
@@ -41,7 +42,10 @@ public interface FluentChain {
      * @param assertion The assertion logic to apply.
      * @return The current {@code FluentChain} instance for method chaining.
      */
-    default FluentChain validate(Consumer<SoftAssertions> assertion) {
+    @InfoAI(description = "Performs a soft validation using SoftAssertions. " +
+            "Soft validations are collected and verified at the end of the test using 'complete'. " +
+            "Use this to validate conditions without interrupting the test flow.")
+    default FluentChain validate(@InfoAI(description = "A lambda with validation logic using SoftAssertions.") Consumer<SoftAssertions> assertion) {
         Quest quest = then();
         LogTest.validation("Starting soft validation.");
         assertion.accept(new SuperQuest(quest).getSoftAssertions());
@@ -57,7 +61,9 @@ public interface FluentChain {
      * @param assertion The assertion logic to execute.
      * @return The current {@code FluentChain} instance for method chaining.
      */
-    default FluentChain validate(Runnable assertion) {
+    @InfoAI(description = "Performs a hard validation. If the validation fails, it throws an exception and stops test execution. " +
+            "Use this to assert critical conditions that should not be bypassed.")
+    default FluentChain validate(@InfoAI(description = "A lambda containing logic for hard validation. Fails immediately if an assertion is not met.") Runnable assertion) {
         LogTest.validation("Starting hard validation...");
         try {
             assertion.run();
@@ -75,6 +81,8 @@ public interface FluentChain {
      * This signals that the sequence of operations has been finalized.
      * </p>
      */
+    @InfoAI(description = "Finalizes the execution flow by invoking the 'complete' method of the active Quest. " +
+            "This clears the test context and asserts all collected soft validations, ensuring the test concludes properly.")
     default void complete() {
         then().complete();
     }

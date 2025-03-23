@@ -4,14 +4,73 @@
       "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.request(com.theairebellion.zeus.api.core.Endpoint)",
       "value": [
         {
+          "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Ping the endpoint defines in enum class Endpoints",
+          "description": "Sends a simple GET request to an API endpoint defined in the Endpoints enum. Use this to ping an endpoint without any additional parameters.",
           "example": "request(Endpoints.GET_ALL_USERS)"
         },
         {
+          "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Ping the endpoint defines in enum class Endpoints and add query param for page with value 2",
+          "description": "Sends a GET request to an API endpoint with an added query parameter. For example, specify the page number to retrieve a particular page of results.",
           "example": "request(Endpoints.GET_ALL_USERS.withQueryParam(\"page\", 2))"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Sends a GET request to an API endpoint with an added path parameter. Use this to retrieve a specific resource, such as a user by ID.",
+          "example": "request(Endpoints.GET_USER.withPathParam(\"id\", 3))"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Sends a DELETE request to an API endpoint by specifying a path parameter. Use this to delete a resource, for example, deleting a user by ID.",
+          "example": "request(Endpoints.DELETE_USER.withPathParam(\"id\", 5))"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Sends a GET request to an endpoint with a custom header. Use this when the request requires specific headers such as authorization tokens or custom metadata.",
+          "example": "request(Endpoints.GET_USER\n  .withPathParam(\"id\", 3)\n  .withHeader(\"SpecificHeader\", \"your-header-value\"))"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.request(com.theairebellion.zeus.api.core.Endpoint, java.lang.Object)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Sends a POST request with a payload to an API endpoint. Use this to create a new resource by providing the required request body.",
+          "example": "request(Endpoints.POST_CREATE_USER, newUserObject)"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Sends a POST request with a payload to an API endpoint to perform login. The request body should include the login credentials.",
+          "example": "request(Endpoints.POST_LOGIN_USER, loginUserObject)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.chain.FluentChain.validate(java.util.function.Consumer)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Performs a soft validation using SoftAssertions. The validation logic is executed without immediately failing the test, allowing multiple assertions to be collected and verified at the end of the test execution.",
+          "example": "validate(softAssertions -> {\n  // Retrieve a response and convert it to a UserResponse object\n  UserResponse userResponse = retrieve(StorageKeysApi.API, GET_USER, Response.class).getBody().as(UserResponse.class);\n  // Soft assertions to check multiple fields\n  softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(9);\n  softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo(\"tobias.funke@reqres.in\");\n  softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo(\"Tobias\");\n  softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo(\"Funke\");\n});"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.chain.FluentChain.validate(java.lang.Runnable)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Performs a hard validation that immediately fails the test if any assertion does not pass. Use this when critical conditions must be met and the test should halt on failure.",
+          "example": "validate(() -> {\n  // Retrieve a response and convert it to a GetUsersResponse object\n  GetUsersResponse usersResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);\n  // Hard assertions that immediately throw if a condition is not met\n  assertEquals(6, usersResponse.getData().size(), \"User count mismatch\");\n  assertTrue(usersResponse.getData().stream().allMatch(user -> user.getId() != null), \"User ID should not be null\");\n});"
         }
       ]
     },
@@ -19,14 +78,202 @@
       "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.requestAndValidate(com.theairebellion.zeus.api.core.Endpoint, com.theairebellion.zeus.validator.core.Assertion[])",
       "value": [
         {
+          "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Ping the GET_USER endpoint defined in enum class Endpoints with path parameter for id with value 3 and validate that status of the response is OK as soft assertion and the body has email field with some value as soft assertion and the body has field url with some value as soft assertion",
-          "example": "requestAndValidate(Endpoints.GET_USER.withPathParam(\"id\", 3), Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).soft(true).build(), Assertion.builder().target(BODY).key(\"data.email\").type(IS).expected(\"emma.wong@reqres.in\").soft(true).build(), Assertion.builder().target(BODY).key(\"support.url\").type(IS).expected(\"https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral\").soft(true).build());"
+          "description": "Sends a request to an API endpoint and validates the response using a comprehensive set of assertions. The following examples validate various aspects of the response:",
+          "example": "requestAndValidate(Endpoints.GET_ALL_USERS.withQueryParam(\"page\", 2),\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),\n  Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.TOTAL.getJsonPath()).type(NOT).expected(1).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.TOTAL_PAGES.getJsonPath()).type(GREATER_THAN).expected(1).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.PER_PAGE.getJsonPath()).type(LESS_THAN).expected(10).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.SUPPORT_URL.getJsonPath()).type(CONTAINS).expected(\"reqres\").build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.SUPPORT_TEXT.getJsonPath()).type(STARTS_WITH).expected(\"Tired of writing\").build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.USER_AVATAR_BY_INDEX.getJsonPath(0)).type(ENDS_WITH).expected(\".jpg\").build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.USER_ID.getJsonPath(0)).type(NOT_NULL).expected(true).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.DATA.getJsonPath()).type(ALL_NOT_NULL).expected(true).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.DATA.getJsonPath()).type(NOT_EMPTY).expected(true).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.USER_FIRST_NAME.getJsonPath(0)).type(LENGTH).expected(7).build()\n);"
         },
         {
+          "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Ping the GET_USER endpoint defined in enum class Endpoints with path parameter for id with value 23 and validate that status is 404 Not Found as hard assertion",
-          "example": "requestAndValidate(Endpoints. GET_USER.withPathParam(\"id\", 23), Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).build());"
+          "description": "Note: The same set of assertion examples can be used with the 'validate' method for an already received response, as both methods perform validations in the same manner.",
+          "example": "validate(response, \n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),\n  Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build());"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Sends a GET request to the GET_USER endpoint with a path parameter and a custom header, then validates the status of the response. Use this pattern when the endpoint requires additional headers like authorization tokens.",
+          "example": "requestAndValidate(\n  Endpoints.GET_USER\n    .withPathParam(\"id\", 3)\n    .withHeader(\"SpecificHeader\", \"custom-token-value\"),\n  Assertion.builder()\n    .target(STATUS)\n    .type(IS)\n    .expected(HttpStatus.SC_OK)\n    .build()\n)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.requestAndValidate(com.theairebellion.zeus.api.core.Endpoint, java.lang.Object, com.theairebellion.zeus.validator.core.Assertion[])",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Sends a POST request with a payload to an API endpoint and validates the response. For example, create a new user and then validate that the response status is 201 Created and that the returned user attributes match the expected values.",
+          "example": "requestAndValidate(Endpoints.POST_CREATE_USER, newUserObject, Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(), Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Morpheus\").soft(true).build())"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.validateResponse(io.restassured.response.Response, com.theairebellion.zeus.validator.core.Assertion[])",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Validates a previously obtained API response with custom assertions. Useful if you've already retrieved a response (e.g., via 'retrieve(..., Response.class)' or a separate request call) and want to apply validations manually instead of using 'requestAndValidate(...)'.",
+          "example": "Response userResponse = retrieve(ENDPOINT_EXAMPLE, Response.class);\nvalidateResponse(\n  userResponse,\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),\n  Assertion.builder().target(BODY).key(\"data.email\").type(IS).expected(\"emma.wong@reqres.in\").build(),\n  Assertion.builder().target(BODY).key(\"support.url\").type(CONTAINS).expected(\"reqres\").build()\n);"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Validates a 'not found' scenario by retrieving a response from storage and checking that the status code is 404. Ideal for scenarios where you manually store an invalid or missing user response and want to verify the error condition.",
+          "example": "Response notFoundResponse = retrieve(ENDPOINT_NOT_FOUND, Response.class);\nvalidateResponse(\n  notFoundResponse,\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).build()\n);"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.chain.FluentService.then()",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Ends the current fluent service (world) context and returns control to the main Quest. Use this when you're done performing operations in one world (e.g., API, UI, or DB) and want to transition to another or execute additional test steps.",
+          "example": "quest\n  .enters(RIVENDELL)\n  .loginUserAndAddSpecificHeader(loginUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(GET_ALL_USERS, Assertion.builder().target(STATUS).type(IS).expected(200).build());"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.chain.FluentChain.complete()",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Finalizes the execution flow in the current fluent service chain. Internally invokes the Quest's complete method, clearing test data and asserting any collected soft validations. Always call this at the end of your chain to ensure the test concludes properly.",
+          "example": "quest\n  .enters(API_WORLD)\n  .request(Endpoints.GET_ALL_USERS)\n  .validate(() -> {\n    // Hard validation logic here\n  })\n  .complete();"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.retryUntil(com.theairebellion.zeus.framework.retry.RetryCondition, java.time.Duration, java.time.Duration)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Demonstrates a custom retry scenario where the test polls a shared flag or any custom logic until true. Ideal for waiting on asynchronous operations, external triggers, or test data setup before continuing.",
+          "example": "retryUntil(\n  sharedFlagIsTrue(),\n  Duration.ofSeconds(10),\n  Duration.ofSeconds(1)\n)\n.requestAndValidate(\n  GET_ALL_USERS.withQueryParam(\"page\", 2),\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()\n)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.validate(java.lang.Runnable)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Executes a hard validation by running any logic inside a Runnable. If an assertion fails inside the Runnable, the test stops immediately. Ideal for JUnit-style validations or quick checks after requesting or retrieving API data.",
+          "example": "quest\n  .enters(OLYMPYS)\n  .request(GET_ALL_USERS.withQueryParam(\"page\", 2))\n  .validate(() -> {\n    GetUsersResponse usersResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);\n    assertEquals(6, usersResponse.getData().size(), \"User data size not correct!\");\n    assertEquals(7, usersResponse.getData().get(0).getFirstName().length(), \"Name length incorrect!\");\n  });"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Another common usage: verifying the attributes of a resource (e.g., a newly created user) using JUnit assertions. If any assertion fails, the test halts immediately.",
+          "example": "quest\n  .enters(OLYMPYS)\n  .validate(() -> {\n    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)\n      .getBody()\n      .as(CreatedUserResponse.class);\n    assertEquals(\"Mr. Morpheus\", createdUserResponse.getName(), \"Name is incorrect!\");\n    assertEquals(\"Intermediate Leader\", createdUserResponse.getJob(), \"Job is incorrect!\");\n  });"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.service.fluent.RestServiceFluent.validate(java.util.function.Consumer)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Executes a soft validation using SoftAssertions, allowing multiple checks to be gathered without ending the test upon a single failure. All collected assertions are ultimately validated at the end of the test flow (when 'complete()' is called).",
+          "example": "quest\n  .enters(OLYMPYS)\n  .request(GET_ALL_USERS.withQueryParam(\"page\", 2))\n  .request(\n    GET_USER.withPathParam(\n      \"id\",\n      retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class)\n        .getBody()\n        .as(GetUsersResponse.class)\n        .getData()\n        .stream()\n        .filter(u -> \"Tobias\".equals(u.getFirstName()))\n        .map(DataResponse::getId)\n        .findFirst()\n        .orElseThrow(() -> new RuntimeException(\"Tobias not found\"))\n    )\n  )\n  .validate(softAssertions -> {\n    UserResponse userResponse = retrieve(StorageKeysApi.API, GET_USER, Response.class)\n      .getBody()\n      .as(UserResponse.class);\n    softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(9);\n    softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo(\"tobias.funke@reqres.in\");\n    softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo(\"Tobias\");\n    softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo(\"Funke\");\n  })\n  .complete();"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.quest.Quest.enters(java.lang.Class)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Switches into the OLYMPYS world, which provides fluent API capabilities through RestServiceFluent. Use this for sending requests, validating responses, and chaining additional API actions.",
+          "example": "quest.enters(OLYMPYS)\n  .requestAndValidate(\n    Endpoints.GET_ALL_USERS.withQueryParam(\"page\", 2),\n    Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()\n  );"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Switches into the RIVENDELL world, where CustomService logic is available (e.g., user authentication flows, specialized request methods). Often followed by '.then()' to return to the main Quest or move to another world.",
+          "example": "quest.enters(RIVENDELL)\n  .loginUserAndAddSpecificHeader(loginUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(\n    Endpoints.GET_ALL_USERS,\n    Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()\n  );"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Switches into the GONDOR world, exposing the EvolutionService. Used for advanced test steps like 'createLeaderUserAndValidateResponse'.",
+          "example": "quest.enters(GONDOR)\n  .createLeaderUserAndValidateResponse(leaderUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(Endpoints.GET_USER, ...);"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(java.lang.Enum, java.lang.Class)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves a stored API response using the GET_ALL_USERS endpoint key and deserializes it to GetUsersResponse for validation.",
+          "example": "GetUsersResponse users = retrieve(GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves the raw response object from storage using the POST_CREATE_USER key. Useful for status code validation or token extraction.",
+          "example": "Response response = retrieve(POST_CREATE_USER, Response.class);"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(java.lang.Enum, java.lang.Enum, java.lang.Class)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves the stored response from the API sub-storage using the GET_ALL_USERS key and deserializes it to a typed response DTO for assertion.",
+          "example": "GetUsersResponse usersResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves the stored user creation response from API sub-storage using the POST_CREATE_USER key. Use this to validate returned user data fields after creation.",
+          "example": "CreatedUserResponse response = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class).getBody().as(CreatedUserResponse.class);"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(com.theairebellion.zeus.framework.storage.DataExtractor, java.lang.Class)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves a specific value from an already stored API response using a custom DataExtractor. Use this approach when you have a JSONPath or logic-based extractor that pulls specific fields out of the stored API data.",
+          "example": "String firstUserEmail = retrieve(\n  responseBodyExtraction(\"/users\", \"$.data[0].email\"),\n  String.class\n);\n// Now you can assert that firstUserEmail is not null or has expected value."
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Demonstrates retrieving a typed object with domain fields from a JSON response using a custom extraction logic. Perfect for cases where you parse a response into a targeted DTO.",
+          "example": "GetUsersResponse users = retrieve(\n  responseBodyExtraction(\"/users\", \"$.data\"),\n  GetUsersResponse.class\n);\n// Then you can do assertions like: assertEquals(6, users.getData().size());"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(com.theairebellion.zeus.framework.storage.DataExtractor, int, java.lang.Class)",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves a specific element from stored API data using a DataExtractor and an index. Use this when your stored data represents a list (e.g., array of users), and you want to extract a particular item at the given position.",
+          "example": "UserResponse secondUser = retrieve(\n  responseBodyExtraction(\"/users\", \"$.data\"),\n  1,\n  UserResponse.class\n);\n// Useful when validating individual user entries after fetching a list of users."
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Allows accessing indexed elements in response arrays when validating paginated or batch-based API calls. Index helps isolate the exact record for assertions.",
+          "example": "String avatarUrl = retrieve(\n  responseBodyExtraction(\"/users\", \"$.data\"),\n  2,\n  UserResponse.class\n).getAvatar();\nassertTrue(avatarUrl.endsWith(\".jpg\"));"
         }
       ]
     },
@@ -34,19 +281,141 @@
       "key": "com.theairebellion.zeus.validator.core.Assertion.AssertionTarget.target",
       "value": [
         {
+          "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Validates the body of an Response object from Rest Assured",
-          "example": "RestAssertionTarget.BODY"
-        },
-        {
-          "usageLevel": "MANDATORY",
-          "description": "Validates the Status of an Response object from Rest Assured",
+          "description": "Target used to validate the HTTP status code of an API response. Does not require a 'key' field. Typically compared against constants like HttpStatus.SC_OK or integer values (e.g., 200).",
           "example": "RestAssertionTarget.STATUS"
         },
         {
+          "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Validates the HEADERS of an Response object from Rest Assured",
+          "description": "Target used to validate the body of the API response. Requires the 'key' field to specify a JSON path (e.g., 'data.email', 'support.url'). Works with value-based assertion types like IS, CONTAINS, MATCHES_REGEX, etc.",
+          "example": "RestAssertionTarget.BODY"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Target used to validate a specific HTTP response header. Requires the 'key' field to define the header name (e.g., 'Content-Type', 'Authorization'). Compared against expected string values or patterns.",
           "example": "RestAssertionTarget.HEADER"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.validator.core.Assertion",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the actual value is equal to the expected one. Works with any object, string, or number.",
+          "example": "Assertion.builder().target(STATUS).type(IS).expected(200).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the actual value is not equal to the expected one. Works with any object, string, or number.",
+          "example": "Assertion.builder().target(BODY).key(\"data.total\").type(NOT).expected(0).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the actual string contains the expected substring.",
+          "example": "Assertion.builder().target(HEADER).key(\"Content-Type\").type(CONTAINS).expected(\"application/json\").build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the actual value is not null.",
+          "example": "Assertion.builder().target(BODY).key(\"data.email\").type(NOT_NULL).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that all values in a list or collection are not null.",
+          "example": "Assertion.builder().target(BODY).key(\"data\").type(ALL_NOT_NULL).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the value is null.",
+          "example": "Assertion.builder().target(BODY).key(\"data.address\").type(IS_NULL).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that all values in a collection are null.",
+          "example": "Assertion.builder().target(BODY).key(\"data.removedFields\").type(ALL_NULL).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that a numeric value is greater than the expected number.",
+          "example": "Assertion.builder().target(BODY).key(\"meta.count\").type(GREATER_THAN).expected(5).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that a numeric value is less than the expected number.",
+          "example": "Assertion.builder().target(BODY).key(\"meta.count\").type(LESS_THAN).expected(100).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that all expected elements exist in the actual collection.",
+          "example": "Assertion.builder().target(BODY).key(\"data.items\").type(CONTAINS_ALL).expected(List.of(\"item1\", \"item2\")).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that at least one of the expected elements exists in the actual collection.",
+          "example": "Assertion.builder().target(BODY).key(\"data.items\").type(CONTAINS_ANY).expected(List.of(\"itemX\", \"itemY\")).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that a string starts with the specified prefix.",
+          "example": "Assertion.builder().target(BODY).key(\"data.username\").type(STARTS_WITH).expected(\"admin\").build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that a string ends with the specified suffix.",
+          "example": "Assertion.builder().target(BODY).key(\"data.avatar\").type(ENDS_WITH).expected(\".jpg\").build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the value has the expected length. Works for strings, lists, etc.",
+          "example": "Assertion.builder().target(BODY).key(\"data.users\").type(LENGTH).expected(6).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that a string matches the given regular expression.",
+          "example": "Assertion.builder().target(BODY).key(\"support.url\").type(MATCHES_REGEX).expected(\"https://.*reqres.*\").build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the collection is empty.",
+          "example": "Assertion.builder().target(BODY).key(\"errors\").type(EMPTY).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that the collection is not empty.",
+          "example": "Assertion.builder().target(BODY).key(\"data.users\").type(NOT_EMPTY).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that a number falls within a specified inclusive range. Expected must be a List of exactly 2 elements: [min, max].",
+          "example": "Assertion.builder().target(BODY).key(\"meta.total\").type(BETWEEN).expected(List.of(5, 15)).build()"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Asserts that two strings are equal, ignoring case sensitivity.",
+          "example": "Assertion.builder().target(BODY).key(\"data.first_name\").type(EQUALS_IGNORE_CASE).expected(\"michael\").build()"
         }
       ]
     }

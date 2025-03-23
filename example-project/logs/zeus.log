@@ -1,0 +1,134 @@
+?? ZEUS ?? 2025-03-23T19:23:52,809 WARN  [] - Support for convention-based stereotype names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.
+?? ZEUS ?? 2025-03-23T19:23:53,315 INFO  [] - Starting ZeroBankTest using Java 17.0.14 with PID 22736 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\example-project)
+?? ZEUS ?? 2025-03-23T19:23:53,332 INFO  [] - No active profile set, falling back to 1 default profile: "default"
+?? ZEUS ?? 2025-03-23T19:23:54,239 INFO  [] - Started ZeroBankTest in 2.097 seconds (process running for 5.652)
+?? ZEUS ?? 2025-03-23T19:23:58,611 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [] - Using chromedriver 134.0.6998.165 (resolved driver for Chrome 134)
+?? ZEUS ?? 2025-03-23T19:23:58,823 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [] - Downloading https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.165/win64/chromedriver-win64.zip
+?? ZEUS ?? 2025-03-23T19:24:00,249 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [] - Extracting driver from compressed file chromedriver-win64.zip
+?? ZEUS ?? 2025-03-23T19:24:00,465 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [] - Exporting webdriver.chrome.driver as C:\Users\stefa\.cache\selenium\chromedriver\win64\134.0.6998.165\chromedriver.exe
+?? ZEUS ?? 2025-03-23T19:24:00,481 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [UI] - Chrome driver is downloaded with a compatible version for the installed browser
+?? ZEUS ?? 2025-03-23T19:24:00,489 [scenario=ZeroBankTest.tableAssert] INFO  [UI] - Creating driver using provider [ChromeDriverProvider]. Headless: [true], Remote: [false], Remote URL: []
+?? ZEUS ?? 2025-03-23T19:24:00,489 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [UI] - Creating driver using provider [ChromeDriverProvider]. Headless: [true], Remote: [false], Remote URL: []
+?? ZEUS ?? 2025-03-23T19:24:00,489 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] INFO  [UI] - Creating driver using provider [ChromeDriverProvider]. Headless: [true], Remote: [false], Remote URL: []
+?? ZEUS ?? 2025-03-23T19:24:00,489 [scenario=ZeroBankTest.alertTest] INFO  [UI] - Creating driver using provider [ChromeDriverProvider]. Headless: [true], Remote: [false], Remote URL: []
+?? ZEUS ?? 2025-03-23T19:24:00,489 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] INFO  [UI] - Creating driver using provider [ChromeDriverProvider]. Headless: [true], Remote: [false], Remote URL: []
+?? ZEUS ?? 2025-03-23T19:24:03,685 [scenario=ZeroBankTest.alertTest] WARN  [] - Unable to find CDP implementation matching 134
+?? ZEUS ?? 2025-03-23T19:24:03,685 [scenario=ZeroBankTest.tableAssert] WARN  [] - Unable to find CDP implementation matching 134
+?? ZEUS ?? 2025-03-23T19:24:03,685 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] WARN  [] - Unable to find CDP implementation matching 134
+?? ZEUS ?? 2025-03-23T19:24:03,703 [scenario=ZeroBankTest.alertTest] WARN  [] - Unable to find version of CDP to use for 134.0.6998.118. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+?? ZEUS ?? 2025-03-23T19:24:03,702 [scenario=ZeroBankTest.tableAssert] WARN  [] - Unable to find version of CDP to use for 134.0.6998.118. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+?? ZEUS ?? 2025-03-23T19:24:03,716 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] WARN  [] - Unable to find version of CDP to use for 134.0.6998.118. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+?? ZEUS ?? 2025-03-23T19:24:03,750 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] WARN  [] - Unable to find CDP implementation matching 134
+?? ZEUS ?? 2025-03-23T19:24:03,766 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] WARN  [] - Unable to find CDP implementation matching 134
+?? ZEUS ?? 2025-03-23T19:24:03,797 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] WARN  [] - Unable to find version of CDP to use for 134.0.6998.118. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+?? ZEUS ?? 2025-03-23T19:24:03,809 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] WARN  [] - Unable to find version of CDP to use for 134.0.6998.118. You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.25.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+?? ZEUS ?? 2025-03-23T19:24:04,926 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] INFO  [TEST] - The quest: 'tableWithButtonCustomServiceAssert(Quest)' has begun and is crafted.
+?? ZEUS ?? 2025-03-23T19:24:04,926 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest: 'alertTest(Quest)' has begun and is crafted.
+?? ZEUS ?? 2025-03-23T19:24:04,926 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest: 'tableAssert(Quest)' has begun and is crafted.
+?? ZEUS ?? 2025-03-23T19:24:04,926 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] INFO  [TEST] - The quest: 'paragraphTextValueTestHardAssertions(Quest)' has begun and is crafted.
+?? ZEUS ?? 2025-03-23T19:24:04,926 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [TEST] - The quest: 'paragraphTextValueTestSoftAssertions(Quest)' has begun and is crafted.
+?? ZEUS ?? 2025-03-23T19:24:05,042 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+?? ZEUS ?? 2025-03-23T19:24:05,042 [scenario=ZeroBankTest.tableAssert] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+?? ZEUS ?? 2025-03-23T19:24:05,042 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+?? ZEUS ?? 2025-03-23T19:24:05,054 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+?? ZEUS ?? 2025-03-23T19:24:05,064 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] INFO  [TEST] - The quest has undertaken a journey through: 'com.example.project.ui.UiServiceCustom'
+?? ZEUS ?? 2025-03-23T19:24:07,619 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Clicking button using locator: By.id: signin_button
+?? ZEUS ?? 2025-03-23T19:24:07,619 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Clicking button using locator: By.id: signin_button
+?? ZEUS ?? 2025-03-23T19:24:07,656 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Clicking button using locator: By.id: signin_button
+?? ZEUS ?? 2025-03-23T19:24:07,659 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Clicking button using locator: By.id: signin_button
+?? ZEUS ?? 2025-03-23T19:24:07,686 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Clicking button using locator: By.id: signin_button
+?? ZEUS ?? 2025-03-23T19:24:08,600 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:08,600 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:08,602 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:08,600 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:08,601 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Inserting value: 'username' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:09,152 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:09,176 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:09,222 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:09,222 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:09,266 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Inserting value: 'password' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:09,655 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Clicking button using locator: By.cssSelector: input[value='Sign in']
+?? ZEUS ?? 2025-03-23T19:24:09,702 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Clicking button using locator: By.cssSelector: input[value='Sign in']
+?? ZEUS ?? 2025-03-23T19:24:09,701 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Clicking button using locator: By.cssSelector: input[value='Sign in']
+?? ZEUS ?? 2025-03-23T19:24:09,719 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Clicking button using locator: By.cssSelector: input[value='Sign in']
+?? ZEUS ?? 2025-03-23T19:24:09,805 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Clicking button using locator: By.cssSelector: input[value='Sign in']
+?? ZEUS ?? 2025-03-23T19:24:11,876 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Clicking button using locator: By.id: online-banking
+?? ZEUS ?? 2025-03-23T19:24:11,914 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: transfer_funds_link
+?? ZEUS ?? 2025-03-23T19:24:12,218 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: transfer_funds_link
+?? ZEUS ?? 2025-03-23T19:24:12,213 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: transfer_funds_link
+?? ZEUS ?? 2025-03-23T19:24:12,325 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Clicking button using locator: By.id: online-banking
+?? ZEUS ?? 2025-03-23T19:24:13,002 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Selecting option Credit Card(Avail. balance = $ -265) in container with locator By.id: tf_fromAccountId for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:13,032 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Selecting options [Credit Card(Avail. balance = $ -265)] in container with locator By.id: tf_fromAccountId for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:13,188 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting items Pay Bills from list BOOTSTRAP_LIST_TYPE using locator By.className: nav-tabs
+?? ZEUS ?? 2025-03-23T19:24:13,319 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Selecting items Pay Bills from list BOOTSTRAP_LIST_TYPE using locator By.className: nav-tabs
+?? ZEUS ?? 2025-03-23T19:24:13,816 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: money_map_link
+?? ZEUS ?? 2025-03-23T19:24:13,987 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: account_activity_link
+?? ZEUS ?? 2025-03-23T19:24:15,721 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Selecting items Find Transactions from list BOOTSTRAP_LIST_TYPE using locator By.className: ui-tabs-nav
+?? ZEUS ?? 2025-03-23T19:24:17,155 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Selecting option Loan(Avail. balance = $ 780) in container with locator By.id: tf_toAccountId for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:17,164 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Selecting options [Loan(Avail. balance = $ 780)] in container with locator By.id: tf_toAccountId for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:17,410 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Inserting value: 'ONLINE' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:18,015 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting items Pay Saved Payee from list BOOTSTRAP_LIST_TYPE using locator By.className: ui-tabs-nav
+?? ZEUS ?? 2025-03-23T19:24:18,286 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Selecting items Pay Saved Payee from list BOOTSTRAP_LIST_TYPE using locator By.className: ui-tabs-nav
+?? ZEUS ?? 2025-03-23T19:24:18,404 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Reading table for component type 'DEFAULT' as class 'OutFlow'
+?? ZEUS ?? 2025-03-23T19:24:18,521 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Inserting value: '100' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:18,566 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Inserting value: '2012-01-01' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:18,609 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting option Sprint in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:18,621 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting options [Sprint] in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:18,687 [scenario=ZeroBankTest.tableWithButtonCustomServiceAssert] STEP  [UI] - Reading entire table as class 'OutFlow'
+?? ZEUS ?? 2025-03-23T19:24:18,889 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Selecting option Sprint in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:18,900 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Selecting options [Sprint] in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:19,084 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Inserting value: 'IDEMO BRE' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:19,444 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Inserting value: '2012-12-31' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:20,897 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: sp_get_payee_details
+?? ZEUS ?? 2025-03-23T19:24:22,616 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Clicking button using locator: By.id: btn_submit
+?? ZEUS ?? 2025-03-23T19:24:22,847 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] VALIDATION [TEST] - Starting hard validation...
+?? ZEUS ?? 2025-03-23T19:24:23,179 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] VALIDATION [TEST] - Hard validation completed successfully.
+?? ZEUS ?? 2025-03-23T19:24:23,203 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting option Bank of America in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:23,268 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting options [Bank of America] in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:24,385 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Inserting value: '100' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:25,856 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: sp_get_payee_details
+?? ZEUS ?? 2025-03-23T19:24:26,038 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Inserting value: '1000' into input component of type: 'BOOTSTRAP_INPUT_TYPE'.
+?? ZEUS ?? 2025-03-23T19:24:26,202 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Clicking button using locator: By.id: btn_submit
+?? ZEUS ?? 2025-03-23T19:24:26,365 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: sp_get_payee_details
+?? ZEUS ?? 2025-03-23T19:24:26,702 [scenario=ZeroBankTest.alertTest] STEP  [UI] - Getting value from alert located by: By.className: alert
+?? ZEUS ?? 2025-03-23T19:24:26,887 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Selecting option Deposit in container with locator By.id: aa_type for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:26,897 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Selecting options [Deposit] in container with locator By.id: aa_type for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:27,517 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] VALIDATION [TEST] - Starting hard validation...
+?? ZEUS ?? 2025-03-23T19:24:27,524 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] VALIDATION [TEST] - Hard validation completed successfully.
+?? ZEUS ?? 2025-03-23T19:24:27,572 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting option Apple in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:27,585 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting options [Apple] in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:27,688 [scenario=ZeroBankTest.alertTest] VALIDATION [TEST] - Starting hard validation...
+?? ZEUS ?? 2025-03-23T19:24:27,706 [scenario=ZeroBankTest.alertTest] VALIDATION [TEST] - Hard validation completed successfully.
+?? ZEUS ?? 2025-03-23T19:24:27,715 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest has left the journey.
+?? ZEUS ?? 2025-03-23T19:24:27,724 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest has reached his end
+?? ZEUS ?? 2025-03-23T19:24:27,835 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] INFO  [TEST] - The quest has left the journey.
+?? ZEUS ?? 2025-03-23T19:24:27,848 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] VALIDATION [TEST] - Starting soft validation.
+?? ZEUS ?? 2025-03-23T19:24:28,683 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Selecting option Bank of America in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:28,693 [scenario=ZeroBankTest.paragraphTextValueTestSoftAssertions] STEP  [UI] - Selecting options [Bank of America] in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:28,882 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Clicking link BOOTSTRAP_LINK using locator By.id: sp_get_payee_details
+?? ZEUS ?? 2025-03-23T19:24:29,059 WARN  [] - Connection reset
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:394) ~[?:?]
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:426) ~[?:?]
+	at java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1170) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:833) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:230) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:303) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:256) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:774) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:957) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:984) ~[java.net.http:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:939) ~[java.net.http:?]
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
+	at java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:939) ~[java.net.http:?]
+?? ZEUS ?? 2025-03-23T19:24:29,352 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Clicking button using locator: By.cssSelector: button[type='submit']
+?? ZEUS ?? 2025-03-23T19:24:29,944 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Reading table for component type 'DEFAULT' as class 'FilteredTransactionEntry'
+?? ZEUS ?? 2025-03-23T19:24:30,054 [scenario=ZeroBankTest.alertTest] INFO  [UI] - WebDriver closed successfully.
+?? ZEUS ?? 2025-03-23T19:24:30,089 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] VALIDATION [TEST] - Starting hard validation...
+?? ZEUS ?? 2025-03-23T19:24:30,089 [scenario=ZeroBankTest.alertTest] INFO  [TEST] - The quest of 'alertTest(Quest)' has concluded with glory. Status: SUCCESS. Duration: 33 seconds.
+?? ZEUS ?? 2025-03-23T19:24:30,097 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] VALIDATION [TEST] - Hard validation completed successfully.
+?? ZEUS ?? 2025-03-23T19:24:30,107 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting option Wells Fargo in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:30,140 [scenario=ZeroBankTest.paragraphTextValueTestHardAssertions] STEP  [UI] - Selecting options [Wells Fargo] in container with locator By.id: sp_payee for select component BOOTSTRAP_SELECT_TYPE
+?? ZEUS ?? 2025-03-23T19:24:30,163 [scenario=ZeroBankTest.tableAssert] STEP  [UI] - Reading entire table as class 'FilteredTransactionEntry'

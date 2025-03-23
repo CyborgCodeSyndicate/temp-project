@@ -15,10 +15,12 @@ import java.util.stream.Collectors;
 public class ArgumentInfoExtractor {
 
     private final FieldInfoExtractor fieldInfoExtractor;
+    private final UsageProvider usageProvider;
 
 
-    public ArgumentInfoExtractor(FieldInfoExtractor fieldInfoExtractor) {
+    public ArgumentInfoExtractor(FieldInfoExtractor fieldInfoExtractor, UsageProvider usageProvider) {
         this.fieldInfoExtractor = fieldInfoExtractor;
+        this.usageProvider = usageProvider;
     }
 
 
@@ -39,6 +41,8 @@ public class ArgumentInfoExtractor {
         if (infoAiForParam != null) {
             argumentAiInfo.setDescription(infoAiForParam.description());
         }
+
+        argumentAiInfo.setUsage(usageProvider.getUsageList(parameter.getType().getName()));
 
         Class<?> typeToAnalyze = parameterType.isArray() ? parameterType.getComponentType() : parameterType;
 

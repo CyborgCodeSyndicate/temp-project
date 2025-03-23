@@ -22,5 +22,6 @@ public class ArgumentAiInfo {
     private String description;
     private List<String> availableOptions;
     private List<AiFieldInfo> fieldsInfo;
+    private List<Usage> usage;
 
 }

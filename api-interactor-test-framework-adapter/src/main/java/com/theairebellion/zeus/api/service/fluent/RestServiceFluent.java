@@ -178,8 +178,6 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
      *
      * @return The {@code RestService} instance.
      */
-    @InfoAI(description = "Retrieves the underlying RestService instance, " +
-            "which handles API request execution and validation.")
     protected RestService getRestService() {
         return restService;
     }

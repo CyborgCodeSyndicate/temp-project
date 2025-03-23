@@ -1,10 +1,6 @@
 package com.theairebellion.zeus.ai.metadata.service;
 
-import com.theairebellion.zeus.ai.metadata.extractor.ArgumentInfoExtractor;
-import com.theairebellion.zeus.ai.metadata.extractor.FieldInfoExtractor;
-import com.theairebellion.zeus.ai.metadata.extractor.JsonFileUsageProvider;
-import com.theairebellion.zeus.ai.metadata.extractor.MethodInfoExtractor;
-import com.theairebellion.zeus.ai.metadata.extractor.UsageProvider;
+import com.theairebellion.zeus.ai.metadata.extractor.*;
 import com.theairebellion.zeus.ai.metadata.model.AiClassInfo;
 import com.theairebellion.zeus.ai.metadata.model.AiMethodInfo;
 import com.theairebellion.zeus.annotations.InfoAIClass;
@@ -12,13 +8,7 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AIMetadataService {
@@ -29,7 +19,7 @@ public class AIMetadataService {
     public AIMetadataService(Reflections reflections) {
         UsageProvider usageProvider = new JsonFileUsageProvider();
         FieldInfoExtractor fieldInfoExtractor = new FieldInfoExtractor(reflections, usageProvider);
-        ArgumentInfoExtractor argumentInfoExtractor = new ArgumentInfoExtractor(fieldInfoExtractor);
+        ArgumentInfoExtractor argumentInfoExtractor = new ArgumentInfoExtractor(fieldInfoExtractor, usageProvider);
         this.methodInfoExtractor = new MethodInfoExtractor(argumentInfoExtractor, usageProvider);
     }
 
@@ -54,25 +44,25 @@ public class AIMetadataService {
     private List<Method> getAccessibleMethods(Class<?> clazz) {
         Set<Method> declaredMethods = new HashSet<>(Arrays.asList(clazz.getDeclaredMethods()));
         Map<String, List<Method>> methodMap = Arrays.stream(clazz.getMethods())
-                                                  .filter(method -> Modifier.isPublic(
-                                                      method.getModifiers()) && !method.getDeclaringClass()
-                                                                                     .equals(Object.class))
-                                                  .collect(Collectors.groupingBy(AIMetadataService::methodSignature));
+                .filter(method -> Modifier.isPublic(
+                        method.getModifiers()) && !method.getDeclaringClass()
+                        .equals(Object.class))
+                .collect(Collectors.groupingBy(AIMetadataService::methodSignature));
 
         return methodMap.values().stream()
-                   .map(methods -> methods.stream()
-                                       .filter(declaredMethods::contains)
-                                       .filter(method -> method.getReturnType().equals(clazz))
-                                       .findFirst()
-                                       .orElse(methods.get(0)))
-                   .toList();
+                .map(methods -> methods.stream()
+                        .filter(declaredMethods::contains)
+                        .filter(method -> method.getReturnType().equals(clazz))
+                        .findFirst()
+                        .orElse(methods.get(0)))
+                .toList();
     }
 
 
     private static String methodSignature(Method method) {
         return method.getName() + "(" + Arrays.stream(method.getParameterTypes())
-                                            .map(Class::getName)
-                                            .collect(Collectors.joining(",")) + ")";
+                .map(Class::getName)
+                .collect(Collectors.joining(",")) + ")";
     }
 
 }

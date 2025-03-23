@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static com.reqres.test.framework.base.World.GONDOR;
 import static com.reqres.test.framework.base.World.OLYMPYS;
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_JUNIOR;
-import static com.reqres.test.framework.rest.Endpoints.CREATE_USER;
+import static com.reqres.test.framework.rest.Endpoints.POST_CREATE_USER;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS;
@@ -50,7 +50,7 @@ public class CreateUserEvolutionTest extends BaseTestSequential {
 
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userJunior,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build(),
@@ -67,7 +67,7 @@ public class CreateUserEvolutionTest extends BaseTestSequential {
                         GET_ALL_USERS.withQueryParam("page", 2),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build())
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         user.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build(),

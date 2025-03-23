@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Usage {
 
+    private String label;
     private UsageLevel usageLevel;
     private String description;
     private String example;

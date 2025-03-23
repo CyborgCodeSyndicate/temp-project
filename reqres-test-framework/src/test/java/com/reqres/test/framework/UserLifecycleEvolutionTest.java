@@ -50,11 +50,11 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
 
         quest.enters(OLYMPYS)
                 .request(
-                        LOGIN_USER,
+                        POST_LOGIN_USER,
                         new LoginUser(username, password)
                 );
 
-        String token = retrieve(StorageKeysApi.API, LOGIN_USER, Response.class)
+        String token = retrieve(StorageKeysApi.API, POST_LOGIN_USER, Response.class)
                 .getBody()
                 .jsonPath()
                 .getString("token");
@@ -71,15 +71,15 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
 
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER.withHeader("Authorization", "Bearer " + token),
+                        POST_CREATE_USER.withHeader("Authorization", "Bearer " + token),
                         userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
                 .requestAndValidate(
-                        CREATE_USER.withHeader("Authorization", "Bearer " + token),
+                        POST_CREATE_USER.withHeader("Authorization", "Bearer " + token),
                         userIntermediate,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody()
                             .as(CreatedUserResponse.class);
                     assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
@@ -112,15 +112,15 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
 
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userIntermediate,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody()
                             .as(CreatedUserResponse.class);
                     assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
@@ -145,7 +145,7 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     public void testUserLifecycleWithPreQuest(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody()
                             .as(CreatedUserResponse.class);
                     assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
@@ -171,7 +171,7 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     public void testUserLifecycleWithRipper(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody()
                             .as(CreatedUserResponse.class);
                     assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");

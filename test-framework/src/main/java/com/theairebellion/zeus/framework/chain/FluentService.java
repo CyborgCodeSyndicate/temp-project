@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.framework.chain;
 
+import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
@@ -34,6 +35,8 @@ public class FluentService implements FluentChain {
      *
      * @return The original {@code Quest} instance.
      */
+    @InfoAI(description = "Completes the current fluent service chain and returns the original Quest, " +
+            "allowing you to transition to other worlds or perform additional test actions.")
     @Override
     public Quest then() {
         LogTest.info("The quest has left the journey.");

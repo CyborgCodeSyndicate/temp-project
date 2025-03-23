@@ -15,7 +15,7 @@ import static com.reqres.test.framework.base.World.GONDOR;
 import static com.reqres.test.framework.base.World.OLYMPYS;
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_SENIOR;
-import static com.reqres.test.framework.rest.Endpoints.CREATE_USER;
+import static com.reqres.test.framework.rest.Endpoints.POST_CREATE_USER;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.BODY;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
@@ -38,13 +38,13 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
 
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build(),
                         Assertion.builder().target(BODY).key("job").type(IS).expected("Leader").soft(true).build())
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userSenior,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
@@ -57,13 +57,13 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
     public void testCreateTwoUsersImproved(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build(),
                         Assertion.builder().target(BODY).key("job").type(IS).expected("Leader").soft(true).build())
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userSenior.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),

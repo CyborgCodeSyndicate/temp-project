@@ -61,7 +61,7 @@ public class BaseTest {
      */
     @InfoAI(description = "Fetches stored test data by key from the test storage system. " +
             "The key must be an enum value representing a stored entity, and the returned object will be of the specified type.")
-    protected <T> T retrieve(@InfoAI(description = "The key representing the stored data in the test storage system.") Enum<?> key,
+    public <T> T retrieve(@InfoAI(description = "The key representing the stored data in the test storage system.") Enum<?> key,
                              @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
@@ -79,7 +79,7 @@ public class BaseTest {
      */
     @InfoAI(description = "Fetches stored test data from a nested storage structure using a sub-key and a main key. " +
             "The sub-key represents a subset of stored data, and the main key identifies the specific entity within that subset.")
-    protected <T> T retrieve(@InfoAI(description = "The sub-key representing a specific subset of stored data.") Enum<?> subKey,
+    public <T> T retrieve(@InfoAI(description = "The sub-key representing a specific subset of stored data.") Enum<?> subKey,
                              @InfoAI(description = "The key representing the stored data entity within the sub-key subset.") Enum<?> key,
                              @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
@@ -97,7 +97,7 @@ public class BaseTest {
      */
     @InfoAI(description = "Fetches stored test data using a DataExtractor. " +
             "The extractor defines how the data is retrieved, and the returned object is of the specified type.")
-    protected <T> T retrieve(@InfoAI(description = "The data extractor defining the retrieval logic for stored test data.") DataExtractor<T> extractor,
+    public <T> T retrieve(@InfoAI(description = "The data extractor defining the retrieval logic for stored test data.") DataExtractor<T> extractor,
                              @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();
         LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
@@ -116,7 +116,7 @@ public class BaseTest {
      */
     @InfoAI(description = "Fetches stored test data using a DataExtractor at a specified index. " +
             "The extractor defines how the data is retrieved, and the index determines which specific entry is returned.")
-    protected <T> T retrieve(@InfoAI(description = "The data extractor defining the retrieval logic for stored test data.") DataExtractor<T> extractor,
+    public <T> T retrieve(@InfoAI(description = "The data extractor defining the retrieval logic for stored test data.") DataExtractor<T> extractor,
                              @InfoAI(description = "The index position of the extracted data entry.") int index,
                              @InfoAI(description = "The expected class type of the retrieved object.") Class<T> clazz) {
         SuperQuest quest = QuestHolder.get();

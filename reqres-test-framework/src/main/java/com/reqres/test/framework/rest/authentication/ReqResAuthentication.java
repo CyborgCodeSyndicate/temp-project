@@ -5,14 +5,14 @@ import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
 
-import static com.reqres.test.framework.rest.Endpoints.LOGIN_USER;
+import static com.reqres.test.framework.rest.Endpoints.POST_LOGIN_USER;
 
 public class ReqResAuthentication extends BaseAuthenticationClient {
 
     @Override
     protected Header authenticateImpl(final RestService restService, final String username, final String password) {
         String token = restService
-                .request(LOGIN_USER, new LoginUser(username, password))
+                .request(POST_LOGIN_USER, new LoginUser(username, password))
                 .getBody()
                 .jsonPath()
                 .getString("token");

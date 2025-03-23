@@ -82,6 +82,7 @@ public class AIUsageService {
         Set<ServiceType> serviceTypes = EnumSet.noneOf(ServiceType.class);
         List<String> usageFiles = new ArrayList<>();
 
+        downloadUsageFile(usageFiles, "framework-ai");
         if (useRest) {
             serviceTypes.add(ServiceType.REST);
             downloadUsageFile(usageFiles, "api-ai");

@@ -20,7 +20,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
-import static com.reqres.test.framework.rest.Endpoints.CREATE_USER;
+import static com.reqres.test.framework.rest.Endpoints.POST_CREATE_USER;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS;
@@ -52,7 +52,7 @@ public class EvolutionService extends FluentService {
     public EvolutionService createJuniorUserAndValidateResponse(@InfoAI(description = "The user object containing details of the junior user to be created.") User juniorUser) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         juniorUser,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build(),
@@ -67,7 +67,7 @@ public class EvolutionService extends FluentService {
     public EvolutionService createLeaderUserAndValidateResponse(@InfoAI(description = "The user object containing details of the leader user to be created.") User leaderUser) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         leaderUser,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build(),
@@ -81,7 +81,7 @@ public class EvolutionService extends FluentService {
     public EvolutionService createSeniorUserAndValidateResponse(@InfoAI(description = "The user object containing details of the senior user to be created.") User seniorUser) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         seniorUser,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
@@ -97,7 +97,7 @@ public class EvolutionService extends FluentService {
                     CreatedUserResponse createdUserResponse = quest
                             .getStorage()
                             .sub(StorageKeysApi.API)
-                            .get(CREATE_USER, Response.class)
+                            .get(POST_CREATE_USER, Response.class)
                             .getBody()
                             .as(CreatedUserResponse.class);
                     assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");

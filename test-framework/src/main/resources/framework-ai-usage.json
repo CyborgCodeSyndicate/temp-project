@@ -1,0 +1,130 @@
+{
+  "items": [
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(java.lang.Enum, java.lang.Class)",
+      "value": [
+        {
+          "label": "UI",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves UI-related data previously stored in the default storage. Use this to validate or reuse captured UI state during a test.",
+          "example": "retrieve(UI_EXAMPLE, String.class)"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves stored test data by key from the default storage. Use this to access an object that was previously stored using an enum key representing an API endpoint or result.",
+          "example": "retrieve(ENDPOINT_EXAMPLE, Response.class)"
+        },
+        {
+          "label": "DB",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves stored test data from the default storage where the key represents a query or database interaction result. Use this when validating database state in tests.",
+          "example": "retrieve(QUERY_EXAMPLE, List.class)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(java.lang.Enum, java.lang.Enum, java.lang.Class)",
+      "value": [
+        {
+          "label": "UI",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves UI test data from sub-storage. Use this when the UI data is grouped in sub-contexts (e.g., by feature or component). The first parameter indicates the UI sub-context, the second is the key for the stored data, and the third is the expected return type.",
+          "example": "retrieve(StorageKeysApi.UI, UI_EXAMPLE, String.class)"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves stored test data from a sub-storage structure using a sub-key and a main key. Use this when the test data is grouped into nested storage (e.g., by module or feature). The first parameter identifies the sub-storage context, the second is the key for the stored entity, and the third is the expected return type.",
+          "example": "retrieve(StorageKeysApi.API, ENDPOINT_EXAMPLE, Response.class)"
+        },
+        {
+          "label": "DB",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves a database query result from sub-storage. The first parameter points to the database sub-context, the second represents the query identifier, and the third is the expected result type.",
+          "example": "retrieve(StorageKeysApi.DB, QUERY_EXAMPLE, List.class)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(com.theairebellion.zeus.framework.storage.DataExtractor, java.lang.Class)",
+      "value": [
+        {
+          "label": "UI",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves specific UI-related test data using a custom extractor. Use this for accessing dynamic UI elements such as rows in a table, cells, or component states based on filtering criteria or index.",
+          "example": "retrieve(uiDataExtractor(UI_COMPONENT_KEY), TableRow.class)"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves a specific value from stored API data using a custom extractor. Use this when you need to extract a particular field or structure from a stored API response body, status, or header using logic such as JSON path.",
+          "example": "retrieve(apiDataExtractor(API_ENDPOINT_KEY), String.class)"
+        },
+        {
+          "label": "DB",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves structured database test data using a custom extractor. This is useful for pulling specific fields or records from stored database query results using advanced filtering or mapping logic.",
+          "example": "retrieve(dbDataExtractor(DB_RESULT_KEY), Integer.class)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.base.BaseTest.retrieve(com.theairebellion.zeus.framework.storage.DataExtractor, int, java.lang.Class)",
+      "value": [
+        {
+          "label": "UI",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves a specific row or component from UI storage using a custom extractor and index. Useful for extracting the first, second, or N-th element from a UI list or table.",
+          "example": "retrieve(uiDataExtractor(UI_TABLE_KEY), 2, TableRow.class)"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves test data from stored API responses using a custom extractor and returns the item at the specified index. Use this when the stored response is a list or array and you want to extract a specific element.",
+          "example": "retrieve(apiDataExtractor(API_RESPONSE_KEY), 0, UserResponse.class)"
+        },
+        {
+          "label": "DB",
+          "usageLevel": "MANDATORY",
+          "description": "Retrieves a database record from a result list using a custom extractor and specified index. Use this to access individual entries in query results.",
+          "example": "retrieve(dbDataExtractor(DB_RESULT_KEY), 1, TransactionResult.class)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.quest.Quest.enters(java.lang.Class)",
+      "value": [
+        {
+          "label": "UI",
+          "usageLevel": "MANDATORY",
+          "description": "Switches into the UI world to interact with visual components, perform UI actions, and assert front-end behaviors through fluent test steps.",
+          "example": "quest.enters(UI_WORLD)"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Switches into the API world to perform RESTful operations like sending requests, validating status codes, and asserting response data using fluent methods.",
+          "example": "quest.enters(API_WORLD)"
+        },
+        {
+          "label": "DB",
+          "usageLevel": "MANDATORY",
+          "description": "Switches into the DB world to execute database-related validations such as querying persisted data and asserting stored values after an operation.",
+          "example": "quest.enters(DB_WORLD)"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.quest.Quest.complete()",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Marks the end of the test execution. This method clears all temporary test data, asserts collected soft validations, and finalizes the test run. It must be called at the end of every test to ensure proper validation and cleanup.",
+          "example": "complete()"
+        }
+      ]
+    }
+  ]
+}

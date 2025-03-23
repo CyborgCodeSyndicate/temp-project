@@ -35,11 +35,11 @@ public class CustomService extends FluentService {
             "The token is then used as a specific header in a request to fetch user details.")
     public CustomService loginUserAndAddSpecificHeader(@InfoAI(description = "The login credentials of the user, including email and password.") LoginUser loginUser) {
         quest.enters(OLYMPYS)
-                .request(LOGIN_USER, loginUser)
+                .request(POST_LOGIN_USER, loginUser)
                 .requestAndValidate(
                         GET_USER
                                 .withPathParam("id", 3)
-                                .withHeader("SpecificHeader", quest.getStorage().sub(StorageKeysApi.API).get(LOGIN_USER, Response.class)
+                                .withHeader("SpecificHeader", quest.getStorage().sub(StorageKeysApi.API).get(POST_LOGIN_USER, Response.class)
                                         .getBody()
                                         .jsonPath()
                                         .getString("token")),

@@ -21,7 +21,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -161,7 +160,7 @@ public class ReqresApiTest extends BaseTest {
     public void testCreateUser(Quest quest, @Craft(model = USER_LEADER) User user) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         user,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build()
@@ -176,7 +175,7 @@ public class ReqresApiTest extends BaseTest {
                         GET_ALL_USERS.withQueryParam("page", 2),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build())
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         user.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build()
                 );
@@ -187,13 +186,13 @@ public class ReqresApiTest extends BaseTest {
     public void testCreateTwoUsers(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Morpheus").soft(true).build(),
                         Assertion.builder().target(BODY).key("job").type(IS).expected("Leader").soft(true).build())
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userSenior.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
@@ -205,11 +204,11 @@ public class ReqresApiTest extends BaseTest {
     @Regression
     public void testLoginUserAndAddHeader(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
         quest.enters(OLYMPYS)
-                .request(LOGIN_USER, loginUser)
+                .request(POST_LOGIN_USER, loginUser)
                 .requestAndValidate(
                         GET_USER
                                 .withPathParam("id", 3)
-                                .withHeader("SpecificHeader", retrieve(StorageKeysApi.API, LOGIN_USER, Response.class)
+                                .withHeader("SpecificHeader", retrieve(StorageKeysApi.API, POST_LOGIN_USER, Response.class)
                                         .getBody()
                                         .jsonPath()
                                         .getString("token")),
@@ -228,7 +227,7 @@ public class ReqresApiTest extends BaseTest {
     public void testUserLifecycle(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody()
                             .as(CreatedUserResponse.class);
                     assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
