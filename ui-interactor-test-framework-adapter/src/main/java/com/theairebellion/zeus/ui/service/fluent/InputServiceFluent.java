@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
 
-import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.ai.metadata.model.classes.Level;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.framework.storage.Storage;

@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.ai.metadata.extractor;
 
-import com.theairebellion.zeus.ai.metadata.model.AiFieldInfo;
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiFieldInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.logging.LogCommon;

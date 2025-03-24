@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.annotations;
 
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
-import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.Level;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

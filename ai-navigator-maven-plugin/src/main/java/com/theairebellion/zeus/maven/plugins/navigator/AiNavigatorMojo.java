@@ -1,7 +1,11 @@
 package com.theairebellion.zeus.maven.plugins.navigator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.theairebellion.zeus.ai.metadata.model.AiUsage;
+import com.theairebellion.zeus.ai.metadata.extractor.AnnotationExtractor;
+import com.theairebellion.zeus.ai.metadata.extractor.AnnotationFieldExtractor;
+import com.theairebellion.zeus.ai.metadata.extractor.JsonFileUsageProvider;
+import com.theairebellion.zeus.ai.metadata.extractor.UsageProvider;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiUsage;
 import com.theairebellion.zeus.ai.metadata.service.AIMetadataService;
 import com.theairebellion.zeus.maven.plugins.navigator.controller.AIUsageController;
 import com.theairebellion.zeus.maven.plugins.navigator.usage.AIUsageService;
@@ -79,17 +83,29 @@ public class AiNavigatorMojo extends AbstractMojo {
 
         try (S3Client s3Client = createS3Client()) {
             Reflections reflections = createReflectionObject();
-            AIMetadataService metadataService = new AIMetadataService(reflections);
-            AIUsageService usageService = new AIUsageService(metadataService, reflections, getLog(), s3Client,
-                s3Bucket);
-
-            AIUsageController controller = new AIUsageController(usageService);
+            AIUsageController controller = getAiUsageController(
+                reflections, s3Client);
             aiUsage = controller.generateUsage(useApi, useUi, useDb);
         } catch (Exception e) {
             throw new MojoExecutionException("Error initializing S3Client in AiNavigatorMojo", e);
         }
 
         writeInstructionsToFile(aiUsage);
+    }
+
+
+    private AIUsageController getAiUsageController(final Reflections reflections, final S3Client s3Client) {
+        UsageProvider usageProvider = new JsonFileUsageProvider();
+        AIMetadataService metadataService = new AIMetadataService(reflections, usageProvider);
+        AnnotationFieldExtractor annotationFieldExtractor = new AnnotationFieldExtractor(reflections);
+
+        AnnotationExtractor annotationExtractor = new AnnotationExtractor(annotationFieldExtractor, usageProvider);
+        AIUsageService usageService = new AIUsageService(metadataService, reflections, annotationExtractor,
+            getLog(),
+            s3Client,
+            s3Bucket);
+
+        return new AIUsageController(usageService);
     }
 
 

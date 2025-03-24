@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.db.annotations;
 
+import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.db.extensions.DbTestExtension;
 import com.theairebellion.zeus.framework.annotation.FrameworkAdapter;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,7 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Annotation added on class that has DB actions in the tests")
 @ExtendWith(DbTestExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

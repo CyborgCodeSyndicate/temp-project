@@ -1,5 +1,6 @@
-package com.theairebellion.zeus.ai.metadata.model;
+package com.theairebellion.zeus.ai.metadata.model.classes;
 
+import com.theairebellion.zeus.ai.metadata.model.annotations.AiAnnotationInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 public class AiUsage {
 
     private List<AiClassInfo> aiClassInfo;
+    private List<AiAnnotationInfo> aiAnnotationInfos;
 
 
 }

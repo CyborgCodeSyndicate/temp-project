@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.annotations;
 
+import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.framework.annotation.FrameworkAdapter;
 import com.theairebellion.zeus.ui.extensions.UiTestExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,7 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Annotation added on class that has UI actions in the tests")
 @ExtendWith(UiTestExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

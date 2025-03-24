@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.validator.core;
 
 
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import lombok.Builder;

@@ -1,6 +1,7 @@
 package com.reqres.test.framework;
 
 import com.reqres.test.framework.data.test.TestData;
+import com.reqres.test.framework.preconditions.QuestPreconditions;
 import com.reqres.test.framework.rest.authentication.AdminAuth;
 import com.reqres.test.framework.rest.authentication.ReqResAuthentication;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
@@ -138,8 +139,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
     @PreQuest({
-            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
-            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
+            @Journey(value = QuestPreconditions.Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
+            @Journey(value = QuestPreconditions.Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Regression
     public void testUserLifecycleWithPreQuest(Quest quest) {
@@ -163,8 +164,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
     @PreQuest({
-            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
-            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
+            @Journey(value = QuestPreconditions.Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
+            @Journey(value = QuestPreconditions.Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
     @Regression
@@ -185,8 +186,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
     @PreQuest({
-            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
-            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
+            @Journey(value = QuestPreconditions.Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),
+            @Journey(value = QuestPreconditions.Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
     @Regression

@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.ai.metadata.model;
+package com.theairebellion.zeus.ai.metadata.model.classes;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AiClassInfo {
+public class AiFieldInfo {
 
     private Class<?> type;
+    private String name;
     private String description;
-    private List<AiMethodInfo> methodsInfo;
+    private CreationType creationType;
+    private List<String> availableEnumOptions;
+    private List<Usage> usage;
 
 }

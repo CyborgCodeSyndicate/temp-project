@@ -1,8 +1,8 @@
 package com.theairebellion.zeus.ai.metadata.extractor;
 
-import com.theairebellion.zeus.ai.metadata.model.AiFieldInfo;
-import com.theairebellion.zeus.ai.metadata.model.ArgumentAiInfo;
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiFieldInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.ArgumentAiInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 
@@ -62,7 +62,7 @@ public class ArgumentInfoExtractor {
         argumentAiInfo.setCreationType(annotation.creationType());
 
         if (annotation.creationType() == CreationType.ENUM && type.isInterface()) {
-            argumentAiInfo.setUseAsKeyInStorage(true);
+            argumentAiInfo.setUseAsKeyInStorage(annotation.useAsKeyInStorage());
             argumentAiInfo.setAvailableOptions(fieldInfoExtractor.getEnumOptions(type));
         }
     }

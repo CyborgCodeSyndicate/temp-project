@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.db.query;
 
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
+import com.theairebellion.zeus.ai.metadata.model.classes.CreationType;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.config.DbConfig;

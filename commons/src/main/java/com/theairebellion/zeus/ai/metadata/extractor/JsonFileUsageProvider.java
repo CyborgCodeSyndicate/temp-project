@@ -4,7 +4,7 @@ package com.theairebellion.zeus.ai.metadata.extractor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.theairebellion.zeus.ai.metadata.model.Usage;
+import com.theairebellion.zeus.ai.metadata.model.classes.Usage;
 import com.theairebellion.zeus.logging.LogCommon;
 import lombok.Setter;
 

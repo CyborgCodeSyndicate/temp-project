@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.maven.plugins.navigator.collector;
 
-import com.theairebellion.zeus.ai.metadata.model.AiClassInfo;
-import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiClassInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.Level;
 import com.theairebellion.zeus.ai.metadata.service.AIMetadataService;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.api.service.fluent.RestServiceFluent;

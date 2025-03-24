@@ -418,6 +418,16 @@
           "example": "Assertion.builder().target(BODY).key(\"data.first_name\").type(EQUALS_IGNORE_CASE).expected(\"michael\").build()"
         }
       ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.PreQuest",
+      "value": [
+        {
+          "usageLevel": "MANDATORY",
+          "description": "Example for PreQuest annotation",
+          "example": "    @PreQuest({\n            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),\n            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)\n    })"
+        }
+      ]
     }
   ]
 }
