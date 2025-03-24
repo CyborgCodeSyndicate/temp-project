@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.framework.annotation;
 
+import com.theairebellion.zeus.annotations.InfoAI;
 import org.junit.jupiter.api.Tag;
 
 import java.lang.annotation.ElementType;
@@ -22,6 +23,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Annotation that marks test methods or classes as part of the Smoke test suite. " +
+        "Used for quick verification of critical functionalities.")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Tag("Smoke")

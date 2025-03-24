@@ -4,11 +4,7 @@ import com.theairebellion.zeus.annotations.AvailableOptionsAI;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.framework.parameters.PreQuestJourney;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Defines a pre-test setup step ("journey") to be executed before the test runs.
@@ -25,7 +21,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
-@InfoAI(description = "Annotation added on test method for specific before test method action")
+@InfoAI(description = "Defines a setup action (journey) that must run before the test. " +
+        "Used inside @PreQuest to organize the preconditions before a test method runs.")
 @Repeatable(PreQuest.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

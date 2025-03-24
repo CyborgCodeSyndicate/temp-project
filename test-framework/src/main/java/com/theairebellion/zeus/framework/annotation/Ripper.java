@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.framework.annotation;
 
+import com.theairebellion.zeus.annotations.InfoAI;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,6 +22,7 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Annotation added on a test or class to define post-test cleanup actions.")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Ripper {

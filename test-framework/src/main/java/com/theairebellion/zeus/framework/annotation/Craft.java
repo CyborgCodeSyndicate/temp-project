@@ -1,5 +1,7 @@
 package com.theairebellion.zeus.framework.annotation;
 
+import com.theairebellion.zeus.annotations.InfoAI;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,6 +18,7 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Annotation added on method parameter to inject test data automatically based on a predefined model enum.")
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Craft {

@@ -23,7 +23,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
-@InfoAI(description = "Annotation added on class that has UI actions in the tests")
+@InfoAI(description = "Marks a test class that performs UI actions. It enables features like interacting with UI elements, " +
+        "performing visual validations, handling authentication, and using a browser driver.")
 @ExtendWith(UiTestExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

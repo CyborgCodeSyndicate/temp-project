@@ -24,7 +24,9 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
-@InfoAI(description = "Annotation added on class that has API actions in the tests")
+@InfoAI(description = "Marks the test class as an API test. Enables API-specific features such as request execution, " +
+        "response validation, authentication handling, and integration with the API test extension. " +
+        "Must be applied to any test class that performs API operations.")
 @ExtendWith(ApiTestExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.annotations;
 
+import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.api.authentication.BaseAuthenticationClient;
 import com.theairebellion.zeus.api.authentication.Credentials;
 
@@ -17,6 +18,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Marks a test method that requires API authentication. " +
+        "Automatically handles login using the provided credentials and authentication client before executing the test.")
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface AuthenticateViaApiAs {

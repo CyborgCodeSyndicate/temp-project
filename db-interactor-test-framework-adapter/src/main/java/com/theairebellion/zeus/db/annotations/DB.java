@@ -20,7 +20,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
-@InfoAI(description = "Annotation added on class that has DB actions in the tests")
+@InfoAI(description = "Marks a test class that performs database (DB) operations. " +
+        "Enables database test support such as query execution, data validation, and connection lifecycle management.")
 @ExtendWith(DbTestExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

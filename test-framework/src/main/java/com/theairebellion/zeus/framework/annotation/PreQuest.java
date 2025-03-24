@@ -23,7 +23,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
-@InfoAI(description = "Annotation added on test method to specify what actions to be executed as before")
+@InfoAI(description = "Annotation added on test method to define setup steps (via journeys) that must be executed before the test. " +
+        "Each journey specifies a precondition using data and order.")
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface PreQuest {

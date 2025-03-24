@@ -420,12 +420,107 @@
       ]
     },
     {
+      "key": "com.theairebellion.zeus.api.annotations.API",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Marks a test class as an API test. Enables request execution, response validation, and API authentication handling through the ApiTestExtension.",
+          "example": "@API\npublic class ReqresApiTest extends BaseTest {\n\n    @Test\n    public void testGetUser(Quest quest) {\n        quest.enters(OLYMPYS)\n             .requestAndValidate(GET_USER.withPathParam(\"id\", 3),\n                  Assertion.builder().target(STATUS).type(IS).expected(200).build()\n             );\n    }\n}"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Specifies that the test method should perform authentication via API before executing the main test logic. The credentials and authentication client type are defined through this annotation.",
+          "example": "@Test\n@AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)\n@PreQuest({\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)\n})\n@Ripper(targets = {DELETE_ADMIN_USER})\n@Regression\npublic void testUserLifecycle(Quest quest) {\n    quest.enters(OLYMPYS)\n         .validate(() -> {\n             CreatedUserResponse response = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)\n                 .getBody()\n                 .as(CreatedUserResponse.class);\n             assertEquals(\"Mr. Morpheus\", response.getName());\n             assertEquals(\"Intermediate Leader\", response.getJob());\n         });\n}"
+        }
+      ]
+    },
+    {
       "key": "com.theairebellion.zeus.framework.annotation.PreQuest",
       "value": [
         {
+          "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Example for PreQuest annotation",
-          "example": "    @PreQuest({\n            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),\n            @Journey(value = CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)\n    })"
+          "description": "Defines a sequence of API test setup steps ('journeys') that should run before the test execution. Each journey represents an action like user creation, configured in a specific order.",
+          "example": "@PreQuest({\n  @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),\n  @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)\n})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Journey",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Defines a precondition setup step within the @PreQuest annotation. Specifies the setup journey to be executed before the test, along with optional journey data and execution order.",
+          "example": "@PreQuest({\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)\n})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.JourneyData",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Defines specific test data to be injected for the associated journey. It typically references an enum constant used to generate API request payloads.",
+          "example": "@PreQuest({\n  @Journey(\n    value = Data.CREATE_NEW_USER,\n    journeyData = {@JourneyData(USER_INTERMEDIATE)},\n    order = 2\n  ),\n  @Journey(\n    value = Data.CREATE_NEW_USER,\n    journeyData = {@JourneyData(USER_LEADER)},\n    order = 1\n  )\n})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Ripper",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Specifies post-test cleanup logic for the test method. Commonly used to delete test data created in preconditions or during execution. The specified targets map to cleanup routines like removing users or resetting state.",
+          "example": "@Ripper(targets = {DELETE_ADMIN_USER})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Craft",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Injects a test user object into the test method using a predefined model (`USER_JUNIOR`). The injected object is resolved lazily and used as the request body.",
+          "example": "@Test\npublic void testCreateJuniorUser(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             GET_ALL_USERS.withQueryParam(\"page\", 2),\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build())\n         .requestAndValidate(\n             POST_CREATE_USER,\n             user.join(),\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build());\n}"
+        },
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Injects two predefined user models into the test method: one resolved immediately and one resolved lazily. Each is used to create a user and validate the response.",
+          "example": "@Test\npublic void testCreateTwoUsers(\n    Quest quest,\n    @Craft(model = USER_LEADER) User userLeader,\n    @Craft(model = USER_SENIOR) Late<User> userSenior) {\n\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             POST_CREATE_USER,\n             userLeader,\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Morpheus\").soft(true).build(),\n             Assertion.builder().target(BODY).key(\"job\").type(IS).expected(\"Leader\").soft(true).build())\n         .requestAndValidate(\n             POST_CREATE_USER,\n             userSenior.join(),\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Mr. Morpheus\").soft(true).build(),\n             Assertion.builder().target(BODY).key(\"job\").type(IS).expected(\"Senior Leader\").soft(true).build());\n}"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Regression",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Marks a test method as part of the regression suite. This example shows regression tagging for a test that creates and validates a user in Reqres API.",
+          "example": "@Regression\n@Test\npublic void testCreateUser(Quest quest, @Craft(model = USER_LEADER) User user) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             POST_CREATE_USER,\n             user,\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Morpheus\").soft(true).build()\n         );\n}"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Smoke",
+      "value": [
+        {
+          "label": "API",
+          "usageLevel": "MANDATORY",
+          "description": "Annotates a key API test or an entire test class to perform a high-level, critical endpoint check. The test must pass quickly to confirm basic API readiness.",
+          "example": "@Smoke\n@Test\npublic void testSmokeGetAllUsers(Quest quest) {\n    quest.enters(OLYMPYS)\n        .requestAndValidate(\n            Endpoints.GET_ALL_USERS,\n            Assertion.builder().target(STATUS).type(IS).expected(200).build()\n        );\n}"
         }
       ]
     }

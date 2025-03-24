@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.framework.annotation;
 
+import com.theairebellion.zeus.annotations.InfoAI;
 import org.junit.jupiter.api.Tag;
 
 import java.lang.annotation.ElementType;
@@ -24,6 +25,8 @@ import java.lang.annotation.Target;
 
  * @author Cyborg Code Syndicate
  */
+@InfoAI(description = "Annotation used to mark test classes or test methods as part of the regression test suite. " +
+        "Helps categorize tests for selective execution.")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Tag("Regression")

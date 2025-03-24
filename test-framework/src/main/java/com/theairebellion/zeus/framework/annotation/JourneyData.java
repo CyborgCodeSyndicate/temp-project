@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
-@InfoAI(
-    description = "Annotation representing data needed for the methods for each Journey. Use enum for data generation")
+@InfoAI(description = "Annotation used to specify a data model that should be created as part of a pre-test setup journey. " +
+        "Applied inside a @Journey annotation to define which data objects should be crafted and injected into the test context.")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
 public @interface JourneyData {

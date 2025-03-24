@@ -125,6 +125,107 @@
           "example": "complete()"
         }
       ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.PreQuest",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Defines one or more setup steps (journeys) to be executed before the test runs. Each journey represents a reusable precondition like creating test data or configuring state.",
+          "example": "@PreQuest({\n  @Journey(value = \"PREPARE_GENERIC_ENTITY\", journeyData = {@JourneyData(value = \"GENERIC_MODEL_1\")}, order = 1),\n  @Journey(value = \"SETUP_GENERIC_ENVIRONMENT\", journeyData = {@JourneyData(value = \"GENERIC_MODEL_2\")}, order = 2)\n})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Journey",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Specifies a precondition step to run before the test method using a named journey and optional journey data. Can be used within @PreQuest or directly if only one journey is needed.",
+          "example": "@PreQuest({\n  @Journey(\n    value = \"CREATE_GENERIC_DATA\",\n    journeyData = {@JourneyData(value = \"GENERIC_OBJECT\")},\n    order = 1\n  )\n})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.JourneyData",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Used inside a Journey annotation to define what test data model should be used as input for the precondition setup. The value is typically an enum constant representing a data model, and 'late' can be used to resolve the data later during test execution.",
+          "example": "@PreQuest({\n  @Journey(\n    value = SETUP_BEFORE_ACTION,\n    journeyData = {@JourneyData(value = \"GENERIC_DATA_MODEL\")},\n    order = 1\n  )\n})"
+        },
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Demonstrates using the 'late' flag when the journey's data depends on a previously executed journey step. Use this for deferred resolution of data.",
+          "example": "@PreQuest({\n  @Journey(\n    value = ANOTHER_SETUP_STEP,\n    journeyData = {@JourneyData(value = \"GENERIC_LATE_DATA_MODEL\", late = true)},\n    order = 2\n  )\n})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Ripper",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Specifies post-test cleanup actions to execute after the test completes. Used to remove test data or reset test environment state.",
+          "example": "@Ripper(targets = {\"CLEANUP_ACTION_1\", \"CLEANUP_ACTION_2\"})"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Craft",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Injects test data into method parameters using predefined data models. The model parameter refers to a test data enum used to dynamically generate and inject data into the test.",
+          "example": "@Test\npublic void testCreateEntity(Quest quest, @Craft(model = GENERIC_ENTITY_MODEL) GenericEntity entity) {\n    quest.enters(GENERIC_WORLD)\n         .requestAndValidate(\n             GENERIC_ENDPOINT,\n             entity,\n             Assertion.builder().target(STATUS).type(IS).expected(201).build()\n         );\n}"
+        },
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Demonstrates usage of multiple @Craft-injected parameters to simulate different data instances during test execution, one of which is resolved lazily via Late<>.",
+          "example": "@Test\npublic void testCreateMultipleEntities(\n    Quest quest,\n    @Craft(model = ENTITY_PRIMARY_MODEL) GenericEntity primaryEntity,\n    @Craft(model = ENTITY_SECONDARY_MODEL) Late<GenericEntity> secondaryEntity) {\n\n    quest.enters(GENERIC_WORLD)\n         .requestAndValidate(CREATE_ENDPOINT, primaryEntity, Assertion.builder().target(STATUS).type(IS).expected(201).build())\n         .requestAndValidate(CREATE_ENDPOINT, secondaryEntity.join(), Assertion.builder().target(STATUS).type(IS).expected(201).build());\n}"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Regression",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Marks a single test method as part of the regression suite. This enables filtering of specific tests tagged as 'Regression' in CI pipelines or test runners.",
+          "example": "@Regression\n@Test\npublic void validateEndpointReturnsExpectedStatus() {\n    // Perform validation logic\n}"
+        },
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Used at the class level to apply the regression tag to all test methods within the class. Suitable when the entire class contains regression-related tests.",
+          "example": "@Regression\npublic class RegressionTaggedTests {\n\n    @Test\n    public void testBusinessRuleOne() {\n        // Check business rule\n    }\n\n    @Test\n    public void testBusinessRuleTwo() {\n        // Check another rule\n    }\n}"
+        }
+      ]
+    },
+    {
+      "key": "com.theairebellion.zeus.framework.annotation.Smoke",
+      "value": [
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Marks a single test method as part of the smoke suite. Perfect for quickly checking the most critical features before deeper testing.",
+          "example": "@Smoke\n@Test\npublic void quickHealthCheckTest() {\n    // Minimal validation to ensure system is up\n}"
+        },
+        {
+          "label": "Framework",
+          "usageLevel": "MANDATORY",
+          "description": "Applied to a test class to mark all tests within as smoke tests. Useful when the entire class consists of core scenario checks.",
+          "example": "@Smoke\npublic class CriticalFunctionalitySmokeTests {\n\n    @Test\n    public void testCoreFeature() {\n        // Core feature validation\n    }\n\n    @Test\n    public void testHighPriorityCheck() {\n        // Quick check for high-priority behavior\n    }\n}"
+        }
+      ]
     }
   ]
 }
