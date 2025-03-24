@@ -567,14 +567,16 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
         // Mock the ReflectionUtil to return null (no custom class found)
         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class)) {
-            reflectionUtilMock.when(() -> ReflectionUtil.findClassThatExtendsClass(any(), any()))
-                    .thenReturn(null);
+            reflectionUtilMock.when(() ->
+                            ReflectionUtil.findImplementationsOfInterface(eq(UIServiceFluent.class), anyString()))
+                    .thenReturn(List.of());
 
             // Execute the method
             registerMethod.invoke(null, quest);
 
             // Verify the lookup was attempted
-            reflectionUtilMock.verify(() -> ReflectionUtil.findClassThatExtendsClass(any(), any()));
+            reflectionUtilMock.verify(() ->
+                    ReflectionUtil.findImplementationsOfInterface(eq(UIServiceFluent.class), anyString()));
         }
     }
 

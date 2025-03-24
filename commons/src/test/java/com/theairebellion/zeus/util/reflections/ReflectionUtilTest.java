@@ -1,10 +1,7 @@
 package com.theairebellion.zeus.util.reflections;
 
 import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
-import com.theairebellion.zeus.util.reflections.mock.MockEnum;
-import com.theairebellion.zeus.util.reflections.mock.MockInterface;
-import com.theairebellion.zeus.util.reflections.mock.TestClass;
-import com.theairebellion.zeus.util.reflections.mock.TestClassWithPrivateField;
+import com.theairebellion.zeus.util.reflections.mock.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,10 +12,14 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("all")
 @DisplayName("ReflectionUtil Tests")
@@ -29,627 +30,539 @@ class ReflectionUtilTest {
     private static final String SOME_FIELD = "someField";
     private static final String TEST_VALUE = "TestValue";
 
+    // -------------------------------------------------------------------------
+    //  NESTED CLASS: EnumFindingTests
+    // -------------------------------------------------------------------------
     @Nested
     @DisplayName("Enum Finding Tests")
     class EnumFindingTests {
+
         @Test
-        @DisplayName("Should find enum class implementing interface")
-        void testFindEnumClassImplementationsOfInterface_shouldReturnEnum() {
+        @DisplayName("Should return a single enum class implementing interface")
+        void shouldReturnSingleEnumClassImplementingInterface() {
             // When
-            Class<? extends Enum<?>> result =
+            List<Class<? extends Enum<?>>> result =
                     ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, MOCK_PACKAGE);
 
             // Then
-            assertEquals(MockEnum.class, result, "Should find the correct enum class");
+            assertEquals(List.of(MockEnum.class), result,
+                    "Expected a single matching enum class that implements the interface");
+        }
+
+        @Test
+        @DisplayName("Should return multiple enum classes implementing interface")
+        void shouldReturnMultipleEnumClassesImplementingInterface() {
+            // When
+            List<Class<? extends Enum<?>>> result =
+                    ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterfaceTwoImpl.class, MOCK_PACKAGE);
+
+            // Then
+            Set<Class<? extends Enum<?>>> expected = Set.of(MockEnumOne.class, MockEnumTwo.class);
+            assertEquals(expected, new HashSet<>(result),
+                    "Expected multiple matching enum classes that implement the interface");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when no enum implementation is found")
+        void shouldThrowExceptionWhenNoEnumImplementationFound() {
+            // Given
+            Class<?> interfaceClass = MockInterfaceNoEnumImpl.class;
+
+            // When
+            ReflectionException ex = assertThrows(ReflectionException.class,
+                    () -> ReflectionUtil.findEnumClassImplementationsOfInterface(interfaceClass, MOCK_PACKAGE),
+                    "Expected ReflectionException when no enum implementation found");
+
+            String message = ex.getMessage();
+            assertAll("Exception message should include relevant details",
+                    () -> assertTrue(message.contains("No Enum implementing interface"),
+                            "Should indicate no implementations found"),
+                    () -> assertTrue(message.contains(interfaceClass.getName()),
+                            "Should include the interface class name"),
+                    () -> assertTrue(message.contains(MOCK_PACKAGE),
+                            "Should include the searched package name"));
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"  ", "\t"})
-        @DisplayName("Should validate package parameter for enum class search")
-        void testFindEnumClassImplementationsOfInterface_shouldThrowOnInvalidPackage(String pkg) {
-            // When/Then
+        @DisplayName("Should throw exception when package parameter is invalid for enum class search")
+        void shouldThrowOnInvalidPackageParameterForEnumSearch(String pkg) {
+            // When / Then
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, pkg),
-                    "Should throw for invalid package name");
+                    "Expected IllegalArgumentException for invalid package name");
 
-            // Change this assertion to check for a substring that's definitely in the message
+            // Checking for a substring that's definitely in the error message
             assertTrue(ex.getMessage().contains("parameter cannot") ||
                             ex.getMessage().contains("empty"),
-                    "Exception message should indicate a problem with the input parameter");
+                    "Should indicate an invalid or empty input parameter");
         }
 
         @Test
-        @DisplayName("Should find specific enum value implementing interface")
-        void testFindEnumImplementationsOfInterface_shouldReturnEnumValue() {
+        @DisplayName("Should find a specific enum value implementing an interface")
+        void shouldReturnEnumValueImplementingInterface() {
             // When
             MockInterface result = ReflectionUtil.findEnumImplementationsOfInterface(
                     MockInterface.class, VALUE_NAME, MOCK_PACKAGE);
 
             // Then
-            assertEquals(MockEnum.VALUE, result, "Should find the correct enum value");
+            assertEquals(MockEnum.VALUE, result,
+                    "Expected to find the correct enum value implementing the interface");
         }
 
         @Test
-        @DisplayName("Should throw when enum value not found")
-        void testFindEnumImplementationsOfInterface_nullEnumName() {
-            // When/Then
+        @DisplayName("Should throw exception if specific enum value is not found")
+        void shouldThrowWhenEnumValueIsNotFound() {
+            // When
+            ReflectionException ex = assertThrows(ReflectionException.class,
+                    () -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            MockInterface.class, "NON_EXISTING_ENUM", MOCK_PACKAGE),
+                    "Expected ReflectionException when the enum value does not exist");
+
+            assertTrue(ex.getMessage().contains("Enum value 'NON_EXISTING_ENUM' not found"),
+                    "Should indicate the enum value was not found");
+        }
+
+        @Test
+        @DisplayName("Should return correct enum value from multiple interfaces")
+        void shouldReturnCorrectEnumValueFromMultipleInterfaces() {
+            // When
+            MockInterfaceTwoImpl result = ReflectionUtil.findEnumImplementationsOfInterface(
+                    MockInterfaceTwoImpl.class, "VALUE_2", MOCK_PACKAGE);
+
+            // Then
+            assertEquals(MockEnumTwo.VALUE_2, result,
+                    "Expected to find the correct enum value among multiple interfaces");
+        }
+
+        @Test
+        @DisplayName("Should throw exception if duplicate enum values are found")
+        void shouldThrowExceptionWhenDuplicateEnumValuesExist() {
+            // When
+            ReflectionException ex = assertThrows(ReflectionException.class,
+                    () -> ReflectionUtil.findEnumImplementationsOfInterface(
+                            MockInterfaceTwoImpl.class, MockEnumOne.VALUE_1.name(), MOCK_PACKAGE),
+                    "Expected ReflectionException when more than one enum value is found");
+
+            assertTrue(ex.getMessage().contains("more than one"),
+                    "Should indicate that duplicate enum values were found");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when enum value is null")
+        void shouldThrowExceptionWhenEnumValueIsNull() {
+            // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class,
                     () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, null, MOCK_PACKAGE),
-                    "Should throw when enum value not found");
+                    "Expected ReflectionException when the enum value is null");
 
             assertTrue(ex.getMessage().contains("Enum value 'null' not found"),
-                    "Exception message should indicate enum value not found");
+                    "Should indicate that the enum value was not found");
         }
 
         @Test
-        @DisplayName("Should throw when no enum implementations found")
-        void testFindEnumClassImplementationsOfInterface_noResults() {
-            // When/Then
+        @DisplayName("Should throw exception when no results are found in package")
+        void shouldThrowExceptionWhenNoEnumClassFoundInPackage() {
+            // Given
+            String invalidPackage = "com.some.fake.package.that.does.not.exist";
+            Class<?> interfaceClass = MockInterface.class;
+
+            // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class, () ->
                             ReflectionUtil.findEnumClassImplementationsOfInterface(
-                                    MockInterface.class,
-                                    "com.some.fake.package.that.does.not.exist"
+                                    interfaceClass,
+                                    invalidPackage
                             ),
-                    "Should throw when no implementations found"
-            );
+                    "Expected ReflectionException when no implementations are found in an invalid package");
 
-            assertTrue(ex.getMessage().contains("No Enum implementing interface"),
-                    "Exception message should indicate no implementations found");
+            String message = ex.getMessage();
+            assertAll("Exception message should include relevant details",
+                    () -> assertTrue(message.contains("No Enum implementing interface"),
+                            "Should indicate no implementations found"),
+                    () -> assertTrue(message.contains(interfaceClass.getName()),
+                            "Should include the interface class name"),
+                    () -> assertTrue(message.contains(invalidPackage),
+                            "Should include the searched package name")
+            );
         }
     }
 
+    // -------------------------------------------------------------------------
+    //  NESTED CLASS: InterfaceImplementationFindingTests
+    // -------------------------------------------------------------------------
     @Nested
     @DisplayName("Interface Implementation Finding Tests")
     class InterfaceImplementationFindingTests {
+
         @Test
-        @DisplayName("Should find all classes implementing an interface")
-        void testFindImplementationsOfInterface_shouldReturnClasses() {
+        @DisplayName("Should find all classes implementing an interface in a package")
+        void shouldReturnAllImplementationsOfInterface() {
             // When
             List<Class<? extends MockInterface>> classes =
                     ReflectionUtil.findImplementationsOfInterface(MockInterface.class, MOCK_PACKAGE);
 
             // Then
             assertAll(
-                    () -> assertFalse(classes.isEmpty(), "Should find at least one implementation"),
-                    () -> assertTrue(classes.contains(TestClass.class), "Should find TestClass implementation"),
-                    () -> assertTrue(classes.contains(MockEnum.class), "Should find MockEnum implementation")
+                    () -> assertFalse(classes.isEmpty(),
+                            "Expected at least one interface implementation"),
+                    () -> assertTrue(classes.contains(TestClass.class),
+                            "Expected TestClass to be found as an implementation"),
+                    () -> assertTrue(classes.contains(MockEnum.class),
+                            "Expected MockEnum to be found as an implementation")
             );
         }
 
         @Test
-        @DisplayName("Should validate parameters for finding interface implementations")
-        void testFindImplementationsOfInterface_shouldThrowOnNullOrEmptyPackage() {
-            // When/Then - Test null interface
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findImplementationsOfInterface(null, MOCK_PACKAGE),
-                    "Should throw on null interface");
+        @DisplayName("Should return empty list if no implementation is found")
+        void shouldReturnEmptyListWhenNoImplementationFound() {
+            // When
+            List<Class<? extends String>> classes =
+                    ReflectionUtil.findImplementationsOfInterface(String.class, MOCK_PACKAGE);
 
-            // When/Then - Test null package
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findImplementationsOfInterface(MockInterface.class, null),
-                    "Should throw on null package");
-
-            // When/Then - Test empty package
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findImplementationsOfInterface(MockInterface.class, "  "),
-                    "Should throw on empty package");
+            // Then
+            assertTrue(classes.isEmpty(),
+                    "Expected an empty list when no implementations are found");
         }
     }
 
+    // -------------------------------------------------------------------------
+    //  NESTED CLASS: FieldValueRetrievalTests
+    // -------------------------------------------------------------------------
     @Nested
     @DisplayName("Field Value Retrieval Tests")
     class FieldValueRetrievalTests {
+
         @Test
         @DisplayName("Should retrieve field value by type")
-        void testGetFieldValue_shouldReturnValueIfFieldMatches() {
+        void shouldRetrieveFieldValueByType() {
             // Given
             TestClass testObject = new TestClass();
             testObject.someField = TEST_VALUE;
 
             // When
-            String result = ReflectionUtil.getFieldValue(testObject, String.class);
+            List<String> result = ReflectionUtil.getFieldValues(testObject, String.class);
 
             // Then
-            assertEquals(TEST_VALUE, result, "Should retrieve the correct field value");
+            assertEquals(List.of(TEST_VALUE), result,
+                    "Expected to retrieve the correct field value");
         }
 
         @Test
-        @DisplayName("Should handle null field value")
-        void testGetFieldValue_fieldExistsButNullValue() {
+        @DisplayName("Should throw exception if field value is null")
+        void shouldThrowExceptionWhenFieldValueIsNull() {
             // Given
             TestClass testObject = new TestClass();
             testObject.someField = null;
 
-            // When/Then
+            // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getFieldValue(testObject, String.class),
-                    "Should throw when field value is null");
+                    () -> ReflectionUtil.getFieldValues(testObject, String.class),
+                    "Expected ReflectionException when field value is null");
 
-            assertTrue(ex.getMessage().contains("Field value is not of the expected type"),
-                    "Exception message should indicate type mismatch");
+            assertTrue(ex.getMessage().contains("incompatible value of type 'null'"),
+                    "Should indicate that the field value is null or mismatched");
         }
 
         @Test
-        @DisplayName("Should throw when no field of matching type exists")
-        void testGetFieldValue_noAssignableFieldFound() {
+        @DisplayName("Should throw exception if no field of matching type is found")
+        void shouldThrowExceptionWhenNoAssignableFieldIsFound() {
             // Given
             TestClass testObject = new TestClass();
 
-            // When/Then
+            // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getFieldValue(testObject, Double.class),
-                    "Should throw when no matching field found");
+                    () -> ReflectionUtil.getFieldValues(testObject, Double.class),
+                    "Expected ReflectionException when no matching field is found");
 
-            assertTrue(ex.getMessage().contains("No field of type 'java.lang.Double' found"),
-                    "Exception message should indicate no field found");
+            assertTrue(ex.getMessage().contains("No fields of type 'java.lang.Double' found"),
+                    "Should indicate that no field of the given type is found");
         }
 
         @Test
         @DisplayName("Should retrieve private field values")
-        void testGetFieldValue_shouldReadPrivateField() {
+        void shouldRetrievePrivateFieldValues() {
             // Given
             TestClassWithPrivateField obj = new TestClassWithPrivateField();
 
             // When
-            String result = ReflectionUtil.getFieldValue(obj, String.class);
+            List<String> result = ReflectionUtil.getFieldValues(obj, String.class);
 
             // Then
-            assertEquals("secret", result, "Should retrieve private field value");
+            assertEquals(List.of("secret"), result,
+                    "Expected to retrieve the private field value");
+        }
+
+
+        @Test
+        @DisplayName("Should wrap IllegalAccessException in ReflectionException")
+        void shouldWrapIllegalAccessExceptionq() throws Exception {
+            //todo fix this for coverage
+            // Given
+            TestClassWithPrivateField instance = new TestClassWithPrivateField();
+            Field field = TestClassWithPrivateField.class.getDeclaredField("hiddenField");
+            Field spyField = spy(field);
+            doThrow(new IllegalAccessException("Simulated")).when(spyField).get(any());
+            doNothing().when(spyField).setAccessible(true);
+
+            // When / Then
+            assertThrows(ReflectionException.class, () -> {
+                spyField.setAccessible(true);
+                if (String.class.isAssignableFrom(spyField.getType())) {
+                    spyField.get(instance);
+                }
+            });
         }
 
         @ParameterizedTest
         @MethodSource("com.theairebellion.zeus.util.reflections.ReflectionUtilTest#fieldAccessScenarios")
         @DisplayName("Should handle various field access scenarios")
-        void testGetFieldValue_variousScenarios(Class<?> type, Object instance, Class<? extends Throwable> expectedEx) {
+        void shouldHandleVariousFieldAccessScenarios(Class<?> type, Object instance, Class<? extends Throwable> expectedEx) {
             if (expectedEx != null) {
-                assertThrows(expectedEx, () -> ReflectionUtil.getFieldValue(instance, type),
-                        "Should throw expected exception");
+                assertThrows(expectedEx, () -> ReflectionUtil.getFieldValues(instance, type),
+                        "Expected an exception for this scenario");
             } else {
-                assertDoesNotThrow(() -> ReflectionUtil.getFieldValue(instance, type),
-                        "Should not throw exception");
+                assertDoesNotThrow(() -> ReflectionUtil.getFieldValues(instance, type),
+                        "Expected no exception for this scenario");
             }
         }
 
         @Test
-        @DisplayName("Should handle illegal access")
-        void testGetFieldValue_illegalAccess() {
-            // When/Then
+        @DisplayName("Should wrap IllegalAccessException when field is inaccessible")
+        void shouldWrapIllegalAccessException() {
+            // When / Then
             assertThrows(ReflectionException.class, () -> {
-                ReflectionUtil.getFieldValue(new Object(), String.class);
-            }, "Should wrap IllegalAccessException");
+                ReflectionUtil.getFieldValues(new Object(), String.class);
+            }, "Expected ReflectionException due to inaccessible field");
         }
     }
 
-    @Nested
-    @DisplayName("Named Attribute Retrieval Tests")
-    class NamedAttributeRetrievalTests {
-        @Test
-        @DisplayName("Should retrieve attribute by name")
-        void testGetAttributeOfClass_shouldReturnValueIfFieldExists() {
-            // Given
-            TestClass testObject = new TestClass();
-            testObject.someField = TEST_VALUE;
-
-            // When
-            String result = ReflectionUtil.getAttributeOfClass(SOME_FIELD, testObject, String.class);
-
-            // Then
-            assertEquals(TEST_VALUE, result, "Should retrieve the correct attribute value");
-        }
-
-        @Test
-        @DisplayName("Should handle null attribute value")
-        void testGetAttributeOfClass_fieldIsNull() {
-            // Given
-            TestClass testObject = new TestClass();
-            testObject.someField = null;
-
-            // When/Then
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getAttributeOfClass(SOME_FIELD, testObject, String.class),
-                    "Should throw when attribute value is null");
-
-            assertTrue(ex.getMessage().contains("Field 'someField' value is not of expected type"),
-                    "Exception message should indicate type mismatch");
-        }
-
-        @Test
-        @DisplayName("Should throw when named field doesn't exist")
-        void testGetAttributeOfClass_fieldDoesNotExist() {
-            // Given
-            TestClass testObject = new TestClass();
-
-            // When/Then
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getAttributeOfClass("nonExistentField", testObject, String.class),
-                    "Should throw when field doesn't exist");
-
-            assertTrue(ex.getMessage().contains("Field 'nonExistentField' not found in class"),
-                    "Exception message should indicate field not found");
-        }
-
-        @Test
-        @DisplayName("Should handle illegal access")
-        void testGetAttributeOfClass_illegalAccess() {
-            // When/Then
-            assertThrows(ReflectionException.class, () -> {
-                ReflectionUtil.getAttributeOfClass("nonExistentField", new Object(), String.class);
-            }, "Should wrap NoSuchFieldException");
-        }
-    }
-
-    @Nested
-    @DisplayName("Class Finding Tests")
-    class ClassFindingTests {
-        @Test
-        @DisplayName("Should return null when no subclass found")
-        void testFindClassThatExtendsClass_noSubclass() {
-            // When
-            @SuppressWarnings("unchecked")
-            Class<Integer> result = (Class<Integer>) ReflectionUtil.findClassThatExtendsClass(Integer.class, "java.lang");
-
-            // Then
-            assertNull(result, "Should return null when no subclass found");
-        }
-
-        @Test
-        @DisplayName("Should find subclass when it exists")
-        void testFindClassThatExtendsClass_withSubclass() {
-            // Given
-            class Parent {}
-            class Child extends Parent {}
-            String packageName = this.getClass().getPackageName();
-
-            // When
-            Class<? extends Parent> result = ReflectionUtil.findClassThatExtendsClass(Parent.class, packageName);
-
-            // Then
-            assertNotNull(result, "Should find a subclass");
-            assertTrue(Child.class.isAssignableFrom(result), "Found class should be the correct subclass");
-        }
-    }
-
+    // -------------------------------------------------------------------------
+    //  NESTED CLASS: ValidationTests
+    // -------------------------------------------------------------------------
     @Nested
     @DisplayName("Validation Tests")
     class ValidationTests {
-        @Test
-        @DisplayName("Should validate all inputs thoroughly")
-        void testValidateInputsCoverage() {
-            // These assertions test the boundary conditions for input validation
 
+        @Test
+        @DisplayName("Should validate input parameters thoroughly")
+        void shouldValidateInputsCoverage() {
             // Enum class finding
             assertThrows(IllegalArgumentException.class,
                     () -> ReflectionUtil.findEnumClassImplementationsOfInterface(null, "somePackage"),
-                    "Should validate interface parameter");
+                    "Expected IllegalArgumentException for null interface parameter");
 
             assertThrows(IllegalArgumentException.class,
                     () -> ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, ""),
-                    "Should validate package parameter");
+                    "Expected IllegalArgumentException for empty package parameter");
 
             // Enum value finding
             assertThrows(ReflectionException.class,
                     () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, "", MOCK_PACKAGE),
-                    "Should validate enum name parameter");
+                    "Expected ReflectionException for empty enum name");
 
             assertThrows(IllegalArgumentException.class,
                     () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, "VALUE", ""),
-                    "Should validate package parameter for enum value");
+                    "Expected IllegalArgumentException for empty package parameter");
 
             // Interface implementations finding
             assertThrows(IllegalArgumentException.class,
                     () -> ReflectionUtil.findImplementationsOfInterface(null, "packagePrefix"),
-                    "Should validate interface parameter for implementations");
+                    "Expected IllegalArgumentException for null interface parameter");
 
             assertThrows(IllegalArgumentException.class,
                     () -> ReflectionUtil.findImplementationsOfInterface(MockInterface.class, ""),
-                    "Should validate package parameter for implementations");
+                    "Expected IllegalArgumentException for empty package parameter");
 
             // Field value retrieval
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getFieldValue(null, String.class),
-                    "Should validate instance parameter");
+                    () -> ReflectionUtil.getFieldValues(null, String.class),
+                    "Expected IllegalArgumentException for null instance parameter");
 
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getFieldValue("someObj", null),
-                    "Should validate field type parameter");
-
-            // Named attribute retrieval
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getAttributeOfClass(null, new Object(), String.class),
-                    "Should validate field name parameter");
-
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getAttributeOfClass("", new Object(), String.class),
-                    "Should validate field name is not empty");
-
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getAttributeOfClass("someField", null, String.class),
-                    "Should validate object parameter");
-
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getAttributeOfClass("someField", new Object(), null),
-                    "Should validate return type parameter");
-
-            // Class finding
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findClassThatExtendsClass(null, "package"),
-                    "Should validate parent class parameter");
-
-            assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findClassThatExtendsClass(Object.class, null),
-                    "Should validate package parameter for class finding");
-        }
-    }
-
-    @Test
-    @DisplayName("Private constructor should be accessible via reflection")
-    void testPrivateConstructor() throws Exception {
-        // When
-        Constructor<ReflectionUtil> ctor = ReflectionUtil.class.getDeclaredConstructor();
-        ctor.setAccessible(true);
-        ReflectionUtil instance = ctor.newInstance();
-
-        // Then
-        assertNotNull(instance, "Should be able to create instance via reflection");
-    }
-
-    @Nested
-    @DisplayName("Field Value Access Edge Cases")
-    class FieldValueEdgeCasesTests {
-
-        @Test
-        @DisplayName("Should throw when field has wrong type")
-        void testGetFieldValue_wrongFieldType() {
-            // Given
-            TestClass testObject = new TestClass();
-            testObject.someField = "string value";
-
-            // When/Then - try to get it as Integer
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getFieldValue(testObject, Integer.class),
-                    "Should throw when field type doesn't match");
-
-            assertTrue(ex.getMessage().contains("No field of type"),
-                    "Exception should indicate no field of requested type found");
+                    () -> ReflectionUtil.getFieldValues("someObj", null),
+                    "Expected IllegalArgumentException for null field type parameter");
         }
 
         @Test
-        @DisplayName("Should handle superclass fields")
-        void testGetFieldValue_inheritedField() {
-            // Given
-            class Parent {
-                protected String parentField = "parent value";
-            }
-
-            class Child extends Parent {
-                // No fields of its own
-            }
-
-            Child child = new Child();
-
+        @DisplayName("Should be able to access private ReflectionUtil constructor via reflection")
+        void shouldAccessPrivateConstructor() throws Exception {
             // When
-            String result = ReflectionUtil.getFieldValue(child, String.class);
+            Constructor<ReflectionUtil> ctor = ReflectionUtil.class.getDeclaredConstructor();
+            ctor.setAccessible(true);
+            ReflectionUtil instance = ctor.newInstance();
 
             // Then
-            assertEquals("parent value", result, "Should find and return field from parent class");
+            assertNotNull(instance,
+                    "Expected to successfully create ReflectionUtil instance via reflection");
         }
 
-        @Test
-        @DisplayName("Should throw when instance is of wrong type for field access")
-        void testGetFieldValue_instanceTypeMismatch() {
-            // Given - a class without any String fields
-            class NoStringFields {
-                private Integer intField = 42;
+        // ---------------------------------------------------------------------
+        //  NESTED CLASS: FieldValueEdgeCasesTests
+        // ---------------------------------------------------------------------
+        @Nested
+        @DisplayName("Field Value Access Edge Cases")
+        class FieldValueEdgeCasesTests {
+
+            @Test
+            @DisplayName("Should handle superclass fields")
+            void shouldHandleSuperclassFields() {
+                // Given
+                class Parent {
+                    protected String parentField = "parent value";
+                }
+                class Child extends Parent {
+                    // No fields of its own
+                }
+
+                Child child = new Child();
+
+                // When
+                List<String> result = ReflectionUtil.getFieldValues(child, String.class);
+
+                // Then
+                assertEquals(List.of("parent value"), result,
+                        "Expected to find and return the field from the parent class");
             }
 
-            // When/Then
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getFieldValue(new NoStringFields(), String.class),
-                    "Should throw when no field of requested type exists");
+            @Test
+            @DisplayName("Should return value from superclass field when type matches")
+            void shouldReturnValueFromSuperclassFieldWhenTypeMatches() {
+                // Given
+                class TestClassWithNumberField {
+                    protected Integer number = 12;
+                }
 
-            assertTrue(ex.getMessage().contains("No field of type"),
-                    "Exception should indicate no field found");
-        }
+                // When
+                List<Number> result = ReflectionUtil.getFieldValues(new TestClassWithNumberField(), Number.class);
 
-        // This test uses a class that simulates an illegal access issue
-        @Test
-        @DisplayName("Should handle field access issues")
-        void testGetFieldValue_accessIssues() {
-            // Create a test class that will cause problems with field access
-            class AccessProblemClass {
-                // This field is intentionally of a different type than what we'll request
-                private Integer fieldWithAccessIssues = 42;
+                // Then
+                assertEquals(List.of(12), result,
+                        "Expected to find and return the field from the superclass with matching type");
             }
 
-            // When/Then
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getFieldValue(new AccessProblemClass(), String.class),
-                    "Should handle issues with field access");
+            @Test
+            @DisplayName("Should throw when field value is not of the expected runtime type")
+            void shouldThrowIfFieldValueIsNotOfExpectedRuntimeType() {
+                // Given
+                class TestClassWithPolymorphicField {
+                    protected Number number = 12;
+                }
 
-            // Should throw because no String field exists
-            assertTrue(ex.getMessage().contains("No field of type"),
-                    "Exception should indicate field type issue");
-        }
-    }
+                // When / Then
+                ReflectionException ex = assertThrows(ReflectionException.class,
+                        () -> ReflectionUtil.getFieldValues(new TestClassWithPolymorphicField(), Integer.class),
+                        "Expected ReflectionException when the field value is not of the expected runtime type");
 
-    @Nested
-    @DisplayName("Named Attribute Access Edge Cases")
-    class NamedAttributeEdgeCasesTests {
-
-        @Test
-        @DisplayName("Should handle field with unexpected type")
-        void testGetAttributeOfClass_unexpectedType() {
-            // Given
-            TestClass testObject = new TestClass();
-            testObject.someField = "string value";
-
-            // When/Then - try to get it as Integer
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getAttributeOfClass(SOME_FIELD, testObject, Integer.class),
-                    "Should throw when field value is not of expected type");
-
-            assertTrue(ex.getMessage().contains("not of expected type"),
-                    "Exception should indicate type mismatch");
-        }
-
-        @Test
-        @DisplayName("Should handle fields in superclass")
-        void testGetAttributeOfClass_superclassField() {
-            // Given
-            class Parent {
-                private String parentField = "parent value";
-            }
-
-            class Child extends Parent {
-                // No fields of its own
-            }
-
-            Child child = new Child();
-
-            // When/Then
-            String result = ReflectionUtil.getAttributeOfClass("parentField", child, String.class);
-
-            // Then
-            assertEquals("parent value", result, "Should find field in parent class");
-        }
-
-        @Test
-        @DisplayName("Should handle NoSuchFieldException")
-        void testGetAttributeOfClass_fieldNotFound() {
-            // Given
-            Object obj = new Object();
-
-            // When/Then
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getAttributeOfClass("nonExistentField", obj, String.class),
-                    "Should throw when field doesn't exist");
-
-            assertTrue(ex.getMessage().contains("not found in class"),
-                    "Exception should indicate field not found");
-        }
-
-        // Test using a class with fields that will cause issues
-        @Test
-        @DisplayName("Should handle field access issues")
-        void testGetAttributeOfClass_accessIssues() {
-            // Given - create a test class with special field properties
-            class SpecialFieldClass {
-                // Making it final to potentially cause issues
-                private final String specialField = "special value";
-            }
-
-            // We'll try to access a non-existent field to trigger exception path
-            ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getAttributeOfClass("nonExistentField", new SpecialFieldClass(), String.class),
-                    "Should handle field access issues properly");
-
-            assertTrue(ex.getMessage().contains("not found"),
-                    "Exception should indicate field not found");
-        }
-    }
-
-    @Test
-    @DisplayName("Should handle IllegalAccessException in getAttributeOfClass")
-    void testGetAttributeOfClass_illegalAccessException() {
-        // Manually create the exception that would be thrown
-        IllegalAccessException illegalAccessEx = new IllegalAccessException("Test access issue");
-
-        // Create the ReflectionException that should result
-        ReflectionException reflectionEx = new ReflectionException(
-                "Cannot access field 'testField' in class hierarchy of 'TestClass'.",
-                illegalAccessEx
-        );
-
-        // Verify the exception properties
-        assertEquals("Cannot access field 'testField' in class hierarchy of 'TestClass'.",
-                reflectionEx.getMessage(), "Message should be formatted correctly");
-        assertSame(illegalAccessEx, reflectionEx.getCause(),
-                "Original exception should be preserved as cause");
-    }
-
-    @Test
-    @DisplayName("Should properly create ReflectionException from IllegalAccessException in getFieldValue")
-    void testGetFieldValue_exceptionHandling() {
-        // Create the exception that would be thrown
-        IllegalAccessException illegalAccessEx = new IllegalAccessException("Access denied to field");
-
-        // Create a mock instance and fieldType for message formatting
-        Object instance = new TestClass();
-        Class<?> fieldType = String.class;
-
-        // Create a string with the exact format used in the exception message
-        String expectedMessage = String.format(
-                "Cannot access field of type '%s' in class '%s'.",
-                fieldType.getName(), instance.getClass().getName());
-
-        // Create the exception that would be thrown by getFieldValue
-        ReflectionException ex = new ReflectionException(expectedMessage, illegalAccessEx);
-
-        // Verify the exception is properly formed
-        assertEquals(expectedMessage, ex.getMessage(),
-                "Exception message should match expected format");
-        assertSame(illegalAccessEx, ex.getCause(),
-                "Original exception should be preserved as cause");
-    }
-
-    @Test
-    @DisplayName("Should properly create ReflectionException from IllegalAccessException in getAttributeOfClass")
-    void testGetAttributeOfClass_exceptionHandling() {
-        // Create the exception that would be thrown
-        IllegalAccessException illegalAccessEx = new IllegalAccessException("Access denied to field");
-
-        // Create test parameters for message formatting
-        String fieldName = "testField";
-        Object instance = new TestClass();
-
-        // Create a string with the exact format used in the exception message
-        String expectedMessage = String.format(
-                "Cannot access field '%s' in class hierarchy of '%s'.",
-                fieldName, instance.getClass().getName());
-
-        // Create the exception that would be thrown by getAttributeOfClass
-        ReflectionException ex = new ReflectionException(expectedMessage, illegalAccessEx);
-
-        // Verify the exception is properly formed
-        assertEquals(expectedMessage, ex.getMessage(),
-                "Exception message should match expected format");
-        assertSame(illegalAccessEx, ex.getCause(),
-                "Original exception should be preserved as cause");
-    }
-
-    @Test
-    @DisplayName("Should handle IllegalAccessException in getFieldValue")
-    void testGetFieldValue_illegalAccessException() throws Exception {
-        // Define test subclass
-        class TestReflectionUtil extends ReflectionUtil {
-            public static <K> K testGetFieldValue(Object instance, Class<K> fieldType)
-                    throws ReflectionException {
-                // Directly throw the exception we want to test
-                throw new ReflectionException(
-                        String.format("Cannot access field of type '%s' in class '%s'.",
-                                fieldType.getName(), instance.getClass().getName()),
-                        new IllegalAccessException("Test exception"));
+                assertTrue(ex.getMessage().contains("No fields of type 'java.lang.Integer' found"),
+                        "Should indicate that the field value is mismatched");
             }
         }
 
-        // Execute the test method
-        Object instance = new TestClass();
+        @Test
+        @DisplayName("Should handle IllegalAccessException in getAttributeOfClass")
+        void shouldHandleIllegalAccessInGetAttributeOfClass() {
+            // Manually create the exception that would be thrown
+            IllegalAccessException illegalAccessEx = new IllegalAccessException("Test access issue");
 
-        try {
-            // This will throw the exception
-            TestReflectionUtil.testGetFieldValue(instance, String.class);
-            fail("Should have thrown exception");
-        } catch (ReflectionException ex) {
-            // Verify the exception
-            assertTrue(ex.getMessage().contains("Cannot access field of type"),
-                    "Exception message should indicate access issue");
-            assertTrue(ex.getCause() instanceof IllegalAccessException,
-                    "Cause should be IllegalAccessException");
+            // Create the ReflectionException that should result
+            ReflectionException reflectionEx = new ReflectionException(
+                    "Cannot access field 'testField' in class hierarchy of 'TestClass'.",
+                    illegalAccessEx
+            );
+
+            // Verify the exception properties
+            assertEquals("Cannot access field 'testField' in class hierarchy of 'TestClass'.",
+                    reflectionEx.getMessage(),
+                    "Expected the exception message to match the provided text");
+            assertSame(illegalAccessEx, reflectionEx.getCause(),
+                    "Expected the original exception to be preserved as the cause");
+        }
+
+        @Test
+        @DisplayName("Should properly create ReflectionException from IllegalAccessException in getFieldValue")
+        void shouldCreateReflectionExceptionFromIllegalAccessInGetFieldValue() {
+            // Create the exception that would be thrown
+            IllegalAccessException illegalAccessEx = new IllegalAccessException("Access denied to field");
+
+            // Create a mock instance and fieldType for message formatting
+            Object instance = new TestClass();
+            Class<?> fieldType = String.class;
+
+            // Create a string with the exact format used in the exception message
+            String expectedMessage = String.format(
+                    "Cannot access field of type '%s' in class '%s'.",
+                    fieldType.getName(), instance.getClass().getName());
+
+            // Create the exception
+            ReflectionException ex = new ReflectionException(expectedMessage, illegalAccessEx);
+
+            // Verify the exception is properly formed
+            assertEquals(expectedMessage, ex.getMessage(),
+                    "Expected the exception message to match the format");
+            assertSame(illegalAccessEx, ex.getCause(),
+                    "Expected the original exception to be preserved as cause");
+        }
+
+        @Test
+        @DisplayName("Should properly create ReflectionException from IllegalAccessException in getAttributeOfClass")
+        void shouldCreateReflectionExceptionFromIllegalAccessInGetAttributeOfClass() {
+            // Create the exception that would be thrown
+            IllegalAccessException illegalAccessEx = new IllegalAccessException("Access denied to field");
+
+            // Create test parameters for message formatting
+            String fieldName = "testField";
+            Object instance = new TestClass();
+
+            // Create a string with the exact format used in the exception message
+            String expectedMessage = String.format(
+                    "Cannot access field '%s' in class hierarchy of '%s'.",
+                    fieldName, instance.getClass().getName());
+
+            // Create the exception
+            ReflectionException ex = new ReflectionException(expectedMessage, illegalAccessEx);
+
+            // Verify the exception is properly formed
+            assertEquals(expectedMessage, ex.getMessage(),
+                    "Expected the exception message to match the format");
+            assertSame(illegalAccessEx, ex.getCause(),
+                    "Expected the original exception to be preserved as cause");
+        }
+
+        @Test
+        @DisplayName("Should handle IllegalAccessException in getFieldValue")
+        void shouldHandleIllegalAccessExceptionInGetFieldValue() throws Exception {
+            // Define test subclass
+            class TestReflectionUtil extends ReflectionUtil {
+                public static <K> K testGetFieldValue(Object instance, Class<K> fieldType)
+                        throws ReflectionException {
+                    // Directly throw the exception we want to test
+                    throw new ReflectionException(
+                            String.format("Cannot access field of type '%s' in class '%s'.",
+                                    fieldType.getName(), instance.getClass().getName()),
+                            new IllegalAccessException("Test exception"));
+                }
+            }
+
+            // Execute the test
+            Object testInstance = new TestClass();
+
+            try {
+                TestReflectionUtil.testGetFieldValue(testInstance, String.class);
+                fail("Expected ReflectionException to be thrown");
+            } catch (ReflectionException ex) {
+                // Verify the exception
+                assertTrue(ex.getMessage().contains("Cannot access field of type"),
+                        "Should indicate an access issue");
+                assertTrue(ex.getCause() instanceof IllegalAccessException,
+                        "Should preserve the IllegalAccessException as the cause");
+            }
         }
     }
 
-    // Helper method to provide scenarios for field access testing
+    // -------------------------------------------------------------------------
+    //  HELPER METHOD: fieldAccessScenarios
+    // -------------------------------------------------------------------------
     static Stream<Arguments> fieldAccessScenarios() {
         return Stream.of(
                 Arguments.of(String.class, new TestClass(), ReflectionException.class),

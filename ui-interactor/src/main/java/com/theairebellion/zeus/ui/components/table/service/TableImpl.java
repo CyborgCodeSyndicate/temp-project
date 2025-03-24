@@ -140,8 +140,10 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     @SafeVarargs
-    public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz, final TableField<T>... fields) {
-        LogUI.step("Reading table rows from " + start + " to " + end + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
+    public final <T> List<T> readTable(final int start, final int end, final Class<T> clazz,
+                                       final TableField<T>... fields) {
+        LogUI.step("Reading table rows from " + start + " to " + end + " as class '" + clazz.getSimpleName() +
+                "' with fields " + Arrays.toString(fields));
         return readTableInternal(clazz, (fields == null) ? null : Arrays.asList(fields), start, end);
     }
 
@@ -190,7 +192,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     @SafeVarargs
     public final <T> T readRow(final int row, final Class<T> clazz, final TableField<T>... fields) {
-        LogUI.step("Reading row number " + row + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
+        LogUI.step("Reading row number " + row + " as class '" + clazz.getSimpleName() + "' with fields " +
+                Arrays.toString(fields));
         return readRowInternal(row - 1, clazz, fields);
     }
 
@@ -211,7 +214,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
     @Override
     @SafeVarargs
     public final <T> T readRow(final List<String> searchCriteria, final Class<T> clazz, final TableField<T>... fields) {
-        LogUI.step("Reading row matching criteria " + searchCriteria + " as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
+        LogUI.step("Reading row matching criteria " + searchCriteria + " as class '" + clazz.getSimpleName() +
+                "' with fields " + Arrays.toString(fields));
         return readRowInternal(searchCriteria, clazz, fields);
     }
 
@@ -231,8 +235,10 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @throws IndexOutOfBoundsException if the cell index is out of range.
      */
     @Override
-    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> rowClass, final TableField<T> field, final int cellIndex, final String... values) {
-        LogUI.step("Inserting cell value in row matching criteria " + searchCriteria + " for class '" + rowClass.getSimpleName() + "', field '" + field + "', cell index " + cellIndex);
+    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> rowClass,
+                                          final TableField<T> field, final int cellIndex, final String... values) {
+        LogUI.step("Inserting cell value in row matching criteria " + searchCriteria + " for class '" +
+                rowClass.getSimpleName() + "', field '" + field + "', cell index " + cellIndex);
         insertCellValueInternal(searchCriteria, rowClass, field, cellIndex, values);
     }
 
@@ -247,8 +253,10 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @param <T>       The type of the row representation.
      */
     @Override
-    public final <T> void insertCellValue(final int row, final Class<T> rowClass, final TableField<T> field, final int cellIndex, final String... values) {
-        LogUI.step("Inserting cell value in row " + row + " for class '" + rowClass.getSimpleName() + "', field '" + field + "', cell index " + cellIndex);
+    public final <T> void insertCellValue(final int row, final Class<T> rowClass, final TableField<T> field,
+                                          final int cellIndex, final String... values) {
+        LogUI.step("Inserting cell value in row " + row + " for class '" + rowClass.getSimpleName() + "', field '" +
+                field + "', cell index " + cellIndex);
         insertCellValueInternal(row - 1, rowClass, field, cellIndex, values);
     }
 
@@ -266,7 +274,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      */
     @Override
     public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final T data) {
-        LogUI.step("Inserting cell value(s) using data for row matching criteria " + searchCriteria + " for class '" + tClass.getSimpleName() + "'");
+        LogUI.step("Inserting cell value(s) using data for row matching criteria " + searchCriteria + " for class '" +
+                tClass.getSimpleName() + "'");
         processInsertCellValue((fieldInvoker, strings) -> {
             if (strings.length == 1) {
                 insertCellValue(searchCriteria, tClass, fieldInvoker, 1, strings);
@@ -292,8 +301,10 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @throws NotFoundException if no row matches the search criteria.
      */
     @Override
-    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass, final TableField<T> field, final String... values) {
-        LogUI.step("Inserting cell value(s) into field '" + field + "' for row matching criteria " + searchCriteria + " for class '" + tClass.getSimpleName() + "'");
+    public final <T> void insertCellValue(final List<String> searchCriteria, final Class<T> tClass,
+                                          final TableField<T> field, final String... values) {
+        LogUI.step("Inserting cell value(s) into field '" + field + "' for row matching criteria " + searchCriteria +
+                " for class '" + tClass.getSimpleName() + "'");
         Table.super.insertCellValue(searchCriteria, tClass, field, values);
     }
 
@@ -311,8 +322,10 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @throws IndexOutOfBoundsException if the row index is out of range.
      */
     @Override
-    public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field, final String... values) {
-        LogUI.step("Inserting cell value(s) into field '" + field + "' for row " + row + " for class '" + tClass.getSimpleName() + "'");
+    public final <T> void insertCellValue(final int row, final Class<T> tClass, final TableField<T> field,
+                                          final String... values) {
+        LogUI.step("Inserting cell value(s) into field '" + field + "' for row " + row + " for class '" +
+                tClass.getSimpleName() + "'");
         Table.super.insertCellValue(row, tClass, field, values);
     }
 
@@ -352,9 +365,12 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @param <T>            The type of the row representation.
      */
     @Override
-    public final <T> void filterTable(final Class<T> tclass, final TableField<T> column, final FilterStrategy filterStrategy, final String... values) {
-        LogUI.step("Filtering table for class '" + tclass.getSimpleName() + "' on column '" + column + "' using strategy '" + filterStrategy + "' with values " + Arrays.toString(values));
-        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass, List.of(column));
+    public final <T> void filterTable(final Class<T> tclass, final TableField<T> column,
+                                      final FilterStrategy filterStrategy, final String... values) {
+        LogUI.step("Filtering table for class '" + tclass.getSimpleName() + "' on column '" + column +
+                "' using strategy '" + filterStrategy + "' with values " + Arrays.toString(values));
+        final Map<String, List<CellLocator>> tableSectionLocatorsMap =
+                getTableSectionLocatorsMap(tclass, List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
                 .findFirst()
@@ -378,9 +394,12 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @param <T>             The type of the row representation.
      */
     @Override
-    public final <T> void sortTable(final Class<T> tclass, final TableField<T> column, final SortingStrategy sortingStrategy) {
-        LogUI.step("Sorting table for class '" + tclass.getSimpleName() + "' on column '" + column + "' using sorting strategy '" + sortingStrategy + "'");
-        final Map<String, List<CellLocator>> tableSectionLocatorsMap = getTableSectionLocatorsMap(tclass, List.of(column));
+    public final <T> void sortTable(final Class<T> tclass, final TableField<T> column,
+                                    final SortingStrategy sortingStrategy) {
+        LogUI.step("Sorting table for class '" + tclass.getSimpleName() + "' on column '" + column +
+                "' using sorting strategy '" + sortingStrategy + "'");
+        final Map<String, List<CellLocator>> tableSectionLocatorsMap =
+                getTableSectionLocatorsMap(tclass, List.of(column));
 
         final Map.Entry<String, List<CellLocator>> firstEntry = tableSectionLocatorsMap.entrySet().stream()
                 .findFirst()
@@ -420,7 +439,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
      * @return A list of {@link SmartWebElement} representing the table rows.
      */
     protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-        driver.getWait().until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(tableContainer, tableRowsLocator));
+        driver.getWait()
+                .until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(tableContainer, tableRowsLocator));
         return tableContainer.findSmartElements(tableRowsLocator);
     }
 
@@ -467,7 +487,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
                 tableSectionLocatorsMap.keySet().stream()
                         .collect(Collectors.toMap(
                                 Function.identity(),
-                                section -> readRowsInRange(tableContainer, tableLocators.getTableRowsLocator(), section, start, end)
+                                section -> readRowsInRange(tableContainer, tableLocators.getTableRowsLocator(), section,
+                                        start, end)
                         ));
 
         return mergeRowsAcrossSections(rowsMap, tableSectionLocatorsMap, rowClass);
@@ -912,10 +933,10 @@ public abstract class TableImpl extends BaseComponent implements Table {
         }
         try {
             final Class<? extends ComponentType> type = component.getType();
-            final Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
-                    type, getUiConfig().projectPackage()
-            );
-            final Enum<?> componentInstance = Enum.valueOf(enumClass, component.getComponentType());
+
+            Enum<?> componentInstance =
+                    (Enum<?>) ReflectionUtil.findEnumImplementationsOfInterface(type, component.getComponentType(),
+                            getUiConfig().projectPackage());
             final TableInsertion service = serviceRegistry.getTableService(type);
             service.tableInsertion(targetCell, (ComponentType) componentInstance, values);
         } catch (Exception e) {
@@ -975,10 +996,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
         }
         try {
             final Class<? extends ComponentType> type = component.getType();
-            final Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
-                    type, getUiConfig().projectPackage()
-            );
-            final Enum<?> componentInstance = Enum.valueOf(enumClass, component.getComponentType());
+            final Enum<?> componentInstance =
+                    (Enum<?>) ReflectionUtil.findEnumImplementationsOfInterface(type, component.getComponentType(),
+                            getUiConfig().projectPackage());
             final TableFilter service = serviceRegistry.getFilterService(type);
             service.tableFilter(targetCell, (ComponentType) componentInstance, filterStrategy, values);
         } catch (Exception e) {
@@ -1072,7 +1092,8 @@ public abstract class TableImpl extends BaseComponent implements Table {
         TableInfo annotation = clazz.getAnnotation(TableInfo.class);
         if (annotation == null) {
             throw new IllegalArgumentException(
-                    "Your class: " + clazz.getSimpleName() + "is missing @TableInfo annotation for the table container");
+                    "Your class: " + clazz.getSimpleName() +
+                            "is missing @TableInfo annotation for the table container");
         }
         final FindBy.FindByBuilder builder = new FindBy.FindByBuilder();
         By tableContainerLocator = builder.buildIt(annotation.tableContainerLocator(), null);

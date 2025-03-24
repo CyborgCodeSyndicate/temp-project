@@ -112,6 +112,15 @@ class LogCoreTest {
                     assertEquals("VALIDATION", capturedLevel.name(), "Level name should be VALIDATION");
                     assertEquals(350, capturedLevel.intLevel(), "Level value should be 350");
                 }
+                case EXTENDED -> {
+                    ArgumentCaptor<Level> levelCaptor = ArgumentCaptor.forClass(Level.class);
+                    verify(mockLogger).log(levelCaptor.capture(), eq(mockMarker), eq(message),
+                            aryEq(new Object[]{ARG_1, ARG_2}));
+                    Level capturedLevel = levelCaptor.getValue();
+                    assertNotNull(capturedLevel, "Level should not be null");
+                    assertEquals("EXTENDED", capturedLevel.name(), "Level name should be EXTENDED");
+                    assertEquals(350, capturedLevel.intLevel(), "Level value should be 350");
+                }
                 default -> throw new IllegalArgumentException("Unexpected method: " + methodName);
             }
         }

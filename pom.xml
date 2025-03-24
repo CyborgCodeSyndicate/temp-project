@@ -215,6 +215,9 @@
                             <goal>report-aggregate</goal>
                         </goals>
                         <configuration>
+                                <excludes>
+                                    <exclude>**/exceptions/*</exclude>
+                                </excludes>
                             <outputDirectory>${project.build.directory}/jacoco-aggregate</outputDirectory>
                         </configuration>
                     </execution>

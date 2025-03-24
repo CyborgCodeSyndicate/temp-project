@@ -84,10 +84,8 @@ public class InsertionServiceFieldImpl extends BaseInsertionService {
     @Override
     protected Enum<?> getEnumValue(Object annotation) {
         InsertionField insertionField = (InsertionField) annotation;
-        Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
-                insertionField.type(), getUiConfig().projectPackage()
-        );
-        return Enum.valueOf(enumClass, insertionField.componentType());
+        return (Enum<?>) ReflectionUtil.findEnumImplementationsOfInterface(
+                insertionField.type(), insertionField.componentType(), getUiConfig().projectPackage());
     }
 
     /**

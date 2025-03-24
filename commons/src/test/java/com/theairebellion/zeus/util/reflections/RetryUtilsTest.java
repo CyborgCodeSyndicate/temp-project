@@ -1,9 +1,11 @@
 package com.theairebellion.zeus.util.reflections;
 
+import com.theairebellion.zeus.logging.LogCommon;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.mockito.MockedStatic;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,6 +13,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
 @DisplayName("RetryUtils Tests")
 class RetryUtilsTest {
@@ -18,9 +23,10 @@ class RetryUtilsTest {
     @Nested
     @DisplayName("Basic Retry Functionality")
     class BasicRetryFunctionality {
+
         @Test
-        @DisplayName("Should return immediately when condition is satisfied on first attempt")
-        void testImmediateSuccess() {
+        @DisplayName("Should return immediately when condition is satisfied on the first attempt")
+        void shouldReturnImmediatelyWhenConditionIsSatisfiedOnFirstAttempt() {
             // When
             String result = RetryUtils.retryUntil(
                     Duration.ofSeconds(1),
@@ -34,8 +40,8 @@ class RetryUtilsTest {
         }
 
         @Test
-        @DisplayName("Should retry until condition is satisfied")
-        void testEventualSuccess() {
+        @DisplayName("Should keep retrying until condition is eventually satisfied")
+        void shouldKeepRetryingUntilConditionIsEventuallySatisfied() {
             // Given
             AtomicInteger counter = new AtomicInteger(0);
 
@@ -53,8 +59,8 @@ class RetryUtilsTest {
         }
 
         @Test
-        @DisplayName("Should handle exceptions in supplier and continue retrying")
-        void testSupplierThrowsThenSuccess() {
+        @DisplayName("Should handle exceptions in supplier and continue retrying until success")
+        void shouldHandleSupplierExceptionsAndContinueRetryingUntilSuccess() {
             // Given
             AtomicInteger counter = new AtomicInteger(0);
 
@@ -80,10 +86,11 @@ class RetryUtilsTest {
     @Nested
     @DisplayName("Timeout and Failure Handling")
     class TimeoutAndFailureHandling {
+
         @Test
-        @DisplayName("Should throw exception when condition is never satisfied")
-        @Timeout(1) // Ensure test doesn't take too long
-        void testFailureToMeetCondition() {
+        @DisplayName("Should throw exception when condition is never satisfied within max wait time")
+        @Timeout(1) // Ensures test doesn't hang too long
+        void shouldThrowExceptionWhenConditionIsNeverSatisfied() {
             // Given
             AtomicInteger counter = new AtomicInteger(0);
             Duration shortTimeout = Duration.ofMillis(100);
@@ -107,8 +114,8 @@ class RetryUtilsTest {
         }
 
         @Test
-        @DisplayName("Should properly handle thread interruption")
-        void testInterruptedSleep() {
+        @DisplayName("Should throw exception when thread is interrupted during retry")
+        void shouldThrowExceptionWhenThreadIsInterrupted() {
             // Given
             Supplier<String> supplier = () -> "not ok";
             Thread.currentThread().interrupt(); // Simulate interruption
@@ -134,9 +141,10 @@ class RetryUtilsTest {
     @Nested
     @DisplayName("Parameter Validation")
     class ParameterValidation {
+
         @Test
-        @DisplayName("Should validate all parameters are non-null")
-        void testNullArguments() {
+        @DisplayName("Should throw NullPointerException for null arguments")
+        void shouldThrowNullPointerExceptionForNullArguments() {
             // Given
             Supplier<String> supplier = () -> "value";
             Predicate<String> condition = s -> s.equals("value");
@@ -171,9 +179,9 @@ class RetryUtilsTest {
     }
 
     @Test
-    @DisplayName("Should respect max wait time")
-    void testMaxWaitTimeRespected() {
-        // Given - a longer timeout to ensure no timing issues
+    @DisplayName("Should throw exception when max wait time is exceeded")
+    void shouldThrowExceptionWhenMaxWaitTimeIsExceeded() {
+        // Given - a slightly longer timeout for test stability
         Duration maxWait = Duration.ofMillis(500);
         Duration interval = Duration.ofMillis(50);
 
@@ -187,17 +195,15 @@ class RetryUtilsTest {
                 )
         );
 
-        // Then - verify the exception message contains expected information
+        // Then
         String message = ex.getMessage();
-        assertTrue(message.contains("Failed to satisfy condition"),
-                "Exception should indicate timeout");
-        assertTrue(message.contains("after"),
-                "Exception should mention attempts were made");
+        assertTrue(message.contains("Failed to satisfy condition"), "Exception should indicate timeout");
+        assertTrue(message.contains("after"), "Exception should mention that attempts were made");
     }
 
     @Test
-    @DisplayName("Should handle zero retry interval")
-    void testZeroRetryInterval() {
+    @DisplayName("Should handle zero retry interval successfully")
+    void shouldHandleZeroRetryIntervalSuccessfully() {
         // Given
         AtomicInteger counter = new AtomicInteger(0);
 
@@ -215,11 +221,8 @@ class RetryUtilsTest {
     }
 
     @Test
-    @DisplayName("Should log attempts appropriately")
-    void testLoggingBehavior() {
-        // This test would ideally use MockedStatic for LogCommon, but we'll add a comment
-        // explaining how it would work for reference
-        /*
+    @DisplayName("Should log retry attempts appropriately")
+    void shouldLogRetryAttemptsAppropriately() {
         try (MockedStatic<LogCommon> logMock = mockStatic(LogCommon.class)) {
             // Given
             AtomicInteger counter = new AtomicInteger(0);
@@ -233,22 +236,11 @@ class RetryUtilsTest {
             );
 
             // Then
-            logMock.verify(() -> LogCommon.debug(contains("Condition not satisfied"), anyInt()),
-                    times(2));
-            logMock.verify(() -> LogCommon.info(contains("Condition satisfied"), eq(3)),
-                    times(1));
+            logMock.verify(() -> LogCommon.debug(contains("Condition not satisfied"), anyInt()), times(2));
+            logMock.verify(() -> LogCommon.info(contains("Condition satisfied"), eq(3)), times(1));
+        } catch (Exception e) {
+            fail("Test failed due to unexpected exception");
         }
-        */
-
-        // For now, we'll just verify that the method completes successfully
-        AtomicInteger counter = new AtomicInteger(0);
-        String result = RetryUtils.retryUntil(
-                Duration.ofMillis(100),
-                Duration.ofMillis(10),
-                () -> (counter.incrementAndGet() >= 3) ? "done" : "not yet",
-                res -> res.equals("done")
-        );
-        assertEquals("done", result);
     }
 
     @Nested
@@ -256,8 +248,8 @@ class RetryUtilsTest {
     class RetryUtilsEdgeCasesTests {
 
         @Test
-        @DisplayName("Should handle immediate success")
-        void testImmediateSuccess() {
+        @DisplayName("Should return immediately if condition is always true")
+        void shouldReturnImmediatelyIfConditionIsAlwaysTrue() {
             // Given
             Duration maxWait = Duration.ofMillis(1000);
             Duration interval = Duration.ofMillis(100);
@@ -280,8 +272,8 @@ class RetryUtilsTest {
         }
 
         @Test
-        @DisplayName("Should handle zero wait time")
-        void testZeroWaitTime() {
+        @DisplayName("Should throw exception immediately if wait time is zero")
+        void shouldThrowExceptionWhenWaitTimeIsZero() {
             // Given
             Duration zeroWait = Duration.ofMillis(0);
             Duration interval = Duration.ofMillis(100);
@@ -292,17 +284,18 @@ class RetryUtilsTest {
                             zeroWait,
                             interval,
                             () -> "result",
-                            s -> false // Never satisfies condition
+                            s -> false // Condition never satisfied
                     ),
-                    "Should throw with zero wait time");
+                    "Should throw with zero wait time"
+            );
 
             assertTrue(ex.getMessage().contains("Failed to satisfy condition"),
                     "Exception should indicate timeout");
         }
 
         @Test
-        @DisplayName("Should handle zero interval")
-        void testZeroInterval() {
+        @DisplayName("Should throw exception when condition is never met and interval is zero")
+        void shouldThrowExceptionWhenConditionNeverMetAndIntervalIsZero() {
             // Given
             Duration maxWait = Duration.ofMillis(200);
             Duration zeroInterval = Duration.ofMillis(0);
@@ -319,16 +312,17 @@ class RetryUtilsTest {
                             },
                             s -> false // Never satisfies condition
                     ),
-                    "Should attempt multiple times with zero interval");
+                    "Should attempt multiple times with zero interval"
+            );
 
             assertTrue(counter.get() > 1, "Should make multiple attempts even with zero interval");
         }
 
         @Test
-        @DisplayName("Should handle exceptions thrown by condition")
-        void testConditionThrowsException() {
+        @DisplayName("Should collect suppressed exceptions when condition throws repeatedly")
+        void shouldCollectSuppressedExceptionsWhenConditionThrowsRepeatedly() {
             // Given
-            Duration maxWait = Duration.ofMillis(500);  // Longer timeout for stability
+            Duration maxWait = Duration.ofMillis(500);  // Slightly longer for stability
             Duration interval = Duration.ofMillis(50);
             AtomicInteger exceptionCount = new AtomicInteger(0);
 
@@ -345,25 +339,23 @@ class RetryUtilsTest {
                     )
             );
 
-            // Verify an exception was thrown indicating timeout
+            // Then
             assertTrue(ex.getMessage().contains("Failed to satisfy condition"),
                     "Should indicate that condition wasn't satisfied");
 
-            // Verify the exception has at least one suppressed exception
+            // Check suppressed exceptions
             Throwable[] suppressed = ex.getSuppressed();
             assertTrue(suppressed.length > 0, "Should have at least one suppressed exception");
-
-            // Verify the suppressed exception is from our condition
             assertTrue(suppressed[0].getMessage().contains("Condition exception"),
                     "Suppressed exception should be from our condition");
 
-            // Verify the condition was called at least once
+            // Verify condition was called
             assertTrue(exceptionCount.get() > 0, "Condition should be called at least once");
         }
 
         @Test
-        @DisplayName("Should handle very small intervals")
-        void testVerySmallInterval() {
+        @DisplayName("Should handle very small intervals with multiple attempts")
+        void shouldHandleVerySmallIntervalsWithMultipleAttempts() {
             // Given
             Duration maxWait = Duration.ofMillis(100);
             Duration tinyInterval = Duration.ofNanos(1); // Extremely small interval
@@ -380,35 +372,10 @@ class RetryUtilsTest {
                             },
                             s -> false // Never satisfies condition
                     ),
-                    "Should handle very small intervals properly");
+                    "Should handle very small intervals properly"
+            );
 
             assertTrue(counter.get() > 1, "Should make multiple attempts with tiny interval");
-        }
-
-        @Test
-        @DisplayName("Should validate input parameters")
-        void testInputValidation() {
-            // Given
-            Duration validDuration = Duration.ofMillis(100);
-            Supplier<String> supplier = () -> "result";
-            Predicate<String> condition = s -> true;
-
-            // When/Then - Test null validations
-            assertThrows(NullPointerException.class,
-                    () -> RetryUtils.retryUntil(null, validDuration, supplier, condition),
-                    "Should validate maxWait is not null");
-
-            assertThrows(NullPointerException.class,
-                    () -> RetryUtils.retryUntil(validDuration, null, supplier, condition),
-                    "Should validate retryInterval is not null");
-
-            assertThrows(NullPointerException.class,
-                    () -> RetryUtils.retryUntil(validDuration, validDuration, null, condition),
-                    "Should validate supplier is not null");
-
-            assertThrows(NullPointerException.class,
-                    () -> RetryUtils.retryUntil(validDuration, validDuration, supplier, null),
-                    "Should validate condition is not null");
         }
     }
 }

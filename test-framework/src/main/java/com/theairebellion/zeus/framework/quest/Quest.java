@@ -8,10 +8,11 @@ import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.storage.Storage;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.theairebellion.zeus.util.reflections.ReflectionUtil.getFieldValue;
+import static com.theairebellion.zeus.util.reflections.ReflectionUtil.getFieldValues;
 
 /**
  * Manages the execution flow and data storage for test scenarios.
@@ -136,7 +137,13 @@ public class Quest {
                     "Could not retrieve an instance of the specified worldType: " + worldType.getName());
         }
 
-        return getFieldValue(world, artifactType);
+        List<K> fieldValues = getFieldValues(world, artifactType);
+        if (fieldValues.size() > 1) {
+            LogTest.warn(
+                    "There is more than one artifact from type: {} inside class: {}. The first one will be taken: {}",
+                    artifactType, worldType, fieldValues.get(0));
+        }
+        return fieldValues.get(0);
     }
 
     /**

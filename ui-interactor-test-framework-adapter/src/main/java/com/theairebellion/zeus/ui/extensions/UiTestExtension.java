@@ -41,11 +41,7 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
@@ -80,18 +76,30 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     private static final String UI_MODULE_PACKAGE = "theairebellion.zeus.ui";
 
     static {
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_NOT_EMPTY, TableAssertionFunctions::validateTableNotEmpty);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_ROW_COUNT, TableAssertionFunctions::validateTableRowCount);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.EVERY_ROW_CONTAINS_VALUES, TableAssertionFunctions::validateEveryRowContainsValues);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DOES_NOT_CONTAIN_ROW, TableAssertionFunctions::validateTableDoesNotContainRow);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_ROWS_ARE_UNIQUE, TableAssertionFunctions::validateAllRowsAreUnique);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.NO_EMPTY_CELLS, TableAssertionFunctions::validateNoEmptyCells);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.COLUMN_VALUES_ARE_UNIQUE, TableAssertionFunctions::validateColumnValuesAreUnique);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DATA_MATCHES_EXPECTED, TableAssertionFunctions::validateTableDataMatchesExpected);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_NOT_EMPTY, TableAssertionFunctions::validateRowNotEmpty);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_CONTAINS_VALUES, TableAssertionFunctions::validateRowContainsValues);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ENABLED, TableAssertionFunctions::validateAllCellsEnabled);
-        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_CLICKABLE, TableAssertionFunctions::validateAllCellsClickable);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_NOT_EMPTY,
+                TableAssertionFunctions::validateTableNotEmpty);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_ROW_COUNT,
+                TableAssertionFunctions::validateTableRowCount);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.EVERY_ROW_CONTAINS_VALUES,
+                TableAssertionFunctions::validateEveryRowContainsValues);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DOES_NOT_CONTAIN_ROW,
+                TableAssertionFunctions::validateTableDoesNotContainRow);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_ROWS_ARE_UNIQUE,
+                TableAssertionFunctions::validateAllRowsAreUnique);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.NO_EMPTY_CELLS,
+                TableAssertionFunctions::validateNoEmptyCells);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.COLUMN_VALUES_ARE_UNIQUE,
+                TableAssertionFunctions::validateColumnValuesAreUnique);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DATA_MATCHES_EXPECTED,
+                TableAssertionFunctions::validateTableDataMatchesExpected);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_NOT_EMPTY,
+                TableAssertionFunctions::validateRowNotEmpty);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_CONTAINS_VALUES,
+                TableAssertionFunctions::validateRowContainsValues);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ENABLED,
+                TableAssertionFunctions::validateAllCellsEnabled);
+        AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_CLICKABLE,
+                TableAssertionFunctions::validateAllCellsClickable);
     }
 
     /**
@@ -270,9 +278,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
     private static void postQuestCreationRegisterCustomServices(SuperQuest quest) {
-        Class<? extends UIServiceFluent> customUIServiceFluentClass =
-                ReflectionUtil.findClassThatExtendsClass(UIServiceFluent.class, getUiConfig().projectPackage());
-        if (customUIServiceFluentClass != null) {
+
+        List<Class<? extends UIServiceFluent>> customUIServices =
+                ReflectionUtil.findImplementationsOfInterface(UIServiceFluent.class, getUiConfig().projectPackage());
+        if (customUIServices.size() > 1) {
+            throw new IllegalStateException(
+                    "There is more than one UI services that extends from UIServiceFluent. Only 1 is allowed");
+        }
+        if (!customUIServices.isEmpty()) {
+            Class<? extends UIServiceFluent> customUIServiceFluentClass = customUIServices.get(0);
             try {
                 SmartWebDriver driver = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
                 quest.registerWorld(customUIServiceFluentClass, customUIServiceFluentClass.getDeclaredConstructor(
@@ -320,7 +334,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
     private static void takeScreenshot(WebDriver driver, String testName) {
-        if(CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
+        if (CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
             CustomAllureListener.stopParentStep();
             CustomAllureListener.startParentStep(TEAR_DOWN);
         }

@@ -49,7 +49,7 @@ class ServicesTest {
                 .thenReturn(Collections.singletonMap("mockHook", mockHook));
 
         reflectionUtilMock = mockStatic(ReflectionUtil.class);
-        reflectionUtilMock.when(() -> ReflectionUtil.getFieldValue(mockHook, MockService.class))
+        reflectionUtilMock.when(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class))
                 .thenReturn(mockService);
     }
 
@@ -70,7 +70,7 @@ class ServicesTest {
         assertNotNull(serviceInstance);
         assertEquals(mockService, serviceInstance);
         verify(applicationContext).getBeansOfType(ClassLevelHook.class);
-        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValue(mockHook, MockService.class));
+        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class));
     }
 
     @Test
@@ -83,7 +83,7 @@ class ServicesTest {
         // Then
         assertSame(firstInstance, secondInstance);
         verify(applicationContext, times(1)).getBeansOfType(ClassLevelHook.class);
-        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValue(mockHook, MockService.class), times(1));
+        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class), times(1));
     }
 
     @Test
@@ -117,7 +117,7 @@ class ServicesTest {
         Services testServices = new Services(applicationContext);
 
         // Setup the reflectionUtilMock to return a mock service for our real hook
-        reflectionUtilMock.when(() -> ReflectionUtil.getFieldValue(realMockHook, MockService.class))
+        reflectionUtilMock.when(() -> ReflectionUtil.getFieldValues(realMockHook, MockService.class))
                 .thenReturn(mockService);
 
         // When
@@ -126,7 +126,7 @@ class ServicesTest {
         // Then
         assertNotNull(serviceInstance);
         assertEquals(mockService, serviceInstance);
-        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValue(realMockHook, MockService.class));
+        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValues(realMockHook, MockService.class));
     }
 
     @Test
