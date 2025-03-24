@@ -4,8 +4,8 @@ import com.theairebellion.zeus.ai.metadata.extractor.ArgumentInfoExtractor;
 import com.theairebellion.zeus.ai.metadata.extractor.FieldInfoExtractor;
 import com.theairebellion.zeus.ai.metadata.extractor.MethodInfoExtractor;
 import com.theairebellion.zeus.ai.metadata.extractor.UsageProvider;
-import com.theairebellion.zeus.ai.metadata.model.AiClassInfo;
-import com.theairebellion.zeus.ai.metadata.model.AiMethodInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiClassInfo;
+import com.theairebellion.zeus.ai.metadata.model.classes.AiMethodInfo;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import org.reflections.Reflections;
 

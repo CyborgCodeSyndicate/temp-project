@@ -2,7 +2,7 @@ package com.reqres.test.framework.service;
 
 import com.reqres.test.framework.rest.ApiResponsesJsonPaths;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
-import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.ai.metadata.model.classes.Level;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;

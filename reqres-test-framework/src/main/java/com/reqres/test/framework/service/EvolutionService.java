@@ -3,7 +3,7 @@ package com.reqres.test.framework.service;
 import com.reqres.test.framework.rest.ApiResponsesJsonPaths;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
-import com.theairebellion.zeus.ai.metadata.model.Level;
+import com.theairebellion.zeus.ai.metadata.model.classes.Level;
 import com.theairebellion.zeus.annotations.InfoAI;
 import com.theairebellion.zeus.annotations.InfoAIClass;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
@@ -20,8 +20,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import static com.reqres.test.framework.base.World.OLYMPYS;
-import static com.reqres.test.framework.rest.Endpoints.POST_CREATE_USER;
 import static com.reqres.test.framework.rest.Endpoints.GET_ALL_USERS;
+import static com.reqres.test.framework.rest.Endpoints.POST_CREATE_USER;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;

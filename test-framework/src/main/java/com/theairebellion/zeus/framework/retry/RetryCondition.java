@@ -1,9 +1,5 @@
 package com.theairebellion.zeus.framework.retry;
 
-import com.theairebellion.zeus.ai.metadata.model.CreationType;
-import com.theairebellion.zeus.annotations.InfoAI;
-import com.theairebellion.zeus.annotations.InfoAIClass;
-
 import java.util.function.Function;
 import java.util.function.Predicate;
 

@@ -17,10 +17,7 @@ import java.util.Map;
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
-import static com.theairebellion.zeus.framework.util.AllureStepHelper.attachFilteredLogsToAllure;
-import static com.theairebellion.zeus.framework.util.AllureStepHelper.logTestOutcome;
-import static com.theairebellion.zeus.framework.util.AllureStepHelper.setDescription;
-import static com.theairebellion.zeus.framework.util.AllureStepHelper.setUpTestMetadata;
+import static com.theairebellion.zeus.framework.util.AllureStepHelper.*;
 import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 
 /**
@@ -62,7 +59,7 @@ public class Epilogue implements AfterTestExecutionCallback {
         long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);
         long durationInSeconds = (System.currentTimeMillis() - startTime) / 1000;
         logTestOutcome(context.getDisplayName(), status, durationInSeconds, throwable);
-        if(!CustomAllureListener.isParentStepActive(TEAR_DOWN)) {
+        if (!CustomAllureListener.isParentStepActive(TEAR_DOWN)) {
             CustomAllureListener.stopParentStep();
             CustomAllureListener.startParentStep(TEAR_DOWN);
         }
