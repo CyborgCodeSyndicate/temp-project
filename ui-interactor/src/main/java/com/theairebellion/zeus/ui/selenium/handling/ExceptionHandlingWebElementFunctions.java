@@ -119,20 +119,18 @@ public class ExceptionHandlingWebElementFunctions {
      * @return The result of the attempted action.
      */
     public static Object handleElementNotInteractable(WebDriver driver, SmartWebElement element, WebElementAction webElementAction, Object... args) {
-        try {
-            element = LocatorParser.updateWebElement(driver, element);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-            Actions actions = new Actions(driver);
-            actions.moveToElement(element.getOriginal());
-            WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));
+        element = LocatorParser.updateWebElement(driver, element);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
 
+        try {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element.getOriginal());
+            WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));
             return WebElementAction.performAction(driver, clickableElement, webElementAction, args);
+        } catch (TimeoutException e) {
+            LogUI.error("Element was not interactable within 2 seconds: " + element, e);
+            throw new ElementNotInteractableException("Element not interactable: " + element, e);
         } catch (Exception e) {
-            String errorMessage = String.format(
-                    "[BROKEN] WebElement action '%s' failed because element was not interactable. Exception: '%s'",
-                    webElementAction.getMethodName(), e.getClass().getSimpleName()
-            );
-            LogUI.error(errorMessage);
+            LogUI.error("Unexpected error while interacting with element: " + element, e);
             throw e;
         }
     }

@@ -44,10 +44,6 @@ public class ExceptionHandlingWebDriverFunctions {
         if (foundElement != null) {
             return webElementAction.performActionWebDriver(driver, foundElement);
         }
-        String errorMessage = String.format(
-                "[BROKEN] WebElement action '%s' could not be executed - Element with locator '%s' not found.",
-                webElementAction.getMethodName(), args[0]
-        );
         throw new NoSuchElementException("Element not found in the main DOM or any iframe.");
     }
 }

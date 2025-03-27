@@ -58,12 +58,10 @@ public class FrameHelper {
         List<WebElement> frames = getAllIFrames(driver);
         for (WebElement frame : frames) {
             driver.switchTo().frame(frame);
-            try {
-                elements = driver.findElements(by);
-                if (!elements.isEmpty()) {
-                    return new SmartWebElement(elements.get(0), driver);
-                }
-            } finally {
+            elements = driver.findElements(by);
+            if (!elements.isEmpty()) {
+                return new SmartWebElement(elements.get(0), driver);
+            } else {
                 driver.switchTo().defaultContent();
             }
         }
