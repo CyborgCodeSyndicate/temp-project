@@ -5,6 +5,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
 import com.theairebellion.zeus.validator.core.AssertionResult;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.core.ParameterizedTypeReference;
 
@@ -48,6 +49,7 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T validateResponseHaveStatus(final String requestUrlSubString, int statusPrefix) {
+        Allure.step("Validate that all API responses containing URL substring: " + requestUrlSubString + " have status prefix: " + statusPrefix);
         return validateResponseHaveStatus(requestUrlSubString, statusPrefix, false);
     }
 
@@ -104,6 +106,7 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T validate(Runnable assertion) {
+        Allure.step("Validating assertion using Runnable");
         return (T) super.validate(assertion);
     }
 
@@ -116,6 +119,7 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T validate(Consumer<SoftAssertions> assertion) {
+        Allure.step("Validating assertions using SoftAssertions consumer");
         return (T) super.validate(assertion);
     }
 }

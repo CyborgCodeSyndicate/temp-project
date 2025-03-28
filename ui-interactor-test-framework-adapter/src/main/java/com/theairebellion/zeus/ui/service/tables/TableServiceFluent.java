@@ -12,7 +12,9 @@ import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
+import io.qameta.allure.Allure;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -59,6 +61,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public final <K> T readTable(TableElement tableElement) {
+        Allure.step("[UI - Table] Reading the table: " + tableElement);
         tableElement.before().accept(driver);
         List<K> rows = tableService.readTable(tableElement.tableType(), tableElement.rowsRepresentationClass());
         tableElement.after().accept(driver);
@@ -76,6 +79,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      */
     @SafeVarargs
     public final <K> T readTable(TableElement tableElement, TableField<K>... fields) {
+        Allure.step("[UI - Table] Reading the table with specific fields: " + tableElement);
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         List<K> rows = tableService.readTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), fields);
@@ -94,6 +98,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public final <K> T readTable(TableElement tableElement, int start, int end) {
+        Allure.step("[UI - Table] Reading a range of rows from the table: " + tableElement + " from " + start + " to " + end);
         tableElement.before().accept(driver);
         List<K> rows = tableService.readTable(tableElement.tableType(), start, end,
                 tableElement.rowsRepresentationClass());
@@ -115,6 +120,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     @SafeVarargs
     public final <K> T readTable(TableElement tableElement, int start, int end,
                                  TableField<K>... fields) {
+        Allure.step("[UI - Table] Reading a range of rows with specific fields from the table: " + tableElement + " from " + start + " to " + end);
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         List<K> rows = tableService.readTable(tableElement.tableType(), start, end,
@@ -122,7 +128,6 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
         tableElement.after().accept(driver);
         storage.sub(UI).put(tableElement.enumImpl(), rows);
         return uiServiceFluent;
-
     }
 
     /**
@@ -134,6 +139,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public final <K> T readRow(TableElement tableElement, int row) {
+        Allure.step("[UI - Table] Reading a specific row from the table: " + tableElement + " at row index: " + row);
         tableElement.before().accept(driver);
         K rowEntry = tableService.readRow(tableElement.tableType(), row,
                 tableElement.rowsRepresentationClass());
@@ -151,6 +157,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance for method chaining.
      */
     public final <K> T readRow(TableElement tableElement, List<String> searchCriteria) {
+        Allure.step("[UI - Table] Reading a specific row from the table by search criteria: " + tableElement + " with criteria: " + searchCriteria);
         tableElement.before().accept(driver);
         K row = tableService.readRow(tableElement.tableType(), searchCriteria,
                 tableElement.rowsRepresentationClass());
@@ -171,6 +178,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     @SafeVarargs
     public final <K> T readRow(TableElement tableElement, int row,
                                TableField<K>... fields) {
+        Allure.step("[UI - Table] Reading a specific row from the table with specific fields: " + tableElement + " at row index: " + row);
         tableElement.before().accept(driver);
         K rowEntry = tableService.readRow(tableElement.tableType(), row,
                 tableElement.rowsRepresentationClass(), fields);
@@ -191,6 +199,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     @SafeVarargs
     public final <K> T readRow(TableElement tableElement, List<String> searchCriteria,
                                TableField<K>... fields) {
+        Allure.step("[UI - Table] Reading a row with search criteria and specific fields: " + tableElement + " with criteria: " + searchCriteria);
         validateArguments(fields[0], tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         K rowEntry = tableService.readRow(tableElement.tableType(), searchCriteria,
@@ -212,6 +221,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      */
     public final <K> T insertCellValue(TableElement tableElement, int row,
                                        TableField<K> field, String... values) {
+        Allure.step("[UI - Table] Inserting value into cell in row: " + row + " for field: " + field);
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), field, 1,
@@ -234,11 +244,13 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     public final <K> T insertCellValue(TableElement tableElement, int row,
                                        TableField<K> field,
                                        int index, String... value) {
+        Allure.step("[UI - Table] Inserting cell value into row: " + row + ", field: " + field + ", index: " + index);
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), field,
                 index, value);
         tableElement.after().accept(driver);
+        Allure.step("[UI - Table] Successfully inserted value into cell");
         return uiServiceFluent;
     }
 
@@ -255,11 +267,13 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria,
                                        TableField<K> field,
                                        String... values) {
+        Allure.step("[UI - Table] Inserting cell value for search criteria: " + searchCriteria + ", field: " + field);
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
                 field, 1, values);
         tableElement.after().accept(driver);
+        Allure.step("[UI - Table] Successfully inserted value for search criteria");
         return uiServiceFluent;
     }
 
@@ -277,11 +291,13 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     public final <K> T insertCellValue(TableElement tableElement, List<String> searchCriteria,
                                        TableField<K> field,
                                        int index, String... values) {
+        Allure.step("[UI - Table] Inserting cell value at index: " + index + " for search criteria: " + searchCriteria + ", field: " + field);
         validateArguments(field, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
                 field, index, values);
         tableElement.after().accept(driver);
+        Allure.step("[UI - Table] Successfully inserted value at index");
         return uiServiceFluent;
     }
 
@@ -295,6 +311,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance for method chaining.
      */
     public final <K> T insertCellValueAsData(TableElement tableElement, int row, K data) {
+        Allure.step("[UI - Table] Inserting data into row: " + row + " using data: " + data);
         if (!tableElement.rowsRepresentationClass().equals(data.getClass())) {
             throw new IllegalArgumentException(
                     "The Data object must be from class: " + tableElement.rowsRepresentationClass());
@@ -302,6 +319,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
         tableElement.before().accept(driver);
         tableService.insertCellValue(tableElement.tableType(), row, tableElement.rowsRepresentationClass(), data);
         tableElement.after().accept(driver);
+        Allure.step("[UI - Table] Successfully inserted data into row");
         return uiServiceFluent;
     }
 
@@ -318,6 +336,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance for method chaining.
      */
     public final <K> T insertCellValueAsData(TableElement tableElement, List<String> searchCriteria, K data) {
+        Allure.step("[UI - Table] Inserting data for search criteria: " + searchCriteria + " using data: " + data);
         if (!tableElement.rowsRepresentationClass().equals(data.getClass())) {
             throw new IllegalArgumentException(
                     "The Data object must be from class: " + tableElement.rowsRepresentationClass());
@@ -326,6 +345,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
         tableService.insertCellValue(tableElement.tableType(), searchCriteria, tableElement.rowsRepresentationClass(),
                 data);
         tableElement.after().accept(driver);
+        Allure.step("[UI - Table] Successfully inserted data for search criteria");
         return uiServiceFluent;
     }
 
@@ -342,11 +362,13 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
     public final <K> T filterTable(TableElement tableElement,
                                    TableField<K> column,
                                    FilterStrategy filterStrategy, String... values) {
+        Allure.step("[UI - Table] Filtering table using column: " + column + " with strategy: " + filterStrategy + " and values: " + values);
         validateArguments(column, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.filterTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), column,
                 filterStrategy, values);
         tableElement.after().accept(driver);
+        Allure.step("[UI - Table] Successfully filtered table");
         return uiServiceFluent;
     }
 
@@ -361,11 +383,13 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      */
     public final <K> T sortTable(TableElement tableElement, TableField<K> column,
                                  SortingStrategy sortingStrategy) {
+        Allure.step("[UI - Table] Sorting table using column: " + column + " with strategy: " + sortingStrategy);
         validateArguments(column, tableElement.rowsRepresentationClass());
         tableElement.before().accept(driver);
         tableService.sortTable(tableElement.tableType(), tableElement.rowsRepresentationClass(), column,
                 sortingStrategy);
         tableElement.after().accept(driver);
+        Allure.step("[UI - Table] Successfully sorted table");
         return uiServiceFluent;
     }
 
@@ -380,6 +404,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      */
     public final <K> T clickElementInCell(TableElement tableElement, int row,
                                           TableField<K> field) {
+        Allure.step("[UI - Table] Clicking element in cell at row: " + row + ", field: " + field);
         return insertCellValue(tableElement, row, field);
     }
 
@@ -394,6 +419,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance for method chaining.
      */
     public final <K> T clickElementInCell(TableElement tableElement, int row, TableField<K> field, int index) {
+        Allure.step("[UI - Table] Clicking element in cell at row: " + row + ", field: " + field + ", index: " + index);
         return insertCellValue(tableElement, row, field, index);
     }
 
@@ -407,6 +433,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance for method chaining.
      */
     public final <K> T clickElementInCell(TableElement tableElement, List<String> searchCriteria, TableField<K> field) {
+        Allure.step("[UI - Table] Clicking element in cell for search criteria: " + searchCriteria + ", field: " + field);
         return insertCellValue(tableElement, searchCriteria, field);
     }
 
@@ -422,6 +449,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      */
     public final <K> T clickElementInCell(TableElement tableElement, List<String> searchCriteria,
                                           TableField<K> field, int index) {
+        Allure.step("[UI - Table] Clicking element in cell for search criteria: " + searchCriteria + ", field: " + field + ", index: " + index);
         return insertCellValue(tableElement, searchCriteria, field, index);
     }
 
@@ -435,6 +463,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance for method chaining.
      */
     public final <K> T clickElementInCell(TableElement tableElement, int row, K data) {
+        Allure.step("[UI - Table] Clicking element in cell at row: " + row + " using data: " + data);
         return insertCellValueAsData(tableElement, row, data);
     }
 
@@ -448,6 +477,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance for method chaining.
      */
     public final <K> T clickElementInCell(TableElement tableElement, List<String> searchCriteria, K data) {
+        Allure.step("[UI - Table] Clicking element in cell for search criteria: " + searchCriteria + " using data: " + data);
         return insertCellValueAsData(tableElement, searchCriteria, data);
     }
 
@@ -468,6 +498,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T validate(TableElement tableElement, Assertion<?>... assertions) {
+        Allure.step("[UI - Table] Validating table element: " + tableElement + " with assertions: " + Arrays.toString(assertions));
         Object tableData = storage.sub(UI).get(tableElement.enumImpl(), Object.class);
         if (tableData == null) {
             throw new IllegalArgumentException("No table data found for key: " + tableElement.enumImpl());
@@ -478,6 +509,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
 
         decorate.validation(results);
 
+        Allure.step("[UI - Table] Validation completed for table element");
         return uiServiceFluent;
     }
 

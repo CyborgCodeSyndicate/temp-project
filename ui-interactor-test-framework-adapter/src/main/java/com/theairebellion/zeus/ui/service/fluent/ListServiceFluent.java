@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.list.ItemListService;
@@ -9,6 +8,7 @@ import com.theairebellion.zeus.ui.selenium.ListUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
+import io.qameta.allure.Allure;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +57,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T select(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] [UI - List] Select values from list: " + Arrays.toString(values)); // Allure step added
         element.before().accept(driver);
         itemListService.select(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -71,6 +72,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T deSelect(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Deselect values from list: " + Arrays.toString(values)); // Allure step added
         element.before().accept(driver);
         itemListService.deSelect(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -85,6 +87,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T areSelected(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Check if values are selected in the list: " + Arrays.toString(values)); // Allure step added
         element.before().accept(driver);
         boolean selected = itemListService.areSelected(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -100,6 +103,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreSelected(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Validate if values are selected in the list: " + Arrays.toString(values)); // Allure step added
         return validateAreSelected(element, true, false, values);
     }
 
@@ -113,6 +117,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreSelected(final ListUIElement element, boolean soft, final String... values) {
+        Allure.step("[UI - List] Validate if values are selected (soft: " + soft + "): " + Arrays.toString(values)); // Allure step added
         return validateAreSelected(element, true, soft, values);
     }
 
@@ -124,6 +129,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreNotSelected(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Validate if values are not selected in the list: " + Arrays.toString(values)); // Allure step added
         return validateAreSelected(element, false, false, values);
     }
 
@@ -137,6 +143,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreNotSelected(final ListUIElement element, boolean soft, final String... values) {
+        Allure.step("[UI - List] Validate if values are not selected (soft: " + soft + "): " + Arrays.toString(values)); // Allure step added
         return validateAreSelected(element, false, soft, values);
     }
 
@@ -182,6 +189,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T isSelected(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Check if value is selected in the list: " + value); // Allure step added
         element.before().accept(driver);
         boolean selected = itemListService.isSelected(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -197,6 +205,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsSelected(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Validate if value is selected in the list: " + value); // Allure step added
         return validateAreSelected(element, true, false, value);
     }
 
@@ -210,6 +219,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsSelected(final ListUIElement element, boolean soft, final String value) {
+        Allure.step("[UI - List] Validate if value is selected (soft: " + soft + "): " + value); // Allure step added
         return validateAreSelected(element, true, soft, value);
     }
 
@@ -221,6 +231,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsNotSelected(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Validate if value is not selected in the list: " + value); // Allure step added
         return validateAreSelected(element, false, false, value);
     }
 
@@ -234,6 +245,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsNotSelected(final ListUIElement element, boolean soft, final String value) {
+        Allure.step("[UI - List] Validate if value is not selected (soft: " + soft + "): " + value); // Allure step added
         return validateAreSelected(element, false, soft, value);
     }
 
@@ -245,6 +257,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T areEnabled(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Check if values are enabled in the list: " + Arrays.toString(values)); // Allure step added
         element.before().accept(driver);
         boolean enabled = itemListService.areEnabled(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -260,6 +273,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreEnabled(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Validate if values are enabled in the list: " + Arrays.toString(values)); // Allure step added
         return validateAreEnabled(element, true, false, values);
     }
 
@@ -273,6 +287,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreEnabled(final ListUIElement element, boolean soft, final String... values) {
+        Allure.step("[UI - List] Validate if values are enabled (soft: " + soft + "): " + Arrays.toString(values)); // Allure step added
         return validateAreEnabled(element, true, soft, values);
     }
 
@@ -284,6 +299,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreDisabled(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Validate that the specified values in the list are disabled");
         return validateAreEnabled(element, false, false, values);
     }
 
@@ -297,6 +313,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreDisabled(final ListUIElement element, boolean soft, final String... values) {
+        Allure.step("[UI - List] Validate that the specified values in the list are disabled");
         return validateAreEnabled(element, false, soft, values);
     }
 
@@ -342,6 +359,8 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T isEnabled(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Check if the specified value is enabled");
+
         element.before().accept(driver);
         boolean enabled = itemListService.isEnabled(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -357,6 +376,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsEnabled(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is enabled");
         return validateAreEnabled(element, true, false, value);
     }
 
@@ -370,6 +390,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsEnabled(final ListUIElement element, boolean soft, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is enabled");
         return validateAreEnabled(element, true, soft, value);
     }
 
@@ -381,6 +402,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsDisabled(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is disabled");
         return validateAreEnabled(element, false, false, value);
     }
 
@@ -394,6 +416,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsDisabled(final ListUIElement element, boolean soft, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is disabled");
         return validateAreEnabled(element, false, soft, value);
     }
 
@@ -405,6 +428,8 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T areVisible(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Check if the specified values are visible");
+
         element.before().accept(driver);
         boolean visible = itemListService.areVisible(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -420,6 +445,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreVisible(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Validate that the specified values are visible in the list");
         return validateAreVisible(element, true, false, values);
     }
 
@@ -433,6 +459,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreVisible(final ListUIElement element, boolean soft, final String... values) {
+        Allure.step("[UI - List] Validate that the specified values are visible in the list");
         return validateAreVisible(element, true, soft, values);
     }
 
@@ -444,6 +471,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreHidden(final ListUIElement element, final String... values) {
+        Allure.step("[UI - List] Validate that the specified values are hidden in the list");
         return validateAreVisible(element, false, false, values);
     }
 
@@ -457,6 +485,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateAreHidden(final ListUIElement element, boolean soft, final String... values) {
+        Allure.step("[UI - List] Validate that the specified values are hidden in the list");
         return validateAreVisible(element, false, soft, values);
     }
 
@@ -502,6 +531,8 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T isVisible(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Check if the specified value is visible");
+
         element.before().accept(driver);
         boolean visible = itemListService.isVisible(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -517,6 +548,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsVisible(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is visible");
         return validateAreVisible(element, true, false, value);
     }
 
@@ -530,6 +562,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsVisible(final ListUIElement element, boolean soft, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is visible");
         return validateAreVisible(element, true, soft, value);
     }
 
@@ -541,6 +574,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsHidden(final ListUIElement element, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is hidden");
         return validateAreVisible(element, false, false, value);
     }
 
@@ -554,6 +588,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T validateIsHidden(final ListUIElement element, boolean soft, final String value) {
+        Allure.step("[UI - List] Validate that the specified value is hidden");
         return validateAreVisible(element, false, soft, value);
     }
 
@@ -564,6 +599,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T getSelected(final ListUIElement element) {
+        Allure.step("[UI - List] Retrieve selected items from the list");
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -579,6 +615,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance, allowing for method chaining.
      */
     public T validateSelectedItems(final ListUIElement element, final String... expectedValues) {
+        Allure.step("[UI - List] Validate that the specified items are selected");
         return validateSelectedItems(element, true, false, expectedValues);
     }
 
@@ -592,6 +629,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance, allowing for method chaining.
      */
     public T validateSelectedItems(final ListUIElement element, boolean soft, final String... expectedValues) {
+        Allure.step("[UI - List] Validate that the specified items are selected");
         return validateSelectedItems(element, true, soft, expectedValues);
     }
 
@@ -603,6 +641,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance, allowing for method chaining.
      */
     public T validateNotSelectedItems(final ListUIElement element, final String... expectedValues) {
+        Allure.step("[UI - List] Validate that the specified items are not selected");
         return validateSelectedItems(element, false, false, expectedValues);
     }
 
@@ -616,6 +655,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance, allowing for method chaining.
      */
     public T validateNotSelectedItems(final ListUIElement element, boolean soft, final String... expectedValues) {
+        Allure.step("[UI - List] Validate that the specified items are not selected");
         return validateSelectedItems(element, false, soft, expectedValues);
     }
 
@@ -661,6 +701,8 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance.
      */
     public T getAll(final ListUIElement element) {
+        Allure.step("[UI - List] Retrieve all items from the list");
+
         element.before().accept(driver);
         List<String> allItems = itemListService.getAll(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -676,6 +718,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance, allowing for method chaining.
      */
     public T validateAllItems(final ListUIElement element, final String... expectedValues) {
+        Allure.step("[UI - List] Validate that all expected items are present in the list");
         return validateAllItems(element, false, expectedValues);
     }
 
@@ -689,6 +732,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      * @return The fluent UI service instance, allowing for method chaining.
      */
     public T validateAllItems(final ListUIElement element, boolean soft, final String... expectedValues) {
+        Allure.step("[UI - List] Validate that all expected items are present in the list");
         element.before().accept(driver);
         List<String> selectedItems = itemListService.getSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -716,6 +760,7 @@ public class ListServiceFluent<T extends UIServiceFluent<?>> implements Insertio
      */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        Allure.step("[UI - List] Insert values into the list");
         itemListService.insertion(componentType, locator, values);
     }
 

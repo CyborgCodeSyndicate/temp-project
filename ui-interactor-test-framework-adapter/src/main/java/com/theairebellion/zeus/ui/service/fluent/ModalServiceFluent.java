@@ -4,6 +4,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.modal.ModalService;
 import com.theairebellion.zeus.ui.selenium.ModalUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
@@ -48,6 +49,8 @@ public class ModalServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T click(final ModalUIElement element) {
+        Allure.step("[UI - Modal] Click button inside the modal UI element");
+
         element.before().accept(driver);
         modalService.clickButton(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -61,6 +64,8 @@ public class ModalServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T getTitle(final ModalUIElement element) {
+        Allure.step("[UI - Modal] Retrieve title of the modal UI element");
+
         element.before().accept(driver);
         String modalTitle = modalService.getTitle(element.componentType());
         element.after().accept(driver);
@@ -75,6 +80,8 @@ public class ModalServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T getContentTitle(final ModalUIElement element) {
+        Allure.step("[UI - Modal] Retrieve content title of the modal UI element");
+
         element.before().accept(driver);
         String modalContentTitle = modalService.getContentTitle(element.componentType());
         element.after().accept(driver);
@@ -89,6 +96,8 @@ public class ModalServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T getBodyText(final ModalUIElement element) {
+        Allure.step("[UI - Modal] Retrieve body text of the modal UI element");
+
         element.before().accept(driver);
         String modalBodyText = modalService.getBodyText(element.componentType());
         element.after().accept(driver);
@@ -103,6 +112,8 @@ public class ModalServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T close(final ModalUIElement element) {
+        Allure.step("[UI - Modal] Close the modal UI element");
+
         element.before().accept(driver);
         modalService.close(element.componentType());
         element.after().accept(driver);

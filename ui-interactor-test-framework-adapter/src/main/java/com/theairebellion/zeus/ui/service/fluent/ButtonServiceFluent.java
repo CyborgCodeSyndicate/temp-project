@@ -1,10 +1,10 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.button.ButtonService;
 import com.theairebellion.zeus.ui.selenium.ButtonUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -56,6 +56,8 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance
      */
     public T click(final ButtonUIElement element) {
+        Allure.step(String.format("[UI - Button] Clicking button with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         buttonService.click(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -69,6 +71,8 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance
      */
     public T isEnabled(final ButtonUIElement element) {
+        Allure.step(String.format("[UI - Button] Checking if button is enabled with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         boolean enabled = buttonService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -119,6 +123,8 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     private T validateIsEnabled(final ButtonUIElement element, boolean shouldBeEnabled, boolean soft) {
+        Allure.step(String.format("[UI - Button] Validating if button is enabled/disabled with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         boolean enabled = buttonService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -158,6 +164,8 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance
      */
     public T isVisible(final ButtonUIElement element) {
+        Allure.step(String.format("[UI - Button] Checking if button is visible with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         boolean visible = buttonService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -183,6 +191,8 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
      * @return The instance of {@link UIServiceFluent} to allow method chaining.
      */
     public T validateIsVisible(final ButtonUIElement element, boolean soft) {
+        Allure.step(String.format("[UI - Button] Validating if button is visible with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         return validateIsVisible(element, true, soft);
     }
 
@@ -208,6 +218,8 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
     }
 
     private T validateIsVisible(final ButtonUIElement element, boolean shouldBeVisible, boolean soft) {
+        Allure.step(String.format("[UI - Button] Validating if button is visible/hidden with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         boolean visible = buttonService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -239,5 +251,4 @@ public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
             );
         }
     }
-
 }

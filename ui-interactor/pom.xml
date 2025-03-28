@@ -39,11 +39,6 @@
             <artifactId>assertions</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-java-commons</artifactId>
-            <version>${allure.version}</version>
-        </dependency>
 
     </dependencies>
 

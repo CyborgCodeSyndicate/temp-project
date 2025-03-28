@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import io.qameta.allure.Allure;
 
 /**
  * Implementation of the {@link LoaderService} interface providing operations for checking the visibility
@@ -62,7 +61,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public boolean isVisible(final LoaderComponentType componentType, final SmartWebElement container) {
-        Allure.step(String.format("[UI - Loader] Checking visibility of loader %s using container", componentType));
         LogUI.step("Checking visibility of loader " + componentType + " using container");
         return loaderComponent(componentType).isVisible(container);
     }
@@ -76,7 +74,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public boolean isVisible(final LoaderComponentType componentType, final By loaderLocator) {
-        Allure.step(String.format("[UI - Loader] Checking visibility of loader %s using locator %s", componentType, loaderLocator));
         LogUI.step("Checking visibility of loader " + componentType + " using locator " + loaderLocator);
         return loaderComponent(componentType).isVisible(loaderLocator);
     }
@@ -91,7 +88,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
     @Override
     public void waitToBeShown(final LoaderComponentType componentType, final SmartWebElement container,
                               final int secondsShown) {
-        Allure.step(String.format("[UI - Loader] Waiting for loader %s to be shown using container for %d seconds", componentType, secondsShown));
         LogUI.step("Waiting for loader " + componentType + " to be shown using container for " + secondsShown + " seconds");
         loaderComponent(componentType).waitToBeShown(container, secondsShown);
     }
@@ -104,7 +100,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public void waitToBeShown(final LoaderComponentType componentType, final int secondsShown) {
-        Allure.step(String.format("[UI - Loader] Waiting for loader %s to be shown for %d seconds", componentType, secondsShown));
         LogUI.step("Waiting for loader " + componentType + " to be shown for " + secondsShown + " seconds");
         loaderComponent(componentType).waitToBeShown(secondsShown);
     }
@@ -118,7 +113,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public void waitToBeShown(final LoaderComponentType componentType, final By loaderLocator, final int secondsShown) {
-        Allure.step(String.format("[UI - Loader] Waiting for loader %s to be shown using locator %s for %d seconds", componentType, loaderLocator, secondsShown));
         LogUI.step("Waiting for loader " + componentType + " to be shown using locator " + loaderLocator + " for " + secondsShown + " seconds");
         loaderComponent(componentType).waitToBeShown(loaderLocator, secondsShown);
     }
@@ -133,7 +127,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final SmartWebElement container,
                                 final int secondsRemoved) {
-        Allure.step(String.format("[UI - Loader] Waiting for loader %s to be removed using container for %d seconds", componentType, secondsRemoved));
         LogUI.step("Waiting for loader " + componentType + " to be removed using container for " + secondsRemoved + " seconds");
         loaderComponent(componentType).waitToBeRemoved(container, secondsRemoved);
     }
@@ -146,7 +139,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final int secondsRemoved) {
-        Allure.step(String.format("[UI - Loader] Waiting for loader %s to be removed for %d seconds", componentType, secondsRemoved));
         LogUI.step("Waiting for loader " + componentType + " to be removed for " + secondsRemoved + " seconds");
         loaderComponent(componentType).waitToBeRemoved(secondsRemoved);
     }
@@ -161,7 +153,6 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final By loaderLocator,
                                 final int secondsRemoved) {
-        Allure.step(String.format("[UI - Loader] Waiting for loader %s to be removed using locator %s for %d seconds", componentType, loaderLocator, secondsRemoved));
         LogUI.step("Waiting for loader " + componentType + " to be removed using locator " + loaderLocator + " for " + secondsRemoved + " seconds");
         loaderComponent(componentType).waitToBeRemoved(loaderLocator, secondsRemoved);
     }

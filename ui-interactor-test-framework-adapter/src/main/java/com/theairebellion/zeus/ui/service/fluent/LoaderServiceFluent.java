@@ -5,6 +5,7 @@ import com.theairebellion.zeus.ui.components.loader.LoaderService;
 import com.theairebellion.zeus.ui.selenium.LoaderUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.assertj.core.api.Assertions;
+import io.qameta.allure.Allure;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
 
@@ -49,6 +50,8 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T isVisible(final LoaderUIElement element) {
+        Allure.step("[UI - Loader] Check if the loader UI element is visible");
+
         element.before().accept(driver);
         boolean visible = loaderService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -63,6 +66,7 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T validateIsVisible(final LoaderUIElement element) {
+        Allure.step("[UI - Loader] Validate that the loader UI element is visible");
         return validateIsVisible(element, true, false);
     }
 
@@ -74,6 +78,7 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T validateIsVisible(final LoaderUIElement element, boolean soft) {
+        Allure.step("[UI - Loader] Validate that the loader UI element is visible with soft validation option");
         return validateIsVisible(element, true, soft);
     }
 
@@ -84,6 +89,7 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T validateIsHidden(final LoaderUIElement element) {
+        Allure.step("[UI - Loader] Validate that the loader UI element is hidden");
         return validateIsVisible(element, false, false);
     }
 
@@ -95,6 +101,7 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T validateIsHidden(final LoaderUIElement element, boolean soft) {
+        Allure.step("[UI - Loader] Validate that the loader UI element is hidden with soft validation option");
         return validateIsVisible(element, false, soft);
     }
 
@@ -147,6 +154,8 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T waitToBeShown(final LoaderUIElement element, int secondsShown) {
+        Allure.step("[UI - Loader] [UI - Loader] Wait for the loader UI element to be shown for " + secondsShown + " seconds");
+
         element.before().accept(driver);
         loaderService.waitToBeShown(element.componentType(), element.locator(), secondsShown);
         element.after().accept(driver);
@@ -161,6 +170,8 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T waitToBeRemoved(final LoaderUIElement element, int secondsRemoved) {
+        Allure.step("[UI - Loader] Wait for the loader UI element to be removed for " + secondsRemoved + " seconds");
+
         element.before().accept(driver);
         loaderService.waitToBeRemoved(element.componentType(), element.locator(), secondsRemoved);
         element.after().accept(driver);
@@ -176,6 +187,9 @@ public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T waitToBeShownAndRemoved(final LoaderUIElement element, int secondsShown, int secondsRemoved) {
+        Allure.step("[UI - Loader] Wait for the loader UI element to be shown and then removed within " +
+                secondsShown + " and " + secondsRemoved + " seconds respectively");
+
         element.before().accept(driver);
         loaderService.waitToBeShownAndRemoved(element.componentType(), element.locator(), secondsShown, secondsRemoved);
         element.after().accept(driver);

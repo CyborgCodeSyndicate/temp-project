@@ -4,6 +4,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.alert.AlertService;
 import com.theairebellion.zeus.ui.selenium.AlertUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
 import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
@@ -53,6 +54,8 @@ public class AlertServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T getValue(final AlertUIElement element) {
+        Allure.step(String.format("[UI - Alert] Retrieving value for alert with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         String value = alertService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -80,6 +83,8 @@ public class AlertServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T validateValue(final AlertUIElement element, String expectedValue, boolean soft) {
+        Allure.step(String.format("[UI - Alert] Validating value for alert with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         String value = alertService.getValue(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -102,6 +107,8 @@ public class AlertServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     public T isVisible(final AlertUIElement element) {
+        Allure.step(String.format("[UI - Alert] Checking visibility for alert with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         boolean enabled = alertService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -160,6 +167,8 @@ public class AlertServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current fluent service instance for method chaining.
      */
     private T validateIsVisible(final AlertUIElement element, boolean shouldBeVisible, boolean soft) {
+        Allure.step(String.format("[UI - Alert] Validating visibility for alert with componentType: %s, locator: %s",
+                element.componentType(), element.locator()));
         element.before().accept(driver);
         boolean visible = alertService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);

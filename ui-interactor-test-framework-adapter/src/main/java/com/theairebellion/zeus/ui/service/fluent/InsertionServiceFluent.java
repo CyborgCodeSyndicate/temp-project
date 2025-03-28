@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.insertion.InsertionService;
+import io.qameta.allure.Allure;
 
 /**
  * A fluent service for handling data insertion operations.
@@ -42,8 +43,8 @@ public class InsertionServiceFluent<T extends UIServiceFluent<?>> {
      * @return The current {@link UIServiceFluent} instance for method chaining.
      */
     public T insertData(Object data) {
+        Allure.step("[UI - Insertion] Insert data: " + data);
         insertionService.insertData(data);
         return uiServiceFluent;
     }
-
 }

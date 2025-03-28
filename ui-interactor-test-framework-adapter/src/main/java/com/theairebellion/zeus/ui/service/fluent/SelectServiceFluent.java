@@ -8,6 +8,7 @@ import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.SelectUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -58,6 +59,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T selectOptions(final SelectUIElement element, final String... values) {
+        Allure.step("[UI - Select] Selecting multiple options in dropdown: " + element.enumImpl() + " (Values: " + Arrays.toString(values) + ")");
         element.before().accept(driver);
         selectService.selectOptions(element.componentType(), element.locator(), values);
         element.after().accept(driver);
@@ -72,6 +74,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T selectOption(final SelectUIElement element, final String value) {
+        Allure.step("[UI - Select] Selecting option in dropdown: " + element.enumImpl() + " (Value: " + value + ")");
         element.before().accept(driver);
         selectService.selectOption(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -86,6 +89,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T selectOptions(final SelectUIElement element, final Strategy strategy) {
+        Allure.step("[UI - Select] Selecting option in dropdown: " + element.enumImpl() + " (Strategy: " + strategy + ")");
         element.before().accept(driver);
         selectService.selectOptions(element.componentType(), element.locator(), strategy);
         element.after().accept(driver);
@@ -99,6 +103,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T getAvailableOptions(final SelectUIElement element) {
+        Allure.step("[UI - Select] Retrieving available options in dropdown: " + element.enumImpl());
         element.before().accept(driver);
         List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -114,6 +119,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T validateAvailableOptions(final SelectUIElement element, final String... expectedValues) {
+        Allure.step("[UI - Select] Validating available options in dropdown: " + element.enumImpl() + " (Expected Values: " + Arrays.toString(expectedValues) + ")");
         return validateAvailableOptions(element, false, expectedValues);
     }
 
@@ -127,6 +133,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T validateAvailableOptions(final SelectUIElement element, boolean soft, final String... expectedValues) {
+        Allure.step("[UI - Select] Validating available options in dropdown: " + element.enumImpl() + " (Soft: " + soft + ", Expected Values: " + Arrays.toString(expectedValues) + ")");
         element.before().accept(driver);
         List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -153,6 +160,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T validateAvailableOptions(final SelectUIElement element, final int expectedValuesCount) {
+        Allure.step("[UI - Select] Validating number of available options in dropdown: " + element.enumImpl() + " (Expected Count: " + expectedValuesCount + ")");
         return validateAvailableOptions(element, false, expectedValuesCount);
     }
 
@@ -166,6 +174,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T validateAvailableOptions(final SelectUIElement element, boolean soft, final int expectedValuesCount) {
+        Allure.step("[UI - Select] Validating number of available options in dropdown: " + element.enumImpl() + " (Soft: " + soft + ", Expected Count: " + expectedValuesCount + ")");
         element.before().accept(driver);
         List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -191,6 +200,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T getSelectedOptions(final SelectUIElement element) {
+        Allure.step("[UI - Select] Retrieving selected options in dropdown: " + element.enumImpl());
         element.before().accept(driver);
         List<String> selectedOptions = selectService.getSelectedOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -206,6 +216,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T validateSelectedOptions(final SelectUIElement element, final String... expectedValues) {
+        Allure.step("[UI - Select] Validating selected options in dropdown: " + element.enumImpl() + " (Expected Values: " + Arrays.toString(expectedValues) + ")");
         return validateSelectedOptions(element, false, expectedValues);
     }
 
@@ -219,6 +230,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T validateSelectedOptions(final SelectUIElement element, boolean soft, final String... expectedValues) {
+        Allure.step("[UI - Select] Validating selected options in dropdown: " + element.enumImpl() + " (Soft: " + soft + ", Expected Values: " + Arrays.toString(expectedValues) + ")");
         element.before().accept(driver);
         List<String> selectedOptions = selectService.getSelectedOptions(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -245,6 +257,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T isOptionVisible(final SelectUIElement element, final String value) {
+        Allure.step("[UI - Select] Checking if option " + value + " is visible in select element " + element);
         element.before().accept(driver);
         boolean visibleOption = selectService.isOptionVisible(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -302,6 +315,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
 
     private T validateIsVisible(final SelectUIElement element, boolean shouldBeVisible, String value,
                                 boolean soft) {
+        Allure.step("[UI - Select] Validating visibility of option " + value + " in select element " + element);
         element.before().accept(driver);
         boolean visible = selectService.isOptionVisible(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -342,6 +356,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      * @return The fluent UI service instance.
      */
     public T isOptionEnabled(final SelectUIElement element, final String value) {
+        Allure.step("[UI - Select] Checking if option " + value + " is enabled in select element " + element);
         element.before().accept(driver);
         boolean enabledOption = selectService.isOptionEnabled(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -399,6 +414,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
 
     private T validateIsEnabled(final SelectUIElement element, boolean shouldBeEnabled, String value,
                                 boolean soft) {
+        Allure.step("[UI - Select] Validating whether option " + value + " is " + (shouldBeEnabled ? "enabled" : "disabled") + " in select element " + element);
         element.before().accept(driver);
         boolean enabled = selectService.isOptionVisible(element.componentType(), element.locator(), value);
         element.after().accept(driver);
@@ -440,6 +456,7 @@ public class SelectServiceFluent<T extends UIServiceFluent<?>> implements Insert
      */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        Allure.step("[UI - Select] Inserting values into select element with component type " + componentType + " and locator " + locator);
         selectService.insertion(componentType, locator, values);
     }
 

@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.checkbox.CheckboxComponentType;
@@ -8,6 +7,7 @@ import com.theairebellion.zeus.ui.components.checkbox.CheckboxService;
 import com.theairebellion.zeus.ui.insertion.Insertion;
 import com.theairebellion.zeus.ui.selenium.CheckboxUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -58,6 +58,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T select(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Select checkbox with element: " + element);
         checkboxService.select((CheckboxComponentType) element.componentType(), element.locator());
         return uiServiceFluent;
     }
@@ -69,6 +70,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T deSelect(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Deselect checkbox with element: " + element);
         checkboxService.deSelect((CheckboxComponentType) element.componentType(), element.locator());
         return uiServiceFluent;
     }
@@ -80,6 +82,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T isSelected(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Check if checkbox with element " + element + " is selected");
         boolean selected = checkboxService.isSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
         return uiServiceFluent;
@@ -103,6 +106,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T validateIsSelected(final CheckboxUIElement element, boolean soft) {
+        Allure.step("[UI - Checkbox] Validate if checkbox with element " + element + " is selected");
         element.before().accept(driver);
         boolean selected = checkboxService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -129,6 +133,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T areSelected(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Check if multiple checkboxes with element " + element + " are selected");
         boolean selected = checkboxService.areSelected((CheckboxComponentType) element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selected);
         return uiServiceFluent;
@@ -141,6 +146,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T isEnabled(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Check if checkbox with element " + element + " is enabled");
         boolean enabled = checkboxService.isEnabled(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
@@ -164,6 +170,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T validateIsEnabled(final CheckboxUIElement element, boolean soft) {
+        Allure.step("[UI - Checkbox] Validate if checkbox with element " + element + " is enabled");
         element.before().accept(driver);
         boolean enabled = checkboxService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -190,6 +197,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T areEnabled(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Check if multiple checkboxes with element " + element + " are enabled");
         boolean enabled = checkboxService.areEnabled((CheckboxComponentType) element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
         return uiServiceFluent;
@@ -202,6 +210,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T getSelected(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Retrieve the selected values from checkbox " + element);
         List<String> selectedValues = checkboxService.getSelected(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), selectedValues);
         return uiServiceFluent;
@@ -214,6 +223,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      * @return The instance of {@link UIServiceFluent} for method chaining.
      */
     public T getAll(final CheckboxUIElement element) {
+        Allure.step("[UI - Checkbox] Retrieve all checkbox values from " + element);
         checkboxService.getAll(element.componentType(), element.locator()); //todo: Do we need storage
         return uiServiceFluent;
     }
@@ -227,6 +237,7 @@ public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Inse
      */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        Allure.step("[UI - Checkbox] Insert a value into checkbox " + locator + " of type " + componentType);
         checkboxService.insertion(componentType, locator, values);
     }
 

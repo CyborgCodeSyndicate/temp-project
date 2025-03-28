@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchWindowException;
@@ -41,6 +42,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T navigate(String url) {
+        Allure.step("[UI - Navigation] Navigate to the URL and maximize the browser window");
+
         driver.manage().window().maximize();
         driver.get(url);
         return uiServiceFluent;
@@ -52,6 +55,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T back() {
+        Allure.step("[UI - Navigation] Navigate back in the browser history");
+
         driver.navigate().back();
         return uiServiceFluent;
     }
@@ -62,6 +67,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T forward() {
+        Allure.step("[UI - Navigation] Navigate forward in the browser history");
+
         driver.navigate().forward();
         return uiServiceFluent;
     }
@@ -72,6 +79,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T refresh() {
+        Allure.step("[UI - Navigation] Refresh the current page");
+
         driver.navigate().refresh();
         return uiServiceFluent;
     }
@@ -82,6 +91,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T switchToNewTab() {
+        Allure.step("[UI - Navigation] Switch to a newly opened browser tab");
+
         String currentHandle = driver.getWindowHandle();
         for (String handle : driver.getWindowHandles()) {
             if (!handle.equals(currentHandle)) {
@@ -100,6 +111,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @throws NoSuchWindowException if no window with the given title is found.
      */
     public T switchToWindow(String windowTitle) {
+        Allure.step("[UI - Navigation] Switch to the browser window with the title: " + windowTitle);
+
         for (String handle : driver.getWindowHandles()) {
             driver.switchTo().window(handle);
             if (Objects.equals(driver.getTitle(), windowTitle)) {
@@ -115,6 +128,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T closeCurrentTab() {
+        Allure.step("[UI - Navigation] Close the current browser tab");
+
         driver.close();
         if (!driver.getWindowHandles().isEmpty()) {
             driver.switchTo().window(driver.getWindowHandles().iterator().next());
@@ -129,6 +144,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T switchToFrameByIndex(int index) {
+        Allure.step("[UI - Navigation] Switch to the iframe using index: " + index);
+
         driver.switchTo().frame(index);
         return uiServiceFluent;
     }
@@ -140,6 +157,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T switchToFrameByNameOrId(String nameOrId) {
+        Allure.step("[UI - Navigation] Switch to the iframe using name or ID: " + nameOrId);
+
         driver.switchTo().frame(nameOrId);
         return uiServiceFluent;
     }
@@ -150,6 +169,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T switchToParentFrame() {
+        Allure.step("[UI - Navigation] Switch to the parent frame");
+
         driver.switchTo().parentFrame();
         return uiServiceFluent;
     }
@@ -160,6 +181,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T switchToDefaultContent() {
+        Allure.step("[UI - Navigation] Switch back to the default content from the iframe");
+
         driver.switchTo().defaultContent();
         return uiServiceFluent;
     }
@@ -170,6 +193,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T acceptAlert() {
+        Allure.step("[UI - Navigation] Accept the alert pop-up");
+
         driver.switchTo().alert().accept();
         return uiServiceFluent;
     }
@@ -180,6 +205,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T dismissAlert() {
+        Allure.step("[UI - Navigation] Dismiss the alert pop-up");
+
         driver.switchTo().alert().dismiss();
         return uiServiceFluent;
     }
@@ -200,6 +227,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T validateAlertText(String expected) {
+        Allure.step("[UI - Navigation] Validate that the alert text matches the expected value");
+
         return validateAlertText(expected, false);
     }
 
@@ -211,6 +240,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T validateAlertText(String expected, boolean soft) {
+        Allure.step("[UI - Navigation] Validate alert text with expected value: " + expected);
+
         String alertText = getAlertText();
         if (soft) {
             return (T) uiServiceFluent.validate(
@@ -229,6 +260,8 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      * @return The fluent UI service instance.
      */
     public T openNewTab() {
+        Allure.step("[UI - Navigation] Open a new browser tab using JavaScript and switch to it");
+
         ((JavascriptExecutor) driver).executeScript("window.open();");
         return switchToNewTab();
     }

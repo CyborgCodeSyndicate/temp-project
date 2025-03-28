@@ -8,7 +8,6 @@ import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import io.qameta.allure.Allure;
 
 /**
  * Implementation of the {@link LinkService} interface providing actions for interacting with link components.
@@ -47,7 +46,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, SmartWebElement container, String buttonText) {
-        Allure.step(String.format("[UI - Link] Clicking link %s with text %s", componentType, buttonText));
         LogUI.step("Clicking link " + componentType + " with text " + buttonText);
         linkComponent((LinkComponentType) componentType).click(container, buttonText);
     }
@@ -60,7 +58,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, final SmartWebElement container) {
-        Allure.step(String.format("[UI - Link] Clicking link %s", componentType));
         LogUI.step("Clicking link " + componentType);
         linkComponent((LinkComponentType) componentType).click(container);
     }
@@ -73,7 +70,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, final String buttonText) {
-        Allure.step(String.format("[UI - Link] Clicking link %s with text %s", componentType, buttonText));
         LogUI.step("Clicking link " + componentType + " with text " + buttonText);
         linkComponent((LinkComponentType) componentType).click(buttonText);
     }
@@ -86,7 +82,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, final By buttonLocator) {
-        Allure.step(String.format("[UI - Link] Clicking link %s using locator %s", componentType, buttonLocator));
         LogUI.step("Clicking link " + componentType + " using locator " + buttonLocator);
         linkComponent((LinkComponentType) componentType).click(buttonLocator);
     }
@@ -100,7 +95,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final SmartWebElement container, final String buttonText) {
-        Allure.step(String.format("[UI - Link] Double-clicking link %s with text %s", componentType, buttonText));
         LogUI.step("Double-clicking link " + componentType + " with text " + buttonText);
         linkComponent(componentType).doubleClick(container, buttonText);
     }
@@ -113,7 +107,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final SmartWebElement container) {
-        Allure.step(String.format("[UI - Link] Double-clicking link %s", componentType));
         LogUI.step("Double-clicking link " + componentType);
         linkComponent(componentType).doubleClick(container);
     }
@@ -126,7 +119,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final String buttonText) {
-        Allure.step(String.format("[UI - Link] Double-clicking link %s with text %s", componentType, buttonText));
         LogUI.step("Double-clicking link " + componentType + " with text " + buttonText);
         linkComponent(componentType).doubleClick(buttonText);
     }
@@ -139,7 +131,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final By buttonLocator) {
-        Allure.step(String.format("[UI - Link] Double-clicking link %s using locator %s", componentType, buttonLocator));
         LogUI.step("Double-clicking link " + componentType + " using locator " + buttonLocator);
         linkComponent(componentType).doubleClick(buttonLocator);
     }
@@ -151,7 +142,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container, final String buttonText) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is enabled with text %s", componentType, buttonText));
         LogUI.step("Checking if link " + componentType + " is enabled with text " + buttonText);
         return linkComponent((LinkComponentType) componentType).isEnabled(container, buttonText);
     }
@@ -165,7 +155,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is enabled", componentType));
         LogUI.step("Checking if link " + componentType + " is enabled");
         return linkComponent((LinkComponentType) componentType).isEnabled(container);
     }
@@ -179,7 +168,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final String buttonText) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is enabled with text %s", componentType, buttonText));
         LogUI.step("Checking if link " + componentType + " is enabled with text " + buttonText);
         return linkComponent((LinkComponentType) componentType).isEnabled(buttonText);
     }
@@ -193,7 +181,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final By buttonLocator) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is enabled using locator %s", componentType, buttonLocator));
         LogUI.step("Checking if link " + componentType + " is enabled using locator " + buttonLocator);
         return linkComponent((LinkComponentType) componentType).isEnabled(buttonLocator);
     }
@@ -208,7 +195,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container, final String buttonText) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is visible with text %s", componentType, buttonText));
         LogUI.step("Checking if link " + componentType + " is visible with text " + buttonText);
         return linkComponent((LinkComponentType) componentType).isVisible(container, buttonText);
     }
@@ -222,7 +208,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is visible", componentType));
         LogUI.step("Checking if link " + componentType + " is visible");
         return linkComponent((LinkComponentType) componentType).isVisible(container);
     }
@@ -236,7 +221,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final String buttonText) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is visible with text %s", componentType, buttonText));
         LogUI.step("Checking if link " + componentType + " is visible with text " + buttonText);
         return linkComponent((LinkComponentType) componentType).isVisible(buttonText);
     }
@@ -250,7 +234,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final By buttonLocator) {
-        Allure.step(String.format("[UI - Link] Checking if link %s is visible using locator %s", componentType, buttonLocator));
         LogUI.step("Checking if link " + componentType + " is visible using locator " + buttonLocator);
         return linkComponent((LinkComponentType) componentType).isVisible(buttonLocator);
     }
@@ -264,7 +247,6 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType, final String... values) {
-        Allure.step(String.format("[UI - Link] Inserting values %s in cell for link %s", String.join(", ", values), componentType));
         LogUI.step("Inserting values " + String.join(", ", values) + " in cell for link " + componentType);
         linkComponent((LinkComponentType) componentType).clickElementInCell(cellElement);
     }
