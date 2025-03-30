@@ -1,6 +1,7 @@
 package com.bakery.project;
 
 import com.bakery.project.data.creator.TestDataCreator;
+import com.bakery.project.db.DbResponsesJsonPaths;
 import com.bakery.project.db.hooks.DbHookFlows;
 import com.bakery.project.model.bakery.Order;
 import com.bakery.project.ui.authentication.AdminUI;
@@ -24,6 +25,8 @@ import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static com.bakery.project.base.World.FORGE;
 import static com.bakery.project.base.World.UNDERWORLD;
 import static com.bakery.project.data.cleaner.TestDataCleaner.Data.DELETE_CREATED_ORDERS;
@@ -34,10 +37,10 @@ import static com.bakery.project.db.Queries.QUERY_ORDER_PRODUCT;
 import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.LOGIN_PRECONDITION;
 import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.ORDER_PRECONDITION;
 import static com.bakery.project.preconditions.BakeryQuestPreconditions.Data.SELLER_PRECONDITION;
-import static com.theairebellion.zeus.db.validator.DbAssertionTarget.COLUMNS;
 import static com.theairebellion.zeus.db.validator.DbAssertionTarget.QUERY_RESULT;
 import static com.theairebellion.zeus.framework.hooks.HookExecution.BEFORE;
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.PRE_ARGUMENTS;
+import static com.theairebellion.zeus.validator.core.AssertionTypes.CONTAINS_ALL;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNORE_CASE;
 
 @UI
@@ -58,7 +61,6 @@ public class BakeryDatabaseTests extends BaseTest {
     })
     public void createOrderDatabaseValidation(Quest quest,
                                               @Craft(model = VALID_ORDER) Order order) {
-
         quest
                 .enters(FORGE)
                 .validateOrder(order)
@@ -67,12 +69,12 @@ public class BakeryDatabaseTests extends BaseTest {
                 .query(QUERY_ORDER.withParam("id", 1))
                 .validate(retrieve(StorageKeysDb.DB, QUERY_ORDER, QueryResponse.class),
                         Assertion.builder()
-                                .target(QUERY_RESULT).key("$.PRODUCT")
-                                .type(EQUALS_IGNORE_CASE).expected(order.getProduct()).soft(true)
+                                .target(QUERY_RESULT).key(DbResponsesJsonPaths.PRODUCT_BY_ID.getJsonPath(1))
+                                .type(CONTAINS_ALL).expected(List.of(order.getProduct())).soft(true)
                                 .build(),
                         Assertion.builder()
-                                .target(COLUMNS).key("LOCATION")
-                                .type(EQUALS_IGNORE_CASE).expected(order.getLocation()).soft(true)
+                                .target(QUERY_RESULT).key(DbResponsesJsonPaths.LOCATION_BY_ID.getJsonPath(1))
+                                .type(CONTAINS_ALL).expected(List.of(order.getLocation())).soft(true)
                                 .build()
                 )
                 .complete();
@@ -99,11 +101,7 @@ public class BakeryDatabaseTests extends BaseTest {
                 .query(QUERY_ORDER_PRODUCT.withParam("id", 1))
                 .validate(retrieve(StorageKeysDb.DB, QUERY_ORDER_PRODUCT, QueryResponse.class),
                         Assertion.builder()
-                                .target(QUERY_RESULT).key("$.PRODUCT")
-                                .type(EQUALS_IGNORE_CASE).expected(order.getProduct()).soft(true)
-                                .build(),
-                        Assertion.builder()
-                                .target(COLUMNS).key("PRODUCT")
+                                .target(QUERY_RESULT).key(DbResponsesJsonPaths.PRODUCT.getJsonPath(0))
                                 .type(EQUALS_IGNORE_CASE).expected(order.getProduct()).soft(true)
                                 .build()
                 )
