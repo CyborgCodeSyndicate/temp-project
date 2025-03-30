@@ -11,7 +11,6 @@ import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -175,10 +174,9 @@ public class AllureStepHelper extends ObjectFormatter {
      * </p>
      */
     public static void initializeTestEnvironment() {
-        //todo: Duplicate key issue with project.package
-        /*Map<String, String> propertiesMap = collectConfigurationProperties();
+        Map<String, List<String>> propertiesMap = collectConfigurationProperties();
         writeEnvironmentProperties(propertiesMap);
-        writeCategoriesJson();*/
+        writeCategoriesJson();
     }
 
     /**
@@ -191,7 +189,7 @@ public class AllureStepHelper extends ObjectFormatter {
      *
      * @return A map containing configuration keys and their corresponding values, annotated with their source.
      */
-    private static Map<String, String> collectConfigurationProperties() {
+    private static Map<String, List<String>> collectConfigurationProperties() {
         List<Class<? extends PropertyConfig>> allConfig = findAllPropertyConfigImplementations();
 
         return allConfig.stream()
@@ -211,20 +209,25 @@ public class AllureStepHelper extends ObjectFormatter {
                                     Object value = method.invoke(propertyConfig);
 
                                     if (value == null || value.toString().trim().isEmpty()) {
-                                        System.out.println("Skipping key '" + key + "' because value is empty or null.");
+                                        LogTest.debug("Skipping key '" + key + "' because value is empty or null.");
                                         return null;
                                     }
 
-                                    return new AbstractMap.SimpleEntry<>(key, value + " (Source: " + configSourceValue + ")");
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    System.err.println("Error invoking method: " + method.getName());
-                                    e.printStackTrace();
+                                    return new AbstractMap.SimpleEntry<>(
+                                            key,
+                                            value + " (Source: " + configSourceValue + ")"
+                                    );
+                                } catch (Exception e) {
+                                    LogTest.error("Error processing " + method.getName(), e);
                                     return null;
                                 }
                             })
                             .filter(Objects::nonNull);
                 })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())
+                ));
     }
 
     /**
@@ -258,7 +261,7 @@ public class AllureStepHelper extends ObjectFormatter {
      * @param propertiesMap A map containing configuration keys and values.
      * @throws RuntimeException if writing to the file fails.
      */
-    private static void writeEnvironmentProperties(Map<String, String> propertiesMap) {
+    private static void writeEnvironmentProperties(Map<String, List<String>> propertiesMap) {
         File allureResultsDir = new File(ALLURE_RESULTS_DIR);
         if (!allureResultsDir.exists()) {
             allureResultsDir.mkdirs();
@@ -266,8 +269,10 @@ public class AllureStepHelper extends ObjectFormatter {
 
         File environmentFile = new File(allureResultsDir, ENVIRONMENT_PROPERTIES_FILE);
         try (FileWriter writer = new FileWriter(environmentFile)) {
-            for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
-                writer.write(entry.getKey() + "=" + entry.getValue() + "\n");
+            for (Map.Entry<String, List<String>> entry : propertiesMap.entrySet()) {
+                String key = entry.getKey();
+                String combinedValues = String.join("; ", entry.getValue());
+                writer.write(key + "=" + combinedValues + "\n");
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to write environment.properties file", e);

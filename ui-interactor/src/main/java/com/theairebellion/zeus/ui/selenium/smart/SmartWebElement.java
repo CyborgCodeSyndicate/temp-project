@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.selenium.smart;
 import com.theairebellion.zeus.ui.annotations.HandleUIException;
 import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.decorators.WebElementDecorator;
+import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElement;
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
 import lombok.Getter;
@@ -110,7 +111,7 @@ public class SmartWebElement extends WebElementDecorator {
             original.click();
             return;
         }
-        performActionWithWait("click", element -> super.click());
+        performActionWithWait(element -> super.click(), WebElementAction.CLICK.getMethodName());
     }
 
     /**
@@ -141,7 +142,7 @@ public class SmartWebElement extends WebElementDecorator {
             original.clear();
             return;
         }
-        performActionWithWait("clear", element -> super.clear());
+        performActionWithWait(element -> super.clear(), WebElementAction.CLEAR.getMethodName());
     }
 
     /**
@@ -156,7 +157,7 @@ public class SmartWebElement extends WebElementDecorator {
             original.sendKeys(keysToSend);
             return;
         }
-        performActionWithWait("sendKeys", element -> super.sendKeys(keysToSend));
+        performActionWithWait(element -> super.sendKeys(keysToSend), WebElementAction.SEND_KEYS.getMethodName());
     }
 
     /**
@@ -168,7 +169,7 @@ public class SmartWebElement extends WebElementDecorator {
             original.submit();
             return;
         }
-        performActionWithWait("submit", element -> super.submit());
+        performActionWithWait(element -> super.submit(), WebElementAction.SUBMIT.getMethodName());
     }
 
     /**
@@ -265,13 +266,18 @@ public class SmartWebElement extends WebElementDecorator {
         }
     }
 
-    //todo: javaDocs
-    private void performActionWithWait(String methodName, Consumer<SmartWebElement> action) {
+    /**
+     * Performs an action on the element after waiting for it to become clickable.
+     *
+     * @param action The action to perform.
+     * @param actionName The name of the action being performed.
+     */
+    private void performActionWithWait(Consumer<SmartWebElement> action, String actionName) {
         try {
             waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
             action.accept(this);
         } catch (Exception e) {
-            handleException(methodName, e, new Object[0]);
+            handleException(actionName, e, new Object[0]);
         }
     }
 
