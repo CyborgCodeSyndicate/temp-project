@@ -46,7 +46,10 @@ public class DbClientManager {
      * @return A {@code DbClient} instance corresponding to the configuration.
      */
     public DbClient getClient(DatabaseConfiguration dbConfig) {
-        String urlKey = buildUrlKey(dbConfig);
+        String urlKey = dbConfig.getFullConnectionString() != null
+                ? dbConfig.getFullConnectionString()
+                : dbConfig.buildUrlKey();
+
         return clientCache.computeIfAbsent(urlKey, key -> initializeDbClient(dbConfig));
     }
 
@@ -60,18 +63,5 @@ public class DbClientManager {
         return new RelationalDbClient(connector, dbConfig);
     }
 
-    /**
-     * Builds a unique key for the database configuration based on connection details.
-     *
-     * @param dbConfig The database configuration.
-     * @return A unique string representing the database connection.
-     */
-    private String buildUrlKey(DatabaseConfiguration dbConfig) {
-        return String.format("%s://%s:%d/%s",
-                dbConfig.getDbType().protocol(),
-                dbConfig.getHost(),
-                dbConfig.getPort(),
-                dbConfig.getDatabase());
-    }
-
 }
+

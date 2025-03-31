@@ -42,7 +42,7 @@ public class JsonPathExtractor {
     public JsonPathExtractor(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.jsonPathConfig = Configuration.builder()
-                .options(Option.ALWAYS_RETURN_LIST, Option.SUPPRESS_EXCEPTIONS)
+                .options(Option.SUPPRESS_EXCEPTIONS)
                 .build();
     }
 

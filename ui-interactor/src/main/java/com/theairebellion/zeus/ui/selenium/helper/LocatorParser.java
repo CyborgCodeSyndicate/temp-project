@@ -37,7 +37,14 @@ public class LocatorParser {
      */
     public static SmartWebElement updateWebElement(WebDriver driver, SmartWebElement element) {
         LogUI.extended("Element: '{}' is being relocated.", element.toString());
-        List<By> locatorsList = parseLocators(element.toString());
+        List<By> locatorsList = new ArrayList<>();
+        try {
+            locatorsList = parseLocators(element.toString());
+        } catch (Exception ignore) {
+        }
+        if (locatorsList.isEmpty()) {
+            throw new RuntimeException("Element can't be auto updated");
+        }
         return new SmartWebDriver(driver).findSmartElement(
                 new ByChained(locatorsList.toArray(new By[0])), 10);
     }

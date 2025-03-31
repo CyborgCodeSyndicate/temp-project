@@ -183,6 +183,10 @@ public interface UiConfig extends PropertyConfig {
     @Key("accordion.default.type")
     String accordionDefaultType();
 
+    //todo: JavaDocs
+    @Key("ui.base.url")
+    String baseUrl();
+
     /**
      * Retrieves the default type for table components.
      *

@@ -43,7 +43,8 @@ public class RelationalDbClient implements DbClient {
      */
     @Override
     public QueryResponse executeQuery(String query) {
-        try (Connection connection = connector.getConnection(dbConfig)) {
+        try {
+            Connection connection = connector.getConnection(dbConfig);
             LogDb.info("Obtained database connection for: {}", dbConfig.getDatabase());
             return executeAndProcessQuery(connection, query);
         } catch (SQLException e) {

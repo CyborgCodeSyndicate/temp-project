@@ -1,16 +1,12 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import io.qameta.allure.Allure;
-import org.assertj.core.api.SoftAssertions;
-import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * A fluent service for handling API response validation and interception.
@@ -24,7 +20,7 @@ import java.util.function.Consumer;
  *
  * @author Cyborg Code Syndicate
  */
-public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends FluentService {
+public class InterceptorServiceFluent<T extends UIServiceFluent<?>> {
 
     private final T uiServiceFluent;
     private final Storage storage;
@@ -65,9 +61,8 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
      */
     public T validateResponseHaveStatus(final String requestUrlSubString, int statusPrefix,
                                         boolean soft) {
-        List<ApiResponse> apiResponses = storage.sub(StorageKeysUi.UI)
-                .get(StorageKeysUi.RESPONSES, new ParameterizedTypeReference<>() {
-                });
+        List<ApiResponse> apiResponses = (List<ApiResponse>) storage.sub(StorageKeysUi.UI)
+                .getByClass(StorageKeysUi.RESPONSES, Object.class);
 
         List<ApiResponse> filteredResponses = apiResponses.stream()
                 .filter(apiResponse -> apiResponse.getUrl().contains(requestUrlSubString))
@@ -82,7 +77,7 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
                 true, isPassed, soft);
 
         List<AssertionResult<Object>> validationResults = List.of((AssertionResult<Object>) result);
-        validation(validationResults);
+        uiServiceFluent.validation(validationResults);
         return uiServiceFluent;
     }
 
@@ -99,27 +94,4 @@ public class InterceptorServiceFluent<T extends UIServiceFluent<?>> extends Flue
         return statusStr.startsWith(prefixStr);
     }
 
-    /**
-     * Validates assertions using a {@link Runnable}, executing the assertion logic.
-     *
-     * @param assertion The assertion to validate.
-     * @return The current {@link UIServiceFluent} instance for method chaining.
-     */
-    public T validate(Runnable assertion) {
-        Allure.step("Validating assertion using Runnable");
-        return (T) super.validate(assertion);
-    }
-
-    /**
-     * Validates assertions using a {@link Consumer} of {@link SoftAssertions}.
-     * <p>
-     * This method allows performing multiple soft assertions in a single validation step.
-     *
-     * @param assertion The assertion logic applied to a {@link SoftAssertions} instance.
-     * @return The current {@link UIServiceFluent} instance for method chaining.
-     */
-    public T validate(Consumer<SoftAssertions> assertion) {
-        Allure.step("Validating assertions using SoftAssertions consumer");
-        return (T) super.validate(assertion);
-    }
 }

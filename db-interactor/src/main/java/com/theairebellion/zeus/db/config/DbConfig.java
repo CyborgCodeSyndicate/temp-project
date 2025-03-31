@@ -18,11 +18,11 @@ import org.aeonbits.owner.Config;
 @Config.Sources({"system:properties", "classpath:${db.config.file}.properties"})
 public interface DbConfig extends PropertyConfig {
 
-    /**
-     * Retrieves the default database type.
-     *
-     * @return The {@link DbType} of the database.
-     */
+    //todo: javaDocs - Check maybe not needed for all properties
+    @Key("project.package")
+    String projectPackage();
+
+    @ConverterClass(DbTypeConverter.class)
     @Key("db.default.type")
     DbType type();
 
@@ -65,5 +65,8 @@ public interface DbConfig extends PropertyConfig {
      */
     @Key("db.default.password")
     String password();
+
+    @Key("db.full.connection.string")
+    String fullConnectionString();
 
 }

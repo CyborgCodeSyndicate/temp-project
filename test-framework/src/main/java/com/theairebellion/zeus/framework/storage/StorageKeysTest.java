@@ -25,5 +25,6 @@ public enum StorageKeysTest {
      * Key for storing static test data.
      */
     STATIC_DATA,
+    HOOKS,
 
 }

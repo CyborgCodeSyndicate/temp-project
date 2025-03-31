@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.storage;
 
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import com.theairebellion.zeus.framework.storage.DataExtractorImpl;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
@@ -10,7 +11,13 @@ import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -71,6 +78,34 @@ public class DataExtractorsUi {
                     ApiResponse selectedResponse = filteredResponses.get(adjustedIndex);
 
                     return JsonPath.read(selectedResponse.getBody(), jsonPath);
+                }
+        );
+    }
+
+    //todo: javaDocs
+    public static <T> DataExtractor<T> responseBodyExtraction(String responsePrefix, String jsonPath, String jsonPrefix) {
+        return new DataExtractorImpl<>(
+                StorageKeysUi.UI,
+                StorageKeysUi.RESPONSES,
+                raw -> {
+                    List<ApiResponse> responses = (List<ApiResponse>) raw;
+                    List<ApiResponse> filteredResponses = responses.stream()
+                            .filter(
+                                    response -> response.getUrl().contains(responsePrefix))
+                            .toList();
+
+                    for (ApiResponse filteredResponse : filteredResponses) {
+                        String jsonBody = removeJsonPrefix(filteredResponse.getBody(), jsonPrefix);
+                        try {
+                            Object result = JsonPath.read(jsonBody, jsonPath);
+                            if (result instanceof List<?> list && list.isEmpty()) {
+                                continue;
+                            }
+                            return (T) result;
+                        } catch (PathNotFoundException ignored) {
+                        }
+                    }
+                    return null;
                 }
         );
     }
@@ -179,6 +214,16 @@ public class DataExtractorsUi {
         return list.stream()
                 .map(s -> s.trim().toLowerCase())
                 .toList();
+    }
+
+
+    private static String removeJsonPrefix(String body, String jsonPrefix) {
+        Pattern dynamicPrefixPattern = Pattern.compile("^" + Pattern.quote(jsonPrefix));
+        Matcher matcher = dynamicPrefixPattern.matcher(body);
+        if (matcher.find()) {
+            return matcher.replaceFirst("");
+        }
+        return body;
     }
 
 }

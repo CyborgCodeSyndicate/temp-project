@@ -108,7 +108,8 @@ public class SmartWebElement extends WebElementDecorator {
     @HandleUIException
     public void click() {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
-            super.click();
+            original.click();
+            return;
         }
         performActionWithWait(element -> super.click(), WebElementAction.CLICK.getMethodName());
     }
@@ -121,6 +122,7 @@ public class SmartWebElement extends WebElementDecorator {
         Actions actions = new Actions(driver);
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
             actions.doubleClick();
+            return;
         }
         try {
             waitWithoutFailure(ExpectedConditions.elementToBeClickable(this));
@@ -137,7 +139,8 @@ public class SmartWebElement extends WebElementDecorator {
     @HandleUIException
     public void clear() {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
-            super.clear();
+            original.clear();
+            return;
         }
         performActionWithWait(element -> super.clear(), WebElementAction.CLEAR.getMethodName());
     }
@@ -151,7 +154,8 @@ public class SmartWebElement extends WebElementDecorator {
     @NullMarked
     public void sendKeys(CharSequence... keysToSend) {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
-            super.sendKeys(keysToSend);
+            original.sendKeys(keysToSend);
+            return;
         }
         performActionWithWait(element -> super.sendKeys(keysToSend), WebElementAction.SEND_KEYS.getMethodName());
     }
@@ -162,7 +166,8 @@ public class SmartWebElement extends WebElementDecorator {
     @Override
     public void submit() {
         if (!getUiConfig().useWrappedSeleniumFunctions()) {
-            super.submit();
+            original.submit();
+            return;
         }
         performActionWithWait(element -> super.submit(), WebElementAction.SUBMIT.getMethodName());
     }
@@ -212,10 +217,20 @@ public class SmartWebElement extends WebElementDecorator {
                         .findFirst();
 
         if (exceptionHandlingOptional.isPresent()) {
-            return (T) exceptionHandlingOptional.get()
-                    .getExceptionHandlingMap()
-                    .get(cause.getClass())
-                    .apply(driver, this, exception, params);
+            try {
+                return (T) exceptionHandlingOptional.get()
+                        .getExceptionHandlingMap()
+                        .get(cause.getClass())
+                        .apply(driver, this, exception, params);
+            } catch (Exception handlerException) {
+                LogUI.error("Framework attempted to handle an exception in method '" + methodName
+                        + "', but the handler failed with: " + handlerException.getClass().getSimpleName() + ": "
+                        + handlerException.getMessage(), handlerException);
+                exception.addSuppressed(handlerException);
+                LogUI.error("Propagating original exception: " + exception.getClass().getSimpleName()
+                        + ": " + exception.getMessage(), exception);
+                throw exception;
+            }
         } else {
             String locator = (params.length > 0 && params[0] instanceof By) ? params[0].toString() : "Unknown locator";
             String exceptionMessage = exception.getClass().getSimpleName();

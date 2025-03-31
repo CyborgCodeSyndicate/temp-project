@@ -29,6 +29,9 @@ public enum StoreKeys {
      */
     START_TIME,
 
-    HTML;
+    HTML,
+
+    //todo: JavaDocs
+    HOOKS_PARAMS;
 
 }

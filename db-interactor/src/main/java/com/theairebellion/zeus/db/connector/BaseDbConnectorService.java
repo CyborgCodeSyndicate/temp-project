@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class BaseDbConnectorService {
 
-    private final Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
-    private final Set<DbType> registeredTypes = Collections.synchronizedSet(new HashSet<>());
+    private static final Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
+    private static final Set<DbType> registeredTypes = Collections.synchronizedSet(new HashSet<>());
 
     /**
      * Retrieves or creates a database connection based on the provided configuration.
@@ -39,7 +39,7 @@ public class BaseDbConnectorService {
     public Connection getConnection(DatabaseConfiguration dbConfig) {
         DbType dbType = dbConfig.getDbType();
         registerDriverIfNecessary(dbType);
-        String url = buildConnectionUrl(dbType, dbConfig);
+        String url = buildConnectionUrl(dbConfig);
         return connectionMap.computeIfAbsent(url, u -> createConnection(u, dbConfig));
     }
 
@@ -67,16 +67,13 @@ public class BaseDbConnectorService {
     /**
      * Constructs the connection URL for the database.
      *
-     * @param dbType   The database type.
      * @param dbConfig The database configuration.
      * @return The constructed database connection URL.
      */
-    private String buildConnectionUrl(DbType dbType, DatabaseConfiguration dbConfig) {
-        String url = String.format("%s://%s:%d/%s",
-                dbType.protocol(),
-                dbConfig.getHost(),
-                dbConfig.getPort(),
-                dbConfig.getDatabase());
+    private String buildConnectionUrl(DatabaseConfiguration dbConfig) {
+        String url = dbConfig.getFullConnectionString() != null
+                ? dbConfig.getFullConnectionString()
+                : dbConfig.buildUrlKey();
         LogDb.debug("Built connection URL: {}", url);
         return url;
     }

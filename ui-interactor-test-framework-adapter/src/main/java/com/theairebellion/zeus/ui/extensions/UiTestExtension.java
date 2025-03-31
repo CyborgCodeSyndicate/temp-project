@@ -18,6 +18,7 @@ import com.theairebellion.zeus.ui.log.LogUI;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
+import com.theairebellion.zeus.ui.parameters.DataIntercept;
 import com.theairebellion.zeus.ui.validator.TableAssertionFunctions;
 import com.theairebellion.zeus.ui.validator.TableAssertionTypes;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.platform.launcher.LauncherSession;
+import org.junit.platform.launcher.LauncherSessionListener;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -50,6 +53,7 @@ import java.util.function.Consumer;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
 import static com.theairebellion.zeus.framework.allure.StepType.TEST_EXECUTION;
+import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
@@ -74,7 +78,7 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
  * @author Cyborg Code Syndicate
  */
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
-        TestExecutionExceptionHandler {
+        TestExecutionExceptionHandler, LauncherSessionListener {
 
     private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
     private static final String UI_MODULE_PACKAGE = "theairebellion.zeus.ui";
@@ -124,7 +128,14 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     private void processInterceptRequestsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(InterceptRequests.class))
                 .ifPresent(intercept -> {
-                    String[] urlsForIntercepting = intercept.requestUrlSubStrings();
+                    Class<? extends Enum> enumClass = ReflectionUtil.findEnumClassImplementationsOfInterface(
+                            DataIntercept.class, getFrameworkConfig().projectPackage());
+
+                    List<String> resolvedEndpoints = Arrays.stream(intercept.requestUrlSubStrings())
+                            .map(target -> ((DataIntercept) Enum.valueOf(enumClass, target)).getEndpointSubString())
+                            .toList();
+
+                    String[] urlsForIntercepting = resolvedEndpoints.toArray(new String[0]);
                     Consumer<SuperQuest> questConsumer =
                             quest -> postQuestCreationIntercept(quest, urlsForIntercepting);
                     addQuestConsumer(context, questConsumer);
@@ -236,7 +247,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     public void afterTestExecution(ExtensionContext context) {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
-        WebDriver driver = getWebDriver(decoratorsFactory, context);
+        SmartWebDriver smartWebDriver = getSmartWebDriver(decoratorsFactory, context);
+        WebDriver driver = unwrapDriver(smartWebDriver);
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
             LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName());
@@ -247,9 +259,11 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             Allure.addAttachment("Intercepted Requests", "text/html",
                     new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
         }
-        driver.close();
-        driver.quit();
-        LogUI.info("WebDriver closed successfully.");
+        if (!smartWebDriver.isKeepDriverForSession()) {
+            driver.close();
+            driver.quit();
+            LogUI.info("WebDriver closed successfully.");
+        }
     }
 
     /**
@@ -264,9 +278,24 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
-        WebDriver driver = getWebDriver(decoratorsFactory, context);
+        SmartWebDriver smartWebDriver = getSmartWebDriver(decoratorsFactory, context);
+        WebDriver driver = unwrapDriver(smartWebDriver);
         takeScreenshot(driver, context.getDisplayName());
+        if (!smartWebDriver.isKeepDriverForSession()) {
+            driver.close();
+            driver.quit();
+        }
         throw throwable;
+    }
+
+    @Override
+    public void launcherSessionClosed(LauncherSession session) {
+        BaseLoginClient.driverToKeep.forEach(smartWebDriver -> {
+            WebDriver driver = unwrapDriver(smartWebDriver);
+            driver.close();
+            driver.quit();
+        });
+
     }
 
     private static void postQuestCreationRegisterCustomServices(SuperQuest quest) {
@@ -335,10 +364,14 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
     private WebDriver getWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
+        SmartWebDriver artifact = getSmartWebDriver(decoratorsFactory, context);
+        return unwrapDriver(artifact.getOriginal());
+    }
+
+    private static SmartWebDriver getSmartWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
         Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(StoreKeys.QUEST);
         SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
-        SmartWebDriver artifact = superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
-        return unwrapDriver(artifact.getOriginal());
+        return superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
     }
 
     private static WebDriver unwrapDriver(WebDriver maybeProxy) {

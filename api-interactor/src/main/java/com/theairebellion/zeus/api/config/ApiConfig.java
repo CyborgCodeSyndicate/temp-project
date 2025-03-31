@@ -27,6 +27,9 @@ import org.aeonbits.owner.Config;
 @Config.Sources({"system:properties", "classpath:${api.config.file}.properties"})
 public interface ApiConfig extends PropertyConfig {
 
+    @Key("project.package")
+    String projectPackage();
+
     /**
      * Determines whether RestAssured request/response logging is enabled.
      * <p>Default: {@code true}</p>

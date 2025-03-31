@@ -73,7 +73,7 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
                         throw new InvalidAssertionException(
                                 "Assertion value must have a non-null key. Key must contain a valid JsonPath expression.");
                     }
-                    Object value = jsonPathExtractor.extract(queryResponse.getRows(), assertion.getKey(), Object.class);
+                    Object value = jsonPathExtractor.extract(queryResponse.getRows(), key, Object.class);
                     if (value == null) {
                         throw new IllegalArgumentException("JsonPath expression: '" + key + "' not found in query result.");
                     }

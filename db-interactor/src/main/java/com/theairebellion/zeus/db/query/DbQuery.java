@@ -42,6 +42,7 @@ public interface DbQuery {
                 .database(dbConfig.name())
                 .dbUser(dbConfig.username())
                 .dbPassword(dbConfig.password())
+                .fullConnectionString(dbConfig.fullConnectionString())
                 .build();
     }
 

@@ -19,7 +19,6 @@ public class DataCreationFunctions {
                    // .id(id)
                    .age(20)
                    .build();
-
     }
 
 
@@ -33,7 +32,6 @@ public class DataCreationFunctions {
                    .tags(List.of(new Tag(0L, "Rescued")))
                    .status(Status.AVAILABLE)
                    .build();
-
     }
 
 

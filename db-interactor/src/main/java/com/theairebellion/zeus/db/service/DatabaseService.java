@@ -10,6 +10,7 @@ import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.db.validator.QueryResponseValidator;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ import java.util.List;
 public class DatabaseService {
 
     private final JsonPathExtractor jsonPathExtractor;
+    @Getter
     private final DbClientManager dbClientManager;
     private final QueryResponseValidator queryResponseValidator;
 
