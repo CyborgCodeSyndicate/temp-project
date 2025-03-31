@@ -3,7 +3,6 @@ package com.bakery.project.db.hooks;
 import com.theairebellion.zeus.db.query.DbQuery;
 
 public enum QueriesH2 implements DbQuery {
-    QUERY_H2("fdsfsd"),
     CREATE_TABLE_ORDERS(
             "CREATE TABLE orders ("
                     + "id INT PRIMARY KEY, "
