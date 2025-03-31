@@ -34,7 +34,7 @@ class TabServiceImplTest extends BaseUnitUITest {
         container = MockSmartWebElement.createMock();
         cellElement = MockSmartWebElement.createMock();
         tabMock = mock(Tab.class);
-        componentType = MockTabComponentType.DUMMY;
+        componentType = MockTabComponentType.DUMMY_TAB;
         locator = By.id("tab");
 
         // Configure static mock for ComponentFactory
@@ -320,7 +320,7 @@ class TabServiceImplTest extends BaseUnitUITest {
         @DisplayName("Different component types create different instances")
         void differentComponentTypes() {
             // Setup mock component types
-            componentType = MockTabComponentType.DUMMY;
+            componentType = MockTabComponentType.DUMMY_TAB;
             var componentType2 = MockTabComponentType.TEST;
 
             // Create mock components

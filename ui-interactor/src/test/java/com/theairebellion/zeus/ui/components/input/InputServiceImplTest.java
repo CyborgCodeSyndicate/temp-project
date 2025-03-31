@@ -1,12 +1,5 @@
 package com.theairebellion.zeus.ui.components.input;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
@@ -29,6 +22,14 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @DisplayName("InputServiceImpl Test")
 class InputServiceImplTest extends BaseUnitUITest {
 
@@ -43,6 +44,7 @@ class InputServiceImplTest extends BaseUnitUITest {
     private FilterStrategy filterStrategy;
     private MockedStatic<ComponentFactory> factoryMock;
 
+
     @BeforeEach
     void setUp() {
         driver = mock(SmartWebDriver.class);
@@ -56,8 +58,9 @@ class InputServiceImplTest extends BaseUnitUITest {
         filterStrategy = FilterStrategy.SELECT;
         factoryMock = Mockito.mockStatic(ComponentFactory.class);
         factoryMock.when(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)))
-                .thenReturn(inputMock);
+            .thenReturn(inputMock);
     }
+
 
     @AfterEach
     void tearDown() {
@@ -65,6 +68,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             factoryMock.close();
         }
     }
+
 
     @Nested
     @DisplayName("Insert Method Tests")
@@ -80,6 +84,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).insert(container, "value");
         }
 
+
         @Test
         @DisplayName("insert with container and label delegates to component correctly")
         void testInsertContainerLabel() {
@@ -89,6 +94,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).insert(container, "label", "value");
         }
+
 
         @Test
         @DisplayName("insert with label delegates to component correctly")
@@ -100,6 +106,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).insert("label", "value");
         }
 
+
         @Test
         @DisplayName("insert with locator delegates to component correctly")
         void testInsertBy() {
@@ -109,6 +116,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).insert(locator, "value");
         }
+
 
         @Test
         @DisplayName("default insert with container delegates correctly")
@@ -120,6 +128,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).insert(container, "value");
         }
 
+
         @Test
         @DisplayName("default insert with container and label delegates correctly")
         void testDefaultInsertWithContainerAndLabel() {
@@ -129,6 +138,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).insert(container, "label", "value");
         }
+
 
         @Test
         @DisplayName("default insert with label delegates correctly")
@@ -140,6 +150,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).insert("label", "value");
         }
 
+
         @Test
         @DisplayName("default insert with locator delegates correctly")
         void testDefaultInsertWithBy() {
@@ -149,6 +160,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).insert(locator, "value");
         }
+
     }
 
     @Nested
@@ -165,6 +177,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).clear(container);
         }
 
+
         @Test
         @DisplayName("clear with container and label delegates to component correctly")
         void testClearContainerLabel() {
@@ -174,6 +187,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).clear(container, "label");
         }
+
 
         @Test
         @DisplayName("clear with label delegates to component correctly")
@@ -185,6 +199,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).clear("label");
         }
 
+
         @Test
         @DisplayName("clear with locator delegates to component correctly")
         void testClearBy() {
@@ -194,6 +209,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).clear(locator);
         }
+
 
         @Test
         @DisplayName("default clear with container delegates correctly")
@@ -205,6 +221,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).clear(container);
         }
 
+
         @Test
         @DisplayName("default clear with container and label delegates correctly")
         void testDefaultClearWithContainerAndLabel() {
@@ -214,6 +231,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).clear(container, "label");
         }
+
 
         @Test
         @DisplayName("default clear with label delegates correctly")
@@ -225,6 +243,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).clear("label");
         }
 
+
         @Test
         @DisplayName("default clear with locator delegates correctly")
         void testDefaultClearWithBy() {
@@ -234,6 +253,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).clear(locator);
         }
+
     }
 
     @Nested
@@ -254,6 +274,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getValue(container);
         }
 
+
         @Test
         @DisplayName("getValue with container and label delegates to component correctly")
         void testGetValueContainerLabel() {
@@ -267,6 +288,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("val");
             verify(inputMock).getValue(container);
         }
+
 
         @Test
         @DisplayName("getValue with label delegates to component correctly")
@@ -282,6 +304,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getValue("label");
         }
 
+
         @Test
         @DisplayName("getValue with locator delegates to component correctly")
         void testGetValueBy() {
@@ -295,6 +318,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("val");
             verify(inputMock).getValue(locator);
         }
+
 
         @Test
         @DisplayName("default getValue with container delegates correctly")
@@ -310,6 +334,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getValue(container);
         }
 
+
         @Test
         @DisplayName("default getValue with container and label delegates correctly")
         void testDefaultGetValueWithContainerAndLabel() {
@@ -323,6 +348,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("val");
             verify(inputMock).getValue(container);
         }
+
 
         @Test
         @DisplayName("default getValue with label delegates correctly")
@@ -338,6 +364,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getValue("label");
         }
 
+
         @Test
         @DisplayName("default getValue with locator delegates correctly")
         void testDefaultGetValueWithBy() {
@@ -351,6 +378,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("val");
             verify(inputMock).getValue(locator);
         }
+
     }
 
     @Nested
@@ -371,6 +399,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).isEnabled(container);
         }
 
+
         @Test
         @DisplayName("isEnabled with container and label delegates to component correctly")
         void testIsEnabledContainerLabel() {
@@ -384,6 +413,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isTrue();
             verify(inputMock).isEnabled(container, "label");
         }
+
 
         @Test
         @DisplayName("isEnabled with label delegates to component correctly")
@@ -399,6 +429,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).isEnabled("label");
         }
 
+
         @Test
         @DisplayName("isEnabled with locator delegates to component correctly")
         void testIsEnabledBy() {
@@ -412,6 +443,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isTrue();
             verify(inputMock).isEnabled(locator);
         }
+
 
         @Test
         @DisplayName("default isEnabled with container delegates correctly")
@@ -427,6 +459,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).isEnabled(container);
         }
 
+
         @Test
         @DisplayName("default isEnabled with container and label delegates correctly")
         void testDefaultIsEnabledWithContainerAndLabel() {
@@ -440,6 +473,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isTrue();
             verify(inputMock).isEnabled(container, "label");
         }
+
 
         @Test
         @DisplayName("default isEnabled with label delegates correctly")
@@ -455,6 +489,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).isEnabled("label");
         }
 
+
         @Test
         @DisplayName("default isEnabled with locator delegates correctly")
         void testDefaultIsEnabledWithBy() {
@@ -468,6 +503,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isTrue();
             verify(inputMock).isEnabled(locator);
         }
+
     }
 
     @Nested
@@ -488,6 +524,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getErrorMessage(container);
         }
 
+
         @Test
         @DisplayName("getErrorMessage with container and label delegates to component correctly")
         void testGetErrorMessageContainerLabel() {
@@ -501,6 +538,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("err");
             verify(inputMock).getErrorMessage(container, "label");
         }
+
 
         @Test
         @DisplayName("getErrorMessage with label delegates to component correctly")
@@ -516,6 +554,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getErrorMessage("label");
         }
 
+
         @Test
         @DisplayName("getErrorMessage with locator delegates to component correctly")
         void testGetErrorMessageBy() {
@@ -529,6 +568,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("err");
             verify(inputMock).getErrorMessage(locator);
         }
+
 
         @Test
         @DisplayName("default getErrorMessage with container delegates correctly")
@@ -544,6 +584,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getErrorMessage(container);
         }
 
+
         @Test
         @DisplayName("default getErrorMessage with container and label delegates correctly")
         void testDefaultGetErrorMessageWithContainerAndLabel() {
@@ -557,6 +598,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("err");
             verify(inputMock).getErrorMessage(container, "label");
         }
+
 
         @Test
         @DisplayName("default getErrorMessage with label delegates correctly")
@@ -572,6 +614,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).getErrorMessage("label");
         }
 
+
         @Test
         @DisplayName("default getErrorMessage with locator delegates correctly")
         void testDefaultGetErrorMessageWithBy() {
@@ -585,6 +628,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(result).isEqualTo("err");
             verify(inputMock).getErrorMessage(locator);
         }
+
     }
 
     @Nested
@@ -600,8 +644,10 @@ class InputServiceImplTest extends BaseUnitUITest {
             service.getValue(mockInputComponentType, container);
 
             // Then
-            factoryMock.verify(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)), times(1));
+            factoryMock.verify(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)),
+                times(1));
         }
+
 
         @Test
         @DisplayName("Multiple service instances don't share component cache")
@@ -616,7 +662,7 @@ class InputServiceImplTest extends BaseUnitUITest {
 
             // We need to ensure different component instances are returned for each service
             factoryMock.when(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)))
-                    .thenAnswer(invocation -> mock(Input.class));
+                .thenAnswer(invocation -> mock(Input.class));
 
             // When
             service1.insert(mockInputComponentType, container, "value1");
@@ -638,6 +684,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             assertThat(componentsMap1).isNotEmpty();
             assertThat(componentsMap2).isNotEmpty();
         }
+
     }
 
     @Nested
@@ -654,6 +701,7 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).tableInsertion(cell, "val1", "val2");
         }
 
+
         @Test
         @DisplayName("tableFilter delegates to component correctly")
         void testTableFilter() {
@@ -664,21 +712,18 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).tableFilter(headerCell, filterStrategy, "val1");
         }
 
+
         @Test
         @DisplayName("tableInsertion with non-InputComponentType throws ClassCastException")
         void testTableInsertionWithNonInputComponentType() {
             // Given
             ComponentType nonInputType = mock(ComponentType.class);
 
-            try {
-                // When
-                service.tableInsertion(cell, nonInputType, "val1");
-                throw new AssertionError("Expected ClassCastException was not thrown");
-            } catch (ClassCastException e) {
-                // Then - Expected exception
-                assertThat(e).isInstanceOf(ClassCastException.class);
-            }
+            // Assert
+            assertThrows(IllegalArgumentException.class, () -> service.tableInsertion(cell, nonInputType, "val1"));
+
         }
+
 
         @Test
         @DisplayName("tableFilter with non-InputComponentType throws ClassCastException")
@@ -686,15 +731,11 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Given
             ComponentType nonInputType = mock(ComponentType.class);
 
-            try {
-                // When
-                service.tableFilter(headerCell, nonInputType, filterStrategy, "val1");
-                throw new AssertionError("Expected ClassCastException was not thrown");
-            } catch (ClassCastException e) {
-                // Then - Expected exception
-                assertThat(e).isInstanceOf(ClassCastException.class);
-            }
+            //Assert
+            assertThrows(IllegalArgumentException.class, () -> service.tableFilter(headerCell, nonInputType, filterStrategy, "val1"));
+
         }
+
     }
 
     @Nested
@@ -711,21 +752,16 @@ class InputServiceImplTest extends BaseUnitUITest {
             verify(inputMock).insert(locator, "insertionVal");
         }
 
+
         @Test
         @DisplayName("insertion with non-InputComponentType throws ClassCastException")
         void testInsertionWithNonInputComponentType() {
             // Given
             ComponentType nonInputType = mock(ComponentType.class);
 
-            try {
-                // When
-                service.insertion(nonInputType, locator, "val1");
-                throw new AssertionError("Expected ClassCastException was not thrown");
-            } catch (ClassCastException e) {
-                // Then - Expected exception
-                assertThat(e).isInstanceOf(ClassCastException.class);
-            }
+            assertThrows(IllegalArgumentException.class, () -> service.insertion(nonInputType, locator, "val1"));
         }
+
     }
 
     @Nested
@@ -736,21 +772,25 @@ class InputServiceImplTest extends BaseUnitUITest {
         @DisplayName("createComponent delegates to ComponentFactory")
         void testCreateComponent() throws Exception {
             // Given
-            Method createComponentMethod = InputServiceImpl.class.getDeclaredMethod("createComponent", InputComponentType.class);
+            Method createComponentMethod = InputServiceImpl.class.getDeclaredMethod("createComponent",
+                InputComponentType.class);
             createComponentMethod.setAccessible(true);
 
             // When
             createComponentMethod.invoke(service, mockInputComponentType);
 
             // Then
-            factoryMock.verify(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)), times(1));
+            factoryMock.verify(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)),
+                times(1));
         }
+
 
         @Test
         @DisplayName("inputComponent delegates to getOrCreateComponent")
         void testInputComponent() throws Exception {
             // Given
-            Method inputComponentMethod = InputServiceImpl.class.getDeclaredMethod("inputComponent", InputComponentType.class);
+            Method inputComponentMethod = InputServiceImpl.class.getDeclaredMethod("inputComponent",
+                InputComponentType.class);
             inputComponentMethod.setAccessible(true);
 
             // Clear components map to ensure component creation
@@ -763,8 +803,10 @@ class InputServiceImplTest extends BaseUnitUITest {
             inputComponentMethod.invoke(service, mockInputComponentType);
 
             // Then
-            factoryMock.verify(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)), times(1));
+            factoryMock.verify(() -> ComponentFactory.getInputComponent(eq(mockInputComponentType), eq(driver)),
+                times(1));
         }
+
     }
 
     @Nested
@@ -784,15 +826,17 @@ class InputServiceImplTest extends BaseUnitUITest {
             }
         }
 
+
         @Test
         @DisplayName("Method with null container delegates to component")
         void testMethodWithNullContainer() {
             // When
-            service.insert(mockInputComponentType, (SmartWebElement)null, "value");
+            service.insert(mockInputComponentType, (SmartWebElement) null, "value");
 
             // Then
             verify(inputMock).insert((SmartWebElement) null, "value");
         }
+
 
         @Test
         @DisplayName("Method with null value delegates to component")
@@ -803,7 +847,9 @@ class InputServiceImplTest extends BaseUnitUITest {
             // Then
             verify(inputMock).insert(container, null);
         }
+
     }
+
 
     @Test
     @DisplayName("Input interface default methods work correctly")
@@ -811,64 +857,115 @@ class InputServiceImplTest extends BaseUnitUITest {
         // Create a concrete implementation of Input with default methods
         Input defaultInput = new Input() {
             @Override
-            public void insert(SmartWebElement container, String value) {}
+            public void insert(SmartWebElement container, String value) {
+            }
+
 
             @Override
-            public void insert(SmartWebElement container, String inputFieldLabel, String value) {}
+            public void insert(SmartWebElement container, String inputFieldLabel, String value) {
+            }
+
 
             @Override
-            public void insert(String inputFieldLabel, String value) {}
+            public void insert(String inputFieldLabel, String value) {
+            }
+
 
             @Override
-            public void insert(By inputFieldContainerLocator, String value) {}
+            public void insert(By inputFieldContainerLocator, String value) {
+            }
+
 
             @Override
-            public void clear(SmartWebElement container) {}
+            public void clear(SmartWebElement container) {
+            }
+
 
             @Override
-            public void clear(SmartWebElement container, String inputFieldLabel) {}
+            public void clear(SmartWebElement container, String inputFieldLabel) {
+            }
+
 
             @Override
-            public void clear(String inputFieldLabel) {}
+            public void clear(String inputFieldLabel) {
+            }
+
 
             @Override
-            public void clear(By inputFieldContainerLocator) {}
+            public void clear(By inputFieldContainerLocator) {
+            }
+
 
             @Override
-            public String getValue(SmartWebElement container) { return ""; }
+            public String getValue(SmartWebElement container) {
+                return "";
+            }
+
 
             @Override
-            public String getValue(SmartWebElement container, String inputFieldLabel) { return ""; }
+            public String getValue(SmartWebElement container, String inputFieldLabel) {
+                return "";
+            }
+
 
             @Override
-            public String getValue(String inputFieldLabel) { return ""; }
+            public String getValue(String inputFieldLabel) {
+                return "";
+            }
+
 
             @Override
-            public String getValue(By inputFieldContainerLocator) { return ""; }
+            public String getValue(By inputFieldContainerLocator) {
+                return "";
+            }
+
 
             @Override
-            public boolean isEnabled(SmartWebElement container) { return false; }
+            public boolean isEnabled(SmartWebElement container) {
+                return false;
+            }
+
 
             @Override
-            public boolean isEnabled(SmartWebElement container, String inputFieldLabel) { return false; }
+            public boolean isEnabled(SmartWebElement container, String inputFieldLabel) {
+                return false;
+            }
+
 
             @Override
-            public boolean isEnabled(String inputFieldLabel) { return false; }
+            public boolean isEnabled(String inputFieldLabel) {
+                return false;
+            }
+
 
             @Override
-            public boolean isEnabled(By inputFieldContainerLocator) { return false; }
+            public boolean isEnabled(By inputFieldContainerLocator) {
+                return false;
+            }
+
 
             @Override
-            public String getErrorMessage(SmartWebElement container) { return ""; }
+            public String getErrorMessage(SmartWebElement container) {
+                return "";
+            }
+
 
             @Override
-            public String getErrorMessage(SmartWebElement container, String inputFieldLabel) { return ""; }
+            public String getErrorMessage(SmartWebElement container, String inputFieldLabel) {
+                return "";
+            }
+
 
             @Override
-            public String getErrorMessage(String inputFieldLabel) { return ""; }
+            public String getErrorMessage(String inputFieldLabel) {
+                return "";
+            }
+
 
             @Override
-            public String getErrorMessage(By inputFieldContainerLocator) { return ""; }
+            public String getErrorMessage(By inputFieldContainerLocator) {
+                return "";
+            }
         };
 
         // Call the default methods to cover them
@@ -878,4 +975,5 @@ class InputServiceImplTest extends BaseUnitUITest {
         // Verify no exceptions
         assertThat(defaultInput).isNotNull();
     }
+
 }

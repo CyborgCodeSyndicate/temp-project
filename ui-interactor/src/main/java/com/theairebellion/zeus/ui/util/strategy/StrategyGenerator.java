@@ -21,14 +21,18 @@ import java.util.Random;
  */
 public class StrategyGenerator {
 
+    private StrategyGenerator() {
+    }
+
     /**
      * Selects and returns a random element from the given list.
      *
      * @param elements The list of {@link SmartWebElement} from which an element is to be selected.
      * @return A randomly selected {@link SmartWebElement} from the list.
-     * @throws IndexOutOfBoundsException if the list is empty.
+     * @throws IllegalArgumentException if the list is null or empty.
      */
     public static SmartWebElement getRandomElementFromElements(List<SmartWebElement> elements) {
+        validateInput(elements);
         return elements.get(new Random().nextInt(elements.size()));
     }
 
@@ -37,9 +41,10 @@ public class StrategyGenerator {
      *
      * @param elements The list of {@link SmartWebElement} from which the first element is to be selected.
      * @return The first {@link SmartWebElement} in the list.
-     * @throws IndexOutOfBoundsException if the list is empty.
+     * @throws IllegalArgumentException if the list is null or empty.
      */
     public static SmartWebElement getFirstElementFromElements(List<SmartWebElement> elements) {
+        validateInput(elements);
         return elements.get(0);
     }
 
@@ -48,10 +53,22 @@ public class StrategyGenerator {
      *
      * @param elements The list of {@link SmartWebElement} from which the last element is to be selected.
      * @return The last {@link SmartWebElement} in the list.
-     * @throws IndexOutOfBoundsException if the list is empty.
+     * @throws IllegalArgumentException if the list is null or empty.
      */
     public static SmartWebElement getLastElementFromElements(List<SmartWebElement> elements) {
+        validateInput(elements);
         return elements.get(elements.size() - 1);
     }
 
+    /**
+     * Validates that the input list is not null or empty.
+     *
+     * @param elements The list to validate.
+     * @throws IllegalArgumentException if the list is null or empty.
+     */
+    private static void validateInput(List<SmartWebElement> elements) {
+        if (elements == null || elements.isEmpty()) {
+            throw new IllegalArgumentException("Element list must not be null or empty.");
+        }
+    }
 }

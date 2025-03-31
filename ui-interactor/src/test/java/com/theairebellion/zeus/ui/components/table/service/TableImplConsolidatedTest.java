@@ -501,7 +501,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create field invoker
                 TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -533,7 +533,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create field invoker
                 TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -590,7 +590,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create field invoker
                 TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -623,7 +623,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create field invoker
                 TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -751,7 +751,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create field with required annotations
                 TableField<FilterRow> field = (row, value) -> row.setCell((TableCell) value);
@@ -1576,7 +1576,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
         try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
             reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                     eq(ComponentType.class), anyString()
-            )).thenReturn((Class) TestComponentType.class);
+            )).thenReturn(List.of(TestComponentType.class));
 
             // Create field with required annotations
             TableField<FilterRow> field = (row, value) -> row.setCell((TableCell) value);

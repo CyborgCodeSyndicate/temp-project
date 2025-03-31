@@ -9,23 +9,30 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.remote.AbstractDriverOptions;
 
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("all")
 @ExtendWith(MockitoExtension.class)
 class WebDriverFactoryTest {
-    // Static code block to ensure WebDriverFactory class initialization is covered
-    static {
-        // Force class loading to ensure static initialization blocks are covered
-        WebDriverFactory.class.getName();
-    }
 
     private static final String CHROME_TYPE = "CHROME";
     private static final String EDGE_TYPE = "EDGE";
@@ -45,10 +52,6 @@ class WebDriverFactoryTest {
     void testBasicClassFunctionality() {
         // This test simply ensures the constructor is covered
         assertNotNull(WebDriverFactory.class, "WebDriverFactory class should exist");
-
-        // Create an instance just to cover constructor (should do nothing but needed for coverage)
-        WebDriverFactory factory = new WebDriverFactory();
-        assertNotNull(factory, "Should be able to instantiate WebDriverFactory");
 
         // Reflection to verify DRIVER_PROVIDERS is initialized
         try {
@@ -82,6 +85,22 @@ class WebDriverFactoryTest {
         // Verify the exception message
         assertTrue(exception.getMessage().contains("Driver type already registered"),
                 "Exception should mention that driver type is already registered regardless of case");
+    }
+
+    @Test
+    void testRegisterNewDriver() {
+        String NEW_DRIVER = "NEW";
+        WebDriverFactory.registerDriver(NEW_DRIVER, mock(DriverProvider.class));
+
+
+        try {
+            Field field = WebDriverFactory.class.getDeclaredField("DRIVER_PROVIDERS");
+            field.setAccessible(true);
+            Map<String, DriverProvider<?>> providers = (Map<String, DriverProvider<?>>) field.get(null);
+            assertNotNull(providers.get(NEW_DRIVER), "New driver should be added");
+        } catch (Exception e) {
+            fail("Could not access DRIVER_PROVIDERS field: " + e.getMessage());
+        }
     }
 
     @Test
@@ -148,7 +167,7 @@ class WebDriverFactoryTest {
 
             // When creating a driver that will throw an exception
             // Then a RuntimeException should be thrown
-            Exception exception = assertThrows(RuntimeException.class, () ->
+            Exception exception = assertThrows(WebDriverException.class, () ->
                     WebDriverFactory.createDriver(CHROME_TYPE, config));
 
             // Verify the exception details

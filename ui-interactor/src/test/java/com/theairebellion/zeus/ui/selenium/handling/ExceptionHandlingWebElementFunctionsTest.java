@@ -13,13 +13,29 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -31,6 +47,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Mock
     private WebElement mockWebElement;
 
+
     @Test
     void testConstructorExists() {
         // This verifies the private constructor exists for the utility class
@@ -38,6 +55,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
         };
         assertNotNull(instance);
     }
+
 
     @Test
     void testHandleStaleElement() {
@@ -48,7 +66,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                    .thenReturn(element);
+                .thenReturn(element);
 
             // Call the method - we'll just verify that the updateWebElement is called
             // and not worry about verifying WebElementAction.performAction since it can't be mocked
@@ -58,6 +76,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
         }
     }
+
 
     @Test
     void testHandleStaleElementWithArgs() {
@@ -69,15 +88,17 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                    .thenReturn(element);
+                .thenReturn(element);
 
             // Call the method
-            ExceptionHandlingWebElementFunctions.handleStaleElement(mockDriver, element, WebElementAction.SEND_KEYS, arg);
+            ExceptionHandlingWebElementFunctions.handleStaleElement(mockDriver, element, WebElementAction.SEND_KEYS,
+                arg);
 
             // Verify the static method was called
             mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
         }
     }
+
 
     @Test
     void testHandleNoSuchElementWithInvalidArgs() {
@@ -93,21 +114,24 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             // Empty args
             Object[] emptyArgs = new Object[0];
             IllegalArgumentException emptyException = assertThrows(IllegalArgumentException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, WebElementAction.FIND_ELEMENT, emptyArgs);
+                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                    WebElementAction.FIND_ELEMENT, emptyArgs);
             });
             assertTrue(emptyException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
 
             // Null args
             Object[] nullArgs = new Object[]{null};
             IllegalArgumentException nullException = assertThrows(IllegalArgumentException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, WebElementAction.FIND_ELEMENT, nullArgs);
+                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                    WebElementAction.FIND_ELEMENT, nullArgs);
             });
             assertTrue(nullException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
 
             // Non-By args
             Object[] invalidArgs = new Object[]{"not a By object"};
             IllegalArgumentException invalidException = assertThrows(IllegalArgumentException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, WebElementAction.FIND_ELEMENT, invalidArgs);
+                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                    WebElementAction.FIND_ELEMENT, invalidArgs);
             });
             assertTrue(invalidException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
 
@@ -115,6 +139,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             mockedLogUI.verify(() -> LogUI.error(anyString()), atLeastOnce());
         }
     }
+
 
     @Test
     void testHandleNoSuchElementWhenElementFound() {
@@ -132,7 +157,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
-                    .thenReturn(foundElement);
+                .thenReturn(foundElement);
 
             // Create a real WebElementAction - don't try to mock it since it's an enum
             WebElementAction action = WebElementAction.FIND_ELEMENT;
@@ -149,6 +174,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
         }
     }
+
 
     @Test
     void testHandleNoSuchElementWhenElementNotFound() {
@@ -167,11 +193,12 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
-                    .thenReturn(null);
+                .thenReturn(null);
 
             // Execute method and expect exception
             NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, WebElementAction.FIND_ELEMENT, args);
+                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                    WebElementAction.FIND_ELEMENT, args);
             });
 
             // Verify methods were called
@@ -182,6 +209,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             assertTrue(exception.getMessage().contains("Element not found in any iframe"));
         }
     }
+
 
     @Test
     void testHandleElementClickIntercepted() {
@@ -195,11 +223,12 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
-                    .thenReturn("//div");
+                .thenReturn("//div");
 
             try {
                 // Call method - may throw errors in test but we just want to verify parser was called
-                ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(mockDriver, element, WebElementAction.CLICK, clickException);
+                ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(mockDriver, element,
+                    WebElementAction.CLICK, clickException);
             } catch (Exception e) {
                 // Ignore expected exceptions
             }
@@ -208,6 +237,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             mockedParser.verify(() -> LocatorParser.extractBlockingElementLocator(anyString()));
         }
     }
+
 
     @Test
     void testHandleElementClickInterceptedWithNullMessage() {
@@ -220,7 +250,8 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
         try {
             // Call method - may throw but we just want to verify it doesn't crash on null message
-            ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(mockDriver, element, WebElementAction.CLICK, clickException);
+            ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(mockDriver, element,
+                WebElementAction.CLICK, clickException);
             // If we get here without exception, the test passes
             assertTrue(true);
         } catch (Exception e) {
@@ -228,6 +259,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             assertTrue(true);
         }
     }
+
 
     @Test
     void testHandleElementClickInterceptedWithArgs() {
@@ -243,7 +275,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
         try {
             // Call method - we just want to verify it handles additional args
             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.SEND_KEYS, clickException, testArg);
+                mockDriver, element, WebElementAction.SEND_KEYS, clickException, testArg);
             // If we get here without exception, the test passes
             assertTrue(true);
         } catch (Exception e) {
@@ -251,6 +283,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             assertTrue(true);
         }
     }
+
 
     @Test
     void testHandleElementNotInteractable() {
@@ -261,11 +294,12 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                    .thenReturn(element);
+                .thenReturn(element);
 
             try {
                 // Call method - may throw in test but we want to verify parser is called
-                ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element, WebElementAction.CLICK);
+                ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element,
+                    WebElementAction.CLICK);
             } catch (Exception e) {
                 // Ignore expected exceptions
             }
@@ -274,6 +308,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
         }
     }
+
 
     @Test
     void testHandleElementNotInteractableWithArgs() {
@@ -286,11 +321,12 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                    .thenReturn(element);
+                .thenReturn(element);
 
             try {
                 // Call method - may throw but we want to verify it handles additional args
-                ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element, WebElementAction.SEND_KEYS, testArg);
+                ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element,
+                    WebElementAction.SEND_KEYS, testArg);
             } catch (Exception e) {
                 // Ignore expected exceptions
             }
@@ -299,6 +335,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
         }
     }
+
 
     @Test
     void testHandleElementClickInterceptedWithLocatorExtractionAndBlockerWait() {
@@ -312,21 +349,23 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Return a valid locator when extractBlockingElementLocator is called
             mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
-                    .thenReturn("//div[@id='blocker']");
+                .thenReturn("//div[@id='blocker']");
 
             // Call method to test the branch where a blocking element is found
             try {
                 ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                        mockDriver, element, WebElementAction.CLICK, clickException);
+                    mockDriver, element, WebElementAction.CLICK, clickException);
             } catch (Exception e) {
                 // Expected in test environment since we can't fully mock WebDriverWait
             }
 
             // Verify the parser was called with the exception message
             mockedParser.verify(() ->
-                    LocatorParser.extractBlockingElementLocator(eq("Other element would receive the click: <div id='blocker'>")));
+                                    LocatorParser.extractBlockingElementLocator(
+                                        eq("Other element would receive the click: <div id='blocker'>")));
         }
     }
+
 
     @Test
     void testHandleElementClickInterceptedWithExceptionDuringWait() {
@@ -345,20 +384,21 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Return a valid locator
             mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
-                    .thenReturn("//div");
+                .thenReturn("//div");
 
             // Call the method - it will throw since we can't fully mock WebDriverWait
             try {
                 ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                        mockDriver, element, WebElementAction.CLICK, clickException);
+                    mockDriver, element, WebElementAction.CLICK, clickException);
             } catch (Exception e) {
                 // This exception is expected - verify it's logged
                 mockedLogUI.verify(() ->
-                                LogUI.warn(contains("Exception occurred while waiting for blocking element:")),
-                        atLeastOnce());
+                                       LogUI.warn(contains("Exception occurred while waiting for blocking element:")),
+                    atLeastOnce());
             }
         }
     }
+
 
     @Test
     void testHandleElementNotInteractableWithFullExecution() {
@@ -376,23 +416,25 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Setup mocks
             mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                    .thenReturn(updatedElement);
+                .thenReturn(updatedElement);
 
             // Call method - this will throw an exception because we can't fully mock Actions
             try {
                 ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                        mockDriver, element, WebElementAction.CLICK);
+                    mockDriver, element, WebElementAction.CLICK);
             } catch (Exception e) {
                 // This exception is expected - verify it's logged
                 mockedLogUI.verify(() ->
-                                LogUI.warn(contains("Exception occurred while trying to make element interactable:")),
-                        atLeastOnce());
+                                       LogUI.warn(
+                                           contains("Exception occurred while trying to make element interactable:")),
+                    atLeastOnce());
             }
 
             // Verify method was called
             mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
         }
     }
+
 
     @Test
     void testHandleElementClickIntercepted_NullExceptionMessage() {
@@ -407,14 +449,17 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
         // Call the method
         ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                mockDriver, element, WebElementAction.CLICK, exception);
+            mockDriver, element, WebElementAction.CLICK, exception);
 
         // No assertion needed - we just want to execute this branch without errors
     }
 
+
     @Test
     void testHandleElementClickIntercepted_NullLocatorString() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+             MockedStatic<LogUI> mockedLog = mockStatic(LogUI.class)
+        ) {
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
             WebElement original = mock(WebElement.class);
@@ -428,56 +473,16 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(null);
 
             // Call the method
-            ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, exception);
+            assertThrows(IllegalArgumentException.class,
+                () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+                    mockDriver, element, WebElementAction.CLICK, exception));
 
             // Verify parser was called
             mockedParser.verify(() -> LocatorParser.extractBlockingElementLocator("Some error message"));
+            mockedLog.verify(() -> LogUI.error(anyString()));
         }
     }
 
-    @Test
-    void testHandleElementClickIntercepted_TimeoutException() {
-        // This test needs to trigger the TimeoutException catch block at line 9-10
-        // We'll use PowerMockito to mock the static ExpectedConditions class
-
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
-
-            // Setup logging
-            mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
-
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Create exception with message
-            Exception exception = mock(Exception.class);
-            when(exception.getMessage()).thenReturn("Element intercepted");
-
-            // Setup parser to return a locator
-            String locator = "//div[@id='blocker']";
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(locator);
-
-            // Mock By.xpath
-            By mockBlocker = mock(By.class);
-            mockedBy.when(() -> By.xpath(locator)).thenReturn(mockBlocker);
-
-            // Call the method - it will throw an exception inside WebDriverWait which we can't mock
-            // but that's OK because we just need to run the code path
-            try {
-                ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                        mockDriver, element, WebElementAction.CLICK, exception);
-            } catch (Exception e) {
-                // This is expected and should contain TimeoutException in the cause chain
-                assertTrue(e.toString().contains("WebDriverWait") ||
-                        e.toString().contains("ExpectedConditions") ||
-                        e.toString().contains("Timeout"));
-            }
-        }
-    }
 
     @Test
     void testHandleElementClickIntercepted_GeneralExceptionRunTimeException() {
@@ -508,12 +513,13 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Call the method - this should trigger the general exception branch
             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, exception);
+                mockDriver, element, WebElementAction.CLICK, exception);
 
             // Verify the warning was logged
             mockedLogUI.verify(() -> LogUI.warn(any()));
         }
     }
+
 
     @Test
     void testHandleElementClickIntercepted_GeneralException() {
@@ -534,7 +540,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             // Setup parser and By mocks to force general exception path
             String locatorString = "//div[@id='blocker']";
             mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
-                    .thenReturn(locatorString);
+                .thenReturn(locatorString);
             By mockBlocker = mock(By.class);
             mockedBy.when(() -> By.xpath(locatorString)).thenReturn(mockBlocker);
 
@@ -545,12 +551,13 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Run the method with our mocks
             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, clickException);
+                mockDriver, element, WebElementAction.CLICK, clickException);
 
             // Verify the warning was logged with the message
             mockedLogUI.verify(() -> LogUI.warn(any()));
         }
     }
+
 
     @Test
     void testHandleElementNotInteractable_CompleteFlow() {
@@ -564,24 +571,25 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             when(updatedElement.getOriginal()).thenReturn(mockOriginal);
 
             mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
-                    .thenReturn(updatedElement);
+                .thenReturn(updatedElement);
 
             // Run the test - we'll get an exception but that's OK as we just need to
             // verify that LocatorParser.updateWebElement was called
             try {
                 ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                        mockDriver, element, WebElementAction.CLICK);
+                    mockDriver, element, WebElementAction.CLICK);
             } catch (Exception e) {
                 // Expected, but we should verify that it contains the Actions error
                 assertTrue(e.getMessage().contains("Actions") ||
-                        e.getMessage().contains("Interactive") ||
-                        e.getMessage().contains("interactable"));
+                               e.getMessage().contains("Interactive") ||
+                               e.getMessage().contains("interactable"));
             }
 
             // Verify that LocatorParser.updateWebElement was called
             mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
         }
     }
+
 
     @Test
     void testHandleElementNotInteractable_TimeoutException() {
@@ -600,7 +608,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             when(updatedElement.getOriginal()).thenReturn(mockOriginal);
 
             mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
-                    .thenReturn(updatedElement);
+                .thenReturn(updatedElement);
 
             // Create mock Actions and WebDriverWait that throws TimeoutException
             Actions mockActions = mock(Actions.class);
@@ -612,12 +620,13 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Run the test to hit the TimeoutException path
             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK);
+                mockDriver, element, WebElementAction.CLICK);
 
             // Verify the warning was logged
             mockedLogUI.verify(() -> LogUI.warn(any()));
         }
     }
+
 
     @Test
     void testHandleElementNotInteractable_GeneralException() {
@@ -636,7 +645,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             when(updatedElement.getOriginal()).thenReturn(mockOriginal);
 
             mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
-                    .thenReturn(updatedElement);
+                .thenReturn(updatedElement);
 
             // Create mock Actions and WebDriverWait that throws a general exception
             Actions mockActions = mock(Actions.class);
@@ -646,7 +655,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Run the test to hit the general exception path
             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK);
+                mockDriver, element, WebElementAction.CLICK);
 
             // Verify the warning was logged with the message
             mockedLogUI.verify(() -> LogUI.warn(any()));
@@ -659,8 +668,10 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
      * that allows us to control WebDriverWait behavior
      */
     class TestableExceptionHandlingFunctions extends ExceptionHandlingWebElementFunctions {
+
         // Override the WebDriverWait creation to return our controllable mock
-        static WebDriverWait createTestableWait(WebDriver driver, boolean shouldThrowTimeout, boolean shouldThrowException) {
+        static WebDriverWait createTestableWait(WebDriver driver, boolean shouldThrowTimeout,
+                                                boolean shouldThrowException) {
             WebDriverWait mockWait = mock(WebDriverWait.class);
 
             if (shouldThrowTimeout) {
@@ -673,14 +684,17 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             return mockWait;
         }
+
     }
+
 
     @Test
     void testHandleElementClickIntercepted_TimeoutExceptionBranch() throws Exception {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
              MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
              MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(TestableExceptionHandlingFunctions.class)) {
+             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(
+                 TestableExceptionHandlingFunctions.class)) {
 
             // Setup logger mock
             mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
@@ -704,23 +718,27 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Create a WebDriverWait that will throw TimeoutException
             WebDriverWait mockWait = TestableExceptionHandlingFunctions.createTestableWait(mockDriver, true, false);
-            testableClass.when(() -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean())).thenReturn(mockWait);
+            testableClass.when(
+                    () -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean()))
+                .thenReturn(mockWait);
 
             // Execute the method
             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, clickException);
+                mockDriver, element, WebElementAction.CLICK, clickException);
 
             // Verify the correct warning was logged
             mockedLogUI.verify(() -> LogUI.warn(any()));
         }
     }
+
 
     @Test
     void testHandleElementClickIntercepted_GeneralExceptionBranch() throws Exception {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
              MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
              MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(TestableExceptionHandlingFunctions.class)) {
+             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(
+                 TestableExceptionHandlingFunctions.class)) {
 
             // Setup logger mock
             mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
@@ -744,22 +762,26 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Create a WebDriverWait that will throw general Exception
             WebDriverWait mockWait = TestableExceptionHandlingFunctions.createTestableWait(mockDriver, false, true);
-            testableClass.when(() -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean())).thenReturn(mockWait);
+            testableClass.when(
+                    () -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean()))
+                .thenReturn(mockWait);
 
             // Execute the method
             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, clickException);
+                mockDriver, element, WebElementAction.CLICK, clickException);
 
             // Verify the correct warning was logged
             mockedLogUI.verify(() -> LogUI.warn(any()));
         }
     }
 
+
     @Test
     void testHandleElementNotInteractable_TimeoutExceptionBranch() throws Exception {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
              MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
-             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(TestableExceptionHandlingFunctions.class)) {
+             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(
+                 TestableExceptionHandlingFunctions.class)) {
 
             // Setup logger mock
             mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
@@ -779,22 +801,26 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Create a WebDriverWait that will throw TimeoutException
             WebDriverWait mockWait = TestableExceptionHandlingFunctions.createTestableWait(mockDriver, true, false);
-            testableClass.when(() -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean())).thenReturn(mockWait);
+            testableClass.when(
+                    () -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean()))
+                .thenReturn(mockWait);
 
             // Execute the method
             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK);
+                mockDriver, element, WebElementAction.CLICK);
 
             // Verify the correct warning was logged
             mockedLogUI.verify(() -> LogUI.warn(any()));
         }
     }
 
+
     @Test
     void testHandleElementNotInteractable_GeneralExceptionBranch() throws Exception {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
              MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
-             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(TestableExceptionHandlingFunctions.class)) {
+             MockedStatic<TestableExceptionHandlingFunctions> testableClass = mockStatic(
+                 TestableExceptionHandlingFunctions.class)) {
 
             // Setup logger mock
             mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
@@ -814,19 +840,23 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Create a WebDriverWait that will throw general Exception
             WebDriverWait mockWait = TestableExceptionHandlingFunctions.createTestableWait(mockDriver, false, true);
-            testableClass.when(() -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean())).thenReturn(mockWait);
+            testableClass.when(
+                    () -> TestableExceptionHandlingFunctions.createTestableWait(any(), anyBoolean(), anyBoolean()))
+                .thenReturn(mockWait);
 
             // Execute the method
             ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK);
+                mockDriver, element, WebElementAction.CLICK);
 
             // Verify the correct warning was logged
             mockedLogUI.verify(() -> LogUI.warn(any()));
         }
     }
 
+
     // Helper method for argument matching with "contains"
     private static String contains(String substring) {
         return argThat(string -> string != null && string.contains(substring));
     }
+
 }

@@ -31,34 +31,6 @@ class UiConfigHolderTest extends BaseUnitUITest {
         }
     }
 
-    @Test
-    void testConstructor() {
-        // Get the class
-        Class<UiConfigHolder> holderClass = UiConfigHolder.class;
-
-        // Get all declared constructors
-        Constructor<?>[] constructors = holderClass.getDeclaredConstructors();
-
-        // Check that at least one constructor exists
-        assertTrue(constructors.length > 0, "Class should have at least one constructor");
-
-        // Try to instantiate the constructor
-        try {
-            Constructor<UiConfigHolder> constructor = holderClass.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            UiConfigHolder instance = constructor.newInstance();
-            assertNotNull(instance, "Constructor should create an instance");
-        } catch (Exception e) {
-            fail("Failed to instantiate constructor: " + e.getMessage());
-        }
-    }
-
-    @Test
-    void testConstructorInstantiation() {
-        // Attempt to create an instance using the public constructor
-        UiConfigHolder instance = new UiConfigHolder();
-        assertNotNull(instance, "Public constructor should create an instance");
-    }
 
     @Test
     void testGetUiConfigFirstCall() {

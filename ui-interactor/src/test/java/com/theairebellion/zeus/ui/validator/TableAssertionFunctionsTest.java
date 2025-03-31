@@ -14,6 +14,13 @@ import static org.mockito.Mockito.when;
 
 class TableAssertionFunctionsTest {
 
+    List<Object> tableGeneric = Arrays.asList(
+        Arrays.asList("a", "b", "c"),
+        Arrays.asList("x", "y", "z"),
+        "Text"
+    );
+
+
     @Test
     void testValidateTableNotEmpty() {
         // Valid scenarios
@@ -24,6 +31,7 @@ class TableAssertionFunctionsTest {
         assertFalse(TableAssertionFunctions.validateTableNotEmpty("not a list", true));
         assertFalse(TableAssertionFunctions.validateTableNotEmpty(Arrays.asList(1, 2, 3), "not a boolean"));
     }
+
 
     @Test
     void testValidateTableRowCount() {
@@ -36,12 +44,13 @@ class TableAssertionFunctionsTest {
         assertFalse(TableAssertionFunctions.validateTableRowCount(Arrays.asList(1, 2, 3), "not an integer"));
     }
 
+
     @Test
     void testValidateEveryRowContainsValues() {
         // Valid scenarios
         List<List<String>> table = Arrays.asList(
-                Arrays.asList("a", "b", "c"),
-                Arrays.asList("a", "b", "test")
+            Arrays.asList("a", "b", "c"),
+            Arrays.asList("a", "b", "test")
         );
 
         // Modify the expected values to match the implementation
@@ -54,14 +63,19 @@ class TableAssertionFunctionsTest {
         // Invalid input types
         assertFalse(TableAssertionFunctions.validateEveryRowContainsValues("not a list", expectedValues));
         assertFalse(TableAssertionFunctions.validateEveryRowContainsValues(table, "not a list"));
+
+        assertFalse(TableAssertionFunctions.validateEveryRowContainsValues(List.of(), expectedValues));
+        assertFalse(TableAssertionFunctions.validateEveryRowContainsValues(table, List.of()));
     }
+
 
     @Test
     void testValidateTableDoesNotContainRow() {
         List<List<String>> table = Arrays.asList(
-                Arrays.asList("a", "b", "c"),
-                Arrays.asList("x", "y", "z")
+            Arrays.asList("a", "b", "c"),
+            Arrays.asList("x", "y", "z")
         );
+
 
         // Valid scenarios
         assertTrue(TableAssertionFunctions.validateTableDoesNotContainRow(table, Arrays.asList("1", "2", "3")));
@@ -70,19 +84,26 @@ class TableAssertionFunctionsTest {
         // Invalid input types
         assertFalse(TableAssertionFunctions.validateTableDoesNotContainRow("not a list", Arrays.asList("a")));
         assertFalse(TableAssertionFunctions.validateTableDoesNotContainRow(table, "not a list"));
+
+        assertFalse(TableAssertionFunctions.validateTableDoesNotContainRow(List.of(), Arrays.asList("1", "2", "3")));
+        assertFalse(TableAssertionFunctions.validateTableDoesNotContainRow(table, List.of()));
+
+        assertFalse(TableAssertionFunctions.validateTableDoesNotContainRow(tableGeneric, Arrays.asList("1", "2", "3")));
     }
+
 
     @Test
     void testValidateAllRowsAreUnique() {
         // Valid scenarios
         List<List<String>> uniqueTable = Arrays.asList(
-                Arrays.asList("a", "b", "c"),
-                Arrays.asList("x", "y", "z")
+            Arrays.asList("a", "b", "c"),
+            Arrays.asList("x", "y", "z")
         );
         List<List<String>> nonUniqueTable = Arrays.asList(
-                Arrays.asList("a", "b", "c"),
-                Arrays.asList("a", "b", "c")
+            Arrays.asList("a", "b", "c"),
+            Arrays.asList("a", "b", "c")
         );
+
 
         assertTrue(TableAssertionFunctions.validateAllRowsAreUnique(uniqueTable, true));
         assertFalse(TableAssertionFunctions.validateAllRowsAreUnique(nonUniqueTable, true));
@@ -90,18 +111,25 @@ class TableAssertionFunctionsTest {
         // Invalid input types
         assertFalse(TableAssertionFunctions.validateAllRowsAreUnique("not a list", true));
         assertFalse(TableAssertionFunctions.validateAllRowsAreUnique(uniqueTable, "not a boolean"));
+
+        assertFalse(TableAssertionFunctions.validateAllRowsAreUnique(List.of(), true));
+        assertFalse(TableAssertionFunctions.validateAllRowsAreUnique(tableGeneric, true));
+
+
+
     }
+
 
     @Test
     void testValidateNoEmptyCells() {
         // Valid scenarios
         List<List<String>> tableWithNoEmptyCells = Arrays.asList(
-                Arrays.asList("a", "b", "c"),
-                Arrays.asList("x", "y", "z")
+            Arrays.asList("a", "b", "c"),
+            Arrays.asList("x", "y", "z")
         );
         List<List<String>> tableWithEmptyCells = Arrays.asList(
-                Arrays.asList("a", "", "c"),
-                Arrays.asList("x", "y", "z")
+            Arrays.asList("a", "", "c"),
+            Arrays.asList("x", "y", "z")
         );
 
         assertTrue(TableAssertionFunctions.validateNoEmptyCells(tableWithNoEmptyCells, true));
@@ -110,15 +138,19 @@ class TableAssertionFunctionsTest {
         // Invalid input types
         assertFalse(TableAssertionFunctions.validateNoEmptyCells("not a list", true));
         assertFalse(TableAssertionFunctions.validateNoEmptyCells(tableWithNoEmptyCells, "not a boolean"));
+
+        assertFalse(TableAssertionFunctions.validateNoEmptyCells(List.of(), true));
+        assertFalse(TableAssertionFunctions.validateNoEmptyCells(tableGeneric, true));
     }
+
 
     @Test
     void testValidateColumnValuesAreUnique() {
         // Valid scenarios with truly unique column values
         List<List<String>> table = Arrays.asList(
-                Arrays.asList("a", "1", "x"),
-                Arrays.asList("b", "2", "y"),
-                Arrays.asList("c", "3", "z")
+            Arrays.asList("a", "1", "x"),
+            Arrays.asList("b", "2", "y"),
+            Arrays.asList("c", "3", "z")
         );
 
         // First column (index 1) has unique values
@@ -126,32 +158,37 @@ class TableAssertionFunctionsTest {
 
         // Second column (index 2) does NOT have unique values
         assertFalse(TableAssertionFunctions.validateColumnValuesAreUnique(
-                Arrays.asList(
-                        Arrays.asList("a", "1", "x"),
-                        Arrays.asList("b", "1", "y"),
-                        Arrays.asList("c", "3", "z")
-                ), 2)
+            Arrays.asList(
+                Arrays.asList("a", "1", "x"),
+                Arrays.asList("b", "1", "y"),
+                Arrays.asList("c", "3", "z")
+            ), 2)
         );
 
         // Invalid input types
         assertFalse(TableAssertionFunctions.validateColumnValuesAreUnique("not a list", 1));
         assertFalse(TableAssertionFunctions.validateColumnValuesAreUnique(table, "not an integer"));
+
+        assertFalse(TableAssertionFunctions.validateColumnValuesAreUnique(List.of(), 1));
+        assertFalse(TableAssertionFunctions.validateColumnValuesAreUnique(tableGeneric, 1));
+        assertFalse(TableAssertionFunctions.validateColumnValuesAreUnique(table, 10));
     }
+
 
     @Test
     void testValidateTableDataMatchesExpected() {
         // Valid scenarios
         List<List<String>> table = Arrays.asList(
-                Arrays.asList("a", "b", "c"),
-                Arrays.asList("x", "y", "z")
+            Arrays.asList("a", "b", "c"),
+            Arrays.asList("x", "y", "z")
         );
         List<List<String>> expectedTable = Arrays.asList(
-                Arrays.asList("a", "b", "c"),
-                Arrays.asList("x", "y", "z")
+            Arrays.asList("a", "b", "c"),
+            Arrays.asList("x", "y", "z")
         );
         List<List<String>> differentTable = Arrays.asList(
-                Arrays.asList("1", "2", "3"),
-                Arrays.asList("4", "5", "6")
+            Arrays.asList("1", "2", "3"),
+            Arrays.asList("4", "5", "6")
         );
 
         assertTrue(TableAssertionFunctions.validateTableDataMatchesExpected(table, expectedTable));
@@ -160,7 +197,14 @@ class TableAssertionFunctionsTest {
         // Invalid input types
         assertFalse(TableAssertionFunctions.validateTableDataMatchesExpected("not a list", expectedTable));
         assertFalse(TableAssertionFunctions.validateTableDataMatchesExpected(table, "not a list"));
+
+        assertFalse(TableAssertionFunctions.validateTableDataMatchesExpected(List.of(), expectedTable));
+        assertFalse(TableAssertionFunctions.validateTableDataMatchesExpected(table, List.of()));
+        assertFalse(TableAssertionFunctions.validateTableDataMatchesExpected(tableGeneric, expectedTable));
+        assertFalse(TableAssertionFunctions.validateTableDataMatchesExpected(table, tableGeneric));
+
     }
+
 
     @Test
     void testValidateRowNotEmpty() {
@@ -176,6 +220,7 @@ class TableAssertionFunctionsTest {
         assertFalse(TableAssertionFunctions.validateRowNotEmpty(nonEmptyRow, "not a boolean"));
     }
 
+
     @Test
     void testValidateRowContainsValues() {
         // Valid scenarios
@@ -189,7 +234,11 @@ class TableAssertionFunctionsTest {
         // Invalid input types
         assertFalse(TableAssertionFunctions.validateRowContainsValues("not a list", expectedValues));
         assertFalse(TableAssertionFunctions.validateRowContainsValues(row, "not a list"));
+
+        assertFalse(TableAssertionFunctions.validateRowContainsValues(List.of(), expectedValues));
+        assertFalse(TableAssertionFunctions.validateRowContainsValues(row, List.of()));
     }
+
 
     @Test
     void testValidateAllCellsEnabled() {
@@ -205,12 +254,12 @@ class TableAssertionFunctionsTest {
 
         // Valid scenarios
         List<List<SmartWebElement>> enabledTable = Arrays.asList(
-                Arrays.asList(enabledCell1, enabledCell2),
-                Arrays.asList(enabledCell1, enabledCell2)
+            Arrays.asList(enabledCell1, enabledCell2),
+            Arrays.asList(enabledCell1, enabledCell2)
         );
         List<List<SmartWebElement>> tableWithDisabledCell = Arrays.asList(
-                Arrays.asList(enabledCell1, disabledCell),
-                Arrays.asList(enabledCell1, enabledCell2)
+            Arrays.asList(enabledCell1, disabledCell),
+            Arrays.asList(enabledCell1, enabledCell2)
         );
 
         assertTrue(TableAssertionFunctions.validateAllCellsEnabled(enabledTable, true));
@@ -220,6 +269,7 @@ class TableAssertionFunctionsTest {
         assertFalse(TableAssertionFunctions.validateAllCellsEnabled("not a list", true));
         assertFalse(TableAssertionFunctions.validateAllCellsEnabled(enabledTable, "not a boolean"));
     }
+
 
     @Test
     void testValidateAllCellsClickable() {
@@ -238,12 +288,12 @@ class TableAssertionFunctionsTest {
 
         // Valid scenarios
         List<List<SmartWebElement>> clickableTable = Arrays.asList(
-                Arrays.asList(clickableCell1, clickableCell2),
-                Arrays.asList(clickableCell1, clickableCell2)
+            Arrays.asList(clickableCell1, clickableCell2),
+            Arrays.asList(clickableCell1, clickableCell2)
         );
         List<List<SmartWebElement>> tableWithNonClickableCell = Arrays.asList(
-                Arrays.asList(clickableCell1, nonClickableCell),
-                Arrays.asList(clickableCell1, clickableCell2)
+            Arrays.asList(clickableCell1, nonClickableCell),
+            Arrays.asList(clickableCell1, clickableCell2)
         );
 
         assertTrue(TableAssertionFunctions.validateAllCellsClickable(clickableTable, true));
@@ -253,4 +303,5 @@ class TableAssertionFunctionsTest {
         assertFalse(TableAssertionFunctions.validateAllCellsClickable("not a list", true));
         assertFalse(TableAssertionFunctions.validateAllCellsClickable(clickableTable, "not a boolean"));
     }
+
 }

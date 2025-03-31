@@ -4,9 +4,14 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.edge.EdgeOptions;
 
@@ -157,6 +162,26 @@ class EdgeDriverProviderTest {
             // Then the setup method should be called with version
             verify(mockManager).driverVersion(VERSION);
             verify(mockManager).setup();
+        }
+    }
+
+    @Test
+    void testCreateDriverForCoverageWithoutLaunchingBrowser() {
+        EdgeOptions options = new EdgeOptions();
+
+        // Mock the ChromeDriver constructor
+        try (MockedConstruction<EdgeDriver> mocked =
+                 org.mockito.Mockito.mockConstruction(EdgeDriver.class)) {
+
+            EdgeDriverProvider provider = new EdgeDriverProvider();
+
+            WebDriver driver = provider.createDriver(options);
+
+            assertNotNull(driver);
+            assertInstanceOf(EdgeDriver.class, driver);
+
+            // Verify the constructor was called
+            assertEquals(1, mocked.constructed().size());
         }
     }
 }

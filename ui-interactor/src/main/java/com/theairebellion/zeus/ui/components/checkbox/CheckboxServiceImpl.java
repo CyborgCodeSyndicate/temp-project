@@ -52,7 +52,8 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public void select(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
-        LogUI.step("Selecting checkbox " + componentType + " with text " + String.join(", ", checkBoxText));
+        String text = checkBoxText != null ? String.join(", ", checkBoxText) : "no text added";
+        LogUI.step("Selecting checkbox " + componentType + " with text " + text);
         checkboxComponent(componentType).select(container, checkBoxText);
     }
 

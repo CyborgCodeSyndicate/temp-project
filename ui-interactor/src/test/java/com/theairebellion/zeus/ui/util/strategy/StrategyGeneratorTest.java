@@ -66,35 +66,47 @@ class StrategyGeneratorTest {
     }
 
     @Test
-    @DisplayName("getFirstElementFromElements should throw exception with empty list")
-    void firstElementThrowsExceptionWithEmptyList() {
-        // Given
-        List<SmartWebElement> emptyList = new ArrayList<>();
-
-        // Then
-        assertThrows(IndexOutOfBoundsException.class,
-                () -> StrategyGenerator.getFirstElementFromElements(emptyList));
-    }
-
-    @Test
-    @DisplayName("getLastElementFromElements should throw exception with empty list")
-    void lastElementThrowsExceptionWithEmptyList() {
-        // Given
-        List<SmartWebElement> emptyList = new ArrayList<>();
-
-        // Then
-        assertThrows(IndexOutOfBoundsException.class,
-                () -> StrategyGenerator.getLastElementFromElements(emptyList));
-    }
-
-    @Test
     @DisplayName("getRandomElementFromElements should throw IllegalArgumentException with empty list")
     void randomElementThrowsExceptionWithEmptyList() {
-        // Given
         List<SmartWebElement> emptyList = new ArrayList<>();
-
-        // Then
         assertThrows(IllegalArgumentException.class,
-                () -> StrategyGenerator.getRandomElementFromElements(emptyList));
+            () -> StrategyGenerator.getRandomElementFromElements(emptyList));
+    }
+
+    @Test
+    @DisplayName("getFirstElementFromElements should throw IllegalArgumentException with empty list")
+    void firstElementThrowsExceptionWithEmptyList() {
+        List<SmartWebElement> emptyList = new ArrayList<>();
+        assertThrows(IllegalArgumentException.class,
+            () -> StrategyGenerator.getFirstElementFromElements(emptyList));
+    }
+
+    @Test
+    @DisplayName("getLastElementFromElements should throw IllegalArgumentException with empty list")
+    void lastElementThrowsExceptionWithEmptyList() {
+        List<SmartWebElement> emptyList = new ArrayList<>();
+        assertThrows(IllegalArgumentException.class,
+            () -> StrategyGenerator.getLastElementFromElements(emptyList));
+    }
+
+    @Test
+    @DisplayName("getRandomElementFromElements should throw IllegalArgumentException with null list")
+    void randomElementThrowsExceptionWithNullList() {
+        assertThrows(IllegalArgumentException.class,
+            () -> StrategyGenerator.getRandomElementFromElements(null));
+    }
+
+    @Test
+    @DisplayName("getFirstElementFromElements should throw IllegalArgumentException with null list")
+    void firstElementThrowsExceptionWithNullList() {
+        assertThrows(IllegalArgumentException.class,
+            () -> StrategyGenerator.getFirstElementFromElements(null));
+    }
+
+    @Test
+    @DisplayName("getLastElementFromElements should throw IllegalArgumentException with null list")
+    void lastElementThrowsExceptionWithNullList() {
+        assertThrows(IllegalArgumentException.class,
+            () -> StrategyGenerator.getLastElementFromElements(null));
     }
 }

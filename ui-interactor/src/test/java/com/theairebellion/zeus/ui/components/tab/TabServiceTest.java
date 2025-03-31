@@ -137,7 +137,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "TabX";
 
                 // When
@@ -156,7 +156,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 var result = mockService.isSelected(componentType, container);
@@ -173,7 +173,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "TabZ";
 
                 // When
@@ -191,7 +191,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 var result = mockService.isSelected(componentType, locator);
@@ -212,7 +212,7 @@ class TabServiceTest extends BaseUnitUITest {
             void clickWithContainerAndText() {
                 // Given
                 mockService.reset();
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "ClickTab";
 
                 // When
@@ -229,7 +229,7 @@ class TabServiceTest extends BaseUnitUITest {
             void clickWithContainer() {
                 // Given
                 mockService.reset();
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 mockService.click(componentType, container);
@@ -244,7 +244,7 @@ class TabServiceTest extends BaseUnitUITest {
             void clickWithTextOnly() {
                 // Given
                 mockService.reset();
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "CText";
 
                 // When
@@ -260,7 +260,7 @@ class TabServiceTest extends BaseUnitUITest {
             void clickWithLocator() {
                 // Given
                 mockService.reset();
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 mockService.click(componentType, locator);
@@ -281,7 +281,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "TabA";
 
                 // When
@@ -300,7 +300,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 var result = mockService.isEnabled(componentType, container);
@@ -317,7 +317,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "TT";
 
                 // When
@@ -335,7 +335,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 var result = mockService.isEnabled(componentType, locator);
@@ -357,7 +357,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "TabView";
 
                 // When
@@ -376,7 +376,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 var result = mockService.isVisible(componentType, container);
@@ -393,7 +393,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
                 var tabText = "TCheck";
 
                 // When
@@ -411,7 +411,7 @@ class TabServiceTest extends BaseUnitUITest {
                 // Given
                 mockService.reset();
                 mockService.returnBool = true;
-                var componentType = MockTabComponentType.DUMMY;
+                var componentType = MockTabComponentType.DUMMY_TAB;
 
                 // When
                 var result = mockService.isVisible(componentType, locator);
@@ -510,7 +510,7 @@ class TabServiceTest extends BaseUnitUITest {
         @DisplayName("getDefaultType returns component type when found")
         void getDefaultTypeSuccess() throws Exception {
             // Given
-            var mockType = MockTabComponentType.DUMMY;
+            var mockType = MockTabComponentType.DUMMY_TAB;
             reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
                             eq(TabComponentType.class),
                             eq("TEST_TYPE"),
@@ -550,7 +550,7 @@ class TabServiceTest extends BaseUnitUITest {
     @DisplayName("reset method clears all fields properly")
     void resetMethodClearsAllFields() {
         // Given
-        mockService.lastComponentType = MockTabComponentType.DUMMY;
+        mockService.lastComponentType = MockTabComponentType.DUMMY_TAB;
         mockService.lastContainer = container;
         mockService.lastText = "buttonText";
         mockService.lastLocator = locator;

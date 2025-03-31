@@ -42,6 +42,7 @@ class WebDriverConfigTest {
         assertSame(eventFiringDecorator, config.getEventFiringDecorator(), "Event firing decorator should match input");
     }
 
+
     @Test
     void testBuilder() {
         // When creating a config using the builder
@@ -64,14 +65,13 @@ class WebDriverConfigTest {
     }
 
     @Test
-    void testBuilderWithDefaults() {
+    void testEmptyBuilderWithDefaults() {
         // When creating a config with only some properties
         WebDriverConfig<ChromeOptions> config = WebDriverConfig.<ChromeOptions>builder()
-                .version(VERSION)
                 .build();
 
         // Then specified properties should match and unspecified should be default values
-        assertEquals(VERSION, config.getVersion(), "Version should match input");
+        assertNull(config.getVersion(), "Version should be null");
         assertFalse(config.isHeadless(), "Headless should default to false");
         assertFalse(config.isRemote(), "Remote should default to false");
         assertNull(config.getRemoteUrl(), "Remote URL should default to null");

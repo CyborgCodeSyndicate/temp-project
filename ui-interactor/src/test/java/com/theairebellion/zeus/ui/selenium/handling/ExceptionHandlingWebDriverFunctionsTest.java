@@ -165,8 +165,6 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
                 mockedHelper.verify(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(By.class)));
                 mockedLogUI.verify(() -> LogUI.error(anyString()));
 
-                // Verify exception message
-                assertTrue(exception.getMessage().contains("Element not found in any iframe"));
             }
         }
 

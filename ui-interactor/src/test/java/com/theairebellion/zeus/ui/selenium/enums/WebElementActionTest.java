@@ -49,7 +49,7 @@ class WebElementActionTest extends BaseUnitUITest {
         Object result = WebElementAction.performAction(mockDriver, mockElement, WebElementAction.FIND_ELEMENT);
 
         // Verify that result is a SmartWebElement wrapping our mockElement
-        assertTrue(result instanceof SmartWebElement);
+        assertInstanceOf(SmartWebElement.class, result);
         assertEquals(mockElement, ((SmartWebElement) result).getOriginal());
     }
 
@@ -59,7 +59,7 @@ class WebElementActionTest extends BaseUnitUITest {
         Object result = WebElementAction.FIND_ELEMENT.performActionWebElement(mockDriver, mockElement);
 
         // Then
-        assertTrue(result instanceof SmartWebElement);
+        assertInstanceOf(SmartWebElement.class, result);
         assertEquals(mockElement, ((SmartWebElement) result).getOriginal());
     }
 
@@ -72,7 +72,7 @@ class WebElementActionTest extends BaseUnitUITest {
         Object result = WebElementAction.FIND_ELEMENT.performActionWebDriver(mockDriver, element);
 
         // Then
-        assertTrue(result instanceof SmartWebElement);
+        assertInstanceOf(SmartWebElement.class, result);
         assertEquals(element, ((SmartWebElement) result).getOriginal());
     }
 
@@ -96,7 +96,7 @@ class WebElementActionTest extends BaseUnitUITest {
 
         // Verify that all results are SmartWebElement instances
         for (int i = 0; i < result.size(); i++) {
-            assertTrue(result.get(i) instanceof SmartWebElement);
+            assertInstanceOf(SmartWebElement.class, result.get(i));
             assertEquals(elements.get(i), result.get(i).getOriginal());
         }
     }
@@ -121,7 +121,7 @@ class WebElementActionTest extends BaseUnitUITest {
 
         // Verify that all results are SmartWebElement instances
         for (int i = 0; i < result.size(); i++) {
-            assertTrue(result.get(i) instanceof SmartWebElement);
+            assertInstanceOf(SmartWebElement.class, result.get(i));
             assertEquals(elements.get(i), result.get(i).getOriginal());
         }
     }

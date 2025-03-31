@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.components.table.service;
 
 import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.components.input.InputComponentType;
 import com.theairebellion.zeus.ui.components.table.annotations.*;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterComponent;
@@ -925,7 +926,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         any(Class.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create test data with single value field
                 InsertionRow data = new InsertionRow();
@@ -960,7 +961,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         any(Class.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create test data with multiple values in a list
                 MultiValueRow data = new MultiValueRow();
@@ -1011,7 +1012,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         any(Class.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create test data with multiple values in a list
                 MultiValueRow data = new MultiValueRow();
@@ -1059,7 +1060,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         any(Class.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Create test data with single value field
                 InsertionRow data = new InsertionRow();
@@ -1094,7 +1095,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TableImplConsolidatedTest.TestComponentType.class);
+                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
 
                 // Create field invoker
                 TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -1139,7 +1140,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         any(Class.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TestComponentType.class));
 
                 // Execute the method that should hit the for-loop branch
                 spyTableImpl.insertCellValue(criteria, MultiValueRow.class, data);
@@ -1182,7 +1183,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         any(Class.class), anyString()
-                )).thenReturn((Class) TestComponentType.class);
+                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
 
                 // Execute the method that should hit the for-loop branch
                 spyTableImpl.insertCellValue(rowIndex, MultiValueRow.class, data);
@@ -1325,7 +1326,11 @@ class TableImplTest extends BaseUnitUITest {
                 // This is the key fix - make sure it returns TestComponentType.class
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString())
-                ).thenReturn((Class) TestComponentType.class);
+                ).thenReturn(List.of(TestComponentType.class));
+
+                reflectionUtil.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+                    eq(ComponentType.class), anyString(), anyString())
+                ).thenReturn(TestComponentType.TEST);
 
                 // Execute - this should now work without throwing a NullPointerException
                 insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
@@ -1392,7 +1397,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TableImplConsolidatedTest.TestComponentType.class);
+                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
 
                 // Create field invoker
                 TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -1476,7 +1481,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TableImplConsolidatedTest.TestComponentType.class);
+                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
 
                 // Create field invoker
                 TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -1509,7 +1514,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TableImplConsolidatedTest.TestComponentType.class);
+                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
 
                 // Create field invoker
                 TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
@@ -1807,7 +1812,7 @@ class TableImplTest extends BaseUnitUITest {
             try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
                 reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
                         eq(ComponentType.class), anyString()
-                )).thenReturn((Class) TableImplConsolidatedTest.TestComponentType.class);
+                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
 
                 // Create field with required annotations
                 TableField<TableImplConsolidatedTest.FilterRow> field = (row, value) -> row.setCell((TableCell) value);

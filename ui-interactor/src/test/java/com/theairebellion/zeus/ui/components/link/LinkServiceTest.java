@@ -50,7 +50,7 @@ class LinkServiceTest extends BaseUnitUITest {
             service.doubleClick(container, linkText);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY);
+            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
             assertThat(service.lastContainer).isEqualTo(container);
             assertThat(service.lastButtonText).isEqualTo(linkText);
         }
@@ -65,7 +65,7 @@ class LinkServiceTest extends BaseUnitUITest {
             service.doubleClick(container);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY);
+            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
             assertThat(service.lastContainer).isEqualTo(container);
         }
 
@@ -80,7 +80,7 @@ class LinkServiceTest extends BaseUnitUITest {
             service.doubleClick(linkText);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY);
+            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
             assertThat(service.lastButtonText).isEqualTo(linkText);
         }
 
@@ -94,7 +94,7 @@ class LinkServiceTest extends BaseUnitUITest {
             service.doubleClick(locator);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY);
+            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
             assertThat(service.lastLocator).isEqualTo(locator);
         }
     }
@@ -132,7 +132,7 @@ class LinkServiceTest extends BaseUnitUITest {
         @DisplayName("getDefaultType returns component type when found")
         void getDefaultTypeSuccess() throws Exception {
             // Given
-            var mockType = MockLinkComponentType.DUMMY;
+            var mockType = MockLinkComponentType.DUMMY_LINK;
             reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
                             eq(LinkComponentType.class),
                             eq("TEST_TYPE"),
@@ -172,7 +172,7 @@ class LinkServiceTest extends BaseUnitUITest {
     @DisplayName("reset method clears all fields properly")
     void resetMethodClearsAllFields() {
         // Given
-        service.lastLinkType = MockLinkComponentType.DUMMY;
+        service.lastLinkType = MockLinkComponentType.DUMMY_LINK;
         service.lastContainer = container;
         service.lastButtonText = "buttonText";
         service.lastLocator = locator;

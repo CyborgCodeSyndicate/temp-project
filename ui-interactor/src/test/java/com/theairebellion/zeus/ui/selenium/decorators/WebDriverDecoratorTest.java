@@ -9,6 +9,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -47,6 +49,7 @@ class WebDriverDecoratorTest {
         // Then it should return the same instance
         assertSame(mockWebDriver, result);
     }
+
 
     @Test
     void shouldDelegateGetMethod() {

@@ -33,7 +33,7 @@ class LinkServiceImplTest extends BaseUnitUITest {
         container = MockSmartWebElement.createMock();
         cellElement = MockSmartWebElement.createMock();
         linkMock = mock(Link.class);
-        componentType = MockLinkComponentType.DUMMY;
+        componentType = MockLinkComponentType.DUMMY_LINK;
         locator = By.id("link");
 
         // Configure static mock for ComponentFactory
@@ -307,7 +307,7 @@ class LinkServiceImplTest extends BaseUnitUITest {
         @DisplayName("Different component types create different instances")
         void differentComponentTypes() {
             // Setup mock component types
-            var type1 = MockLinkComponentType.DUMMY;
+            var type1 = MockLinkComponentType.DUMMY_LINK;
             var type2 = MockLinkComponentType.TEST;
 
             // Create mock components

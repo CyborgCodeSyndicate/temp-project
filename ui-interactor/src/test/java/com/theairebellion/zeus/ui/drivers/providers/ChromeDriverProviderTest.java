@@ -5,7 +5,9 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.WebDriver;
@@ -124,7 +126,7 @@ class ChromeDriverProviderTest {
             verify(mockManager, never()).driverVersion(anyString());
 
             // And the correct log message should be shown
-            mockedLog.verify(() -> LogUI.info("Chrome driver is downloaded with compatible version for the installed browser"));
+            mockedLog.verify(() -> LogUI.info("Chrome driver is downloaded with a compatible version for the installed browser"));
         }
     }
 
@@ -146,7 +148,7 @@ class ChromeDriverProviderTest {
             verify(mockManager, never()).driverVersion(anyString());
 
             // And the correct log message should be shown
-            mockedLog.verify(() -> LogUI.info("Chrome driver is downloaded with compatible version for the installed browser"));
+            mockedLog.verify(() -> LogUI.info("Chrome driver is downloaded with a compatible version for the installed browser"));
         }
     }
 
@@ -175,30 +177,24 @@ class ChromeDriverProviderTest {
         }
     }
 
+
     @Test
-    void testCreateDriverForCoverage() throws Exception {
-        // Create real options
+    void testCreateDriverForCoverageWithoutLaunchingBrowser() {
         ChromeOptions options = new ChromeOptions();
 
-        // Create a subclass that overrides just what we need
-        ChromeDriverProvider testProvider = new ChromeDriverProvider() {
-            @Override
-            public WebDriver createDriver(ChromeOptions opts) {
-                // Call the parent method for coverage statistics
-                // But intercept the call to ChromeDriver constructor
-                try {
-                    // Access and call the real method but in a way that gets recorded for coverage
-                    ChromeDriverService service = ChromeDriverService.createDefaultService();
-                    // We won't actually create a ChromeDriver, just return a mock
-                    return mock(ChromeDriver.class);
-                } catch (Exception e) {
-                    return mock(ChromeDriver.class);
-                }
-            }
-        };
+        // Mock the ChromeDriver constructor
+        try (MockedConstruction<ChromeDriver> mocked =
+                 org.mockito.Mockito.mockConstruction(ChromeDriver.class)) {
 
-        // This should execute the real method code path for coverage
-        WebDriver driver = testProvider.createDriver(options);
-        assertNotNull(driver);
+            ChromeDriverProvider provider = new ChromeDriverProvider();
+
+            WebDriver driver = provider.createDriver(options);
+
+            assertNotNull(driver);
+            assertInstanceOf(ChromeDriver.class, driver);
+
+            // Verify the constructor was called
+            assertEquals(1, mocked.constructed().size());
+        }
     }
 }
