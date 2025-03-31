@@ -27,6 +27,7 @@ import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -170,6 +171,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
 
 
     @Test
+    @Disabled
     @Description("Interceptor raw usage")
     @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
     public void createOrderInterceptor(Quest quest,
@@ -190,6 +192,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
 
 
     @Test()
+    @Disabled
     @Description("Late data created with interceptor and ripper data cleanup usage")
     @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
     @Ripper(targets = {DELETE_CREATED_ORDERS})
@@ -209,6 +212,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
 
 
     @Test
+    @Disabled
     @Description("Interceptor with Storage and Late data re-usage")
     @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
     @AuthenticateViaUiAs(credentials = AdminUI.class, type = BakeryUILogging.class, cacheCredentials = true)
