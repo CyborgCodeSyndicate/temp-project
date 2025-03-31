@@ -6,6 +6,7 @@ import com.reqres.test.framework.rest.authentication.ReqResAuthentication;
 import com.reqres.test.framework.rest.dto.request.LoginUser;
 import com.reqres.test.framework.rest.dto.request.User;
 import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
+import com.reqres.test.framework.utils.Helpers;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
@@ -166,8 +167,8 @@ public class ReqresApiTestAIGenerated extends BaseTest {
     })
     @Ripper(targets = {DELETE_ADMIN_USER})
     public void testCreateIntermediateUserAfterLeaderAndLogin2(Quest quest,
-                                                              @Craft(model = USER_LEADER) Late<User> userLeader,
-                                                              @Craft(model = USER_INTERMEDIATE) Late<User> userIntermediate) {
+                                                               @Craft(model = USER_LEADER) Late<User> userLeader,
+                                                               @Craft(model = USER_INTERMEDIATE) Late<User> userIntermediate) {
 
         String leaderId = retrieve(StorageKeysApi.API, Endpoints.POST_CREATE_USER, Response.class)
                 .getBody().as(CreatedUserResponse.class).getId();
@@ -192,6 +193,19 @@ public class ReqresApiTestAIGenerated extends BaseTest {
                                 .getBody().as(CreatedUserResponse.class).getId()),
                         userIntermediate,
                         Assertion.builder().target(RestAssertionTarget.STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
+                )
+                .complete();
+    }
+
+    @Test
+    @Regression
+    @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
+    public void testGetNonExistentUserReturns404AndEmptyBody(Quest quest) {
+        quest.enters(OLYMPYS)
+                .requestAndValidate(
+                        Endpoints.GET_USER.withPathParam("id", 23),
+                        Assertion.builder().target(RestAssertionTarget.STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).build(),
+                        Assertion.builder().target(RestAssertionTarget.BODY).key("$").type(IS).expected(Helpers.EMPTY_JSON).build()
                 )
                 .complete();
     }
