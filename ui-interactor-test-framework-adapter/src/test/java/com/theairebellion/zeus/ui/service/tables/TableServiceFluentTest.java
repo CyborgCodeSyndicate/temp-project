@@ -125,7 +125,7 @@ class TableServiceFluentTest extends BaseUnitUITest {
         when(mockStorage.sub(UI)).thenReturn(subStorage);
         when(subStorage.get(eq(tableElement.enumImpl()), eq(Object.class))).thenReturn(tableData);
 
-        Assertion<?> mockAssertion = mock(Assertion.class);
+        Assertion mockAssertion = mock(Assertion.class);
         List<AssertionResult<Object>> fakeResults = List.of(new AssertionResult<>(true, "testdesc", null, null, false));
         mockTableService.setFakeValidateResults(fakeResults);
 
@@ -137,7 +137,7 @@ class TableServiceFluentTest extends BaseUnitUITest {
     @DisplayName("validate should throw if no table data found")
     void validateShouldThrowWhenNoDataFound() {
         TestTableElement tableElement = new TestTableElement();
-        Assertion<?> mockAssertion = mock(Assertion.class);
+        Assertion mockAssertion = mock(Assertion.class);
 
         Storage subStorage = mock(Storage.class);
         when(mockStorage.sub(UI)).thenReturn(subStorage);
@@ -232,7 +232,7 @@ class TableServiceFluentTest extends BaseUnitUITest {
     @DisplayName("validate should retrieve table data from storage and call tableService.validate")
     void validateShouldCallTableServiceValidate() {
         TestTableElement tableElement = new TestTableElement();
-        Assertion<?> assertion = mock(Assertion.class);
+        Assertion assertion = mock(Assertion.class);
         Storage subStorage = mock(Storage.class);
         when(mockStorage.sub(UI)).thenReturn(subStorage);
 
@@ -252,7 +252,7 @@ class TableServiceFluentTest extends BaseUnitUITest {
     @DisplayName("validate should throw if no table data found")
     void validateThrowsWhenNoData() {
         TestTableElement tableElement = new TestTableElement();
-        Assertion<?> assertion = mock(Assertion.class);
+        Assertion assertion = mock(Assertion.class);
 
         Storage subStorage = mock(Storage.class);
         when(mockStorage.sub(UI)).thenReturn(subStorage);
@@ -331,7 +331,7 @@ class TableServiceFluentTest extends BaseUnitUITest {
 
         @Override
         @SuppressWarnings("unchecked")
-        public <T> List<AssertionResult<T>> validate(Object table, Assertion<?>... assertions) {
+        public <T> List<AssertionResult<T>> validate(Object table, Assertion... assertions) {
             return (List<AssertionResult<T>>) (Object) fakeValidateResults;
         }
     }

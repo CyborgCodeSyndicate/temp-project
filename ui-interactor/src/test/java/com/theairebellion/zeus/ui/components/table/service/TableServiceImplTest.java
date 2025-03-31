@@ -186,8 +186,8 @@ class TableServiceImplTest extends BaseUnitUITest {
     class ValidationTests {
         @Test
         void testValidate_WithValidInput() {
-            Assertion<?> assertion1 = mock(Assertion.class);
-            Assertion<?> assertion2 = mock(Assertion.class);
+            Assertion assertion1 = mock(Assertion.class);
+            Assertion assertion2 = mock(Assertion.class);
 
             // Create expected results with explicit type casting
             @SuppressWarnings("unchecked")
@@ -222,7 +222,7 @@ class TableServiceImplTest extends BaseUnitUITest {
         @Test
         void testValidate_WithNullTable() {
             // Create mock assertions
-            Assertion<?> assertion = mock(Assertion.class);
+            Assertion assertion = mock(Assertion.class);
 
             // Execute and verify exception thrown for null table
             IllegalArgumentException ex = assertThrows(
@@ -239,7 +239,7 @@ class TableServiceImplTest extends BaseUnitUITest {
             // Execute and verify exception thrown for null assertions
             IllegalArgumentException ex = assertThrows(
                     IllegalArgumentException.class,
-                    () -> testService.validate("table object", (Assertion<?>[]) null)
+                    () -> testService.validate("table object", (Assertion[]) null)
             );
 
             // Verify the exception message
@@ -251,7 +251,7 @@ class TableServiceImplTest extends BaseUnitUITest {
             // Execute and verify exception thrown for empty assertions array
             IllegalArgumentException ex = assertThrows(
                     IllegalArgumentException.class,
-                    () -> testService.validate("table object", new Assertion<?>[0])
+                    () -> testService.validate("table object", new Assertion[0])
             );
 
             // Verify the exception message

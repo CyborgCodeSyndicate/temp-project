@@ -3,6 +3,7 @@ package com.theairebellion.zeus.api.authentication;
 import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
+import lombok.NonNull;
 
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +33,7 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
      * @return The generated {@code AuthenticationKey}.
      */
     @Override
-    public AuthenticationKey authenticate(final RestService restService, final String username, final String password,
+    public AuthenticationKey authenticate(final @NonNull RestService restService, @NonNull final String username, final String password,
                                           boolean cache) {
         var authenticationKey = new AuthenticationKey(username, password, this.getClass());
         if (!cache) {

@@ -13,6 +13,7 @@ import io.restassured.http.Header;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -89,7 +91,8 @@ class RestServiceTest {
                     Arguments.of(Method.GET, null),
                     Arguments.of(Method.POST, "someBody"),
                     Arguments.of(Method.PUT, "updateBody"),
-                    Arguments.of(Method.DELETE, null)
+                    Arguments.of(Method.DELETE, null),
+                    Arguments.of(Method.PATCH, "someBody")
             );
         }
 
@@ -130,8 +133,8 @@ class RestServiceTest {
             // Arrange
             @SuppressWarnings("unchecked")
             List<AssertionResult<String>> expectedResults = mock(List.class);
-            Assertion<?> mockAssertion1 = mock(Assertion.class);
-            Assertion<?> mockAssertion2 = mock(Assertion.class);
+            Assertion mockAssertion1 = mock(Assertion.class);
+            Assertion mockAssertion2 = mock(Assertion.class);
 
             when(restResponseValidator.validateResponse(eq(responseMock), any(Assertion[].class)))
                     .thenReturn((List) expectedResults);
@@ -149,7 +152,7 @@ class RestServiceTest {
         @Test
         @DisplayName("validate() with null response should throw IllegalArgumentException")
         void validateWithNullResponseShouldThrow() {
-            Assertion<?> mockAssertion = mock(Assertion.class);
+            Assertion mockAssertion = mock(Assertion.class);
 
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                     () -> restService.validate(null, mockAssertion),
@@ -161,8 +164,9 @@ class RestServiceTest {
 
         @ParameterizedTest
         @NullSource
+        @EmptySource
         @DisplayName("validate() with null or empty assertions should throw IllegalArgumentException")
-        void validateWithNoAssertionsShouldThrow(Assertion<?>[] assertions) {
+        void validateWithNoAssertionsShouldThrow(Assertion[] assertions) {
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                     () -> restService.validate(responseMock, assertions),
                     "Should throw IllegalArgumentException for null or empty assertions");
@@ -174,7 +178,7 @@ class RestServiceTest {
         @Test
         @DisplayName("Validate with validator throwing exception")
         void validateWithValidatorException() {
-            Assertion<?> mockAssertion = mock(Assertion.class);
+            Assertion mockAssertion = mock(Assertion.class);
 
             when(restResponseValidator.validateResponse(eq(responseMock), any(Assertion[].class)))
                     .thenThrow(new RuntimeException("Validation failed"));
@@ -199,7 +203,7 @@ class RestServiceTest {
             Object body = "testRequestBody";
 
             // Create a mock assertion for validation
-            Assertion<?> mockAssertion = mock(Assertion.class);
+            Assertion mockAssertion = mock(Assertion.class);
 
             // Mock the request specification preparation
             RequestSpecification specMock = mock(RequestSpecification.class);
@@ -236,7 +240,7 @@ class RestServiceTest {
             Endpoint endpoint = mock(Endpoint.class);
 
             // Create a mock assertion for validation
-            Assertion<?> mockAssertion = mock(Assertion.class);
+            Assertion mockAssertion = mock(Assertion.class);
 
             // Mock the request specification preparation with null body
             RequestSpecification specMock = mock(RequestSpecification.class);
@@ -298,7 +302,7 @@ class RestServiceTest {
                 }
 
                 @Override
-                public AuthenticationKey authenticate(RestService restService, String user, String pass, boolean cache) {
+                public AuthenticationKey authenticate(@NonNull RestService restService, @NonNull String user, String pass, boolean cache) {
                     return null;
                 }
 
@@ -344,7 +348,7 @@ class RestServiceTest {
             // Exception throwing AuthClient implementation
             class ExceptionThrowingAuthClient extends BaseAuthenticationClient {
                 @Override
-                public AuthenticationKey authenticate(RestService restService, String user, String pass, boolean cache) {
+                public AuthenticationKey authenticate(@NonNull RestService restService, @NonNull String user, String pass, boolean cache) {
                     throw new RuntimeException("Authentication failed");
                 }
 

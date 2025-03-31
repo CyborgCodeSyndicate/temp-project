@@ -497,7 +497,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @param assertions   The assertions to verify.
      * @return The fluent UI service instance.
      */
-    public T validate(TableElement tableElement, Assertion<?>... assertions) {
+    public T validate(TableElement tableElement, Assertion... assertions) {
         Allure.step("[UI - Table] Validating table element: " + tableElement + " with assertions: " + Arrays.toString(assertions));
         Object tableData = storage.sub(UI).get(tableElement.enumImpl(), Object.class);
         if (tableData == null) {

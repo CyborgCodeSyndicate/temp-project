@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.log;
 
+import com.theairebellion.zeus.logging.LogCommon;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,10 +10,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LogApi Tests")
 class LogApiTest {
+
+    private static final String INSTANCE_FIELD = "INSTANCE";
 
     @Test
     @DisplayName("All log methods should execute without exceptions")
@@ -90,5 +94,30 @@ class LogApiTest {
             // Restore the original instance
             instanceField.set(null, originalInstance);
         }
+    }
+
+    @Test
+    @DisplayName("Should allow extending with custom instance")
+    void testExtend() throws Exception {
+        // Given
+        Field instanceField = getInstanceField();
+        Object originalInstance = instanceField.get(null);
+        LogApi mockInstance = mock(LogApi.class);
+
+        // When
+        LogApi.extend(mockInstance);
+
+        // Then
+        assertSame(mockInstance, instanceField.get(null),
+            "Instance field should be set to the mock");
+
+        // Restore original instance
+        instanceField.set(null, originalInstance);
+    }
+
+    private static Field getInstanceField() throws NoSuchFieldException {
+        Field instanceField = LogApi.class.getDeclaredField(INSTANCE_FIELD);
+        instanceField.setAccessible(true);
+        return instanceField;
     }
 }

@@ -23,6 +23,9 @@ import java.util.function.BiFunction;
  */
 public class AssertionRegistry {
 
+    private AssertionRegistry() {
+    }
+
     private static final Map<AssertionType, BiFunction<Object, Object, Boolean>> VALIDATORS = new ConcurrentHashMap<>();
 
     static {
@@ -74,7 +77,7 @@ public class AssertionRegistry {
         BiFunction<Object, Object, Boolean> validator = VALIDATORS.get(type);
 
         if (validator == null) {
-            throw new IllegalArgumentException("No validator registered for AssertionType: " + type);
+            throw new IllegalArgumentException("No validator registered for AssertionType: " + type.type().name());
         }
 
         return validator;

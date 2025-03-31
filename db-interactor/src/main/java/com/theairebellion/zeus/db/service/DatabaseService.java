@@ -90,7 +90,7 @@ public class DatabaseService {
      * @param <T>           The expected result type.
      * @return A list of assertion results indicating pass or failure.
      */
-    public <T> List<AssertionResult<T>> validate(QueryResponse queryResponse, Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> validate(QueryResponse queryResponse, Assertion... assertions) {
         return queryResponseValidator.validateQueryResponse(queryResponse, assertions);
     }
 
@@ -102,7 +102,7 @@ public class DatabaseService {
      * @param <T>        The expected result type.
      * @return A list of assertion results indicating pass or failure.
      */
-    public <T> List<AssertionResult<T>> queryAndValidate(DbQuery query, Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> queryAndValidate(DbQuery query, Assertion... assertions) {
         DatabaseConfiguration dbConfig = query.config();
         DbClient client = dbClientManager.getClient(dbConfig);
 

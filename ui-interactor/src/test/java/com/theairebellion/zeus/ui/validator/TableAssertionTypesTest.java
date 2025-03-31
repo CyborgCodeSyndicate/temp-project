@@ -96,7 +96,7 @@ class UiTableValidatorTest {
         // Create a mock implementation of UiTableValidator
         UiTableValidator mockValidator = new UiTableValidator() {
             @Override
-            public <T> List<AssertionResult<T>> validateTable(Object object, Assertion<?>... assertions) {
+            public <T> List<AssertionResult<T>> validateTable(Object object, Assertion... assertions) {
                 // Create mock AssertionResults
                 AssertionResult<T> mockResult1 = new AssertionResult<>(
                         true,
@@ -120,8 +120,8 @@ class UiTableValidatorTest {
 
         // Create mock objects
         Object testObject = new Object();
-        Assertion<?> mockAssertion1 = Mockito.mock(Assertion.class);
-        Assertion<?> mockAssertion2 = Mockito.mock(Assertion.class);
+        Assertion mockAssertion1 = Mockito.mock(Assertion.class);
+        Assertion mockAssertion2 = Mockito.mock(Assertion.class);
 
         // Call validateTable
         List<AssertionResult<Object>> results = mockValidator.validateTable(testObject, mockAssertion1, mockAssertion2);
@@ -138,7 +138,7 @@ class UiTableValidatorTest {
         // Create a mock implementation of UiTableValidator
         UiTableValidator mockValidator = new UiTableValidator() {
             @Override
-            public <T> List<AssertionResult<T>> validateTable(Object object, Assertion<?>... assertions) {
+            public <T> List<AssertionResult<T>> validateTable(Object object, Assertion... assertions) {
                 // Return empty list when no assertions
                 return List.of();
             }

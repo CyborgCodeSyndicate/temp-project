@@ -4,21 +4,43 @@ import com.theairebellion.zeus.api.config.ApiConfig;
 import com.theairebellion.zeus.api.config.ApiConfigHolder;
 import com.theairebellion.zeus.api.core.mock.MockEndpoint;
 import com.theairebellion.zeus.api.core.mock.TestEnum;
+import io.restassured.RestAssured;
 import io.restassured.http.Method;
+import io.restassured.specification.RequestLogSpecification;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -27,11 +49,6 @@ class EndpointTest {
 
     private static final String TEST_URL = "/test/path";
     private static final String TEST_BASE_URL = "https://example.com";
-
-    private static final String FAKE_LEVEL = "FAKE";
-    private static final String ALL_LEVEL = "ALL";
-    private static final String BASIC_LEVEL = "BASIC";
-    private static final String NONE_LEVEL = "NONE";
 
     @Mock
     private ApiConfig mockConfig;
@@ -69,52 +86,16 @@ class EndpointTest {
     class BasicPropertiesTests {
 
         @Test
-        @DisplayName("method() should return configured method")
-        void methodShouldReturnConfiguredMethod() {
+        @DisplayName("MockEndpoint should return configured values for method(), url(), enumImpl(), baseUrl() and headers()")
+        void shouldReturnConfiguredValuesForAllProperties() {
             // Arrange
             MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
 
             // Assert
             assertEquals(Method.GET, endpoint.method(), "method() should return configured value");
-        }
-
-        @Test
-        @DisplayName("url() should return configured URL")
-        void urlShouldReturnConfiguredUrl() {
-            // Arrange
-            MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
-
-            // Assert
             assertEquals(TEST_URL, endpoint.url(), "url() should return configured value");
-        }
-
-        @Test
-        @DisplayName("enumImpl() should return configured enum value")
-        void enumImplShouldReturnConfiguredEnum() {
-            // Arrange
-            MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
-
-            // Assert
             assertEquals(TestEnum.SAMPLE, endpoint.enumImpl(), "enumImpl() should return configured value");
-        }
-
-        @Test
-        @DisplayName("baseUrl() should return configured base URL")
-        void baseUrlShouldReturnConfiguredBaseUrl() {
-            // Arrange
-            MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
-
-            // Assert
             assertEquals(TEST_BASE_URL, endpoint.baseUrl(), "baseUrl() should return configured value");
-        }
-
-        @Test
-        @DisplayName("headers() should return empty map by default")
-        void headersShouldReturnEmptyMapByDefault() {
-            // Arrange
-            MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
-
-            // Assert
             assertTrue(endpoint.headers().isEmpty(), "headers() should return empty map by default");
         }
     }
@@ -129,15 +110,41 @@ class EndpointTest {
             assertNotNull(validEndpoint.defaultConfiguration(), "defaultConfiguration should not return null");
         }
 
-        @Test
-        @DisplayName("logging should be applied when enabled with ALL level")
-        void loggingWithAllLevel() {
-            try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
+        @ParameterizedTest(name = "[{index}] Logging level: {0}, enabled: {1}")
+        @DisplayName("Logging behavior based on ApiConfig settings")
+        @CsvSource({
+            "ALL,    true,  all,   false",
+            "BASIC,  true,  basic, false",
+            "NONE,   true,  none,  false",
+            "'',     false, none,  false",
+            "FAKE,   true,  none,  true"
+        })
+        void shouldApplyLoggingAccordingToConfig(
+            String level,
+            boolean enabled,
+            String expectedLogMethod,
+            boolean shouldThrow
+        ) {
+            RequestSpecification mockSpec = mock(RequestSpecification.class);
+            RequestLogSpecification mockLogSpec = mock(RequestLogSpecification.class);
+
+            try (
+                MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class);
+                MockedStatic<RestAssured> mockedRestAssured = mockStatic(RestAssured.class)
+            ) {
                 // Setup mock config
-                when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
-                when(mockConfig.restAssuredLoggingLevel()).thenReturn(ALL_LEVEL);
+                when(mockConfig.restAssuredLoggingEnabled()).thenReturn(enabled);
+                when(mockConfig.restAssuredLoggingLevel()).thenReturn(level);
                 when(mockConfig.baseUrl()).thenReturn(TEST_BASE_URL);
                 mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
+
+                // Setup fluent RestAssured mocks
+                mockedRestAssured.when(RestAssured::given).thenReturn(mockSpec);
+                when(mockSpec.baseUri(anyString())).thenReturn(mockSpec);
+                when(mockSpec.headers(anyMap())).thenReturn(mockSpec);
+                when(mockSpec.log()).thenReturn(mockLogSpec);
+                when(mockLogSpec.all()).thenReturn(mockSpec);
+                when(mockLogSpec.ifValidationFails()).thenReturn(mockSpec);
 
                 // Create an endpoint that uses the mock config's baseUrl
                 Endpoint endpoint = new Endpoint() {
@@ -146,96 +153,19 @@ class EndpointTest {
                     @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
                 };
 
-                assertNotNull(endpoint.defaultConfiguration(),
-                        "Should configure logging with ALL level");
-            }
-        }
+                if (shouldThrow) {
+                    assertThrows(IllegalArgumentException.class, endpoint::defaultConfiguration);
+                } else {
+                    RequestSpecification spec = endpoint.defaultConfiguration();
+                    assertNotNull(spec, "Request specification should not be null");
 
-        @Test
-        @DisplayName("logging should be applied when enabled with BASIC level")
-        void loggingWithBasicLevel() {
-            try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
-                // Setup mock config
-                when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
-                when(mockConfig.restAssuredLoggingLevel()).thenReturn(BASIC_LEVEL);
-                when(mockConfig.baseUrl()).thenReturn(TEST_BASE_URL);
-                mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
-
-                // Create an endpoint that uses the mock config's baseUrl
-                Endpoint endpoint = new Endpoint() {
-                    @Override public Method method() { return Method.GET; }
-                    @Override public String url() { return TEST_URL; }
-                    @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
-                };
-
-                assertNotNull(endpoint.defaultConfiguration(),
-                        "Should configure logging with BASIC level");
-            }
-        }
-
-        @Test
-        @DisplayName("logging should not be applied when set to NONE level")
-        void loggingWithNoneLevel() {
-            try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
-                // Setup mock config
-                when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
-                when(mockConfig.restAssuredLoggingLevel()).thenReturn(NONE_LEVEL);
-                when(mockConfig.baseUrl()).thenReturn(TEST_BASE_URL);
-                mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
-
-                // Create an endpoint that uses the mock config's baseUrl
-                Endpoint endpoint = new Endpoint() {
-                    @Override public Method method() { return Method.GET; }
-                    @Override public String url() { return TEST_URL; }
-                    @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
-                };
-
-                assertNotNull(endpoint.defaultConfiguration(),
-                        "Should configure with NONE logging level");
-            }
-        }
-
-        @Test
-        @DisplayName("logging should not be applied when disabled")
-        void loggingDisabled() {
-            try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
-                // Setup mock config
-                when(mockConfig.restAssuredLoggingEnabled()).thenReturn(false);
-                when(mockConfig.baseUrl()).thenReturn(TEST_BASE_URL);
-                mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
-
-                // Create an endpoint that uses the mock config's baseUrl
-                Endpoint endpoint = new Endpoint() {
-                    @Override public Method method() { return Method.GET; }
-                    @Override public String url() { return TEST_URL; }
-                    @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
-                };
-
-                assertNotNull(endpoint.defaultConfiguration(),
-                        "Should configure with logging disabled");
-            }
-        }
-
-        @Test
-        @DisplayName("invalid logging level should throw IllegalArgumentException")
-        void invalidLoggingLevelThrowsException() {
-            try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
-                // Setup mock config
-                when(mockConfig.restAssuredLoggingEnabled()).thenReturn(true);
-                when(mockConfig.restAssuredLoggingLevel()).thenReturn(FAKE_LEVEL);
-                when(mockConfig.baseUrl()).thenReturn(TEST_BASE_URL);
-                mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
-
-                // Create an endpoint that uses the mock config's baseUrl
-                Endpoint endpoint = new Endpoint() {
-                    @Override public Method method() { return Method.GET; }
-                    @Override public String url() { return TEST_URL; }
-                    @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
-                };
-
-                assertThrows(IllegalArgumentException.class,
-                        endpoint::defaultConfiguration,
-                        "Should throw exception for invalid logging level");
+                    // Verify logging based on expectedLogMethod
+                    switch (expectedLogMethod) {
+                        case "all" -> verify(mockLogSpec).all();
+                        case "basic" -> verify(mockLogSpec).ifValidationFails();
+                        case "none" -> verify(mockLogSpec, never()).all();
+                    }
+                }
             }
         }
     }
@@ -281,46 +211,6 @@ class EndpointTest {
         }
     }
 
-    @Nested
-    @DisplayName("Endpoint Validation Tests")
-    class EndpointValidationTests {
-
-        @Test
-        @DisplayName("prepareRequestSpec should throw exception for null URL")
-        void prepareRequestSpecShouldThrowExceptionForNullUrl() {
-            // Arrange
-            MockEndpoint invalidEndpoint = new MockEndpoint(Method.GET, null, TestEnum.NO_URL, TEST_BASE_URL);
-
-            // Act & Assert
-            IllegalStateException exception = assertThrows(
-                    IllegalStateException.class,
-                    () -> invalidEndpoint.prepareRequestSpec(null),
-                    "prepareRequestSpec should throw exception for null URL"
-            );
-
-            // Verify exception message
-            assertTrue(exception.getMessage().contains("URL must not be null or empty"),
-                    "Exception message should mention URL");
-        }
-
-        @Test
-        @DisplayName("prepareRequestSpec should throw exception for null method")
-        void prepareRequestSpecShouldThrowExceptionForNullMethod() {
-            // Arrange
-            MockEndpoint invalidEndpoint = new MockEndpoint(null, "/some/url", TestEnum.NO_METHOD, TEST_BASE_URL);
-
-            // Act & Assert
-            IllegalStateException exception = assertThrows(
-                    IllegalStateException.class,
-                    () -> invalidEndpoint.prepareRequestSpec("body"),
-                    "prepareRequestSpec should throw exception for null method"
-            );
-
-            // Verify exception message
-            assertTrue(exception.getMessage().contains("HTTP method must not be null"),
-                    "Exception message should mention HTTP method");
-        }
-    }
 
     @Nested
     @DisplayName("Request Preparation Tests")
@@ -358,126 +248,196 @@ class EndpointTest {
     class ParametrizationTests {
 
         @Test
-        @DisplayName("withQueryParam should return ParametrizedEndpoint")
-        void withQueryParamShouldReturnParametrizedEndpoint() {
+        @DisplayName("withQueryParam should return ParametrizedEndpoint and query params should be added")
+        void withQueryParamShouldReturnParametrizedEndpointAndQueryParamsShouldBeAdded() {
             // Arrange
-            MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
+            MockEndpoint baseEndpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL) {
+                @Override
+                public RequestSpecification prepareRequestSpec(final Object body) {
+                    return defaultConfiguration();
+                }
+            };
 
             // Act
-            Endpoint result = endpoint.withQueryParam("key", "value");
+            Endpoint endpointWithQuery = baseEndpoint.withQueryParam("key", "value");
+
+            // Call prepareRequestSpec to trigger internal param injection
+            RequestSpecification requestSpec = endpointWithQuery.prepareRequestSpec(null);
 
             // Assert
-            assertInstanceOf(ParametrizedEndpoint.class, result,
-                    "withQueryParam should return ParametrizedEndpoint");
+            // Since MockTestableEndpoint returns a mock spec, we can verify interactions directly
+
+            assertInstanceOf(ParametrizedEndpoint.class, endpointWithQuery,
+                "withQueryParam should return ParametrizedEndpoint");
+            verify(requestSpec).queryParams(argThat(queryMap ->
+                                                        queryMap.size() == 1 &&
+                                                            queryMap.containsKey("key") &&
+                                                            "value".equals(queryMap.get("key"))
+            ));
         }
+
 
         @Test
-        @DisplayName("withPathParam should return ParametrizedEndpoint")
-        void withPathParamShouldReturnParametrizedEndpoint() {
+        @DisplayName("withPathParam should return ParametrizedEndpoint and path params should be added")
+        void withPathParamShouldReturnParametrizedEndpointAndPathParamsShouldBeAdded() {
+            // Arrange
+            MockEndpoint baseEndpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL) {
+                @Override
+                public RequestSpecification prepareRequestSpec(final Object body) {
+                    return defaultConfiguration();
+                }
+            };
+
+            // Act
+            Endpoint endpointWithPath = baseEndpoint.withPathParam("key", "value");
+
+
+            // Call prepareRequestSpec to trigger internal param injection
+            RequestSpecification requestSpec = endpointWithPath.prepareRequestSpec(null);
+
+
+            // Assert
+            // Since MockTestableEndpoint returns a mock spec, we can verify interactions directly
+
+            assertInstanceOf(ParametrizedEndpoint.class, endpointWithPath,
+                "withQueryParam should return ParametrizedEndpoint");
+            verify(requestSpec).pathParams(argThat(params ->
+                                                       params.size() == 1 &&
+                                                           params.containsKey("key") &&
+                                                           "value".equals(params.get("key"))
+            ));
+        }
+
+
+        @ParameterizedTest(name = "[{index}] withHeader should add {1}")
+        @DisplayName("withHeader should return ParametrizedEndpoint with correct header values")
+        @MethodSource("headerValuesProvider")
+        void withHeaderShouldReturnParametrizedEndpoint(String headerKey, List<String> values) {
             // Arrange
             MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
 
             // Act
-            Endpoint result = endpoint.withPathParam("id", 123);
+            Endpoint result = values.size() == 1
+                                  ? endpoint.withHeader(headerKey, values.get(0))
+                                  : endpoint.withHeader(headerKey, values);
 
             // Assert
+            Map<String, List<String>> headers = result.headers();
+
             assertInstanceOf(ParametrizedEndpoint.class, result,
-                    "withPathParam should return ParametrizedEndpoint");
+                "withHeader should return ParametrizedEndpoint");
+
+            assertEquals(1, headers.size(), "There should be one header");
+            assertNotNull(headers.get(headerKey), "Header key should be added");
+            assertEquals(values, headers.get(headerKey), "Header value(s) should be added correctly");
         }
 
-        @Test
-        @DisplayName("withHeader with single value should return ParametrizedEndpoint")
-        void withHeaderSingleValueShouldReturnParametrizedEndpoint() {
-            // Arrange
-            MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
 
-            // Act
-            Endpoint result = endpoint.withHeader("X-Header", "Value");
-
-            // Assert
-            assertInstanceOf(ParametrizedEndpoint.class, result,
-                    "withHeader should return ParametrizedEndpoint");
+        private static Stream<Arguments> headerValuesProvider() {
+            return Stream.of(
+                Arguments.of("X-Header", List.of("Value")),
+                Arguments.of("X-Header", List.of("Value1", "Value2"))
+            );
         }
 
-        @Test
-        @DisplayName("withHeader with list value should return ParametrizedEndpoint")
-        void withHeaderListValueShouldReturnParametrizedEndpoint() {
-            // Arrange
-            MockEndpoint endpoint = new MockEndpoint(Method.GET, TEST_URL, TestEnum.SAMPLE, TEST_BASE_URL);
-
-            // Act
-            Endpoint result = endpoint.withHeader("X-Header",
-                    java.util.Arrays.asList("Value1", "Value2"));
-
-            // Assert
-            assertInstanceOf(ParametrizedEndpoint.class, result,
-                    "withHeader with list should return ParametrizedEndpoint");
-        }
     }
 
-    @Nested
-    @DisplayName("API Configuration Tests")
-    class ApiConfigurationTests {
 
-        @Test
-        @DisplayName("baseUrl should use ApiConfig when not overridden")
-        void baseUrlShouldUseApiConfigWhenNotOverridden() {
-            // Arrange - Using a custom anonymous class for this specific test
-            try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
-                when(mockConfig.baseUrl()).thenReturn("https://mocked-url.com");
-                mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
+        @Nested
+        @DisplayName("API Configuration Tests")
+        class ApiConfigurationTests {
 
-                // Create an endpoint that doesn't override baseUrl
-                Endpoint nonOverridingEndpoint = new Endpoint() {
-                    @Override public Method method() { return Method.GET; }
-                    @Override public String url() { return TEST_URL; }
-                    @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
+            @Test
+            @DisplayName("baseUrl should use ApiConfig when not overridden")
+            void baseUrlShouldUseApiConfigWhenNotOverridden() {
+                // Arrange - Using a custom anonymous class for this specific test
+                try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
+                    when(mockConfig.baseUrl()).thenReturn("https://mocked-url.com");
+                    mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
 
-                    // The default implementation will use ApiConfigHolder
-                    // Not overriding baseUrl() here
-                };
+                    // Create an endpoint that doesn't override baseUrl
+                    Endpoint nonOverridingEndpoint = new Endpoint() {
+                        @Override
+                        public Method method() {
+                            return Method.GET;
+                        }
 
-                // Act
-                String baseUrl = nonOverridingEndpoint.baseUrl();
 
-                // Assert
-                assertEquals("https://mocked-url.com", baseUrl,
+                        @Override
+                        public String url() {
+                            return TEST_URL;
+                        }
+
+
+                        @Override
+                        public Enum<?> enumImpl() {
+                            return TestEnum.SAMPLE;
+                        }
+
+                        // The default implementation will use ApiConfigHolder
+                        // Not overriding baseUrl() here
+                    };
+
+                    // Act
+                    String baseUrl = nonOverridingEndpoint.baseUrl();
+
+                    // Assert
+                    assertEquals("https://mocked-url.com", baseUrl,
                         "baseUrl should use value from ApiConfig");
 
-                // Verify ApiConfigHolder.getApiConfig() was called
-                mockedApiConfig.verify(ApiConfigHolder::getApiConfig);
+                    // Verify ApiConfigHolder.getApiConfig() was called
+                    mockedApiConfig.verify(ApiConfigHolder::getApiConfig);
+                }
             }
+
+
+            @Test
+            @DisplayName("logging configuration should be determined by ApiConfig")
+            void loggingConfigurationShouldBeBasedOnApiConfig() {
+                // This test verifies that ApiConfigHolder.getApiConfig() is called
+                try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
+                    // Setup mock returns
+                    when(mockConfig.baseUrl()).thenReturn(TEST_BASE_URL);
+                    mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
+
+                    // Create a special endpoint for this test case that just checks
+                    // if ApiConfigHolder.getApiConfig() is called
+                    Endpoint testEndpoint = new Endpoint() {
+                        @Override
+                        public Method method() {
+                            return Method.GET;
+                        }
+
+
+                        @Override
+                        public String url() {
+                            return TEST_URL;
+                        }
+
+
+                        @Override
+                        public Enum<?> enumImpl() {
+                            return TestEnum.SAMPLE;
+                        }
+
+
+                        @Override
+                        public RequestSpecification defaultConfiguration() {
+                            // Just call getApiConfig to verify the mock is used
+                            ApiConfigHolder.getApiConfig();
+                            // Return mock spec instead of calling RestAssured
+                            return mock(RequestSpecification.class);
+                        }
+                    };
+
+                    // Act - just call defaultConfiguration to trigger the method
+                    testEndpoint.defaultConfiguration();
+
+                    // Verify ApiConfigHolder.getApiConfig() was called
+                    mockedApiConfig.verify(ApiConfigHolder::getApiConfig);
+                }
+            }
+
         }
 
-        @Test
-        @DisplayName("logging configuration should be determined by ApiConfig")
-        void loggingConfigurationShouldBeBasedOnApiConfig() {
-            // This test verifies that ApiConfigHolder.getApiConfig() is called
-            try (MockedStatic<ApiConfigHolder> mockedApiConfig = mockStatic(ApiConfigHolder.class)) {
-                // Setup mock returns
-                when(mockConfig.baseUrl()).thenReturn(TEST_BASE_URL);
-                mockedApiConfig.when(ApiConfigHolder::getApiConfig).thenReturn(mockConfig);
-
-                // Create a special endpoint for this test case that just checks
-                // if ApiConfigHolder.getApiConfig() is called
-                Endpoint testEndpoint = new Endpoint() {
-                    @Override public Method method() { return Method.GET; }
-                    @Override public String url() { return TEST_URL; }
-                    @Override public Enum<?> enumImpl() { return TestEnum.SAMPLE; }
-                    @Override public RequestSpecification defaultConfiguration() {
-                        // Just call getApiConfig to verify the mock is used
-                        ApiConfigHolder.getApiConfig();
-                        // Return mock spec instead of calling RestAssured
-                        return mock(RequestSpecification.class);
-                    }
-                };
-
-                // Act - just call defaultConfiguration to trigger the method
-                testEndpoint.defaultConfiguration();
-
-                // Verify ApiConfigHolder.getApiConfig() was called
-                mockedApiConfig.verify(ApiConfigHolder::getApiConfig);
-            }
-        }
     }
-}

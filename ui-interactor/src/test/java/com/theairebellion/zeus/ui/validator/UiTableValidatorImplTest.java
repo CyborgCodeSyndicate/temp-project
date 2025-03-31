@@ -28,7 +28,7 @@ class UiTableValidatorImplTest {
     private UiTableValidatorImpl validator;
 
     @Mock
-    private Assertion<Object> assertionMock;
+    private Assertion assertionMock;
 
     @Mock
     private SmartWebElement smartWebElementMock;

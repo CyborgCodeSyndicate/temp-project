@@ -78,7 +78,7 @@ public class MockTableService implements TableService {
     }
 
     @Override
-    public <T> List<AssertionResult<T>> validate(Object table, Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> validate(Object table, Assertion... assertions) {
         return List.of();
     }
 }

@@ -41,7 +41,7 @@ class QueryResponseValidatorImplTest {
         // Arrange
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("id", 1), Map.of("id", 2)));
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(KEY_NUM_ROWS)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.NUMBER_ROWS)
@@ -72,7 +72,7 @@ class QueryResponseValidatorImplTest {
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
         when(jsonPathExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(VALUE_NAME);
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(KEY_JSON_PATH_NAME)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.QUERY_RESULT)
@@ -104,7 +104,7 @@ class QueryResponseValidatorImplTest {
 
         when(jsonPathExtractor.extract(row.keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(KEY_COLUMN_NAME);
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(KEY_COLUMN_NAME)
                 .target(DbAssertionTarget.COLUMNS)
                 .type(AssertionTypes.CONTAINS)
@@ -134,7 +134,7 @@ class QueryResponseValidatorImplTest {
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("other", "value")));
         when(jsonPathExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(null);
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(KEY_JSON_PATH_NAME)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.QUERY_RESULT)
@@ -160,7 +160,7 @@ class QueryResponseValidatorImplTest {
         // Arrange
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(null)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.QUERY_RESULT)
@@ -185,7 +185,7 @@ class QueryResponseValidatorImplTest {
         // Arrange
         QueryResponse queryResponse = new QueryResponse(List.of(Map.of("name", VALUE_NAME)));
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(null)
                 .type(AssertionTypes.CONTAINS)
                 .target(DbAssertionTarget.COLUMNS)
@@ -210,7 +210,7 @@ class QueryResponseValidatorImplTest {
         // Arrange
         QueryResponse queryResponse = new QueryResponse(Collections.emptyList());
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(KEY_COLUMN_NAME)
                 .type(AssertionTypes.CONTAINS)
                 .target(DbAssertionTarget.COLUMNS)
@@ -238,7 +238,7 @@ class QueryResponseValidatorImplTest {
 
         when(jsonPathExtractor.extract(row.keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(null);
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key(KEY_COLUMN_NAME)
                 .type(AssertionTypes.CONTAINS)
                 .target(DbAssertionTarget.COLUMNS)
@@ -268,7 +268,7 @@ class QueryResponseValidatorImplTest {
         when(jsonPathExtractor.extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class)).thenReturn(VALUE_NAME);
         when(jsonPathExtractor.extract(row.keySet(), KEY_COLUMN_NAME, Object.class)).thenReturn(KEY_COLUMN_NAME);
 
-        Assertion<?> rowCountAssertion = Assertion.builder()
+        Assertion rowCountAssertion = Assertion.builder()
                 .key(KEY_NUM_ROWS)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.NUMBER_ROWS)
@@ -276,7 +276,7 @@ class QueryResponseValidatorImplTest {
                 .soft(false)
                 .build();
 
-        Assertion<?> jsonPathAssertion = Assertion.builder()
+        Assertion jsonPathAssertion = Assertion.builder()
                 .key(KEY_JSON_PATH_NAME)
                 .type(AssertionTypes.IS)
                 .target(DbAssertionTarget.QUERY_RESULT)
@@ -284,7 +284,7 @@ class QueryResponseValidatorImplTest {
                 .soft(false)
                 .build();
 
-        Assertion<?> columnAssertion = Assertion.builder()
+        Assertion columnAssertion = Assertion.builder()
                 .key(KEY_COLUMN_NAME)
                 .type(AssertionTypes.CONTAINS)
                 .target(DbAssertionTarget.COLUMNS)

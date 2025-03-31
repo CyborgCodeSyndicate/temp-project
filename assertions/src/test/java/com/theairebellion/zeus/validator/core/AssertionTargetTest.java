@@ -11,7 +11,12 @@ class AssertionTargetTest {
     @DisplayName("AssertionTarget implementation should return the enum itself")
     void testAssertionTargetImplementation() {
         // Given
-        AssertionTarget target = () -> TestEnum.TEST_VALUE;
+        AssertionTarget target = new AssertionTarget() {
+            @Override
+            public Enum<?> target() {
+                return TestEnum.TEST_VALUE;
+            }
+        };
 
         // When
         Enum<?> result = target.target();

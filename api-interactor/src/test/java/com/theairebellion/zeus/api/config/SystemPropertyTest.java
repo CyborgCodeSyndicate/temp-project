@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.api.config;
 
-import org.aeonbits.owner.Config;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +15,13 @@ class SystemPropertyTest {
     private static final String TEST_PROPERTY_KEY = "test.property.key";
     private static final String TEST_PROPERTY_VALUE = "test.property.value";
 
+
     @BeforeEach
     void setUp() {
         // Make sure the property is not set initially
         System.clearProperty(TEST_PROPERTY_KEY);
     }
+
 
     @AfterEach
     void tearDown() {
@@ -28,12 +29,15 @@ class SystemPropertyTest {
         System.clearProperty(TEST_PROPERTY_KEY);
     }
 
+
     // Define a simple test config interface
-    @Config.Sources("system:properties")
-    interface TestConfig extends Config {
+    interface TestConfig extends ApiConfig {
+
         @Key(TEST_PROPERTY_KEY)
         String testProperty();
+
     }
+
 
     @Test
     @DisplayName("Owner ConfigFactory should recognize system properties")
@@ -50,6 +54,7 @@ class SystemPropertyTest {
 
         // Verify the property is read correctly
         assertEquals(TEST_PROPERTY_VALUE, configAfterSet.testProperty(),
-                "System property should be recognized by the config");
+            "System property should be recognized by the config");
     }
+
 }

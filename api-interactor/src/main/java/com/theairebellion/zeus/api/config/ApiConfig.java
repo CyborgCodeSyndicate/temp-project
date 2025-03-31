@@ -41,7 +41,7 @@ public interface ApiConfig extends PropertyConfig {
      * Specifies the logging level for RestAssured.
      * <p>Default: {@code "ALL"}</p>
      *
-     * @return The logging level as a string (e.g., {@code "ALL"}, {@code "BODY"}, {@code "HEADERS"}).
+     * @return The logging level as a string (e.g., {@code "ALL"}, {@code "BASIC"}, {@code "NONE"}).
      */
     @DefaultValue("ALL")
     @Key("api.restassured.logging.level")
@@ -75,9 +75,11 @@ public interface ApiConfig extends PropertyConfig {
      * If {@code log.full.body} is set to {@code false}, response bodies longer than this value
      * will be truncated with an ellipsis ({@code ...}).
      * </p>
+     * <p>Default: {@code 1000}</p>
      *
      * @return The maximum number of characters to display in a logged response body.
      */
+    @DefaultValue("1000")
     @Key("shorten.body")
     int shortenBody();
 

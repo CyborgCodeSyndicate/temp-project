@@ -131,7 +131,7 @@ class RestServiceFluentTest {
         void validateResponseWithSpecificAssertions() {
             // Arrange
             List<AssertionResult<Object>> mockResults = new ArrayList<>();
-            Assertion<?>[] assertions = new Assertion<?>[0];
+            Assertion[] assertions = new Assertion[0];
             when(restService.validate(response, assertions)).thenReturn(mockResults);
 
             // Act
@@ -204,7 +204,7 @@ class RestServiceFluentTest {
             when(restService.validate(eq(response), any())).thenReturn(mockResults);
 
             // Act
-            var result = restFluent.requestAndValidate(endpoint, body, (Assertion<?>[]) null);
+            var result = restFluent.requestAndValidate(endpoint, body, (Assertion[]) null);
 
             // Assert
             assertThat(result).isSameAs(restFluent);
@@ -219,7 +219,7 @@ class RestServiceFluentTest {
             // Arrange
             doReturn(TestEnum.MOCK_ENDPOINT).when(endpoint).enumImpl();
             List<AssertionResult<Object>> mockResults = new ArrayList<>();
-            Assertion<?>[] assertions = new Assertion<?>[0];
+            Assertion[] assertions = new Assertion[0];
 
             when(restService.request(endpoint)).thenReturn(response);
             when(restService.validate(response, assertions)).thenReturn(mockResults);
@@ -311,7 +311,7 @@ class RestServiceFluentTest {
             when(restService.validate(eq(response), any())).thenReturn(mockResults);
 
             // Act
-            var result = restFluent.validateResponse(response, (Assertion<?>[]) null);
+            var result = restFluent.validateResponse(response, (Assertion[]) null);
 
             // Assert
             assertThat(result).isSameAs(restFluent);
@@ -328,7 +328,7 @@ class RestServiceFluentTest {
             when(restService.validate(eq(response), any())).thenReturn(mockResults);
 
             // Act
-            var result = restFluent.requestAndValidate(endpoint, null, (Assertion<?>[]) null);
+            var result = restFluent.requestAndValidate(endpoint, null, (Assertion[]) null);
 
             // Assert
             assertThat(result).isSameAs(restFluent);

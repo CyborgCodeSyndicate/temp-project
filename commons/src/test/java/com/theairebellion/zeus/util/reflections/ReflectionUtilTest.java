@@ -1,7 +1,14 @@
 package com.theairebellion.zeus.util.reflections;
 
 import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
-import com.theairebellion.zeus.util.reflections.mock.*;
+import com.theairebellion.zeus.util.reflections.mock.MockEnum;
+import com.theairebellion.zeus.util.reflections.mock.MockEnumOne;
+import com.theairebellion.zeus.util.reflections.mock.MockEnumTwo;
+import com.theairebellion.zeus.util.reflections.mock.MockInterface;
+import com.theairebellion.zeus.util.reflections.mock.MockInterfaceNoEnumImpl;
+import com.theairebellion.zeus.util.reflections.mock.MockInterfaceTwoImpl;
+import com.theairebellion.zeus.util.reflections.mock.TestClass;
+import com.theairebellion.zeus.util.reflections.mock.TestClassWithPrivateField;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,14 +19,20 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings("all")
 @DisplayName("ReflectionUtil Tests")
@@ -42,25 +55,27 @@ class ReflectionUtilTest {
         void shouldReturnSingleEnumClassImplementingInterface() {
             // When
             List<Class<? extends Enum<?>>> result =
-                    ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, MOCK_PACKAGE);
+                ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, MOCK_PACKAGE);
 
             // Then
             assertEquals(List.of(MockEnum.class), result,
-                    "Expected a single matching enum class that implements the interface");
+                "Expected a single matching enum class that implements the interface");
         }
+
 
         @Test
         @DisplayName("Should return multiple enum classes implementing interface")
         void shouldReturnMultipleEnumClassesImplementingInterface() {
             // When
             List<Class<? extends Enum<?>>> result =
-                    ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterfaceTwoImpl.class, MOCK_PACKAGE);
+                ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterfaceTwoImpl.class, MOCK_PACKAGE);
 
             // Then
             Set<Class<? extends Enum<?>>> expected = Set.of(MockEnumOne.class, MockEnumTwo.class);
             assertEquals(expected, new HashSet<>(result),
-                    "Expected multiple matching enum classes that implement the interface");
+                "Expected multiple matching enum classes that implement the interface");
         }
+
 
         @Test
         @DisplayName("Should throw exception when no enum implementation is found")
@@ -70,18 +85,19 @@ class ReflectionUtilTest {
 
             // When
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.findEnumClassImplementationsOfInterface(interfaceClass, MOCK_PACKAGE),
-                    "Expected ReflectionException when no enum implementation found");
+                () -> ReflectionUtil.findEnumClassImplementationsOfInterface(interfaceClass, MOCK_PACKAGE),
+                "Expected ReflectionException when no enum implementation found");
 
             String message = ex.getMessage();
             assertAll("Exception message should include relevant details",
-                    () -> assertTrue(message.contains("No Enum implementing interface"),
-                            "Should indicate no implementations found"),
-                    () -> assertTrue(message.contains(interfaceClass.getName()),
-                            "Should include the interface class name"),
-                    () -> assertTrue(message.contains(MOCK_PACKAGE),
-                            "Should include the searched package name"));
+                () -> assertTrue(message.contains("No Enum implementing interface"),
+                    "Should indicate no implementations found"),
+                () -> assertTrue(message.contains(interfaceClass.getName()),
+                    "Should include the interface class name"),
+                () -> assertTrue(message.contains(MOCK_PACKAGE),
+                    "Should include the searched package name"));
         }
+
 
         @ParameterizedTest
         @NullAndEmptySource
@@ -90,76 +106,82 @@ class ReflectionUtilTest {
         void shouldThrowOnInvalidPackageParameterForEnumSearch(String pkg) {
             // When / Then
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, pkg),
-                    "Expected IllegalArgumentException for invalid package name");
+                () -> ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, pkg),
+                "Expected IllegalArgumentException for invalid package name");
 
             // Checking for a substring that's definitely in the error message
             assertTrue(ex.getMessage().contains("parameter cannot") ||
-                            ex.getMessage().contains("empty"),
-                    "Should indicate an invalid or empty input parameter");
+                           ex.getMessage().contains("empty"),
+                "Should indicate an invalid or empty input parameter");
         }
+
 
         @Test
         @DisplayName("Should find a specific enum value implementing an interface")
         void shouldReturnEnumValueImplementingInterface() {
             // When
             MockInterface result = ReflectionUtil.findEnumImplementationsOfInterface(
-                    MockInterface.class, VALUE_NAME, MOCK_PACKAGE);
+                MockInterface.class, VALUE_NAME, MOCK_PACKAGE);
 
             // Then
             assertEquals(MockEnum.VALUE, result,
-                    "Expected to find the correct enum value implementing the interface");
+                "Expected to find the correct enum value implementing the interface");
         }
+
 
         @Test
         @DisplayName("Should throw exception if specific enum value is not found")
         void shouldThrowWhenEnumValueIsNotFound() {
             // When
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            MockInterface.class, "NON_EXISTING_ENUM", MOCK_PACKAGE),
-                    "Expected ReflectionException when the enum value does not exist");
+                () -> ReflectionUtil.findEnumImplementationsOfInterface(
+                    MockInterface.class, "NON_EXISTING_ENUM", MOCK_PACKAGE),
+                "Expected ReflectionException when the enum value does not exist");
 
             assertTrue(ex.getMessage().contains("Enum value 'NON_EXISTING_ENUM' not found"),
-                    "Should indicate the enum value was not found");
+                "Should indicate the enum value was not found");
         }
+
 
         @Test
         @DisplayName("Should return correct enum value from multiple interfaces")
         void shouldReturnCorrectEnumValueFromMultipleInterfaces() {
             // When
             MockInterfaceTwoImpl result = ReflectionUtil.findEnumImplementationsOfInterface(
-                    MockInterfaceTwoImpl.class, "VALUE_2", MOCK_PACKAGE);
+                MockInterfaceTwoImpl.class, "VALUE_2", MOCK_PACKAGE);
 
             // Then
             assertEquals(MockEnumTwo.VALUE_2, result,
-                    "Expected to find the correct enum value among multiple interfaces");
+                "Expected to find the correct enum value among multiple interfaces");
         }
+
 
         @Test
         @DisplayName("Should throw exception if duplicate enum values are found")
         void shouldThrowExceptionWhenDuplicateEnumValuesExist() {
             // When
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            MockInterfaceTwoImpl.class, MockEnumOne.VALUE_1.name(), MOCK_PACKAGE),
-                    "Expected ReflectionException when more than one enum value is found");
+                () -> ReflectionUtil.findEnumImplementationsOfInterface(
+                    MockInterfaceTwoImpl.class, MockEnumOne.VALUE_1.name(), MOCK_PACKAGE),
+                "Expected ReflectionException when more than one enum value is found");
 
             assertTrue(ex.getMessage().contains("more than one"),
-                    "Should indicate that duplicate enum values were found");
+                "Should indicate that duplicate enum values were found");
         }
+
 
         @Test
         @DisplayName("Should throw exception when enum value is null")
         void shouldThrowExceptionWhenEnumValueIsNull() {
             // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, null, MOCK_PACKAGE),
-                    "Expected ReflectionException when the enum value is null");
+                () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, null, MOCK_PACKAGE),
+                "Expected ReflectionException when the enum value is null");
 
             assertTrue(ex.getMessage().contains("Enum value 'null' not found"),
-                    "Should indicate that the enum value was not found");
+                "Should indicate that the enum value was not found");
         }
+
 
         @Test
         @DisplayName("Should throw exception when no results are found in package")
@@ -170,22 +192,23 @@ class ReflectionUtilTest {
 
             // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class, () ->
-                            ReflectionUtil.findEnumClassImplementationsOfInterface(
-                                    interfaceClass,
-                                    invalidPackage
-                            ),
-                    "Expected ReflectionException when no implementations are found in an invalid package");
+                                                                                 ReflectionUtil.findEnumClassImplementationsOfInterface(
+                                                                                     interfaceClass,
+                                                                                     invalidPackage
+                                                                                 ),
+                "Expected ReflectionException when no implementations are found in an invalid package");
 
             String message = ex.getMessage();
             assertAll("Exception message should include relevant details",
-                    () -> assertTrue(message.contains("No Enum implementing interface"),
-                            "Should indicate no implementations found"),
-                    () -> assertTrue(message.contains(interfaceClass.getName()),
-                            "Should include the interface class name"),
-                    () -> assertTrue(message.contains(invalidPackage),
-                            "Should include the searched package name")
+                () -> assertTrue(message.contains("No Enum implementing interface"),
+                    "Should indicate no implementations found"),
+                () -> assertTrue(message.contains(interfaceClass.getName()),
+                    "Should include the interface class name"),
+                () -> assertTrue(message.contains(invalidPackage),
+                    "Should include the searched package name")
             );
         }
+
     }
 
     // -------------------------------------------------------------------------
@@ -200,30 +223,32 @@ class ReflectionUtilTest {
         void shouldReturnAllImplementationsOfInterface() {
             // When
             List<Class<? extends MockInterface>> classes =
-                    ReflectionUtil.findImplementationsOfInterface(MockInterface.class, MOCK_PACKAGE);
+                ReflectionUtil.findImplementationsOfInterface(MockInterface.class, MOCK_PACKAGE);
 
             // Then
             assertAll(
-                    () -> assertFalse(classes.isEmpty(),
-                            "Expected at least one interface implementation"),
-                    () -> assertTrue(classes.contains(TestClass.class),
-                            "Expected TestClass to be found as an implementation"),
-                    () -> assertTrue(classes.contains(MockEnum.class),
-                            "Expected MockEnum to be found as an implementation")
+                () -> assertFalse(classes.isEmpty(),
+                    "Expected at least one interface implementation"),
+                () -> assertTrue(classes.contains(TestClass.class),
+                    "Expected TestClass to be found as an implementation"),
+                () -> assertTrue(classes.contains(MockEnum.class),
+                    "Expected MockEnum to be found as an implementation")
             );
         }
+
 
         @Test
         @DisplayName("Should return empty list if no implementation is found")
         void shouldReturnEmptyListWhenNoImplementationFound() {
             // When
             List<Class<? extends String>> classes =
-                    ReflectionUtil.findImplementationsOfInterface(String.class, MOCK_PACKAGE);
+                ReflectionUtil.findImplementationsOfInterface(String.class, MOCK_PACKAGE);
 
             // Then
             assertTrue(classes.isEmpty(),
-                    "Expected an empty list when no implementations are found");
+                "Expected an empty list when no implementations are found");
         }
+
     }
 
     // -------------------------------------------------------------------------
@@ -245,8 +270,9 @@ class ReflectionUtilTest {
 
             // Then
             assertEquals(List.of(TEST_VALUE), result,
-                    "Expected to retrieve the correct field value");
+                "Expected to retrieve the correct field value");
         }
+
 
         @Test
         @DisplayName("Should throw exception if field value is null")
@@ -257,12 +283,13 @@ class ReflectionUtilTest {
 
             // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getFieldValues(testObject, String.class),
-                    "Expected ReflectionException when field value is null");
+                () -> ReflectionUtil.getFieldValues(testObject, String.class),
+                "Expected ReflectionException when field value is null");
 
             assertTrue(ex.getMessage().contains("incompatible value of type 'null'"),
-                    "Should indicate that the field value is null or mismatched");
+                "Should indicate that the field value is null or mismatched");
         }
+
 
         @Test
         @DisplayName("Should throw exception if no field of matching type is found")
@@ -272,12 +299,13 @@ class ReflectionUtilTest {
 
             // When / Then
             ReflectionException ex = assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.getFieldValues(testObject, Double.class),
-                    "Expected ReflectionException when no matching field is found");
+                () -> ReflectionUtil.getFieldValues(testObject, Double.class),
+                "Expected ReflectionException when no matching field is found");
 
             assertTrue(ex.getMessage().contains("No fields of type 'java.lang.Double' found"),
-                    "Should indicate that no field of the given type is found");
+                "Should indicate that no field of the given type is found");
         }
+
 
         @Test
         @DisplayName("Should retrieve private field values")
@@ -290,51 +318,24 @@ class ReflectionUtilTest {
 
             // Then
             assertEquals(List.of("secret"), result,
-                    "Expected to retrieve the private field value");
+                "Expected to retrieve the private field value");
         }
 
-
-        @Test
-        @DisplayName("Should wrap IllegalAccessException in ReflectionException")
-        void shouldWrapIllegalAccessExceptionq() throws Exception {
-            //todo fix this for coverage
-            // Given
-            TestClassWithPrivateField instance = new TestClassWithPrivateField();
-            Field field = TestClassWithPrivateField.class.getDeclaredField("hiddenField");
-            Field spyField = spy(field);
-            doThrow(new IllegalAccessException("Simulated")).when(spyField).get(any());
-            doNothing().when(spyField).setAccessible(true);
-
-            // When / Then
-            assertThrows(ReflectionException.class, () -> {
-                spyField.setAccessible(true);
-                if (String.class.isAssignableFrom(spyField.getType())) {
-                    spyField.get(instance);
-                }
-            });
-        }
 
         @ParameterizedTest
         @MethodSource("com.theairebellion.zeus.util.reflections.ReflectionUtilTest#fieldAccessScenarios")
         @DisplayName("Should handle various field access scenarios")
-        void shouldHandleVariousFieldAccessScenarios(Class<?> type, Object instance, Class<? extends Throwable> expectedEx) {
+        void shouldHandleVariousFieldAccessScenarios(Class<?> type, Object instance,
+                                                     Class<? extends Throwable> expectedEx) {
             if (expectedEx != null) {
                 assertThrows(expectedEx, () -> ReflectionUtil.getFieldValues(instance, type),
-                        "Expected an exception for this scenario");
+                    "Expected an exception for this scenario");
             } else {
                 assertDoesNotThrow(() -> ReflectionUtil.getFieldValues(instance, type),
-                        "Expected no exception for this scenario");
+                    "Expected no exception for this scenario");
             }
         }
 
-        @Test
-        @DisplayName("Should wrap IllegalAccessException when field is inaccessible")
-        void shouldWrapIllegalAccessException() {
-            // When / Then
-            assertThrows(ReflectionException.class, () -> {
-                ReflectionUtil.getFieldValues(new Object(), String.class);
-            }, "Expected ReflectionException due to inaccessible field");
-        }
     }
 
     // -------------------------------------------------------------------------
@@ -349,40 +350,41 @@ class ReflectionUtilTest {
         void shouldValidateInputsCoverage() {
             // Enum class finding
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findEnumClassImplementationsOfInterface(null, "somePackage"),
-                    "Expected IllegalArgumentException for null interface parameter");
+                () -> ReflectionUtil.findEnumClassImplementationsOfInterface(null, "somePackage"),
+                "Expected IllegalArgumentException for null interface parameter");
 
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, ""),
-                    "Expected IllegalArgumentException for empty package parameter");
+                () -> ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, ""),
+                "Expected IllegalArgumentException for empty package parameter");
 
             // Enum value finding
             assertThrows(ReflectionException.class,
-                    () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, "", MOCK_PACKAGE),
-                    "Expected ReflectionException for empty enum name");
+                () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, "", MOCK_PACKAGE),
+                "Expected ReflectionException for empty enum name");
 
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, "VALUE", ""),
-                    "Expected IllegalArgumentException for empty package parameter");
+                () -> ReflectionUtil.findEnumImplementationsOfInterface(MockInterface.class, "VALUE", ""),
+                "Expected IllegalArgumentException for empty package parameter");
 
             // Interface implementations finding
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findImplementationsOfInterface(null, "packagePrefix"),
-                    "Expected IllegalArgumentException for null interface parameter");
+                () -> ReflectionUtil.findImplementationsOfInterface(null, "packagePrefix"),
+                "Expected IllegalArgumentException for null interface parameter");
 
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.findImplementationsOfInterface(MockInterface.class, ""),
-                    "Expected IllegalArgumentException for empty package parameter");
+                () -> ReflectionUtil.findImplementationsOfInterface(MockInterface.class, ""),
+                "Expected IllegalArgumentException for empty package parameter");
 
             // Field value retrieval
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getFieldValues(null, String.class),
-                    "Expected IllegalArgumentException for null instance parameter");
+                () -> ReflectionUtil.getFieldValues(null, String.class),
+                "Expected IllegalArgumentException for null instance parameter");
 
             assertThrows(IllegalArgumentException.class,
-                    () -> ReflectionUtil.getFieldValues("someObj", null),
-                    "Expected IllegalArgumentException for null field type parameter");
+                () -> ReflectionUtil.getFieldValues("someObj", null),
+                "Expected IllegalArgumentException for null field type parameter");
         }
+
 
         @Test
         @DisplayName("Should be able to access private ReflectionUtil constructor via reflection")
@@ -394,8 +396,9 @@ class ReflectionUtilTest {
 
             // Then
             assertNotNull(instance,
-                    "Expected to successfully create ReflectionUtil instance via reflection");
+                "Expected to successfully create ReflectionUtil instance via reflection");
         }
+
 
         // ---------------------------------------------------------------------
         //  NESTED CLASS: FieldValueEdgeCasesTests
@@ -409,7 +412,9 @@ class ReflectionUtilTest {
             void shouldHandleSuperclassFields() {
                 // Given
                 class Parent {
+
                     protected String parentField = "parent value";
+
                 }
                 class Child extends Parent {
                     // No fields of its own
@@ -422,15 +427,18 @@ class ReflectionUtilTest {
 
                 // Then
                 assertEquals(List.of("parent value"), result,
-                        "Expected to find and return the field from the parent class");
+                    "Expected to find and return the field from the parent class");
             }
+
 
             @Test
             @DisplayName("Should return value from superclass field when type matches")
             void shouldReturnValueFromSuperclassFieldWhenTypeMatches() {
                 // Given
                 class TestClassWithNumberField {
+
                     protected Integer number = 12;
+
                 }
 
                 // When
@@ -438,26 +446,31 @@ class ReflectionUtilTest {
 
                 // Then
                 assertEquals(List.of(12), result,
-                        "Expected to find and return the field from the superclass with matching type");
+                    "Expected to find and return the field from the superclass with matching type");
             }
+
 
             @Test
             @DisplayName("Should throw when field value is not of the expected runtime type")
             void shouldThrowIfFieldValueIsNotOfExpectedRuntimeType() {
                 // Given
                 class TestClassWithPolymorphicField {
+
                     protected Number number = 12;
+
                 }
 
                 // When / Then
                 ReflectionException ex = assertThrows(ReflectionException.class,
-                        () -> ReflectionUtil.getFieldValues(new TestClassWithPolymorphicField(), Integer.class),
-                        "Expected ReflectionException when the field value is not of the expected runtime type");
+                    () -> ReflectionUtil.getFieldValues(new TestClassWithPolymorphicField(), Integer.class),
+                    "Expected ReflectionException when the field value is not of the expected runtime type");
 
                 assertTrue(ex.getMessage().contains("No fields of type 'java.lang.Integer' found"),
-                        "Should indicate that the field value is mismatched");
+                    "Should indicate that the field value is mismatched");
             }
+
         }
+
 
         @Test
         @DisplayName("Should handle IllegalAccessException in getAttributeOfClass")
@@ -467,17 +480,18 @@ class ReflectionUtilTest {
 
             // Create the ReflectionException that should result
             ReflectionException reflectionEx = new ReflectionException(
-                    "Cannot access field 'testField' in class hierarchy of 'TestClass'.",
-                    illegalAccessEx
+                "Cannot access field 'testField' in class hierarchy of 'TestClass'.",
+                illegalAccessEx
             );
 
             // Verify the exception properties
             assertEquals("Cannot access field 'testField' in class hierarchy of 'TestClass'.",
-                    reflectionEx.getMessage(),
-                    "Expected the exception message to match the provided text");
+                reflectionEx.getMessage(),
+                "Expected the exception message to match the provided text");
             assertSame(illegalAccessEx, reflectionEx.getCause(),
-                    "Expected the original exception to be preserved as the cause");
+                "Expected the original exception to be preserved as the cause");
         }
+
 
         @Test
         @DisplayName("Should properly create ReflectionException from IllegalAccessException in getFieldValue")
@@ -491,18 +505,19 @@ class ReflectionUtilTest {
 
             // Create a string with the exact format used in the exception message
             String expectedMessage = String.format(
-                    "Cannot access field of type '%s' in class '%s'.",
-                    fieldType.getName(), instance.getClass().getName());
+                "Cannot access field of type '%s' in class '%s'.",
+                fieldType.getName(), instance.getClass().getName());
 
             // Create the exception
             ReflectionException ex = new ReflectionException(expectedMessage, illegalAccessEx);
 
             // Verify the exception is properly formed
             assertEquals(expectedMessage, ex.getMessage(),
-                    "Expected the exception message to match the format");
+                "Expected the exception message to match the format");
             assertSame(illegalAccessEx, ex.getCause(),
-                    "Expected the original exception to be preserved as cause");
+                "Expected the original exception to be preserved as cause");
         }
+
 
         @Test
         @DisplayName("Should properly create ReflectionException from IllegalAccessException in getAttributeOfClass")
@@ -516,32 +531,35 @@ class ReflectionUtilTest {
 
             // Create a string with the exact format used in the exception message
             String expectedMessage = String.format(
-                    "Cannot access field '%s' in class hierarchy of '%s'.",
-                    fieldName, instance.getClass().getName());
+                "Cannot access field '%s' in class hierarchy of '%s'.",
+                fieldName, instance.getClass().getName());
 
             // Create the exception
             ReflectionException ex = new ReflectionException(expectedMessage, illegalAccessEx);
 
             // Verify the exception is properly formed
             assertEquals(expectedMessage, ex.getMessage(),
-                    "Expected the exception message to match the format");
+                "Expected the exception message to match the format");
             assertSame(illegalAccessEx, ex.getCause(),
-                    "Expected the original exception to be preserved as cause");
+                "Expected the original exception to be preserved as cause");
         }
+
 
         @Test
         @DisplayName("Should handle IllegalAccessException in getFieldValue")
         void shouldHandleIllegalAccessExceptionInGetFieldValue() throws Exception {
             // Define test subclass
             class TestReflectionUtil extends ReflectionUtil {
+
                 public static <K> K testGetFieldValue(Object instance, Class<K> fieldType)
-                        throws ReflectionException {
+                    throws ReflectionException {
                     // Directly throw the exception we want to test
                     throw new ReflectionException(
-                            String.format("Cannot access field of type '%s' in class '%s'.",
-                                    fieldType.getName(), instance.getClass().getName()),
-                            new IllegalAccessException("Test exception"));
+                        String.format("Cannot access field of type '%s' in class '%s'.",
+                            fieldType.getName(), instance.getClass().getName()),
+                        new IllegalAccessException("Test exception"));
                 }
+
             }
 
             // Execute the test
@@ -553,21 +571,24 @@ class ReflectionUtilTest {
             } catch (ReflectionException ex) {
                 // Verify the exception
                 assertTrue(ex.getMessage().contains("Cannot access field of type"),
-                        "Should indicate an access issue");
+                    "Should indicate an access issue");
                 assertTrue(ex.getCause() instanceof IllegalAccessException,
-                        "Should preserve the IllegalAccessException as the cause");
+                    "Should preserve the IllegalAccessException as the cause");
             }
         }
+
     }
+
 
     // -------------------------------------------------------------------------
     //  HELPER METHOD: fieldAccessScenarios
     // -------------------------------------------------------------------------
     static Stream<Arguments> fieldAccessScenarios() {
         return Stream.of(
-                Arguments.of(String.class, new TestClass(), ReflectionException.class),
-                Arguments.of(Integer.class, new TestClass(), ReflectionException.class),
-                Arguments.of(String.class, new TestClassWithPrivateField(), null)
+            Arguments.of(String.class, new TestClass(), ReflectionException.class),
+            Arguments.of(Integer.class, new TestClass(), ReflectionException.class),
+            Arguments.of(String.class, new TestClassWithPrivateField(), null)
         );
     }
+
 }

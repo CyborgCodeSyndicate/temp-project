@@ -498,6 +498,6 @@ public interface TableService {
      * @param <T>        The type of the table rows.
      * @return A list of assertion results.
      */
-    <T> List<AssertionResult<T>> validate(Object table, Assertion<?>... assertions);
+    <T> List<AssertionResult<T>> validate(Object table, Assertion... assertions);
 
 }

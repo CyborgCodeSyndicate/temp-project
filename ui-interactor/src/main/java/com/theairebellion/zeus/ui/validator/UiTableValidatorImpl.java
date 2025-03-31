@@ -49,12 +49,12 @@ public class UiTableValidatorImpl implements UiTableValidator {
      * @return A list of assertion results indicating whether the validation passed or failed.
      */
     @Override
-    public <T> List<AssertionResult<T>> validateTable(final Object object, final Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> validateTable(final Object object, final Assertion... assertions) {
         startValidation(assertions.length);
 
         Map<String, T> data = new HashMap<>();
 
-        for (Assertion<?> assertion : assertions) {
+        for (Assertion assertion : assertions) {
             processAssertion((UiTablesAssertionTarget) assertion.getTarget());
             switch ((UiTablesAssertionTarget) assertion.getTarget()) {
                 case ROW_VALUES -> {
@@ -81,7 +81,7 @@ public class UiTableValidatorImpl implements UiTableValidator {
         }
 
         printAssertionTarget((Map<String, Object>) data);
-        return AssertionUtil.validate(data, assertions);
+        return AssertionUtil.validate(data, List.of(assertions));
     }
 
     /**

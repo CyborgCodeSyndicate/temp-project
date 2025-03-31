@@ -1,7 +1,10 @@
 package com.theairebellion.zeus.api.validator;
 
 import com.theairebellion.zeus.validator.core.Assertion;
+import com.theairebellion.zeus.validator.core.AssertionResult;
+import com.theairebellion.zeus.validator.core.AssertionTarget;
 import com.theairebellion.zeus.validator.core.AssertionTypes;
+import com.theairebellion.zeus.validator.exceptions.InvalidAssertionException;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +44,7 @@ class RestResponseValidatorImplTest {
         @DisplayName("Validate response status code")
         void testValidateResponseStatus() {
             // Arrange
-            Assertion<?> statusAssertion = Assertion.builder()
+            Assertion statusAssertion = Assertion.builder()
                     .target(RestAssertionTarget.STATUS)
                     .key("AssertionKeyForStatus")
                     .type(AssertionTypes.IS)
@@ -58,7 +65,7 @@ class RestResponseValidatorImplTest {
         @DisplayName("Validate response body")
         void testValidateResponseBody() {
             // Arrange
-            Assertion<?> bodyAssertion = Assertion.builder()
+            Assertion bodyAssertion = Assertion.builder()
                     .target(RestAssertionTarget.BODY)
                     .key("some.json.path")
                     .type(AssertionTypes.IS)
@@ -70,14 +77,16 @@ class RestResponseValidatorImplTest {
             );
 
             // Act & Assert
-            assertNotNull(validator.validateResponse(responseMock, bodyAssertion));
+            List<AssertionResult<Object>> results = validator.validateResponse(responseMock, bodyAssertion);
+            assertEquals(1, results.size(), "The size of the list of results is not correct");
+            assertTrue(results.get(0).isPassed(), "Assertion should be pass");
         }
 
         @Test
         @DisplayName("Validate response body with null key")
         void testValidateResponseBodyNoKey() {
             // Arrange
-            Assertion<?> bodyAssertion = Assertion.builder()
+            Assertion bodyAssertion = Assertion.builder()
                     .target(RestAssertionTarget.BODY)
                     .key(null)
                     .type(AssertionTypes.IS)
@@ -85,7 +94,7 @@ class RestResponseValidatorImplTest {
                     .build();
 
             // Act & Assert
-            assertThrows(Exception.class,
+            assertThrows(InvalidAssertionException.class,
                     () -> validator.validateResponse(responseMock, bodyAssertion));
         }
 
@@ -93,7 +102,7 @@ class RestResponseValidatorImplTest {
         @DisplayName("Validate response body with null path value")
         void testValidateResponseBodyNullPathValue() {
             // Arrange
-            Assertion<?> bodyAssertion = Assertion.builder()
+            Assertion bodyAssertion = Assertion.builder()
                     .target(RestAssertionTarget.BODY)
                     .key("not.existing")
                     .type(AssertionTypes.IS)
@@ -115,7 +124,7 @@ class RestResponseValidatorImplTest {
         @DisplayName("Validate response header")
         void testValidateResponseHeader() {
             // Arrange
-            Assertion<?> headerAssertion = Assertion.builder()
+            Assertion headerAssertion = Assertion.builder()
                     .target(RestAssertionTarget.HEADER)
                     .key("X-Something")
                     .type(AssertionTypes.IS)
@@ -125,14 +134,16 @@ class RestResponseValidatorImplTest {
             when(responseMock.getHeader("X-Something")).thenReturn("Value");
 
             // Act & Assert
-            assertNotNull(validator.validateResponse(responseMock, headerAssertion));
+            List<AssertionResult<Object>> results = validator.validateResponse(responseMock, headerAssertion);
+            assertEquals(1, results.size(), "The size of the list of results is not correct");
+            assertTrue(results.get(0).isPassed(), "Assertion should be pass");
         }
 
         @Test
         @DisplayName("Validate response header with null key")
         void testValidateResponseHeaderNoKey() {
             // Arrange
-            Assertion<?> headerAssertion = Assertion.builder()
+            Assertion headerAssertion = Assertion.builder()
                     .target(RestAssertionTarget.HEADER)
                     .key(null)
                     .type(AssertionTypes.IS)
@@ -140,7 +151,7 @@ class RestResponseValidatorImplTest {
                     .build();
 
             // Act & Assert
-            assertThrows(Exception.class,
+            assertThrows(InvalidAssertionException.class,
                     () -> validator.validateResponse(responseMock, headerAssertion));
         }
 
@@ -148,7 +159,7 @@ class RestResponseValidatorImplTest {
         @DisplayName("Validate response header with missing header")
         void testValidateResponseHeaderMissingHeader() {
             // Arrange
-            Assertion<?> headerAssertion = Assertion.builder()
+            Assertion headerAssertion = Assertion.builder()
                     .target(RestAssertionTarget.HEADER)
                     .key("X-NotThere")
                     .type(AssertionTypes.IS)
@@ -162,4 +173,39 @@ class RestResponseValidatorImplTest {
                     () -> validator.validateResponse(responseMock, headerAssertion));
         }
     }
+
+    @Nested
+    @DisplayName("Invalid Target Assertion Tests")
+    class InvalidTargetAssertionTests {
+        @Test
+        @DisplayName("Validate invalid assertion target throws exception")
+        void testInvalidateAssertionTargetThrowsException() {
+            // Arrange
+            Assertion invalidAssertion = Assertion.builder()
+                                            .target(AssertionTargetImpl.INVALID)
+                                            .key("AssertionKeyForStatus")
+                                            .type(AssertionTypes.IS)
+                                            .expected(200)
+                                            .build();
+
+            assertThrows(InvalidAssertionException.class,
+                () -> validator.validateResponse(responseMock, invalidAssertion));
+
+        }
+
+
+        private enum AssertionTargetImpl implements AssertionTarget{
+            INVALID;
+
+
+            @Override
+            public Enum<?> target() {
+                return this;
+            }
+        }
+
+    }
+
+
+
 }

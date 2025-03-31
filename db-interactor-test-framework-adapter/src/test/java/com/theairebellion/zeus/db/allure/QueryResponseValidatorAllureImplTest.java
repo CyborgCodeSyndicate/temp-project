@@ -88,7 +88,7 @@ class QueryResponseValidatorAllureImplTest {
         QueryResponseValidatorAllureImpl validatorSpy = spy(new QueryResponseValidatorAllureImpl(mockExtractor));
         QueryResponse queryResponse = mock(QueryResponse.class);
 
-        Assertion<?> assertion = Assertion.builder()
+        Assertion assertion = Assertion.builder()
                 .key("testKey")
                 .expected("testValue")
                 .type(AssertionTypes.IS)

@@ -12,8 +12,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 
@@ -29,15 +34,16 @@ class RetryUtilsTest {
         void shouldReturnImmediatelyWhenConditionIsSatisfiedOnFirstAttempt() {
             // When
             String result = RetryUtils.retryUntil(
-                    Duration.ofSeconds(1),
-                    Duration.ofMillis(10),
-                    () -> "success",
-                    res -> res.equals("success")
+                Duration.ofSeconds(1),
+                Duration.ofMillis(10),
+                () -> "success",
+                res -> res.equals("success")
             );
 
             // Then
             assertEquals("success", result, "Should return the successful result immediately");
         }
+
 
         @Test
         @DisplayName("Should keep retrying until condition is eventually satisfied")
@@ -47,16 +53,17 @@ class RetryUtilsTest {
 
             // When
             String result = RetryUtils.retryUntil(
-                    Duration.ofSeconds(2),
-                    Duration.ofMillis(10),
-                    () -> (counter.incrementAndGet() >= 3) ? "done" : "not yet",
-                    res -> res.equals("done")
+                Duration.ofSeconds(2),
+                Duration.ofMillis(10),
+                () -> (counter.incrementAndGet() >= 3) ? "done" : "not yet",
+                res -> res.equals("done")
             );
 
             // Then
             assertEquals("done", result, "Should return the final successful result");
             assertTrue(counter.get() >= 3, "Should have attempted at least 3 times");
         }
+
 
         @Test
         @DisplayName("Should handle exceptions in supplier and continue retrying until success")
@@ -66,21 +73,22 @@ class RetryUtilsTest {
 
             // When
             String result = RetryUtils.retryUntil(
-                    Duration.ofSeconds(2),
-                    Duration.ofMillis(10),
-                    () -> {
-                        if (counter.incrementAndGet() < 3) {
-                            throw new RuntimeException("failure");
-                        }
-                        return "ok";
-                    },
-                    res -> res.equals("ok")
+                Duration.ofSeconds(2),
+                Duration.ofMillis(10),
+                () -> {
+                    if (counter.incrementAndGet() < 3) {
+                        throw new RuntimeException("failure");
+                    }
+                    return "ok";
+                },
+                res -> res.equals("ok")
             );
 
             // Then
             assertEquals("ok", result, "Should return success after handling exceptions");
             assertTrue(counter.get() >= 3, "Should have attempted at least 3 times");
         }
+
     }
 
     @Nested
@@ -89,7 +97,8 @@ class RetryUtilsTest {
 
         @Test
         @DisplayName("Should throw exception when condition is never satisfied within max wait time")
-        @Timeout(1) // Ensures test doesn't hang too long
+        @Timeout(1)
+            // Ensures test doesn't hang too long
         void shouldThrowExceptionWhenConditionIsNeverSatisfied() {
             // Given
             AtomicInteger counter = new AtomicInteger(0);
@@ -97,21 +106,22 @@ class RetryUtilsTest {
 
             // When/Then
             IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                    RetryUtils.retryUntil(
-                            shortTimeout,
-                            Duration.ofMillis(20),
-                            () -> {
-                                counter.incrementAndGet();
-                                return "bad";
-                            },
-                            res -> res.equals("good")
-                    )
+                                                                                     RetryUtils.retryUntil(
+                                                                                         shortTimeout,
+                                                                                         Duration.ofMillis(20),
+                                                                                         () -> {
+                                                                                             counter.incrementAndGet();
+                                                                                             return "bad";
+                                                                                         },
+                                                                                         res -> res.equals("good")
+                                                                                     )
             );
 
             assertTrue(ex.getMessage().contains("Failed to satisfy condition"),
-                    "Exception message should indicate failure reason");
+                "Exception message should indicate failure reason");
             assertTrue(counter.get() > 0, "Should have made at least one attempt");
         }
+
 
         @Test
         @DisplayName("Should throw exception when thread is interrupted during retry")
@@ -122,20 +132,21 @@ class RetryUtilsTest {
 
             // When/Then
             IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                    RetryUtils.retryUntil(
-                            Duration.ofSeconds(1),
-                            Duration.ofMillis(50),
-                            supplier,
-                            res -> false
-                    )
+                                                                                     RetryUtils.retryUntil(
+                                                                                         Duration.ofSeconds(1),
+                                                                                         Duration.ofMillis(50),
+                                                                                         supplier,
+                                                                                         res -> false
+                                                                                     )
             );
 
             assertTrue(ex.getMessage().contains("Retry was interrupted"),
-                    "Exception message should indicate interruption");
+                "Exception message should indicate interruption");
 
             // Clear interrupt flag for subsequent tests
             Thread.interrupted();
         }
+
     }
 
     @Nested
@@ -153,30 +164,36 @@ class RetryUtilsTest {
 
             // When/Then - Test each parameter
             NullPointerException ex1 = assertThrows(NullPointerException.class, () ->
-                    RetryUtils.retryUntil(null, interval, supplier, condition)
+                                                                                    RetryUtils.retryUntil(null,
+                                                                                        interval, supplier, condition)
             );
             assertTrue(ex1.getMessage().contains("maxWait must not be null"),
-                    "Should check maxWait parameter");
+                "Should check maxWait parameter");
 
             NullPointerException ex2 = assertThrows(NullPointerException.class, () ->
-                    RetryUtils.retryUntil(maxWait, null, supplier, condition)
+                                                                                    RetryUtils.retryUntil(maxWait, null,
+                                                                                        supplier, condition)
             );
             assertTrue(ex2.getMessage().contains("retryInterval must not be null"),
-                    "Should check retryInterval parameter");
+                "Should check retryInterval parameter");
 
             NullPointerException ex3 = assertThrows(NullPointerException.class, () ->
-                    RetryUtils.retryUntil(maxWait, interval, null, condition)
+                                                                                    RetryUtils.retryUntil(maxWait,
+                                                                                        interval, null, condition)
             );
             assertTrue(ex3.getMessage().contains("supplier must not be null"),
-                    "Should check supplier parameter");
+                "Should check supplier parameter");
 
             NullPointerException ex4 = assertThrows(NullPointerException.class, () ->
-                    RetryUtils.retryUntil(maxWait, interval, supplier, null)
+                                                                                    RetryUtils.retryUntil(maxWait,
+                                                                                        interval, supplier, null)
             );
             assertTrue(ex4.getMessage().contains("condition must not be null"),
-                    "Should check condition parameter");
+                "Should check condition parameter");
         }
+
     }
+
 
     @Test
     @DisplayName("Should throw exception when max wait time is exceeded")
@@ -187,12 +204,12 @@ class RetryUtilsTest {
 
         // When
         IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                RetryUtils.retryUntil(
-                        maxWait,
-                        interval,
-                        () -> "never",
-                        res -> false
-                )
+                                                                                 RetryUtils.retryUntil(
+                                                                                     maxWait,
+                                                                                     interval,
+                                                                                     () -> "never",
+                                                                                     res -> false
+                                                                                 )
         );
 
         // Then
@@ -200,6 +217,7 @@ class RetryUtilsTest {
         assertTrue(message.contains("Failed to satisfy condition"), "Exception should indicate timeout");
         assertTrue(message.contains("after"), "Exception should mention that attempts were made");
     }
+
 
     @Test
     @DisplayName("Should handle zero retry interval successfully")
@@ -209,16 +227,17 @@ class RetryUtilsTest {
 
         // When
         String result = RetryUtils.retryUntil(
-                Duration.ofMillis(500),
-                Duration.ofMillis(0), // Zero interval
-                () -> (counter.incrementAndGet() >= 3) ? "done" : "not yet",
-                res -> res.equals("done")
+            Duration.ofMillis(500),
+            Duration.ofMillis(0), // Zero interval
+            () -> (counter.incrementAndGet() >= 3) ? "done" : "not yet",
+            res -> res.equals("done")
         );
 
         // Then
         assertEquals("done", result, "Should return successful result with zero interval");
         assertTrue(counter.get() >= 3, "Should have attempted at least 3 times");
     }
+
 
     @Test
     @DisplayName("Should log retry attempts appropriately")
@@ -229,10 +248,10 @@ class RetryUtilsTest {
 
             // When
             RetryUtils.retryUntil(
-                    Duration.ofMillis(100),
-                    Duration.ofMillis(10),
-                    () -> (counter.incrementAndGet() >= 3) ? "done" : "not yet",
-                    res -> res.equals("done")
+                Duration.ofMillis(100),
+                Duration.ofMillis(10),
+                () -> (counter.incrementAndGet() >= 3) ? "done" : "not yet",
+                res -> res.equals("done")
             );
 
             // Then
@@ -242,6 +261,7 @@ class RetryUtilsTest {
             fail("Test failed due to unexpected exception");
         }
     }
+
 
     @Nested
     @DisplayName("RetryUtils Edge Cases")
@@ -257,19 +277,20 @@ class RetryUtilsTest {
 
             // When
             String result = RetryUtils.retryUntil(
-                    maxWait,
-                    interval,
-                    () -> {
-                        counter.incrementAndGet();
-                        return "success";
-                    },
-                    s -> true // Always satisfies condition
+                maxWait,
+                interval,
+                () -> {
+                    counter.incrementAndGet();
+                    return "success";
+                },
+                s -> true // Always satisfies condition
             );
 
             // Then
             assertEquals("success", result, "Should return the successful result");
             assertEquals(1, counter.get(), "Should only make one attempt");
         }
+
 
         @Test
         @DisplayName("Should throw exception immediately if wait time is zero")
@@ -280,18 +301,19 @@ class RetryUtilsTest {
 
             // When/Then
             IllegalStateException ex = assertThrows(IllegalStateException.class,
-                    () -> RetryUtils.retryUntil(
-                            zeroWait,
-                            interval,
-                            () -> "result",
-                            s -> false // Condition never satisfied
-                    ),
-                    "Should throw with zero wait time"
+                () -> RetryUtils.retryUntil(
+                    zeroWait,
+                    interval,
+                    () -> "result",
+                    s -> false // Condition never satisfied
+                ),
+                "Should throw with zero wait time"
             );
 
             assertTrue(ex.getMessage().contains("Failed to satisfy condition"),
-                    "Exception should indicate timeout");
+                "Exception should indicate timeout");
         }
+
 
         @Test
         @DisplayName("Should throw exception when condition is never met and interval is zero")
@@ -303,20 +325,21 @@ class RetryUtilsTest {
 
             // When/Then
             IllegalStateException ex = assertThrows(IllegalStateException.class,
-                    () -> RetryUtils.retryUntil(
-                            maxWait,
-                            zeroInterval,
-                            () -> {
-                                counter.incrementAndGet();
-                                return "result";
-                            },
-                            s -> false // Never satisfies condition
-                    ),
-                    "Should attempt multiple times with zero interval"
+                () -> RetryUtils.retryUntil(
+                    maxWait,
+                    zeroInterval,
+                    () -> {
+                        counter.incrementAndGet();
+                        return "result";
+                    },
+                    s -> false // Never satisfies condition
+                ),
+                "Should attempt multiple times with zero interval"
             );
 
             assertTrue(counter.get() > 1, "Should make multiple attempts even with zero interval");
         }
+
 
         @Test
         @DisplayName("Should collect suppressed exceptions when condition throws repeatedly")
@@ -328,30 +351,31 @@ class RetryUtilsTest {
 
             // When/Then
             IllegalStateException ex = assertThrows(IllegalStateException.class,
-                    () -> RetryUtils.retryUntil(
-                            maxWait,
-                            interval,
-                            () -> "result",
-                            s -> {
-                                int count = exceptionCount.incrementAndGet();
-                                throw new RuntimeException("Condition exception #" + count);
-                            }
-                    )
+                () -> RetryUtils.retryUntil(
+                    maxWait,
+                    interval,
+                    () -> "result",
+                    s -> {
+                        int count = exceptionCount.incrementAndGet();
+                        throw new RuntimeException("Condition exception #" + count);
+                    }
+                )
             );
 
             // Then
             assertTrue(ex.getMessage().contains("Failed to satisfy condition"),
-                    "Should indicate that condition wasn't satisfied");
+                "Should indicate that condition wasn't satisfied");
 
             // Check suppressed exceptions
             Throwable[] suppressed = ex.getSuppressed();
             assertTrue(suppressed.length > 0, "Should have at least one suppressed exception");
             assertTrue(suppressed[0].getMessage().contains("Condition exception"),
-                    "Suppressed exception should be from our condition");
+                "Suppressed exception should be from our condition");
 
             // Verify condition was called
             assertTrue(exceptionCount.get() > 0, "Condition should be called at least once");
         }
+
 
         @Test
         @DisplayName("Should handle very small intervals with multiple attempts")
@@ -363,19 +387,84 @@ class RetryUtilsTest {
 
             // When/Then
             IllegalStateException ex = assertThrows(IllegalStateException.class,
-                    () -> RetryUtils.retryUntil(
-                            maxWait,
-                            tinyInterval,
-                            () -> {
-                                counter.incrementAndGet();
-                                return "result";
-                            },
-                            s -> false // Never satisfies condition
-                    ),
-                    "Should handle very small intervals properly"
+                () -> RetryUtils.retryUntil(
+                    maxWait,
+                    tinyInterval,
+                    () -> {
+                        counter.incrementAndGet();
+                        return "result";
+                    },
+                    s -> false // Never satisfies condition
+                ),
+                "Should handle very small intervals properly"
             );
 
             assertTrue(counter.get() > 1, "Should make multiple attempts with tiny interval");
         }
+
+
+        @Test
+        @DisplayName("Should throw when maxWait is negative")
+        void shouldThrowWhenMaxWaitIsNegative() {
+            // Given
+            Duration maxWait = Duration.ofMillis(-1);
+            Duration retryInterval = Duration.ofMillis(10);
+
+            // When / Then
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                                                                                           RetryUtils.retryUntil(
+                                                                                               maxWait, retryInterval,
+                                                                                               () -> "value", v -> true)
+            );
+
+            assertEquals("maxWait must not be negative", ex.getMessage());
+        }
+
+
+        @Test
+        @DisplayName("Should throw when retryInterval is negative")
+        void shouldThrowWhenRetryIntervalIsNegative() {
+            // Given
+            Duration maxWait = Duration.ofMillis(100);
+            Duration retryInterval = Duration.ofMillis(-10);
+
+            // When / Then
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                                                                                           RetryUtils.retryUntil(
+                                                                                               maxWait, retryInterval,
+                                                                                               () -> "value", v -> true)
+            );
+
+            assertEquals("retryInterval must not be negative", ex.getMessage());
+        }
+
+
+        @Test
+        @DisplayName("Should exit retry loop immediately if remaining time is 0")
+        void shouldBreakImmediatelyIfRemainingTimeIsZero() {
+            // Given a very short timeout and a long sleep interval
+            Duration maxWait = Duration.ofMillis(1);     // practically immediate
+            Duration retryInterval = Duration.ofMillis(100);  // much longer than maxWait
+            AtomicInteger counter = new AtomicInteger(0);
+
+            // When / Then
+            IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+                                                                                     RetryUtils.retryUntil(
+                                                                                         maxWait,
+                                                                                         retryInterval,
+                                                                                         () -> {
+                                                                                             counter.incrementAndGet();
+                                                                                             return "nope";
+                                                                                         },
+                                                                                         result -> false
+                                                                                     )
+            );
+
+            assertTrue(counter.get() <= 1, "Should not retry more than once due to time constraint");
+            assertTrue(ex.getMessage().contains("Failed to satisfy condition"),
+                "Should indicate condition was not satisfied in time");
+        }
+
     }
+
 }

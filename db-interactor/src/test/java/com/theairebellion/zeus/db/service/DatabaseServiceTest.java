@@ -52,7 +52,7 @@ class DatabaseServiceTest {
     private DatabaseConfiguration dbConfig;
 
     @Mock
-    private Assertion<?> assertion;
+    private Assertion assertion;
 
     @InjectMocks
     private DatabaseService databaseService;

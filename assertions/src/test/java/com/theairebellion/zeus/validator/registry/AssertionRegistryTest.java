@@ -67,6 +67,9 @@ class AssertionRegistryTest {
 
             assertTrue(exception.getMessage().contains("No validator registered"),
                     "Exception message should indicate the problem");
+
+            assertTrue(exception.getMessage().contains(unknownType.type().name()),
+                "Exception message should contain the not registered assertion");
         }
 
         @Test

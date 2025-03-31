@@ -31,6 +31,8 @@ public abstract class LogCore {
      */
     private final Marker marker;
 
+    private static Boolean SILENT_MODE;
+
     /**
      * Custom log level for step-based logs.
      */
@@ -46,20 +48,12 @@ public abstract class LogCore {
      */
     private static final Level EXTENDED_LEVEL = Level.forName("EXTENDED", 450);
 
-    /**
-     * Flag indicating whether the application is running in silent mode.
-     * <p>
-     * If enabled via {@code silent.mode=true}, warning, error, debug, trace, step,
-     * validation, and extended logs will be suppressed.
-     * </p>
-     * <p>Default: {@code false}</p>
-     */
-    private static final Boolean SILENT_MODE = Boolean.parseBoolean(System.getProperty("silent.mode", "false"));
 
     /**
      * Flag indicating whether extended logging is enabled, controlled via system properties.
      */
     private static Boolean EXTENDED_LOGGING;
+
 
     /**
      * Initializes the logger and marker for a specific logging category.
@@ -72,6 +66,7 @@ public abstract class LogCore {
         this.marker = LogZeus.registerMarker(markerName);
     }
 
+
     /**
      * Logs an informational message.
      *
@@ -82,6 +77,7 @@ public abstract class LogCore {
         logger.info(marker, message, args);
     }
 
+
     /**
      * Logs a warning message unless silent mode is enabled.
      *
@@ -89,10 +85,11 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void warnLog(String message, Object... args) {
-        if (!SILENT_MODE) {
+        if (!isSilent()) {
             logger.warn(marker, message, args);
         }
     }
+
 
     /**
      * Logs an error message unless silent mode is enabled.
@@ -101,10 +98,11 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void errorLog(String message, Object... args) {
-        if (!SILENT_MODE) {
+        if (!isSilent()) {
             logger.error(marker, message, args);
         }
     }
+
 
     /**
      * Logs a debug message unless silent mode is enabled.
@@ -113,10 +111,11 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void debugLog(String message, Object... args) {
-        if (!SILENT_MODE) {
+        if (!isSilent()) {
             logger.debug(marker, message, args);
         }
     }
+
 
     /**
      * Logs a trace message unless silent mode is enabled.
@@ -125,10 +124,11 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void traceLog(String message, Object... args) {
-        if (!SILENT_MODE) {
+        if (!isSilent()) {
             logger.trace(marker, message, args);
         }
     }
+
 
     /**
      * Logs a step-based message unless silent mode is enabled.
@@ -140,10 +140,11 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void stepLog(String message, Object... args) {
-        if (!SILENT_MODE) {
+        if (!isSilent()) {
             logger.log(STEP_LEVEL, marker, message, args);
         }
     }
+
 
     /**
      * Logs a validation-related message unless silent mode is enabled.
@@ -156,10 +157,11 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void validationLog(String message, Object... args) {
-        if (!SILENT_MODE) {
+        if (!isSilent()) {
             logger.log(VALIDATION_LEVEL, marker, message, args);
         }
     }
+
 
     /**
      * Logs an extended message unless silent mode is enabled.
@@ -172,10 +174,11 @@ public abstract class LogCore {
      * @param args    Arguments to be formatted within the message.
      */
     protected void extendedLog(String message, Object... args) {
-        if (!SILENT_MODE && extendedLoggingEnabled()) {
+        if (!isSilent() && extendedLoggingEnabled()) {
             logger.log(EXTENDED_LEVEL, marker, message, args);
         }
     }
+
 
     /**
      * Determines whether extended logging is enabled based on the system property {@code extended.logging}.
@@ -188,5 +191,26 @@ public abstract class LogCore {
         }
         return EXTENDED_LOGGING;
     }
+
+
+    /**
+     * Determines whether the application is running in silent mode based on the system property {@code silent.mode}.
+     * <p>
+     * When silent mode is enabled (i.e., {@code silent.mode=true}), all non-informational logs will be suppressed.
+     * This includes warning, error, debug, trace, step, validation, and extended logs.
+     * </p>
+     * <p>
+     * By default, silent mode is disabled ({@code false}).
+     * </p>
+     *
+     * @return {@code true} if silent mode is enabled, otherwise {@code false}.
+     */
+    private static boolean isSilent() {
+        if (SILENT_MODE == null) {
+            SILENT_MODE = Boolean.parseBoolean(System.getProperty("silent.mode", "false"));
+        }
+        return SILENT_MODE;
+    }
+
 
 }

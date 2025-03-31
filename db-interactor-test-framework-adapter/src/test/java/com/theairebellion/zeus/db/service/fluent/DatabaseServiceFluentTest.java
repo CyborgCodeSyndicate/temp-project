@@ -44,7 +44,7 @@ class DatabaseServiceFluentTest {
     private QueryResponse queryResponse;
 
     @Mock
-    private Assertion<?> assertion;
+    private Assertion assertion;
 
     private List<AssertionResult<Object>> assertionResults;
 

@@ -29,6 +29,6 @@ public interface RestResponseValidator {
      * @return A list of assertion results, indicating pass or failure for each assertion.
      * @throws IllegalArgumentException If the response or assertions are null.
      */
-    <T> List<AssertionResult<T>> validateResponse(Response response, Assertion<?>... assertions);
+    <T> List<AssertionResult<T>> validateResponse(Response response, Assertion... assertions);
 
 }
