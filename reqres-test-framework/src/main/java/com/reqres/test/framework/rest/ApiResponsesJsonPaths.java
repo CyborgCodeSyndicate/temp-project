@@ -12,7 +12,16 @@ public enum ApiResponsesJsonPaths {
     USER_FIRST_NAME("data[%d].first_name"),
     USER_AVATAR_BY_INDEX("data[%d].avatar"),
     CREATE_USER_NAME("name"),
-    CREATE_USER_JOB("job");
+    CREATE_USER_JOB("job"),
+    RESOURCE_ID_BY_INDEX("data[%d].id"),
+    RESOURCE_NAME_BY_INDEX("data[%d].name"),
+    RESOURCE_COLOR_BY_INDEX("data[%d].color"),
+    RESOURCE_PAGE("page"),
+    RESOURCE_ID("data.id"),
+    RESOURCE_NAME("data.name"),
+    RESOURCE_YEAR("data.year"),
+    RESOURCE_COLOR("data.color"),
+    RESOURCE_PANTONE("data.pantone_value");
 
     private final String jsonPath;
 

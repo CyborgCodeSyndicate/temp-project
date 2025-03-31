@@ -11,7 +11,9 @@ public enum Endpoints implements Endpoint {
     GET_USER(Method.GET, "/users/{id}"),
     POST_CREATE_USER(Method.POST, "/users"),
     POST_LOGIN_USER(Method.POST, "/login"),
-    DELETE_USER(Method.DELETE, "/users/{id}");
+    DELETE_USER(Method.DELETE, "/users/{id}"),
+    GET_ALL_RESOURCES(Method.GET, "/unknown?{page}"),
+    GET_RESOURCE(Method.GET, "/unknown/{id}");
 
     private final Method method;
     private final String url;
