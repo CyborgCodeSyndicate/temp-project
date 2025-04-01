@@ -15,7 +15,8 @@ import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.*;
 import static io.restassured.http.ContentType.JSON;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.apache.http.HttpStatus.*;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
 
 @API
 public class ResourcesAIGeneratedTest extends BaseTest {
@@ -83,7 +84,7 @@ public class ResourcesAIGeneratedTest extends BaseTest {
                 .requestAndValidate(
                         GET_RESOURCE.withPathParam("id", 23),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_NOT_FOUND).build(),
-                        Assertion.builder().target(BODY).key("$").type(IS).expected(EMPTY_JSON).build()
+                        Assertion.builder().target(BODY).key(ROOT.getJsonPath()).type(IS).expected(EMPTY_JSON).build()
                 )
                 .complete();
     }

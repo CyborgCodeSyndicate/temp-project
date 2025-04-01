@@ -2,15 +2,20 @@ package com.reqres.test.framework.rest;
 
 public enum ApiResponsesJsonPaths {
 
+    ROOT("$"),
     TOTAL("total"),
     TOTAL_PAGES("total_pages"),
     PER_PAGE("per_page"),
     SUPPORT_URL("support.url"),
     SUPPORT_TEXT("support.text"),
+    PAGE("page"),
+    USER_EMAIL_BY_INDEX("data[%d].email"),
     DATA("data"),
     USER_ID("data[%d].id"),
     USER_FIRST_NAME("data[%d].first_name"),
     USER_AVATAR_BY_INDEX("data[%d].avatar"),
+    CREATED_USER_ID("id"),
+    CREATED_USER_TIMESTAMP("createdAt"),
     CREATE_USER_NAME("name"),
     CREATE_USER_JOB("job"),
     RESOURCE_ID_BY_INDEX("data[%d].id"),
@@ -21,7 +26,10 @@ public enum ApiResponsesJsonPaths {
     RESOURCE_NAME("data.name"),
     RESOURCE_YEAR("data.year"),
     RESOURCE_COLOR("data.color"),
-    RESOURCE_PANTONE("data.pantone_value");
+    RESOURCE_PANTONE("data.pantone_value"),
+    SINGLE_USER_FIRST_NAME("data.first_name"),
+    SINGLE_USER_EMAIL("data.email"),
+    TOKEN("token");
 
     private final String jsonPath;
 

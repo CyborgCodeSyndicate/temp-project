@@ -20,6 +20,7 @@ import static com.reqres.test.framework.base.World.OLYMPYS;
 import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.*;
 import static com.reqres.test.framework.preconditions.QuestPreconditions.Data.CREATE_NEW_USER;
+import static com.reqres.test.framework.rest.ApiResponsesJsonPaths.*;
 import static com.reqres.test.framework.rest.Endpoints.*;
 import static com.reqres.test.framework.utils.Helpers.EMPTY_JSON;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.*;
@@ -39,16 +40,16 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
                         GET_ALL_USERS.withQueryParam("page", 1),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build(),
                         Assertion.builder().target(HEADER).key(CONTENT_TYPE).type(CONTAINS).expected(JSON.toString()).build(),
-                        Assertion.builder().target(BODY).key("data").type(NOT_EMPTY).expected(true).build(),
-                        Assertion.builder().target(BODY).key("support.text").type(CONTAINS).expected("Tired of writing").build(),
-                        Assertion.builder().target(BODY).key("data[0].avatar").type(ENDS_WITH).expected(".jpg").build(),
-                        Assertion.builder().target(BODY).key("data[0].id").type(NOT_NULL).expected(true).build()
+                        Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(NOT_EMPTY).expected(true).build(),
+                        Assertion.builder().target(BODY).key(SUPPORT_TEXT.getJsonPath()).type(CONTAINS).expected("Tired of writing").build(),
+                        Assertion.builder().target(BODY).key(USER_AVATAR_BY_INDEX.getJsonPath(0)).type(ENDS_WITH).expected(".jpg").build(),
+                        Assertion.builder().target(BODY).key(USER_ID.getJsonPath(0)).type(NOT_NULL).expected(true).build()
                 )
                 .requestAndValidate(
                         GET_ALL_USERS.withQueryParam("page", 2),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build(),
-                        Assertion.builder().target(BODY).key("page").type(IS).expected(2).build(),
-                        Assertion.builder().target(BODY).key("data[5].email").type(CONTAINS).expected("@reqres.in").build()
+                        Assertion.builder().target(BODY).key(PAGE.getJsonPath()).type(IS).expected(2).build(),
+                        Assertion.builder().target(BODY).key(USER_EMAIL_BY_INDEX.getJsonPath(5)).type(CONTAINS).expected("@reqres.in").build()
                 )
                 .complete();
     }
@@ -61,8 +62,8 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
                 .requestAndValidate(
                         GET_USER.withPathParam("id", 9),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build(),
-                        Assertion.builder().target(BODY).key("data.first_name").type(IS).expected("Tobias").build(),
-                        Assertion.builder().target(BODY).key("data.email").type(CONTAINS).expected("@reqres.in").build()
+                        Assertion.builder().target(BODY).key(SINGLE_USER_FIRST_NAME.getJsonPath()).type(IS).expected("Tobias").build(),
+                        Assertion.builder().target(BODY).key(SINGLE_USER_EMAIL.getJsonPath()).type(CONTAINS).expected("@reqres.in").build()
                 )
                 .requestAndValidate(
                         GET_USER.withPathParam("id", 999),
@@ -79,10 +80,10 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
                         POST_CREATE_USER,
                         user,
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
-                        Assertion.builder().target(BODY).key("name").type(IS).expected(user.getName()).build(),
-                        Assertion.builder().target(BODY).key("job").type(IS).expected(user.getJob()).build(),
-                        Assertion.builder().target(BODY).key("id").type(NOT_NULL).expected(true).build(),
-                        Assertion.builder().target(BODY).key("createdAt").type(MATCHES_REGEX).expected("^\\d{4}-\\d{2}-\\d{2}T.*Z$").build()
+                        Assertion.builder().target(BODY).key(CREATE_USER_NAME.getJsonPath()).type(IS).expected(user.getName()).build(),
+                        Assertion.builder().target(BODY).key(CREATE_USER_JOB.getJsonPath()).type(IS).expected(user.getJob()).build(),
+                        Assertion.builder().target(BODY).key(CREATED_USER_ID.getJsonPath()).type(NOT_NULL).expected(true).build(),
+                        Assertion.builder().target(BODY).key(CREATED_USER_TIMESTAMP.getJsonPath()).type(MATCHES_REGEX).expected("^\\d{4}-\\d{2}-\\d{2}T.*Z$").build()
                 )
                 .complete();
     }
@@ -95,8 +96,8 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
                         POST_LOGIN_USER,
                         loginUser,
                         Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build(),
-                        Assertion.builder().target(BODY).key("token").type(NOT_NULL).expected(true).build(),
-                        Assertion.builder().target(BODY).key("token").type(MATCHES_REGEX).expected("[a-zA-Z0-9]+").build()
+                        Assertion.builder().target(BODY).key(TOKEN.getJsonPath()).type(NOT_NULL).expected(true).build(),
+                        Assertion.builder().target(BODY).key(TOKEN.getJsonPath()).type(MATCHES_REGEX).expected("[a-zA-Z0-9]+").build()
                 )
                 .complete();
     }
@@ -139,10 +140,10 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
                         POST_CREATE_USER,
                         userIntermediate.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
-                        Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").build(),
-                        Assertion.builder().target(BODY).key("job").type(IS).expected("Intermediate Leader").build(),
-                        Assertion.builder().target(BODY).key("id").type(NOT_NULL).expected(true).build(),
-                        Assertion.builder().target(BODY).key("createdAt").type(MATCHES_REGEX).expected("^\\d{4}-\\d{2}-\\d{2}T.*Z$").build()
+                        Assertion.builder().target(BODY).key(CREATE_USER_NAME.getJsonPath()).type(IS).expected("Mr. Morpheus").build(),
+                        Assertion.builder().target(BODY).key(CREATE_USER_JOB.getJsonPath()).type(IS).expected("Intermediate Leader").build(),
+                        Assertion.builder().target(BODY).key(CREATED_USER_ID.getJsonPath()).type(NOT_NULL).expected(true).build(),
+                        Assertion.builder().target(BODY).key(CREATED_USER_TIMESTAMP.getJsonPath()).type(MATCHES_REGEX).expected("^\\d{4}-\\d{2}-\\d{2}T.*Z$").build()
                 )
                 .requestAndValidate(
                         DELETE_USER.withPathParam("id", leaderId),
@@ -178,10 +179,10 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
                         POST_CREATE_USER,
                         userIntermediate.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
-                        Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").build(),
-                        Assertion.builder().target(BODY).key("job").type(IS).expected("Intermediate Leader").build(),
-                        Assertion.builder().target(BODY).key("id").type(NOT_NULL).expected(true).build(),
-                        Assertion.builder().target(BODY).key("createdAt").type(MATCHES_REGEX).expected("^\\d{4}-\\d{2}-\\d{2}T.*Z$").build()
+                        Assertion.builder().target(BODY).key(CREATE_USER_NAME.getJsonPath()).type(IS).expected("Mr. Morpheus").build(),
+                        Assertion.builder().target(BODY).key(CREATE_USER_JOB.getJsonPath()).type(IS).expected("Intermediate Leader").build(),
+                        Assertion.builder().target(BODY).key(CREATED_USER_ID.getJsonPath()).type(NOT_NULL).expected(true).build(),
+                        Assertion.builder().target(BODY).key(CREATED_USER_TIMESTAMP.getJsonPath()).type(MATCHES_REGEX).expected("^\\d{4}-\\d{2}-\\d{2}T.*Z$").build()
                 )
                 .requestAndValidate(
                         DELETE_USER.withPathParam("id", leaderId),
@@ -205,9 +206,8 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
                 .requestAndValidate(
                         GET_USER.withPathParam("id", 23),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_NOT_FOUND).build(),
-                        Assertion.builder().target(BODY).key("$").type(IS).expected(EMPTY_JSON).build()
+                        Assertion.builder().target(BODY).key(ROOT.getJsonPath()).type(IS).expected(EMPTY_JSON).build()
                 )
                 .complete();
     }
-
 }
