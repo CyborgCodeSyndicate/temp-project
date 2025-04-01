@@ -2,7 +2,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
+import com.theairebellion.zeus.ui.storage.StorageKeysUi;
 import com.theairebellion.zeus.ui.selenium.ToggleUIElement;
 import com.theairebellion.zeus.ui.service.fluent.mock.MockToggleComponentType;
 import com.theairebellion.zeus.ui.service.fluent.mock.MockToggleService;

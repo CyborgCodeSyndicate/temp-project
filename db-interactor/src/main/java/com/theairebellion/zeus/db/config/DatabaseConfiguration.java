@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.db.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,38 +12,49 @@ import lombok.Getter;
  *
  * @author Cyborg Code Syndicate
  */
-@AllArgsConstructor
 @Getter
 @Builder
 public class DatabaseConfiguration {
 
     /**
-     * The type of database (e.g., PostgreSQL, MySQL).
+     * The type of database (e.g., PostgreSQL, MySQL, h2).
      */
     private DbType dbType;
 
     /**
      * The hostname or IP address of the database server.
      */
-    private final String host;
+    private String host;
 
     /**
      * The port number used for database connections.
      */
-    private final int port;
+    private Integer port;
 
     /**
      * The name of the database.
      */
-    private final String database;
+    private String database;
 
     /**
      * The username for authenticating the database connection.
      */
-    private final String dbUser;
+    private String dbUser;
 
     /**
      * The password for authenticating the database connection.
      */
-    private final String dbPassword;
+    private String dbPassword;
+
+    //todo: javaDocs
+    private String fullConnectionString;
+
+    //todo: javaDocs
+    public String buildUrlKey() {
+        return String.format("%s://%s:%d/%s",
+                dbType.protocol(),
+                host,
+                port,
+                database);
+    }
 }

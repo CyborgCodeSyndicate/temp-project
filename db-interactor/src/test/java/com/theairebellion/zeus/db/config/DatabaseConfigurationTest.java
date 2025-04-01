@@ -56,7 +56,7 @@ class DatabaseConfigurationTest {
 
         // When
         DatabaseConfiguration config = new DatabaseConfiguration(
-                mockDbType, HOST, PORT, DATABASE, USER, PASSWORD);
+                mockDbType, HOST, PORT, DATABASE, USER, PASSWORD, null);
 
         // Then
         assertEquals(mockDbType, config.getDbType());

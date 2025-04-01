@@ -9,6 +9,8 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,6 +41,9 @@ public abstract class BaseLoginClient implements LoginClient {
      */
     private static final Map<LoginKey, SessionInfo> userLoginMap = new ConcurrentHashMap<>();
 
+    //todo: javaDocs
+    public static final List<SmartWebDriver> driverToKeep = new ArrayList<>();
+
     /**
      * JavaScript command to retrieve local storage data.
      */
@@ -52,7 +57,7 @@ public abstract class BaseLoginClient implements LoginClient {
     /**
      * URL of the page after a successful login.
      */
-    private String urlAfterLogging;
+    private static String urlAfterLogging;
 
     /**
      * Logs in the user and optionally caches session data for reuse.
@@ -102,11 +107,14 @@ public abstract class BaseLoginClient implements LoginClient {
                                       String password) {
         loginImpl(uiService, username, password);
         SmartWebDriver smartWebDriver = uiService.getDriver();
+        smartWebDriver.setKeepDriverForSession(true);
+        driverToKeep.add(smartWebDriver);
 
         try {
             smartWebDriver.getWait()
                     .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
+            //todo create custom exception
             throw new RuntimeException("Logging in was not successful");
         }
 
@@ -129,15 +137,21 @@ public abstract class BaseLoginClient implements LoginClient {
         SmartWebDriver smartWebDriver = uiService.getDriver();
         WebDriver driver = smartWebDriver.getOriginal();
 
-        sessionInfo.getCookies().forEach(driver.manage()::addCookie);
+        smartWebDriver.get(urlAfterLogging);
+        smartWebDriver.manage().window().maximize();
+        smartWebDriver.manage().deleteAllCookies();
+
+        sessionInfo.getCookies().forEach(cookie -> driver.manage().addCookie(cookie));
+
         executeJavaScript(driver, String.format(UPDATE_LOCAL_STORAGE, sessionInfo.getLocalStorage()));
 
         smartWebDriver.get(urlAfterLogging);
 
         try {
             smartWebDriver.getWait()
-                    .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
+                .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
+            //todo create custom exception
             throw new RuntimeException("Logging in was not successful");
         }
     }

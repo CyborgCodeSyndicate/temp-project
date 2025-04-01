@@ -245,6 +245,15 @@ public class Storage {
         });
     }
 
+    //todo: javaDocs
+    public <T> T getHookData(Object value, Class<T> clazz) {
+        Map<Object, Object> values = get(StorageKeysTest.HOOKS, Map.class);
+        if (values == null || values.get(values) == null) {
+            return null;
+        }
+        return clazz.cast(values.get(value));
+    }
+
     /**
      * Attempts to cast the provided value to the specified class, returning null if the cast is not possible.
      *

@@ -7,13 +7,6 @@ import com.theairebellion.zeus.ui.insertion.InsertionServiceRegistry;
 import com.theairebellion.zeus.ui.selenium.UIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.FindBy;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link BaseInsertionService} that processes UI elements annotated with {@link InsertionElement}.
@@ -33,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author Cyborg Code Syndicate
  */
-public class InsertionServiceElementImpl extends BaseInsertionService {
+public class InsertionServiceElementImpl extends BaseInsertionService<InsertionElement> {
 
     /**
      * WebDriver instance used for interacting with UI elements.
@@ -46,113 +39,70 @@ public class InsertionServiceElementImpl extends BaseInsertionService {
      * @param serviceRegistry The registry managing available insertion services.
      * @param webDriver       The WebDriver instance for element interaction.
      */
-    public InsertionServiceElementImpl(final InsertionServiceRegistry serviceRegistry, final SmartWebDriver webDriver) {
+    public InsertionServiceElementImpl(final InsertionServiceRegistry serviceRegistry,
+                                       final SmartWebDriver webDriver) {
         super(serviceRegistry);
         this.webDriver = webDriver;
     }
 
-    /**
-     * Retrieves the annotation from a field.
-     *
-     * @param field The field containing the annotation.
-     * @return The {@link InsertionElement} annotation, or {@code null} if not present.
-     */
+    //todo: javaDocs
     @Override
-    protected Object getFieldAnnotation(Field field) {
-        return field.getAnnotation(InsertionElement.class);
+    protected Class<InsertionElement> getAnnotationClass() {
+        return InsertionElement.class;
     }
 
-    /**
-     * Determines the {@link ComponentType} class associated with the annotation.
-     *
-     * @param annotation The annotation containing component metadata.
-     * @return The class of the associated {@link ComponentType}.
-     */
+    //todo: javaDocs
     @Override
-    protected Class<? extends ComponentType> getComponentType(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf(
-                (Class<? extends Enum>) insertionElement.locatorClass(), insertionElement.elementEnum()
+    protected int getOrder(final InsertionElement annotation) {
+        return annotation.order();
+    }
+
+    //todo: javaDocs
+    @Override
+    protected Class<? extends ComponentType> getComponentTypeEnumClass(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
         );
         return uiElement.componentType().getClass();
     }
 
-    /**
-     * Builds the locator (XPath, CSS selector) for identifying the UI component.
-     *
-     * @param annotation The annotation containing locator information.
-     * @return The Selenium {@link By} locator for the component.
-     */
+    //todo: javaDocs
     @Override
-    protected By buildLocator(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf(
-                (Class<? extends Enum>) insertionElement.locatorClass(), insertionElement.elementEnum()
+    protected By buildLocator(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
         );
-        FindBy.FindByBuilder findByBuilder = new FindBy.FindByBuilder();
-        return findByBuilder.buildIt(uiElement.locator(), null);
+        return uiElement.locator();
     }
 
-    /**
-     * Retrieves the enum value representing the UI component type.
-     *
-     * @param annotation The annotation containing component metadata.
-     * @return The enum value corresponding to the component type.
-     */
+    //todo: javaDocs
     @Override
-    protected Enum<?> getEnumValue(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        return Enum.valueOf(
-                (Class<? extends Enum>) insertionElement.locatorClass(), insertionElement.elementEnum()
+    protected ComponentType getType(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
         );
+        return uiElement.componentType();
     }
 
-    /**
-     * Filters and sorts the fields annotated with {@link InsertionElement}.
-     *
-     * <p>Fields are sorted based on the {@code order} specified in the annotation.</p>
-     *
-     * @param fields The list of declared fields in the object.
-     * @return A sorted list of fields annotated with {@link InsertionElement}.
-     */
+    //todo: javaDocs
     @Override
-    protected List<Field> filterAndSortFields(final Field[] fields) {
-        return Arrays.stream(fields)
-                .filter(field -> field.isAnnotationPresent(InsertionElement.class))
-                .sorted(Comparator.comparing(field -> field.getAnnotation(InsertionElement.class).order()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Executes any pre-insertion logic before inserting a value.
-     *
-     * <p>It retrieves the UI element associated with the annotation and executes
-     * the {@code before} action if defined.</p>
-     *
-     * @param annotation The annotation associated with the field being inserted.
-     */
-    @Override
-    protected void beforeInsertion(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf(
-                (Class<? extends Enum>) insertionElement.locatorClass(), insertionElement.elementEnum()
+    protected void beforeInsertion(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
         );
         uiElement.before().accept(webDriver);
     }
 
-    /**
-     * Executes any post-insertion logic after inserting a value.
-     *
-     * <p>It retrieves the UI element associated with the annotation and executes
-     * the {@code after} action if defined.</p>
-     *
-     * @param annotation The annotation associated with the field that was inserted.
-     */
+    //todo: javaDocs
     @Override
-    protected void afterInsertion(Object annotation) {
-        InsertionElement insertionElement = (InsertionElement) annotation;
-        UIElement uiElement = (UIElement) Enum.valueOf(
-                (Class<? extends Enum>) insertionElement.locatorClass(), insertionElement.elementEnum()
+    protected void afterInsertion(final InsertionElement annotation) {
+        final UIElement uiElement = (UIElement) Enum.valueOf(
+            (Class<? extends Enum>) annotation.locatorClass(),
+            annotation.elementEnum()
         );
         uiElement.after().accept(webDriver);
     }

@@ -12,4 +12,28 @@ public interface TestData extends PropertyConfig {
     @Key("username")
     String username();
 
+    @Key("password")
+    String password();
+
+    @Key("seller.email")
+    String sellerEmail();
+
+    @Key("seller.password")
+    String sellerPassword();
+
+    @Key("order.customer.name")
+    String customerName();
+
+    @Key("order.customer.details")
+    String customerDetails();
+
+    @Key("order.phone.number")
+    String phoneNumber();
+
+    @Key("order.location")
+    String location();
+
+    @Key("order.product")
+    String product();
+
 }

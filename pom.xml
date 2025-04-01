@@ -20,6 +20,7 @@
         <module>db-interactor-test-framework-adapter</module>
         <module>ui-interactor-test-framework-adapter</module>
         <module>example-project</module>
+        <module>ui-bakery-project</module>
         <module>commons</module>
         <module>reqres-test-framework</module>
         <module>test-allocator-maven-plugin</module>
@@ -47,6 +48,7 @@
         <selenium.version>4.27.0</selenium.version>
         <webdrivermanager.version>5.9.2</webdrivermanager.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <junit-platform-launcher.version>1.11.4</junit-platform-launcher.version>
     </properties>
 
 
@@ -165,7 +167,6 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.database.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>io.qameta.allure</groupId>
@@ -185,6 +186,11 @@
                 <groupId>io.github.bonigarcia</groupId>
                 <artifactId>webdrivermanager</artifactId>
                 <version>${webdrivermanager.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${junit-platform-launcher.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

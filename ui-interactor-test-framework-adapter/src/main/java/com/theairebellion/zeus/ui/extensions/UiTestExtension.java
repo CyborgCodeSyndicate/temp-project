@@ -15,6 +15,7 @@ import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
 import com.theairebellion.zeus.ui.authentication.LoginCredentials;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.parameters.DataIntercept;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.platform.launcher.LauncherSession;
+import org.junit.platform.launcher.LauncherSessionListener;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -41,15 +44,23 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
 import static com.theairebellion.zeus.framework.allure.StepType.TEST_EXECUTION;
+import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 import static com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.getUiFrameworkConfig;
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.PASSWORD;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.RESPONSES;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.USERNAME;
 
 /**
  * JUnit 5 test extension for managing UI-related test execution lifecycle.
@@ -70,36 +81,36 @@ import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.*;
  * @author Cyborg Code Syndicate
  */
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
-        TestExecutionExceptionHandler {
+                                            TestExecutionExceptionHandler, LauncherSessionListener {
 
     private static final String SELENIUM_PACKAGE = "org.openqa.selenium";
     private static final String UI_MODULE_PACKAGE = "theairebellion.zeus.ui";
 
     static {
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_NOT_EMPTY,
-                TableAssertionFunctions::validateTableNotEmpty);
+            TableAssertionFunctions::validateTableNotEmpty);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_ROW_COUNT,
-                TableAssertionFunctions::validateTableRowCount);
+            TableAssertionFunctions::validateTableRowCount);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.EVERY_ROW_CONTAINS_VALUES,
-                TableAssertionFunctions::validateEveryRowContainsValues);
+            TableAssertionFunctions::validateEveryRowContainsValues);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DOES_NOT_CONTAIN_ROW,
-                TableAssertionFunctions::validateTableDoesNotContainRow);
+            TableAssertionFunctions::validateTableDoesNotContainRow);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_ROWS_ARE_UNIQUE,
-                TableAssertionFunctions::validateAllRowsAreUnique);
+            TableAssertionFunctions::validateAllRowsAreUnique);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.NO_EMPTY_CELLS,
-                TableAssertionFunctions::validateNoEmptyCells);
+            TableAssertionFunctions::validateNoEmptyCells);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.COLUMN_VALUES_ARE_UNIQUE,
-                TableAssertionFunctions::validateColumnValuesAreUnique);
+            TableAssertionFunctions::validateColumnValuesAreUnique);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.TABLE_DATA_MATCHES_EXPECTED,
-                TableAssertionFunctions::validateTableDataMatchesExpected);
+            TableAssertionFunctions::validateTableDataMatchesExpected);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_NOT_EMPTY,
-                TableAssertionFunctions::validateRowNotEmpty);
+            TableAssertionFunctions::validateRowNotEmpty);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ROW_CONTAINS_VALUES,
-                TableAssertionFunctions::validateRowContainsValues);
+            TableAssertionFunctions::validateRowContainsValues);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_ENABLED,
-                TableAssertionFunctions::validateAllCellsEnabled);
+            TableAssertionFunctions::validateAllCellsEnabled);
         AssertionRegistry.registerCustomAssertion(TableAssertionTypes.ALL_CELLS_CLICKABLE,
-                TableAssertionFunctions::validateAllCellsClickable);
+            TableAssertionFunctions::validateAllCellsClickable);
     }
 
     /**
@@ -122,6 +133,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         });
     }
 
+
     private void registerCustomServices(ExtensionContext context) {
 
         Consumer<SuperQuest> questConsumer = UiTestExtension::postQuestCreationRegisterCustomServices;
@@ -129,15 +141,49 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
 
+
     private void processInterceptRequestsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(InterceptRequests.class))
-                .ifPresent(intercept -> {
-                    String[] urlsForIntercepting = intercept.requestUrlSubStrings();
-                    Consumer<SuperQuest> questConsumer =
-                            quest -> postQuestCreationIntercept(quest, urlsForIntercepting);
-                    addQuestConsumer(context, questConsumer);
-                });
+            .ifPresent(intercept -> {
+                String[] urlsForIntercepting;
+                try {
+                    List<Class<? extends Enum<?>>> enumClassImplementations =
+                        ReflectionUtil.findEnumClassImplementationsOfInterface(
+                            DataIntercept.class, getFrameworkConfig().projectPackage());
+
+                    if (enumClassImplementations.size() > 1) {
+                        throw new IllegalStateException(
+                            "There is more than one enum for representing different types of databases. Only 1 is allowed");
+                    }
+
+                    if (enumClassImplementations.size() == 1) {
+                        Class<? extends Enum> enumClass = enumClassImplementations.get(0);
+
+                        List<String> resolvedEndpoints = Arrays.stream(intercept.requestUrlSubStrings())
+                                                             .map(target -> ((DataIntercept) Enum.valueOf(enumClass, target))
+                                                                                .getEndpointSubString())
+                                                             .toList();
+
+                        if (resolvedEndpoints.isEmpty()) {
+                            urlsForIntercepting = intercept.requestUrlSubStrings();
+                        } else {
+                            urlsForIntercepting = resolvedEndpoints.toArray(new String[0]);
+                        }
+                    }
+                    else {
+                        urlsForIntercepting = intercept.requestUrlSubStrings();
+                    }
+                } catch (Exception e) {
+                    urlsForIntercepting = intercept.requestUrlSubStrings();
+                }
+
+                final String[] finalUrlsForIntercepting = urlsForIntercepting;
+                Consumer<SuperQuest> questConsumer = quest -> postQuestCreationIntercept(quest,
+                    finalUrlsForIntercepting);
+                addQuestConsumer(context, questConsumer);
+            });
     }
+
 
     private static void postQuestCreationIntercept(final SuperQuest quest, final String[] urlsForIntercepting) {
         SmartWebDriver artifact = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
@@ -157,10 +203,10 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
                         if (body != null && body.length() > 10000) {
                             response.setBody(String.format(
-                                    "Response body truncated. Original length: %d characters. " +
-                                            "First 100 characters: %s",
-                                    body.length(),
-                                    body.substring(0, 100)
+                                "Response body truncated. Original length: %d characters. " +
+                                    "First 100 characters: %s",
+                                body.length(),
+                                body.substring(0, 100)
                             ));
                         } else {
                             response.setBody(body);
@@ -176,22 +222,23 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         }
     }
 
+
     private void processAuthenticateViaUiAsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(AuthenticateViaUiAs.class))
-                .ifPresent(login -> {
-                    try {
-                        ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
-                        DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
-                        LoginCredentials credentials = login.credentials().getDeclaredConstructor().newInstance();
-                        Consumer<SuperQuest> questConsumer =
-                                quest -> postQuestCreationLogin(quest, decoratorsFactory, credentials.username(),
-                                        credentials.password(), login.type(), login.cacheCredentials());
-                        addQuestConsumer(context, questConsumer);
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException e) {
-                        throw new RuntimeException("Failed to instantiate login credentials", e);
-                    }
-                });
+            .ifPresent(login -> {
+                try {
+                    ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
+                    DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
+                    LoginCredentials credentials = login.credentials().getDeclaredConstructor().newInstance();
+                    Consumer<SuperQuest> questConsumer =
+                        quest -> postQuestCreationLogin(quest, decoratorsFactory, credentials.username(),
+                            credentials.password(), login.type(), login.cacheCredentials());
+                    addQuestConsumer(context, questConsumer);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException("Failed to instantiate login credentials", e);
+                }
+            });
     }
 
 
@@ -210,7 +257,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     @SuppressWarnings("unchecked")
     private List<Consumer<SuperQuest>> getOrCreateQuestConsumers(ExtensionContext context) {
         return (List<Consumer<SuperQuest>>) context.getStore(ExtensionContext.Namespace.GLOBAL)
-                .getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, key -> new ArrayList<>());
+                                                .getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS,
+                                                    key -> new ArrayList<>());
     }
 
 
@@ -231,6 +279,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         return Arrays.stream(urlsForIntercepting).anyMatch(url::contains);
     }
 
+
     /**
      * Executes actions after the test completes, such as:
      * <ul>
@@ -244,7 +293,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     public void afterTestExecution(ExtensionContext context) {
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
-        WebDriver driver = getWebDriver(decoratorsFactory, context);
+        SmartWebDriver smartWebDriver = getSmartWebDriver(decoratorsFactory, context);
+        WebDriver driver = unwrapDriver(smartWebDriver);
         if (context.getExecutionException().isEmpty() && getUiFrameworkConfig().makeScreenshotOnPassedTest()) {
             LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName());
@@ -253,12 +303,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         if (!responses.isEmpty()) {
             String formattedResponses = new ObjectFormatter().formatResponses(Collections.singletonList(responses));
             Allure.addAttachment("Intercepted Requests", "text/html",
-                    new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
+                new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
         }
-        driver.close();
-        driver.quit();
-        LogUI.info("WebDriver closed successfully.");
+        if (!smartWebDriver.isKeepDriverForSession()) {
+            driver.close();
+            driver.quit();
+            LogUI.info("WebDriver closed successfully.");
+        }
     }
+
 
     /**
      * Handles test execution exceptions by capturing a screenshot and throwing the error.
@@ -272,25 +325,42 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
-        WebDriver driver = getWebDriver(decoratorsFactory, context);
+        SmartWebDriver smartWebDriver = getSmartWebDriver(decoratorsFactory, context);
+        WebDriver driver = unwrapDriver(smartWebDriver);
         takeScreenshot(driver, context.getDisplayName());
+        if (!smartWebDriver.isKeepDriverForSession()) {
+            driver.close();
+            driver.quit();
+        }
         throw throwable;
     }
+
+
+    @Override
+    public void launcherSessionClosed(LauncherSession session) {
+        BaseLoginClient.driverToKeep.forEach(smartWebDriver -> {
+            WebDriver driver = unwrapDriver(smartWebDriver);
+            driver.close();
+            driver.quit();
+        });
+
+    }
+
 
     private static void postQuestCreationRegisterCustomServices(SuperQuest quest) {
 
         List<Class<? extends UIServiceFluent>> customUIServices =
-                ReflectionUtil.findImplementationsOfInterface(UIServiceFluent.class, getUiConfig().projectPackage());
+            ReflectionUtil.findImplementationsOfInterface(UIServiceFluent.class, getUiConfig().projectPackage());
         if (customUIServices.size() > 1) {
             throw new IllegalStateException(
-                    "There is more than one UI services that extends from UIServiceFluent. Only 1 is allowed");
+                "There is more than one UI services that extends from UIServiceFluent. Only 1 is allowed");
         }
         if (!customUIServices.isEmpty()) {
             Class<? extends UIServiceFluent> customUIServiceFluentClass = customUIServices.get(0);
             try {
                 SmartWebDriver driver = quest.artifact(UIServiceFluent.class, SmartWebDriver.class);
                 quest.registerWorld(customUIServiceFluentClass, customUIServiceFluentClass.getDeclaredConstructor(
-                        SmartWebDriver.class, SuperQuest.class).newInstance(driver, quest));
+                    SmartWebDriver.class, SuperQuest.class).newInstance(driver, quest));
                 quest.removeWorld(UIServiceFluent.class);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
@@ -311,7 +381,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         try {
             BaseLoginClient baseLoginClient = type.getDeclaredConstructor().newInstance();
             baseLoginClient.login(decoratorsFactory.decorate(uiServiceFluent, SuperUIServiceFluent.class), username,
-                    password, cache);
+                password, cache);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException("Failed to instantiate or execute login client", e);
@@ -324,14 +394,15 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         quest.getSoftAssertions().registerObjectForPostErrorHandling(SmartWebDriver.class, smartWebDriver);
 
         CustomSoftAssertion.registerCustomAssertion(
-                SmartWebDriver.class,
-                (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
-                        "soft_assert_failure_" + testName),
-                stackTrace -> Arrays.stream(stackTrace)
-                        .anyMatch(element -> element.getClassName().contains(SELENIUM_PACKAGE) ||
-                                element.getClassName().contains(UI_MODULE_PACKAGE))
+            SmartWebDriver.class,
+            (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
+                "soft_assert_failure_" + testName),
+            stackTrace -> Arrays.stream(stackTrace)
+                              .anyMatch(element -> element.getClassName().contains(SELENIUM_PACKAGE) ||
+                                                       element.getClassName().contains(UI_MODULE_PACKAGE))
         );
     }
+
 
     private static void takeScreenshot(WebDriver driver, String testName) {
         if (CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
@@ -348,12 +419,19 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
         }
     }
 
+
     private WebDriver getWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
-        Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(StoreKeys.QUEST);
-        SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
-        SmartWebDriver artifact = superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
+        SmartWebDriver artifact = getSmartWebDriver(decoratorsFactory, context);
         return unwrapDriver(artifact.getOriginal());
     }
+
+
+    private static SmartWebDriver getSmartWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
+        Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(StoreKeys.QUEST);
+        SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
+        return superQuest.artifact(UIServiceFluent.class, SmartWebDriver.class);
+    }
+
 
     private static WebDriver unwrapDriver(WebDriver maybeProxy) {
         try {

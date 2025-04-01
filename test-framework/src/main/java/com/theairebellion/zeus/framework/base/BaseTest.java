@@ -9,13 +9,8 @@ import com.theairebellion.zeus.framework.storage.DataExtractor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Properties;
+import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemProperties;
 
 /**
  * Base test class providing foundational test setup and utilities.
@@ -103,28 +98,12 @@ public class BaseTest {
         return quest.getStorage().get(extractor, clazz, index);
     }
 
-    /**
-     * Loads and sets system properties from the {@code system.properties} file if present.
-     *
-     * <p>
-     * If a property is already set in the system, it is not overridden.
-     * </p>
-     */
-    private static void addSystemProperties() {
-        Resource resource = new ClassPathResource("system.properties");
-        if (resource.exists()) {
-            try {
-                Properties props = PropertiesLoaderUtils.loadProperties(resource);
-                for (String propName : props.stringPropertyNames()) {
-                    String propValue = props.getProperty(propName);
-                    if (System.getProperty(propName) == null) {
-                        System.setProperty(propName, propValue);
-                    }
-                }
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to load system.properties", e);
-            }
-        }
+    //todo: JavaDocs
+    protected <T> T hookData(Object value, Class<T> clazz) {
+        SuperQuest quest = QuestHolder.get();
+        LogTest.extended("Fetching data from before hooks storage by key: '{}' and type: '{}'", value,
+            clazz.getName());
+        return quest.getStorage().getHookData(value, clazz);
     }
 
     /**

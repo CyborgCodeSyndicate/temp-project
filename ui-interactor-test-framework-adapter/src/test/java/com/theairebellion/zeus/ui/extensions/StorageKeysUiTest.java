@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.extensions;
 
+import com.theairebellion.zeus.ui.storage.StorageKeysUi;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

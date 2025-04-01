@@ -5,7 +5,12 @@ import com.theairebellion.zeus.db.query.DbQuery;
 
 public enum Queries implements DbQuery {
 
-    EXAMPLE("Select * from table where id = '{id}' and company = '{company}')");
+    QUERY_SELLER("SELECT * FROM sellers WHERE id = {id}"),
+    QUERY_SELLER_EMAIL("SELECT email FROM orders WHERE id = {id}"),
+    QUERY_SELLER_PASSWORD("SELECT password FROM orders WHERE id = {id}"),
+    QUERY_ORDER("SELECT * FROM orders WHERE id = {id}"),
+    QUERY_ORDER_PRODUCT("SELECT product FROM orders WHERE id = {id}"),
+    QUERY_ORDER_DELETE("DELETE FROM orders WHERE id = {id}");
 
     private final String query;
 
@@ -31,6 +36,5 @@ public enum Queries implements DbQuery {
     public Enum<?> enumImpl() {
         return this;
     }
-
 
 }

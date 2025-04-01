@@ -17,7 +17,7 @@ import io.qameta.allure.Allure;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Provides fluent methods for interacting with table components in the UI.

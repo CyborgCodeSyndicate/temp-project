@@ -4,9 +4,12 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.log.LogUI;
 import org.openqa.selenium.By;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Abstract base class for insertion services that handle inserting data into UI components.
@@ -20,7 +23,7 @@ import java.util.Optional;
  *
  * @author Cyborg Code Syndicate
  */
-public abstract class BaseInsertionService implements InsertionService {
+public abstract class BaseInsertionService<A extends Annotation> implements InsertionService {
 
     /** Registry that manages different insertion services. */
     protected final InsertionServiceRegistry serviceRegistry;
@@ -30,7 +33,7 @@ public abstract class BaseInsertionService implements InsertionService {
      *
      * @param serviceRegistry The registry containing available insertion services.
      */
-    public BaseInsertionService(final InsertionServiceRegistry serviceRegistry) {
+    protected BaseInsertionService(final InsertionServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
     }
 
@@ -62,39 +65,34 @@ public abstract class BaseInsertionService implements InsertionService {
      */
     @Override
     public void insertData(final Object data) {
-        Field[] fields = data.getClass().getDeclaredFields();
-        List<Field> targetedFields = filterAndSortFields(fields);
+        final Field[] fields = data.getClass().getDeclaredFields();
+        final List<Field> targetedFields = filterAndSortFields(fields);
 
         for (Field field : targetedFields) {
-            Optional<?> annotation = Optional.ofNullable(getFieldAnnotation(field));
-            if (annotation.isEmpty()) {
+            final A annotation = field.getAnnotation(getAnnotationClass());
+            if (annotation == null) {
                 continue;
             }
-            field.setAccessible(true);
 
+            field.setAccessible(true);
             try {
-                Class<? extends ComponentType> componentTypeClass = getComponentType(annotation);
-                Insertion service = serviceRegistry.getService(componentTypeClass);
+                final Class<? extends ComponentType> enumClass = getComponentTypeEnumClass(annotation);
+                final Class<? extends ComponentType> componentTypeClass = extractComponentTypeClass(enumClass);
+                final Insertion service = serviceRegistry.getService(componentTypeClass);
                 if (service == null) {
                     throw new IllegalStateException(
-                            "No InsertionService registered for: " + componentTypeClass.getSimpleName()
+                        "No InsertionService registered for: " + componentTypeClass.getSimpleName()
                     );
                 }
 
-                By locator = buildLocator(annotation);
-                LogUI.debug("Field [{}] -> Locator: [{}]", field.getName(), locator);
-
-                Enum<?> enumValue = getEnumValue(annotation);
-                LogUI.debug("Field [{}] -> Enum component type: [{}]", field.getName(), enumValue);
-
-                Object valueForField = field.get(data);
+                final By locator = buildLocator(annotation);
+                final Object valueForField = field.get(data);
 
                 if (valueForField != null) {
                     beforeInsertion(annotation);
-                    service.insertion((ComponentType) enumValue, locator, valueForField);
+                    service.insertion(getType(annotation), locator, valueForField);
                     afterInsertion(annotation);
                 }
-
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Failed to access field: " + field.getName(), e);
             }
@@ -102,21 +100,12 @@ public abstract class BaseInsertionService implements InsertionService {
         LogUI.info("Finished data insertion for [{}].", data.getClass().getSimpleName());
     }
 
-    /**
-     * Retrieves the annotation applied to the given field.
-     *
-     * @param field The field to inspect.
-     * @return The annotation object, or {@code null} if no relevant annotation is present.
-     */
-    protected abstract Object getFieldAnnotation(Field field);
+    //todo: javaDocs
+    protected abstract Class<A> getAnnotationClass();
 
-    /**
-     * Determines the component type associated with the given annotation.
-     *
-     * @param annotation The annotation containing component metadata.
-     * @return The component type class associated with the annotation.
-     */
-    protected abstract Class<? extends ComponentType> getComponentType(Object annotation);
+    protected abstract int getOrder(A annotation);
+
+    protected abstract Class<? extends ComponentType> getComponentTypeEnumClass(A annotation);
 
     /**
      * Builds the locator (e.g., XPath, CSS Selector) for identifying the target component.
@@ -124,26 +113,10 @@ public abstract class BaseInsertionService implements InsertionService {
      * @param annotation The annotation containing locator information.
      * @return The Selenium {@link By} locator for the component.
      */
-    protected abstract By buildLocator(Object annotation);
+    protected abstract By buildLocator(A annotation);
 
-    /**
-     * Retrieves the enum value representing the UI component type.
-     *
-     * @param annotation The annotation containing component metadata.
-     * @return The enum value corresponding to the component type.
-     */
-    protected abstract Enum<?> getEnumValue(Object annotation);
-
-    /**
-     * Filters and sorts the fields of an object before processing insertions.
-     * <p>
-     * Implementations can define sorting logic to prioritize certain fields over others.
-     * </p>
-     *
-     * @param fields The list of declared fields in the object.
-     * @return A filtered and sorted list of fields to be processed.
-     */
-    protected abstract List<Field> filterAndSortFields(Field[] fields);
+    //todo: javaDocs
+    protected abstract ComponentType getType(A annotation);
 
     /**
      * Hook method to execute any pre-insertion logic.
@@ -153,7 +126,7 @@ public abstract class BaseInsertionService implements InsertionService {
      *
      * @param annotation The annotation associated with the field being inserted.
      */
-    protected void beforeInsertion(Object annotation) {
+    protected void beforeInsertion(A annotation) {
         // Can be overridden by subclasses if pre-insertion logic is needed
     }
 
@@ -165,6 +138,40 @@ public abstract class BaseInsertionService implements InsertionService {
      *
      * @param annotation The annotation associated with the field that was inserted.
      */
-    protected void afterInsertion(Object annotation) {
+    protected void afterInsertion(A annotation) {
+        // default no-op
     }
+
+    /**
+     * Filters and sorts the fields of an object before processing insertions.
+     * <p>
+     * Implementations can define sorting logic to prioritize certain fields over others.
+     * </p>
+     *
+     * @param fields The list of declared fields in the object.
+     * @return A filtered and sorted list of fields to be processed.
+     */
+    protected final List<Field> filterAndSortFields(final Field[] fields) {
+        return Arrays.stream(fields)
+                   .filter(field -> field.isAnnotationPresent(getAnnotationClass()))
+                   .sorted(Comparator.comparingInt(field ->
+                                                       getOrder(field.getAnnotation(getAnnotationClass()))))
+                   .collect(Collectors.toList());
+    }
+
+    //todo: javaDocs
+    protected static Class<? extends ComponentType> extractComponentTypeClass(
+        final Class<? extends ComponentType> componentTypeClass) {
+
+        @SuppressWarnings("unchecked") final Class<? extends ComponentType> resolved =
+            (Class<? extends ComponentType>) Arrays.stream(componentTypeClass.getInterfaces())
+                                                 .filter(inter -> Arrays.asList(inter.getInterfaces())
+                                                                      .contains(ComponentType.class))
+                                                 .findFirst()
+                                                 .orElseThrow(() -> new IllegalStateException(
+                                                     "No interface extending ComponentType found in " + componentTypeClass
+                                                 ));
+        return resolved;
+    }
+
 }

@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
-import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
+import com.theairebellion.zeus.ui.storage.StorageKeysUi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

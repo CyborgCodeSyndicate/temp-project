@@ -5,7 +5,8 @@ import com.theairebellion.zeus.db.config.DbType;
 import java.sql.Driver;
 
 public enum MyDatabases implements DbType {
-    POSTGRESQL(new org.postgresql.Driver(), "jdbc:postgresql");
+    POSTGRESQL(new org.postgresql.Driver(), "jdbc:postgresql"),
+    H2(new org.h2.Driver(), "jdbc:h2");
 
     private final Driver driver;
     private final String protocol;

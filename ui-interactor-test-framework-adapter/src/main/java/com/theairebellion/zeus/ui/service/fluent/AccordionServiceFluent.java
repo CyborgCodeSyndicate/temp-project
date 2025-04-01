@@ -7,7 +7,7 @@ import com.theairebellion.zeus.ui.selenium.AccordionUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Provides fluent API methods for interacting with Accordion UI components.

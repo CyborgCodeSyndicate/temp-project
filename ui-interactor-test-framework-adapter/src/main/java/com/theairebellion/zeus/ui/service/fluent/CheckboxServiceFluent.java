@@ -13,7 +13,7 @@ import org.openqa.selenium.By;
 
 import java.util.List;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Provides fluent methods for interacting with checkbox UI elements.

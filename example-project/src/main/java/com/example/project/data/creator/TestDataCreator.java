@@ -9,13 +9,13 @@ public enum TestDataCreator implements DataForge {
     USERNAME_JOHN(DataCreationFunctions::usernameJohn),
     PASSWORD_JOHN(DataCreationFunctions::passwordJohn);
 
+
     public static final class Data {
 
         public static final String VALID_STUDENT = "VALID_STUDENT";
         public static final String DOG_PET = "DOG_PET";
         public static final String USERNAME_JOHN = "USERNAME_JOHN";
         public static final String PASSWORD_JOHN = "PASSWORD_JOHN";
-
 
         private Data() {
         }

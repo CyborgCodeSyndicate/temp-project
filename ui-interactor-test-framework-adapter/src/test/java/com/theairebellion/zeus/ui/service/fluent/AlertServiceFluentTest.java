@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.alert.AlertComponentType;
-import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
+import com.theairebellion.zeus.ui.storage.StorageKeysUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.mock.MockAlertComponentType;
 import com.theairebellion.zeus.ui.service.fluent.mock.MockAlertService;

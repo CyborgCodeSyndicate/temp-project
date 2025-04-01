@@ -7,6 +7,7 @@ import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebDriver;
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -38,6 +39,8 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 public class SmartWebDriver extends WebDriverDecorator {
 
     private final WebDriverWait wait;
+    @Setter
+    private boolean keepDriverForSession;
 
     /**
      * Constructs a {@code SmartWebDriver} wrapping the given {@link WebDriver}.
@@ -279,10 +282,20 @@ public class SmartWebDriver extends WebDriverDecorator {
                         .findFirst();
 
         if (exceptionHandlingOptional.isPresent()) {
-            return (T) exceptionHandlingOptional.get()
-                    .getExceptionHandlingMap()
-                    .get(cause.getClass())
-                    .apply(this.getOriginal(), params);
+            try {
+                return (T) exceptionHandlingOptional.get()
+                        .getExceptionHandlingMap()
+                        .get(cause.getClass())
+                        .apply(this.getOriginal(), params);
+            } catch (Exception handlerException) {
+                LogUI.error("Framework attempted to handle an exception in method '" + methodName
+                        + "', but the handler failed with: " + handlerException.getClass().getSimpleName() + ": "
+                        + handlerException.getMessage(), handlerException);
+                exception.addSuppressed(handlerException);
+                LogUI.error("Propagating original exception: " + exception.getClass().getSimpleName()
+                        + ": " + exception.getMessage(), exception);
+                throw exception;
+            }
         } else {
             String locator = (params.length > 0 && params[0] instanceof By) ? params[0].toString() : "Unknown locator";
             String exceptionMessage = exception.getClass().getSimpleName();
