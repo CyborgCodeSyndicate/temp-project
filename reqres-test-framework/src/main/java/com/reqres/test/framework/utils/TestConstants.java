@@ -79,5 +79,8 @@ public class TestConstants {
         public static final String USER_SENIOR_JOB = "Senior Leader";
         public static final String USER_INTERMEDIATE_NAME = "Mr. Morpheus";
         public static final String USER_INTERMEDIATE_JOB = "Intermediate Leader";
+        public static final String USER_JUNIOR_NAME = "Michael suffix";
+        public static final String USER_JUNIOR_JOB = "Junior Lawson worker";
     }
+
 }

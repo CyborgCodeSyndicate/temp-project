@@ -42,7 +42,7 @@ public class DataCreationFunctions {
 
         return User.builder()
                 .name(dataResponse.getFirstName() + " suffix")
-                .job("Junior" + dataResponse.getLastName() + " worker")
+                .job("Junior " + dataResponse.getLastName() + " worker")
                 .build();
     }
 

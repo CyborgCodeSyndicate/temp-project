@@ -57,7 +57,7 @@ public class EvolutionService extends FluentService {
                         Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
                         Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build(),
                         Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.CREATE_USER_NAME.getJsonPath()).type(IS).expected("Michael suffix").build(),
-                        Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.CREATE_USER_JOB.getJsonPath()).type(IS).expected("JuniorLawson worker").build()
+                        Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.CREATE_USER_JOB.getJsonPath()).type(IS).expected("Junior Lawson worker").build()
                 );
         return this;
     }
