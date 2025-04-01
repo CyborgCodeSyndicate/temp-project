@@ -29,7 +29,11 @@ public enum ApiResponsesJsonPaths {
     RESOURCE_PANTONE("data.pantone_value"),
     SINGLE_USER_FIRST_NAME("data.first_name"),
     SINGLE_USER_EMAIL("data.email"),
-    TOKEN("token");
+    TOKEN("token"),
+    SINGLE_USER_EMAIL_EXPLICIT("data.email"),
+    SUPPORT_URL_EXPLICIT("support.url"),
+    CREATE_USER_NAME_RESPONSE("name"),
+    CREATE_USER_JOB_RESPONSE("job");
 
     private final String jsonPath;
 

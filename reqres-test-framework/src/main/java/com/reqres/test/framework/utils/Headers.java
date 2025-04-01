@@ -1,0 +1,12 @@
+package com.reqres.test.framework.utils;
+
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class Headers {
+
+    public static final String SPECIFIC_HEADER = "SpecificHeader";
+    public static final String AUTHORIZATION_HEADER_KEY = "Authorization";
+    public static final String AUTHORIZATION_HEADER_VALUE = "Bearer ";
+
+}
