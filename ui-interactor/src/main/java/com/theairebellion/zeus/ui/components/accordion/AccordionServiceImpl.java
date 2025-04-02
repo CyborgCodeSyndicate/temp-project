@@ -20,7 +20,6 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
 
     @Override
     protected Accordion createComponent(final AccordionComponentType componentType) {
-        String s = "test";
         return ComponentFactory.getAccordionComponent(componentType, driver);
     }
 
