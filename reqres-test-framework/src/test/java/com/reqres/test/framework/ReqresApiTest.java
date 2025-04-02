@@ -224,8 +224,8 @@ public class ReqresApiTest extends BaseTest {
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody().as(CreatedUserResponse.class);
-                    assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName());
-                    assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob());
+                    assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName(), NAME_INCORRECT);
+                    assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob(), JOB_INCORRECT);
                     assertTrue(createdUserResponse.getCreatedAt().contains(Instant.now().atZone(UTC).format(ISO_LOCAL_DATE)));
                 })
                 .complete();

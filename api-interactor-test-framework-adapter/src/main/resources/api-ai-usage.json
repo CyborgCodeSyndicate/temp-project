@@ -7,31 +7,31 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a simple GET request to an API endpoint defined in the Endpoints enum. Use this to ping an endpoint without any additional parameters.",
-          "example": "request(Endpoints.GET_ALL_USERS)"
+          "example": "request(GET_ALL_USERS)"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a GET request to an API endpoint with an added query parameter. For example, specify the page number to retrieve a particular page of results.",
-          "example": "request(Endpoints.GET_ALL_USERS.withQueryParam(\"page\", 2))"
+          "example": "request(GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO))"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a GET request to an API endpoint with an added path parameter. Use this to retrieve a specific resource, such as a user by ID.",
-          "example": "request(Endpoints.GET_USER.withPathParam(\"id\", 3))"
+          "example": "request(GET_USER.withPathParam(ID_PARAM, ID_THREE))"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a DELETE request to an API endpoint by specifying a path parameter. Use this to delete a resource, for example, deleting a user by ID.",
-          "example": "request(Endpoints.DELETE_USER.withPathParam(\"id\", 5))"
+          "example": "request(DELETE_USER.withPathParam(ID_PARAM, ID_THREE))"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a GET request to an endpoint with a custom header. Use this when the request requires specific headers such as authorization tokens or custom metadata.",
-          "example": "request(Endpoints.GET_USER\n  .withPathParam(\"id\", 3)\n  .withHeader(\"SpecificHeader\", \"your-header-value\"))"
+          "example":  "request(GET_USER\n  .withPathParam(ID_PARAM, ID_THREE)\n  .withHeader(SPECIFIC_HEADER, \"your-header-value\"))"
         }
       ]
     },
@@ -42,13 +42,13 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a POST request with a payload to an API endpoint. Use this to create a new resource by providing the required request body.",
-          "example": "request(Endpoints.POST_CREATE_USER, newUserObject)"
+          "example": "request(POST_CREATE_USER, newUser)"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a POST request with a payload to an API endpoint to perform login. The request body should include the login credentials.",
-          "example": "request(Endpoints.POST_LOGIN_USER, loginUserObject)"
+          "example": "request(POST_LOGIN_USER, loginUser)"
         }
       ]
     },
@@ -59,7 +59,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Performs a soft validation using SoftAssertions. The validation logic is executed without immediately failing the test, allowing multiple assertions to be collected and verified at the end of the test execution.",
-          "example": "validate(softAssertions -> {\n  // Retrieve a response and convert it to a UserResponse object\n  UserResponse userResponse = retrieve(StorageKeysApi.API, GET_USER, Response.class).getBody().as(UserResponse.class);\n  // Soft assertions to check multiple fields\n  softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(9);\n  softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo(\"tobias.funke@reqres.in\");\n  softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo(\"Tobias\");\n  softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo(\"Funke\");\n});"
+          "example": "validate(softAssertions -> {\n  UserResponse userResponse = retrieve(API, GET_USER, Response.class).getBody().as(UserResponse.class);\n  softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(USER_NINE_ID);\n  softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo(USER_NINE_EMAIL);\n  softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo(USER_NINE_FIRST_NAME);\n  softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo(USER_NINE_LAST_NAME);\n})"
         }
       ]
     },
@@ -70,7 +70,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Performs a hard validation that immediately fails the test if any assertion does not pass. Use this when critical conditions must be met and the test should halt on failure.",
-          "example": "validate(() -> {\n  // Retrieve a response and convert it to a GetUsersResponse object\n  GetUsersResponse usersResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);\n  // Hard assertions that immediately throw if a condition is not met\n  assertEquals(6, usersResponse.getData().size(), \"User count mismatch\");\n  assertTrue(usersResponse.getData().stream().allMatch(user -> user.getId() != null), \"User ID should not be null\");\n});"
+          "example": "validate(() -> {\n  GetUsersResponse usersResponse = retrieve(API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);\n  assertEquals(PAGE_TWO_DATA_SIZE, usersResponse.getData().size(), USER_DATA_SIZE_INCORRECT);\n  assertEquals(USER_SEVENTH_FIRST_NAME_LENGTH, usersResponse.getData().get(0).getFirstName().length(), FIRST_NAME_LENGTH_INCORRECT);\n})"
         }
       ]
     },
@@ -81,19 +81,13 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a request to an API endpoint and validates the response using a comprehensive set of assertions. The following examples validate various aspects of the response:",
-          "example": "requestAndValidate(Endpoints.GET_ALL_USERS.withQueryParam(\"page\", 2),\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),\n  Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.TOTAL.getJsonPath()).type(NOT).expected(1).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.TOTAL_PAGES.getJsonPath()).type(GREATER_THAN).expected(1).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.PER_PAGE.getJsonPath()).type(LESS_THAN).expected(10).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.SUPPORT_URL.getJsonPath()).type(CONTAINS).expected(\"reqres\").build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.SUPPORT_TEXT.getJsonPath()).type(STARTS_WITH).expected(\"Tired of writing\").build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.USER_AVATAR_BY_INDEX.getJsonPath(0)).type(ENDS_WITH).expected(\".jpg\").build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.USER_ID.getJsonPath(0)).type(NOT_NULL).expected(true).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.DATA.getJsonPath()).type(ALL_NOT_NULL).expected(true).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.DATA.getJsonPath()).type(NOT_EMPTY).expected(true).build(),\n  Assertion.builder().target(BODY).key(ApiResponsesJsonPaths.USER_FIRST_NAME.getJsonPath(0)).type(LENGTH).expected(7).build()\n);"
-        },
-        {
-          "label": "API",
-          "usageLevel": "MANDATORY",
-          "description": "Note: The same set of assertion examples can be used with the 'validate' method for an already received response, as both methods perform validations in the same manner.",
-          "example": "validate(response, \n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),\n  Assertion.builder().target(HEADER).key(HttpHeaders.CONTENT_TYPE).type(CONTAINS).expected(ContentType.JSON.toString()).build());"
+          "example": "requestAndValidate(\n  GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO),\n  Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build(),\n  Assertion.builder().target(HEADER).key(CONTENT_TYPE).type(CONTAINS).expected(JSON.toString()).build(),\n  Assertion.builder().target(BODY).key(TOTAL.getJsonPath()).type(NOT).expected(1).build(),\n  Assertion.builder().target(BODY).key(TOTAL_PAGES.getJsonPath()).type(GREATER_THAN).expected(1).build(),\n  Assertion.builder().target(BODY).key(PER_PAGE.getJsonPath()).type(LESS_THAN).expected(10).build(),\n  Assertion.builder().target(BODY).key(SUPPORT_URL.getJsonPath()).type(CONTAINS).expected(SUPPORT_URL_REQRES_FRAGMENT).build(),\n  Assertion.builder().target(BODY).key(SUPPORT_TEXT.getJsonPath()).type(STARTS_WITH).expected(SUPPORT_TEXT_PREFIX).build(),\n  Assertion.builder().target(BODY).key(USER_AVATAR_BY_INDEX.getJsonPath(0)).type(ENDS_WITH).expected(AVATAR_FILE_EXTENSION).build(),\n  Assertion.builder().target(BODY).key(USER_ID.getJsonPath(0)).type(NOT_NULL).expected(true).build(),\n  Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(ALL_NOT_NULL).expected(true).build(),\n  Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(NOT_EMPTY).expected(true).build(),\n  Assertion.builder().target(BODY).key(USER_FIRST_NAME.getJsonPath(0)).type(LENGTH).expected(7).build(),\n  Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(LENGTH).expected(6).build(),\n  Assertion.builder().target(BODY).key(SUPPORT_URL.getJsonPath()).type(MATCHES_REGEX).expected(SUPPORT_URL_REGEX).build(),\n  Assertion.builder().target(BODY).key(USER_FIRST_NAME.getJsonPath(0)).type(EQUALS_IGNORE_CASE).expected(USER_ONE_FIRST_NAME).build(),\n  Assertion.builder().target(BODY).key(TOTAL.getJsonPath()).type(BETWEEN).expected(TOTAL_USERS_IN_PAGE_RANGE).build(),\n  Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(CONTAINS_ALL).expected(PAGE_TWO_EXPECTED_USERS).build(),\n  Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(CONTAINS_ANY).expected(PAGE_TWO_CONTAINS_ANY_USER).build()\n)"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a GET request to the GET_USER endpoint with a path parameter and a custom header, then validates the status of the response. Use this pattern when the endpoint requires additional headers like authorization tokens.",
-          "example": "requestAndValidate(\n  Endpoints.GET_USER\n    .withPathParam(\"id\", 3)\n    .withHeader(\"SpecificHeader\", \"custom-token-value\"),\n  Assertion.builder()\n    .target(STATUS)\n    .type(IS)\n    .expected(HttpStatus.SC_OK)\n    .build()\n)"
+          "example": "requestAndValidate(\n  GET_USER.withPathParam(ID_PARAM, ID_THREE)\n           .withHeader(SPECIFIC_HEADER, retrieve(StorageKeysApi.API, POST_LOGIN_USER, Response.class)\n             .getBody().jsonPath().getString(TOKEN.getJsonPath())),\n  Assertion.builder()\n    .target(STATUS)\n    .type(IS)\n    .expected(SC_OK)\n    .build()\n)"
         }
       ]
     },
@@ -104,7 +98,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Sends a POST request with a payload to an API endpoint and validates the response. For example, create a new user and then validate that the response status is 201 Created and that the returned user attributes match the expected values.",
-          "example": "requestAndValidate(Endpoints.POST_CREATE_USER, newUserObject, Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(), Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Morpheus\").soft(true).build())"
+          "example": "requestAndValidate(POST_CREATE_USER, userLeader,\n  Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),\n  Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_NAME).soft(true).build(),\n  Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build()\n)\n\nrequestAndValidate(POST_CREATE_USER, userSenior.join(),\n  Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),\n  Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_NAME).soft(true).build(),\n  Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_JOB).soft(true).build()\n)\n\nrequestAndValidate(POST_CREATE_USER, user.join(),\n  Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()\n)"
         }
       ]
     },
@@ -115,13 +109,13 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Validates a previously obtained API response with custom assertions. Useful if you've already retrieved a response (e.g., via 'retrieve(..., Response.class)' or a separate request call) and want to apply validations manually instead of using 'requestAndValidate(...)'.",
-          "example": "Response userResponse = retrieve(ENDPOINT_EXAMPLE, Response.class);\nvalidateResponse(\n  userResponse,\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build(),\n  Assertion.builder().target(BODY).key(\"data.email\").type(IS).expected(\"emma.wong@reqres.in\").build(),\n  Assertion.builder().target(BODY).key(\"support.url\").type(CONTAINS).expected(\"reqres\").build()\n);"
+          "example": "validateResponse(\n  retrieve(ENDPOINT_EXAMPLE, Response.class),\n  Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build(),\n  Assertion.builder().target(BODY).key(\"id\").type(NOT_NULL).build(),\n  Assertion.builder().target(BODY).key(\"list\").type(CONTAINS).expected(\"Ssfsdf\").build()\n);"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Validates a 'not found' scenario by retrieving a response from storage and checking that the status code is 404. Ideal for scenarios where you manually store an invalid or missing user response and want to verify the error condition.",
-          "example": "Response notFoundResponse = retrieve(ENDPOINT_NOT_FOUND, Response.class);\nvalidateResponse(\n  notFoundResponse,\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NOT_FOUND).build()\n);"
+          "example": "validateResponse(\n  retrieve(ENDPOINT_NOT_FOUND, Response.class),\n  Assertion.builder().target(STATUS).type(IS).expected(SC_NOT_FOUND).build()\n);"
         }
       ]
     },
@@ -132,7 +126,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Ends the current fluent service (world) context and returns control to the main Quest. Use this when you're done performing operations in one world (e.g., API, UI, or DB) and want to transition to another or execute additional test steps.",
-          "example": "quest\n  .enters(RIVENDELL)\n  .loginUserAndAddSpecificHeader(loginUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(GET_ALL_USERS, Assertion.builder().target(STATUS).type(IS).expected(200).build());"
+          "example": "quest\n  .enters(RIVENDELL)\n  .loginUserAndAddSpecificHeader(loginUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(GET_ALL_USERS, Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build());"
         }
       ]
     },
@@ -142,8 +136,8 @@
         {
           "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Finalizes the execution flow in the current fluent service chain. Internally invokes the Quest's complete method, clearing test data and asserting any collected soft validations. Always call this at the end of your chain to ensure the test concludes properly.",
-          "example": "quest\n  .enters(API_WORLD)\n  .request(Endpoints.GET_ALL_USERS)\n  .validate(() -> {\n    // Hard validation logic here\n  })\n  .complete();"
+          "description": "Finalizes the execution flow in the current fluent service chain. This method should always be called at the end of the chain—whether after requests, validations, or any other operations. Internally invokes the Quest's complete method, which clears test data and asserts any collected soft validations. Ensures the test concludes properly.",
+          "example": "quest\n  .enters(API_WORLD)\n  .request(GET_ALL_USERS)\n  .validate(() -> {\n    // Hard validation logic here\n  })\n  .complete();"
         }
       ]
     },
@@ -154,7 +148,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Demonstrates a custom retry scenario where the test polls a shared flag or any custom logic until true. Ideal for waiting on asynchronous operations, external triggers, or test data setup before continuing.",
-          "example": "retryUntil(\n  sharedFlagIsTrue(),\n  Duration.ofSeconds(10),\n  Duration.ofSeconds(1)\n)\n.requestAndValidate(\n  GET_ALL_USERS.withQueryParam(\"page\", 2),\n  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()\n)"
+          "example": "retryUntil(\n  sharedFlagIsTrue(),\n  Duration.ofSeconds(10),\n  Duration.ofSeconds(1)\n)\n.requestAndValidate(\n  GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO),\n  Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()\n)"
         }
       ]
     },
@@ -164,14 +158,14 @@
         {
           "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Executes a hard validation by running any logic inside a Runnable. If an assertion fails inside the Runnable, the test stops immediately. Ideal for JUnit-style validations or quick checks after requesting or retrieving API data.",
-          "example": "quest\n  .enters(OLYMPYS)\n  .request(GET_ALL_USERS.withQueryParam(\"page\", 2))\n  .validate(() -> {\n    GetUsersResponse usersResponse = retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);\n    assertEquals(6, usersResponse.getData().size(), \"User data size not correct!\");\n    assertEquals(7, usersResponse.getData().get(0).getFirstName().length(), \"Name length incorrect!\");\n  });"
+          "description": "Executes a hard validation by running logic inside a Runnable. If any assertion fails, the test stops immediately. Ideal for JUnit-style validations after requesting or retrieving API data.",
+          "example": "quest\n  .enters(OLYMPYS)\n  .request(GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO))\n  .validate(() -> {\n    GetUsersResponse usersResponse = retrieve(API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class);\n    assertEquals(PAGE_TWO_DATA_SIZE, usersResponse.getData().size(), USER_DATA_SIZE_INCORRECT);\n    assertEquals(USER_SEVENTH_FIRST_NAME_LENGTH, usersResponse.getData().get(0).getFirstName().length(), FIRST_NAME_LENGTH_INCORRECT);\n  });"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Another common usage: verifying the attributes of a resource (e.g., a newly created user) using JUnit assertions. If any assertion fails, the test halts immediately.",
-          "example": "quest\n  .enters(OLYMPYS)\n  .validate(() -> {\n    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)\n      .getBody()\n      .as(CreatedUserResponse.class);\n    assertEquals(\"Mr. Morpheus\", createdUserResponse.getName(), \"Name is incorrect!\");\n    assertEquals(\"Intermediate Leader\", createdUserResponse.getJob(), \"Job is incorrect!\");\n  });"
+          "description": "Verifies the attributes of a resource (e.g., a newly created user) using hard JUnit assertions. If an assertion fails, the test halts immediately.",
+          "example": "quest\n  .enters(OLYMPYS)\n  .validate(() -> {\n    CreatedUserResponse createdUserResponse = retrieve(API, POST_CREATE_USER, Response.class).getBody().as(CreatedUserResponse.class);\n    assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName(), NAME_INCORRECT);\n    assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob(), JOB_INCORRECT);\n  });"
         }
       ]
     },
@@ -182,7 +176,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Executes a soft validation using SoftAssertions, allowing multiple checks to be gathered without ending the test upon a single failure. All collected assertions are ultimately validated at the end of the test flow (when 'complete()' is called).",
-          "example": "quest\n  .enters(OLYMPYS)\n  .request(GET_ALL_USERS.withQueryParam(\"page\", 2))\n  .request(\n    GET_USER.withPathParam(\n      \"id\",\n      retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class)\n        .getBody()\n        .as(GetUsersResponse.class)\n        .getData()\n        .stream()\n        .filter(u -> \"Tobias\".equals(u.getFirstName()))\n        .map(DataResponse::getId)\n        .findFirst()\n        .orElseThrow(() -> new RuntimeException(\"Tobias not found\"))\n    )\n  )\n  .validate(softAssertions -> {\n    UserResponse userResponse = retrieve(StorageKeysApi.API, GET_USER, Response.class)\n      .getBody()\n      .as(UserResponse.class);\n    softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(9);\n    softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo(\"tobias.funke@reqres.in\");\n    softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo(\"Tobias\");\n    softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo(\"Funke\");\n  })\n  .complete();"
+          "example": "quest\n  .enters(OLYMPYS)\n  .request(GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO))\n  .request(\n    GET_USER.withPathParam(\n      ID_PARAM,\n      retrieve(API, GET_ALL_USERS, Response.class)\n        .getBody()\n        .as(GetUsersResponse.class)\n        .getData()\n        .stream()\n        .filter(u -> USER_NINE_FIRST_NAME.equals(u.getFirstName()))\n        .map(DataResponse::getId)\n        .findFirst()\n        .orElseThrow(() -> new RuntimeException(userWithFirstNameNotFound(USER_NINE_FIRST_NAME)))\n    )\n  )\n  .validate(softAssertions -> {\n    UserResponse userResponse = retrieve(API, GET_USER, Response.class)\n      .getBody()\n      .as(UserResponse.class);\n    softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(USER_NINE_ID);\n    softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo(USER_NINE_EMAIL);\n    softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo(USER_NINE_FIRST_NAME);\n    softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo(USER_NINE_LAST_NAME);\n  })\n  .complete();"
         }
       ]
     },
@@ -193,19 +187,19 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Switches into the OLYMPYS world, which provides fluent API capabilities through RestServiceFluent. Use this for sending requests, validating responses, and chaining additional API actions.",
-          "example": "quest.enters(OLYMPYS)\n  .requestAndValidate(\n    Endpoints.GET_ALL_USERS.withQueryParam(\"page\", 2),\n    Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()\n  );"
+          "example": "quest.enters(OLYMPYS)\n  .requestAndValidate(\n    GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO),\n    Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()\n  );"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Switches into the RIVENDELL world, where CustomService logic is available (e.g., user authentication flows, specialized request methods). Often followed by '.then()' to return to the main Quest or move to another world.",
-          "example": "quest.enters(RIVENDELL)\n  .loginUserAndAddSpecificHeader(loginUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(\n    Endpoints.GET_ALL_USERS,\n    Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build()\n  );"
+          "example": "quest.enters(RIVENDELL)\n  .loginUserAndAddSpecificHeader(loginUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(\n    GET_ALL_USERS,\n    Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()\n  );"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Switches into the GONDOR world, exposing the EvolutionService. Used for advanced test steps like 'createLeaderUserAndValidateResponse'.",
-          "example": "quest.enters(GONDOR)\n  .createLeaderUserAndValidateResponse(leaderUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(Endpoints.GET_USER, ...);"
+          "example": "quest.enters(GONDOR)\n  .createLeaderUserAndValidateResponse(leaderUser)\n  .then()\n  .enters(OLYMPYS)\n  .requestAndValidate(GET_USER, ...);"
         }
       ]
     },
@@ -283,20 +277,20 @@
         {
           "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Target used to validate the HTTP status code of an API response. Does not require a 'key' field. Typically compared against constants like HttpStatus.SC_OK or integer values (e.g., 200).",
-          "example": "RestAssertionTarget.STATUS"
+          "description": "Target used to validate the HTTP status code of an API response. Does not require a 'key' field. Typically compared against constants like SC_OK or integer values (e.g., 200).",
+          "example": "STATUS"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Target used to validate the body of the API response. Requires the 'key' field to specify a JSON path (e.g., 'data.email', 'support.url'). Works with value-based assertion types like IS, CONTAINS, MATCHES_REGEX, etc.",
-          "example": "RestAssertionTarget.BODY"
+          "example": "BODY"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Target used to validate a specific HTTP response header. Requires the 'key' field to define the header name (e.g., 'Content-Type', 'Authorization'). Compared against expected string values or patterns.",
-          "example": "RestAssertionTarget.HEADER"
+          "example": "HEADER"
         }
       ]
     },
@@ -307,115 +301,109 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the actual value is equal to the expected one. Works with any object, string, or number.",
-          "example": "Assertion.builder().target(STATUS).type(IS).expected(200).build()"
+          "example": "Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the actual value is not equal to the expected one. Works with any object, string, or number.",
-          "example": "Assertion.builder().target(BODY).key(\"data.total\").type(NOT).expected(0).build()"
+          "example": "Assertion.builder().target(BODY).key(TOTAL.getJsonPath()).type(NOT).expected(0).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the actual string contains the expected substring.",
-          "example": "Assertion.builder().target(HEADER).key(\"Content-Type\").type(CONTAINS).expected(\"application/json\").build()"
+          "example": "Assertion.builder().target(HEADER).key(CONTENT_TYPE).type(CONTAINS).expected(JSON.toString()).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the actual value is not null.",
-          "example": "Assertion.builder().target(BODY).key(\"data.email\").type(NOT_NULL).build()"
+          "example": "Assertion.builder().target(BODY).key(SINGLE_USER_EMAIL.getJsonPath()).type(NOT_NULL).expected(true).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that all values in a list or collection are not null.",
-          "example": "Assertion.builder().target(BODY).key(\"data\").type(ALL_NOT_NULL).build()"
+          "example": "Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(ALL_NOT_NULL).expected(true).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the value is null.",
-          "example": "Assertion.builder().target(BODY).key(\"data.address\").type(IS_NULL).build()"
-        },
-        {
-          "label": "API",
-          "usageLevel": "MANDATORY",
-          "description": "Asserts that all values in a collection are null.",
-          "example": "Assertion.builder().target(BODY).key(\"data.removedFields\").type(ALL_NULL).build()"
+          "example": "Assertion.builder().target(BODY).key(RESOURCE_COLOR.getJsonPath()).type(IS_NULL).expected(false).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that a numeric value is greater than the expected number.",
-          "example": "Assertion.builder().target(BODY).key(\"meta.count\").type(GREATER_THAN).expected(5).build()"
+          "example": "Assertion.builder().target(BODY).key(TOTAL_PAGES.getJsonPath()).type(GREATER_THAN).expected(1).build(),"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that a numeric value is less than the expected number.",
-          "example": "Assertion.builder().target(BODY).key(\"meta.count\").type(LESS_THAN).expected(100).build()"
+          "example": "Assertion.builder().target(BODY).key(PER_PAGE.getJsonPath()).type(LESS_THAN).expected(10).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that all expected elements exist in the actual collection.",
-          "example": "Assertion.builder().target(BODY).key(\"data.items\").type(CONTAINS_ALL).expected(List.of(\"item1\", \"item2\")).build()"
+          "example": " Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(CONTAINS_ALL).expected(PAGE_TWO_EXPECTED_USERS).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that at least one of the expected elements exists in the actual collection.",
-          "example": "Assertion.builder().target(BODY).key(\"data.items\").type(CONTAINS_ANY).expected(List.of(\"itemX\", \"itemY\")).build()"
+          "example": "Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(CONTAINS_ANY).expected(PAGE_TWO_CONTAINS_ANY_USER).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that a string starts with the specified prefix.",
-          "example": "Assertion.builder().target(BODY).key(\"data.username\").type(STARTS_WITH).expected(\"admin\").build()"
+          "example": "Assertion.builder().target(BODY).key(SUPPORT_TEXT.getJsonPath()).type(STARTS_WITH).expected(SUPPORT_TEXT_PREFIX).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that a string ends with the specified suffix.",
-          "example": "Assertion.builder().target(BODY).key(\"data.avatar\").type(ENDS_WITH).expected(\".jpg\").build()"
+          "example": "Assertion.builder().target(BODY).key(USER_AVATAR_BY_INDEX.getJsonPath(0)).type(ENDS_WITH).expected(AVATAR_FILE_EXTENSION).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the value has the expected length. Works for strings, lists, etc.",
-          "example": "Assertion.builder().target(BODY).key(\"data.users\").type(LENGTH).expected(6).build()"
+          "example": "Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(LENGTH).expected(PAGE_TWO_DATA_SIZE).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that a string matches the given regular expression.",
-          "example": "Assertion.builder().target(BODY).key(\"support.url\").type(MATCHES_REGEX).expected(\"https://.*reqres.*\").build()"
+          "example": "Assertion.builder().target(BODY).key(SUPPORT_URL.getJsonPath()).type(MATCHES_REGEX).expected(SUPPORT_URL_REGEX).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the collection is empty.",
-          "example": "Assertion.builder().target(BODY).key(\"errors\").type(EMPTY).build()"
+          "example": "Assertion.builder().target(BODY).key(SUPPORT_TEXT.getJsonPath()).type(EMPTY).expected(false).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that the collection is not empty.",
-          "example": "Assertion.builder().target(BODY).key(\"data.users\").type(NOT_EMPTY).build()"
+          "example": "Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(NOT_EMPTY).expected(true).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that a number falls within a specified inclusive range. Expected must be a List of exactly 2 elements: [min, max].",
-          "example": "Assertion.builder().target(BODY).key(\"meta.total\").type(BETWEEN).expected(List.of(5, 15)).build()"
+          "example": "Assertion.builder().target(BODY).key(TOTAL.getJsonPath()).type(BETWEEN).expected(TOTAL_USERS_IN_PAGE_RANGE).build()"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Asserts that two strings are equal, ignoring case sensitivity.",
-          "example": "Assertion.builder().target(BODY).key(\"data.first_name\").type(EQUALS_IGNORE_CASE).expected(\"michael\").build()"
+          "example": "Assertion.builder().target(BODY).key(SINGLE_USER_FIRST_NAME.getJsonPath()).type(EQUALS_IGNORE_CASE).expected(USER_ONE_FIRST_NAME).build()"
         }
       ]
     },
@@ -426,7 +414,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Marks a test class as an API test. Enables request execution, response validation, and API authentication handling through the ApiTestExtension.",
-          "example": "@API\npublic class ReqresApiTest extends BaseTest {\n\n    @Test\n    public void testGetUser(Quest quest) {\n        quest.enters(OLYMPYS)\n             .requestAndValidate(GET_USER.withPathParam(\"id\", 3),\n                  Assertion.builder().target(STATUS).type(IS).expected(200).build()\n             );\n    }\n}"
+          "example": "@API\npublic class ReqresApiTest extends BaseTest {\n\n    @Test\n    public void testGetUser(Quest quest) {\n        quest.enters(OLYMPYS)\n             .requestAndValidate(GET_USER.withPathParam(ID_PARAM, ID_THREE),\n                  Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()\n             );\n    }\n}"
         }
       ]
     },
@@ -437,7 +425,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Specifies that the test method should perform authentication via API before executing the main test logic. The credentials and authentication client type are defined through this annotation.",
-          "example": "@Test\n@AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)\n@PreQuest({\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)\n})\n@Ripper(targets = {DELETE_ADMIN_USER})\n@Regression\npublic void testUserLifecycle(Quest quest) {\n    quest.enters(OLYMPYS)\n         .validate(() -> {\n             CreatedUserResponse response = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)\n                 .getBody()\n                 .as(CreatedUserResponse.class);\n             assertEquals(\"Mr. Morpheus\", response.getName());\n             assertEquals(\"Intermediate Leader\", response.getJob());\n         });\n}"
+          "example": "@Test\n@AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)\n@PreQuest({\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_INTERMEDIATE)}, order = 2),\n    @Journey(value = Data.CREATE_NEW_USER, journeyData = {@JourneyData(USER_LEADER)}, order = 1)\n})\n@Ripper(targets = {DELETE_ADMIN_USER})\n@Regression\npublic void testUserLifecycle(Quest quest) {\n    quest.enters(OLYMPYS)\n         .validate(() -> {\n             CreatedUserResponse response = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)\n                 .getBody().as(CreatedUserResponse.class);\n             assertEquals(USER_INTERMEDIATE_NAME, response.getName(), NAME_INCORRECT);\n             assertEquals(USER_INTERMEDIATE_JOB, response.getJob(), JOB_INCORRECT);\n         });\n}"
         }
       ]
     },
@@ -491,14 +479,14 @@
         {
           "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Injects a test user object into the test method using a predefined model (`USER_JUNIOR`). The injected object is resolved lazily and used as the request body.",
-          "example": "@Test\npublic void testCreateJuniorUser(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             GET_ALL_USERS.withQueryParam(\"page\", 2),\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build())\n         .requestAndValidate(\n             POST_CREATE_USER,\n             user.join(),\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build());\n}"
+          "description": "Injects a test user object into the test method using a predefined model (e.g., USER_JUNIOR). The injected object is resolved lazily and used as the request body.",
+          "example": "@Test\npublic void testCreateJuniorUser(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO),\n             Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()\n         )\n         .requestAndValidate(\n             POST_CREATE_USER,\n             user.join(),\n             Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()\n         );\n}"
         },
         {
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Injects two predefined user models into the test method: one resolved immediately and one resolved lazily. Each is used to create a user and validate the response.",
-          "example": "@Test\npublic void testCreateTwoUsers(\n    Quest quest,\n    @Craft(model = USER_LEADER) User userLeader,\n    @Craft(model = USER_SENIOR) Late<User> userSenior) {\n\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             POST_CREATE_USER,\n             userLeader,\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Morpheus\").soft(true).build(),\n             Assertion.builder().target(BODY).key(\"job\").type(IS).expected(\"Leader\").soft(true).build())\n         .requestAndValidate(\n             POST_CREATE_USER,\n             userSenior.join(),\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Mr. Morpheus\").soft(true).build(),\n             Assertion.builder().target(BODY).key(\"job\").type(IS).expected(\"Senior Leader\").soft(true).build());\n}"
+          "example": "@Test\npublic void testCreateTwoUsers(\n    Quest quest,\n    @Craft(model = USER_LEADER) User userLeader,\n    @Craft(model = USER_SENIOR) Late<User> userSenior\n) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             POST_CREATE_USER,\n             userLeader,\n             Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_NAME).soft(true).build(),\n             Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build()\n         )\n         .requestAndValidate(\n             POST_CREATE_USER,\n             userSenior.join(),\n             Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_NAME).soft(true).build(),\n             Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_JOB).soft(true).build()\n         );\n}"
         }
       ]
     },
@@ -508,8 +496,8 @@
         {
           "label": "API",
           "usageLevel": "MANDATORY",
-          "description": "Marks a test method as part of the regression suite. This example shows regression tagging for a test that creates and validates a user in Reqres API.",
-          "example": "@Regression\n@Test\npublic void testCreateUser(Quest quest, @Craft(model = USER_LEADER) User user) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             POST_CREATE_USER,\n             user,\n             Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(\"name\").type(IS).expected(\"Morpheus\").soft(true).build()\n         );\n}"
+          "description": "Marks a test method as part of the regression suite. This example shows regression tagging for a test that creates and validates a user in the Reqres API.",
+          "example": "@Regression\n@Test\npublic void testCreateUser(Quest quest, @Craft(model = USER_LEADER) User user) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             POST_CREATE_USER,\n             user,\n             Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),\n             Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_NAME).soft(true).build()\n         );\n}"
         }
       ]
     },
@@ -520,7 +508,7 @@
           "label": "API",
           "usageLevel": "MANDATORY",
           "description": "Annotates a key API test or an entire test class to perform a high-level, critical endpoint check. The test must pass quickly to confirm basic API readiness.",
-          "example": "@Smoke\n@Test\npublic void testSmokeGetAllUsers(Quest quest) {\n    quest.enters(OLYMPYS)\n        .requestAndValidate(\n            Endpoints.GET_ALL_USERS,\n            Assertion.builder().target(STATUS).type(IS).expected(200).build()\n        );\n}"
+          "example": "@Smoke\n@Test\npublic void testSmokeGetAllUsers(Quest quest) {\n    quest.enters(OLYMPYS)\n         .requestAndValidate(\n             GET_ALL_USERS,\n             Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()\n         );\n}"
         }
       ]
     }

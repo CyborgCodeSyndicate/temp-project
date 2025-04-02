@@ -183,13 +183,13 @@
           "label": "Framework",
           "usageLevel": "MANDATORY",
           "description": "Injects test data into method parameters using predefined data models. The model parameter refers to a test data enum used to dynamically generate and inject data into the test.",
-          "example": "@Test\npublic void testCreateEntity(Quest quest, @Craft(model = GENERIC_ENTITY_MODEL) GenericEntity entity) {\n    quest.enters(GENERIC_WORLD)\n         .requestAndValidate(\n             GENERIC_ENDPOINT,\n             entity,\n             Assertion.builder().target(STATUS).type(IS).expected(201).build()\n         );\n}"
+          "example": "@Test\npublic void testCreateEntity(Quest quest, @Craft(model = GENERIC_ENTITY_MODEL) GenericEntity entity) {\n    quest.enters(GENERIC_WORLD)\n         .requestAndValidate(\n             GENERIC_ENDPOINT,\n             entity,\n             Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()\n         );\n}"
         },
         {
           "label": "Framework",
           "usageLevel": "MANDATORY",
           "description": "Demonstrates usage of multiple @Craft-injected parameters to simulate different data instances during test execution, one of which is resolved lazily via Late<>.",
-          "example": "@Test\npublic void testCreateMultipleEntities(\n    Quest quest,\n    @Craft(model = ENTITY_PRIMARY_MODEL) GenericEntity primaryEntity,\n    @Craft(model = ENTITY_SECONDARY_MODEL) Late<GenericEntity> secondaryEntity) {\n\n    quest.enters(GENERIC_WORLD)\n         .requestAndValidate(CREATE_ENDPOINT, primaryEntity, Assertion.builder().target(STATUS).type(IS).expected(201).build())\n         .requestAndValidate(CREATE_ENDPOINT, secondaryEntity.join(), Assertion.builder().target(STATUS).type(IS).expected(201).build());\n}"
+          "example": "@Test\npublic void testCreateMultipleEntities(\n    Quest quest,\n    @Craft(model = ENTITY_PRIMARY_MODEL) GenericEntity primaryEntity,\n    @Craft(model = ENTITY_SECONDARY_MODEL) Late<GenericEntity> secondaryEntity) {\n\n    quest.enters(GENERIC_WORLD)\n         .requestAndValidate(CREATE_ENDPOINT, primaryEntity, Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build())\n         .requestAndValidate(CREATE_ENDPOINT, secondaryEntity.join(), Assertion.builder().target(STATUS).type(IS).expected(201).build());\n}"
         }
       ]
     },
