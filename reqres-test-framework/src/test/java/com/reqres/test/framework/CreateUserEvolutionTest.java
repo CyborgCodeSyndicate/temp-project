@@ -63,7 +63,8 @@ public class CreateUserEvolutionTest extends BaseTestSequential {
                         Assertion.builder().target(HEADER).key(CONTENT_TYPE).type(CONTAINS).expected(JSON.toString()).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_JUNIOR_NAME).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_JUNIOR_JOB).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -81,7 +82,8 @@ public class CreateUserEvolutionTest extends BaseTestSequential {
                         Assertion.builder().target(HEADER).key(CONTENT_TYPE).type(CONTAINS).expected(JSON.toString()).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_JUNIOR_NAME).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_JUNIOR_JOB).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -89,7 +91,8 @@ public class CreateUserEvolutionTest extends BaseTestSequential {
     public void testCreateJuniorUserImprovedWithCustomService(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
         quest.enters(GONDOR)
                 .getAllUsersAndValidateResponse()
-                .createJuniorUserAndValidateResponse(user.join());
+                .createJuniorUserAndValidateResponse(user.join())
+                .complete();
     }
 
 }

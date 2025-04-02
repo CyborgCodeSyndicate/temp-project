@@ -11,6 +11,7 @@ public class TestConstants {
     public static class Pagination {
         public static final int PAGE_ONE = 1;
         public static final int PAGE_TWO = 2;
+        public static final int PAGE_THREE = 3;
         public static final List<Integer> TOTAL_USERS_IN_PAGE_RANGE = List.of(5, 15);
     }
 
@@ -19,6 +20,8 @@ public class TestConstants {
         public static final String SUPPORT_TEXT_PREFIX = "Tired of writing";
         public static final String SUPPORT_URL_REGEX = "https:\\/\\/contentcaddy\\.io\\?utm_source=reqres&utm_medium=json&utm_campaign=referral";
         public static final String SUPPORT_URL_VALUE = "https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral";
+        public static final String SUPPORT_TEXT_FULL = "Tired of writing endless social media content?";
+        public static final String SUPPORT_TEXT_BRAND = "Content Caddy";
     }
 
     public static class FileConstants {
@@ -52,6 +55,8 @@ public class TestConstants {
                 "avatar", "invalidUrls"
         );
         public static final int INVALID_USER_ID = 23;
+        public static final String USER_TIMESTAMP_REGEX = "^\\d{4}-\\d{2}-\\d{2}T.*Z$";
+        public static final String USER_EMAIL_DOMAIN = "@reqres.in";
     }
 
     public static class PageTwo {
@@ -81,6 +86,27 @@ public class TestConstants {
         public static final String USER_INTERMEDIATE_JOB = "Intermediate Leader";
         public static final String USER_JUNIOR_NAME = "Michael suffix";
         public static final String USER_JUNIOR_JOB = "Junior Lawson worker";
+    }
+
+    public static class Login {
+        public static final String TOKEN_REGEX = "[a-zA-Z0-9]+";
+        public static final String MISSING_PASSWORD_ERROR = "Missing password";
+        public static final String MISSING_EMAIL_ERROR = "Missing email or username";
+        public static final String USER_NOT_FOUND_ERROR = "user not found";
+        public static final String INVALID_EMAIL = "wrong.email@reqres.in";
+    }
+
+    public static class Resources {
+        public static final int RESOURCE_ONE_ID = 1;
+        public static final String RESOURCE_ONE_NAME = "cerulean";
+        public static final int RESOURCE_TWO_ID = 2;
+        public static final String RESOURCE_TWO_NAME = "fuchsia rose";
+        public static final int RESOURCE_TWO_YEAR = 2001;
+        public static final String RESOURCE_TWO_COLOR = "#C74375";
+        public static final String RESOURCE_TWO_PANTONE = "17-2031";
+        public static final int RESOURCE_INVALID_ID = 23;
+        public static final String RESOURCE_SIX_NAME = "honeysuckle";
+        public static final String RESOURCE_SIX_COLOR = "#D94F70";
     }
 
 }

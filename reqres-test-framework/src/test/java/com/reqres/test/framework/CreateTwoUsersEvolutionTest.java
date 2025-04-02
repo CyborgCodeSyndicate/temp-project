@@ -45,14 +45,16 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
                         userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_NAME).soft(true).build(),
-                        Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build())
+                        Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build()
+                )
                 .requestAndValidate(
                         POST_CREATE_USER,
                         userSenior,
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_NAME).soft(true).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_JOB).soft(true).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -64,14 +66,16 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
                         userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_NAME).soft(true).build(),
-                        Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build())
+                        Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build()
+                )
                 .requestAndValidate(
                         POST_CREATE_USER,
                         userSenior.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_NAME).soft(true).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_JOB).soft(true).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -79,7 +83,8 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
     public void testCreateTwoUsersImprovedWithCustomService(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
         quest.enters(GONDOR)
                 .createLeaderUserAndValidateResponse(userLeader)
-                .createSeniorUserAndValidateResponse(userSenior.join());
+                .createSeniorUserAndValidateResponse(userSenior.join())
+                .complete();
     }
 
 }

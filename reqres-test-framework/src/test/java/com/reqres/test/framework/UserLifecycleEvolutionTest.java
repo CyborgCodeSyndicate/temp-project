@@ -65,11 +65,13 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                 .requestAndValidate(
                         POST_CREATE_USER.withHeader(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token),
                         userLeader,
-                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .requestAndValidate(
                         POST_CREATE_USER.withHeader(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token),
                         userIntermediate,
-                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody().as(CreatedUserResponse.class);
@@ -81,7 +83,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                 .requestAndValidate(
                         DELETE_USER.withPathParam(ID_PARAM, ID_THREE).withHeader(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -95,11 +98,13 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                 .requestAndValidate(
                         POST_CREATE_USER,
                         userLeader,
-                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .requestAndValidate(
                         POST_CREATE_USER,
                         userIntermediate,
-                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .validate(() -> {
                     CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
                             .getBody().as(CreatedUserResponse.class);
@@ -111,7 +116,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                 .requestAndValidate(
                         DELETE_USER.withPathParam(ID_PARAM, ID_THREE),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -134,7 +140,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                 .requestAndValidate(
                         DELETE_USER.withPathParam(ID_PARAM, ID_THREE),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -154,7 +161,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                     assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob(), JOB_INCORRECT);
                     assertTrue(createdUserResponse.getCreatedAt()
                             .contains(Instant.now().atZone(UTC).format(ISO_LOCAL_DATE)), CREATED_AT_INCORRECT);
-                });
+                })
+                .complete();
     }
 
     @Test
@@ -167,7 +175,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     @Regression
     public void testUserLifecycleWithCustomService(Quest quest) {
         quest.enters(GONDOR)
-                .validateCreatedUser();
+                .validateCreatedUser()
+                .complete();
     }
 
 }

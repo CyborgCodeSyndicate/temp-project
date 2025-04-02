@@ -75,7 +75,8 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder().target(BODY).key(USER_FIRST_NAME.getJsonPath(0)).type(EQUALS_IGNORE_CASE).expected(USER_ONE_FIRST_NAME).build(),
                         Assertion.builder().target(BODY).key(TOTAL.getJsonPath()).type(BETWEEN).expected(TOTAL_USERS_IN_PAGE_RANGE).build(),
                         Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(CONTAINS_ALL).expected(PAGE_TWO_EXPECTED_USERS).build(),
-                        Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(CONTAINS_ANY).expected(PAGE_TWO_CONTAINS_ANY_USER).build())
+                        Assertion.builder().target(BODY).key(DATA.getJsonPath()).type(CONTAINS_ANY).expected(PAGE_TWO_CONTAINS_ANY_USER).build()
+                )
                 .complete();
     }
 
@@ -88,7 +89,8 @@ public class ReqresApiTest extends BaseTest {
                         Assertion.builder().target(STATUS).type(IS).expected(SC_OK).soft(true).build(),
                         Assertion.builder().target(BODY).key(SINGLE_USER_EMAIL_EXPLICIT.getJsonPath()).type(IS).expected(USER_THREE_EMAIL).soft(true).build(),
                         Assertion.builder().target(BODY).key(SUPPORT_URL_EXPLICIT.getJsonPath()).type(IS).expected(SUPPORT_URL_VALUE).soft(true).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -98,7 +100,8 @@ public class ReqresApiTest extends BaseTest {
                 .requestAndValidate(
                         GET_USER.withPathParam(ID_PARAM, INVALID_USER_ID),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_NOT_FOUND).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -121,7 +124,8 @@ public class ReqresApiTest extends BaseTest {
                 .requestAndValidate(
                         GET_USER.withPathParam(ID_PARAM, retrieve(StorageKeysApi.API, GET_ALL_USERS, Response.class).getBody().as(GetUsersResponse.class).getData().get(0).getId()),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -137,14 +141,16 @@ public class ReqresApiTest extends BaseTest {
                         .filter(user -> USER_NINE_FIRST_NAME.equals(user.getFirstName()))
                         .map(DataResponse::getId)
                         .findFirst()
-                        .orElseThrow(() -> new RuntimeException(userWithFirstNameNotFound(USER_NINE_FIRST_NAME)))))
+                        .orElseThrow(() -> new RuntimeException(userWithFirstNameNotFound(USER_NINE_FIRST_NAME))))
+                )
                 .validate(softAssertions -> {
                     UserResponse userResponse = retrieve(StorageKeysApi.API, GET_USER, Response.class).getBody().as(UserResponse.class);
                     softAssertions.assertThat(userResponse.getData().getId()).isEqualTo(USER_NINE_ID);
                     softAssertions.assertThat(userResponse.getData().getEmail()).isEqualTo(USER_NINE_EMAIL);
                     softAssertions.assertThat(userResponse.getData().getFirstName()).isEqualTo(USER_NINE_FIRST_NAME);
                     softAssertions.assertThat(userResponse.getData().getLastName()).isEqualTo(USER_NINE_LAST_NAME);
-                }).complete();
+                })
+                .complete();
     }
 
     @Test
@@ -156,7 +162,8 @@ public class ReqresApiTest extends BaseTest {
                         user,
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_NAME).soft(true).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -164,11 +171,13 @@ public class ReqresApiTest extends BaseTest {
     public void testCreateJuniorUser(Quest quest, @Craft(model = USER_JUNIOR) Late<User> user) {
         quest.enters(OLYMPYS)
                 .requestAndValidate(GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO),
-                        Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()
+                )
                 .requestAndValidate(POST_CREATE_USER,
                         user.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -178,12 +187,14 @@ public class ReqresApiTest extends BaseTest {
                 .requestAndValidate(POST_CREATE_USER, userLeader,
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_NAME).soft(true).build(),
-                        Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build())
+                        Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_LEADER_JOB).soft(true).build()
+                )
                 .requestAndValidate(POST_CREATE_USER, userSenior.join(),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_NAME_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_NAME).soft(true).build(),
                         Assertion.builder().target(BODY).key(CREATE_USER_JOB_RESPONSE.getJsonPath()).type(IS).expected(USER_SENIOR_JOB).soft(true).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -196,7 +207,8 @@ public class ReqresApiTest extends BaseTest {
                                 .withHeader(SPECIFIC_HEADER, retrieve(StorageKeysApi.API, POST_LOGIN_USER, Response.class)
                                         .getBody().jsonPath().getString(TOKEN.getJsonPath())),
                         Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()
-                );
+                )
+                .complete();
     }
 
     @Test
@@ -215,7 +227,8 @@ public class ReqresApiTest extends BaseTest {
                     assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName());
                     assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob());
                     assertTrue(createdUserResponse.getCreatedAt().contains(Instant.now().atZone(UTC).format(ISO_LOCAL_DATE)));
-                });
+                })
+                .complete();
     }
 
     @Test
@@ -226,7 +239,9 @@ public class ReqresApiTest extends BaseTest {
                 .then()
                 .enters(OLYMPYS)
                 .requestAndValidate(GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO),
-                        Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build());
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_OK).build()
+                )
+                .complete();
     }
 
     @Test
@@ -234,7 +249,8 @@ public class ReqresApiTest extends BaseTest {
     public void testValidateAllUsers(Quest quest, @Craft(model = LOGIN_ADMIN_USER) LoginUser loginUser) {
         quest.enters(RIVENDELL)
                 .loginUserAndAddSpecificHeader(loginUser)
-                .requestAndValidateGetAllUsers();
+                .requestAndValidateGetAllUsers()
+                .complete();
     }
 
 }
