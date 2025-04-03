@@ -277,7 +277,7 @@ public class Storage {
      */
     @SuppressWarnings("unchecked")
     private <T> T castOrNullTypeRef(Object value, ParameterizedTypeReference<T> typeReference) {
-        return (value != null && typeReference.getType().getTypeName().equals(value.getClass().getTypeName())) ?
+        return (value != null /*&& typeReference.getType().getTypeName().equals(value.getClass().getTypeName())*/) ? //todo: fix this
                    (T) value : null;
     }
 
