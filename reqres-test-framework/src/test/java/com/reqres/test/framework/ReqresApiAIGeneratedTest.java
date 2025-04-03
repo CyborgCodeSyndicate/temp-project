@@ -25,6 +25,7 @@ import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMI
 import static com.reqres.test.framework.data.creator.TestDataCreator.*;
 import static com.reqres.test.framework.rest.ApiResponsesJsonPaths.*;
 import static com.reqres.test.framework.rest.Endpoints.*;
+import static com.reqres.test.framework.utils.AssertionMessages.EMAIL_FOUND_IN_LIST_UNEXPECTED;
 import static com.reqres.test.framework.utils.Helpers.EMPTY_JSON;
 import static com.reqres.test.framework.utils.PathVariables.ID_PARAM;
 import static com.reqres.test.framework.utils.QueryParams.PAGE_PARAM;
@@ -189,7 +190,7 @@ public class ReqresApiAIGeneratedTest extends BaseTest {
 
                     assertTrue(
                             emails.stream().noneMatch(email -> email.contains(USER_SENIOR_NAME.toLowerCase())),
-                            "Unexpected: Senior user email found in paginated list!"
+                            EMAIL_FOUND_IN_LIST_UNEXPECTED
                     );
                 })
 

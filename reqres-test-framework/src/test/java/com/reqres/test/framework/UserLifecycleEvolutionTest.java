@@ -10,7 +10,7 @@ import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.*;
-import com.theairebellion.zeus.framework.base.BaseTestSequential;
+import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.restassured.response.Response;
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @API
-public class UserLifecycleEvolutionTest extends BaseTestSequential {
+public class UserLifecycleEvolutionTest extends BaseTest {
 
     @Test
     @Regression

@@ -7,7 +7,7 @@ import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
 import com.theairebellion.zeus.framework.annotation.Craft;
 import com.theairebellion.zeus.framework.annotation.Regression;
-import com.theairebellion.zeus.framework.base.BaseTestSequential;
+import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.parameters.Late;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.validator.core.Assertion;
@@ -34,7 +34,7 @@ import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_OK;
 
 @API
-public class CreateUserEvolutionTest extends BaseTestSequential {
+public class CreateUserEvolutionTest extends BaseTest {
 
     @Test
     @Regression
