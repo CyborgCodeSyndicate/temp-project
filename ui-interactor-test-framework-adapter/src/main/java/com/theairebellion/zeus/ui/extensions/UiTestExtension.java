@@ -157,17 +157,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                 if (checkUrl(urlsForIntercepting, url)) {
                     try {
                         String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
-
-                        if (body != null && body.length() > 10000) {
-                            response.setBody(String.format(
-                                    "Response body truncated. Original length: %d characters. " +
-                                            "First 100 characters: %s",
-                                    body.length(),
-                                    body.substring(0, 100)
-                            ));
-                        } else {
-                            response.setBody(body);
-                        }
+                        response.setBody(body);
                     } catch (Exception e) {
                         response.setBody("Error retrieving response body: " + e.getMessage());
                     }
@@ -224,7 +214,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             responses = new ArrayList<>();
         }
         responses.add(apiResponse);
-        storage.sub(UI).put(RESPONSES, apiResponse);
+        storage.sub(UI).put(RESPONSES, responses);
 
         LogUI.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
     }
