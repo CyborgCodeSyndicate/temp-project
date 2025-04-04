@@ -37,7 +37,7 @@ public @interface InsertionField {
     /**
      * Defines the component type for this field.
      * <p>
-     * This should be a class implementing {@link ComponentType},
+     * This should be class implementing {@link ComponentType},
      * allowing the framework to determine how to interact with the UI element.
      * </p>
      *

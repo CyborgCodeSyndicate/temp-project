@@ -138,7 +138,7 @@ public class ExceptionHandlingWebElementFunctions {
             element = LocatorParser.updateWebElement(driver, element);
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
             Actions actions = new Actions(driver);
-            actions.moveToElement(element.getOriginal());
+            actions.moveToElement(element.getOriginal()).perform();
             WebElement clickableElement = wait.until(ExpectedConditions.elementToBeClickable(element.getOriginal()));
 
             return WebElementAction.performAction(driver, clickableElement, webElementAction, args);

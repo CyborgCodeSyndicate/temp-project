@@ -1155,7 +1155,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 assertThrows(IllegalArgumentException.class, () -> smartDriver.findSmartElement(locator));
 
                 // Verify that the error was logged
-                logUIMock.verify(() -> LogUI.error("No exception handling for this specific exception."));
+                logUIMock.verify(() -> LogUI.error(contains("Exception handling failed for method")));
             }
         }
     }

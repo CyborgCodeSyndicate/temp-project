@@ -70,9 +70,6 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
 
         for (Field field : targetedFields) {
             final A annotation = field.getAnnotation(getAnnotationClass());
-            if (annotation == null) {
-                continue;
-            }
 
             field.setAccessible(true);
             try {
@@ -162,6 +159,9 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
     //todo: javaDocs
     protected static Class<? extends ComponentType> extractComponentTypeClass(
         final Class<? extends ComponentType> componentTypeClass) {
+        if(Arrays.asList(componentTypeClass.getInterfaces()).contains(ComponentType.class)){
+            return componentTypeClass;
+        }
 
         @SuppressWarnings("unchecked") final Class<? extends ComponentType> resolved =
             (Class<? extends ComponentType>) Arrays.stream(componentTypeClass.getInterfaces())

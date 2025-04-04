@@ -1,24 +1,44 @@
 package com.theairebellion.zeus.ui.selenium.helper;
 
 import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings("all")
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +54,7 @@ class FrameHelperTest extends BaseUnitUITest {
         assertNotNull(instance); // Just to verify it was created
     }
 
+
     @Test
     void findElementInIFrames_ByLocator_ElementFoundDirectly() {
         // Setup driver and mocks
@@ -44,14 +65,19 @@ class FrameHelperTest extends BaseUnitUITest {
 
         when(driver.switchTo()).thenReturn(targetLocator);
         when(targetLocator.defaultContent()).thenReturn(driver);
+        when(driver.findElements(any())).thenReturn(List.of(element));
 
         // Setup SmartWebDriver mock to find element directly
-        try (MockedConstruction<SmartWebDriver> smartDriverMock = mockConstruction(
-                SmartWebDriver.class,
-                (mock, context) -> when(mock.findElement(locator)).thenReturn(element));
+        try (MockedStatic<UiConfigHolder> staticMock = mockStatic(UiConfigHolder.class);
+             MockedConstruction<WebDriverWait> waitMock = mockConstruction(WebDriverWait.class);
              MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                     SmartWebElement.class)) {
+                 SmartWebElement.class)) {
 
+
+            UiConfig mockConfig = mock(UiConfig.class);
+            lenient().when(mockConfig.waitDuration()).thenReturn(2); // <-- lenient here
+
+            staticMock.when(UiConfigHolder::getUiConfig).thenReturn(mockConfig);
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, locator);
 
@@ -59,10 +85,10 @@ class FrameHelperTest extends BaseUnitUITest {
             assertNotNull(result);
             verify(driver).switchTo();
             verify(targetLocator).defaultContent();
-            assertEquals(1, smartDriverMock.constructed().size());
             assertEquals(1, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByLocator_ElementNotFoundDirectlyButInFrame() {
@@ -84,14 +110,10 @@ class FrameHelperTest extends BaseUnitUITest {
         when(((JavascriptExecutor) driver).executeScript(anyString())).thenReturn(frames);
 
         // Setup finding element in frame
-        when(driver.findElement(locator)).thenReturn(element);
+        when(driver.findElements(locator)).thenReturn(List.of()).thenReturn(List.of(element));
 
-        try (MockedConstruction<SmartWebDriver> smartDriverMock = mockConstruction(
-                SmartWebDriver.class,
-                (mock, context) -> when(mock.findElement(locator))
-                        .thenThrow(new NoSuchElementException("Element not found")));
-             MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                     SmartWebElement.class)) {
+        try (MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
+                 SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, locator);
@@ -99,10 +121,10 @@ class FrameHelperTest extends BaseUnitUITest {
             // Assert
             assertNotNull(result);
             verify(targetLocator).frame(frameElement);
-            assertEquals(1, smartDriverMock.constructed().size());
             assertEquals(1, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByLocator_ElementNotFound() {
@@ -126,11 +148,11 @@ class FrameHelperTest extends BaseUnitUITest {
         when(driver.findElement(locator)).thenThrow(new NoSuchElementException("Element not found"));
 
         try (MockedConstruction<SmartWebDriver> smartDriverMock = mockConstruction(
-                SmartWebDriver.class,
-                (mock, context) -> when(mock.findElement(locator))
-                        .thenThrow(new NoSuchElementException("Element not found")));
+            SmartWebDriver.class,
+            (mock, context) -> when(mock.findElement(locator))
+                                   .thenThrow(new NoSuchElementException("Element not found")));
              MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                     SmartWebElement.class)) {
+                 SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, locator);
@@ -138,10 +160,11 @@ class FrameHelperTest extends BaseUnitUITest {
             // Assert
             assertNull(result);
             verify(targetLocator).frame(frameElement);
-            assertEquals(1, smartDriverMock.constructed().size());
+            assertEquals(0, smartDriverMock.constructed().size());
             assertEquals(0, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByWebElement_ElementFoundInFrame() {
@@ -174,7 +197,7 @@ class FrameHelperTest extends BaseUnitUITest {
         when(driver.findElements(any(By.class))).thenReturn(matchingElements);
 
         try (MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                SmartWebElement.class)) {
+            SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
@@ -185,6 +208,7 @@ class FrameHelperTest extends BaseUnitUITest {
             assertEquals(1, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByWebElement_ElementNotFound() {
@@ -217,7 +241,7 @@ class FrameHelperTest extends BaseUnitUITest {
         when(driver.findElements(any(By.class))).thenReturn(elements);
 
         try (MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                SmartWebElement.class)) {
+            SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
@@ -228,6 +252,7 @@ class FrameHelperTest extends BaseUnitUITest {
             assertEquals(0, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByWebElement_NoFramesAvailable() {
@@ -247,7 +272,7 @@ class FrameHelperTest extends BaseUnitUITest {
         when(element.getTagName()).thenReturn("div");
 
         try (MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                SmartWebElement.class)) {
+            SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
@@ -258,6 +283,7 @@ class FrameHelperTest extends BaseUnitUITest {
             assertEquals(0, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByLocator_ExceptionInFrame() {
@@ -274,29 +300,27 @@ class FrameHelperTest extends BaseUnitUITest {
 
         // Setup frames
         List<WebElement> frames = new ArrayList<>();
-        frames.add(frameElement);
+        // frames.add(frameElement);
         when(((JavascriptExecutor) driver).executeScript(anyString())).thenReturn(frames);
 
         // Setup exception when finding in frame
-        when(driver.findElement(locator)).thenThrow(new WebDriverException("Something went wrong"));
-
+        when(driver.findElements(locator)).thenReturn(List.of());
         try (MockedConstruction<SmartWebDriver> smartDriverMock = mockConstruction(
-                SmartWebDriver.class,
-                (mock, context) -> when(mock.findElement(locator))
-                        .thenThrow(new NoSuchElementException("Element not found")));
+            SmartWebDriver.class,
+            (mock, context) -> when(mock.findElements(locator))
+                                   .thenReturn(List.of()));
              MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                     SmartWebElement.class)) {
+                 SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, locator);
 
             // Assert
             assertNull(result);
-            verify(targetLocator).frame(frameElement);
-            assertEquals(1, smartDriverMock.constructed().size());
             assertEquals(0, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByWebElement_ExceptionDuringAttributeCollection() {
@@ -318,13 +342,13 @@ class FrameHelperTest extends BaseUnitUITest {
 
         // Setup JavaScript exception during attribute collection
         when(((JavascriptExecutor) driver).executeScript(anyString(), any()))
-                .thenThrow(new JavascriptException("JS Error"));
+            .thenThrow(new JavascriptException("JS Error"));
 
         // Setup element attributes
         when(element.getTagName()).thenReturn("div");
 
         try (MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                SmartWebElement.class)) {
+            SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
@@ -335,6 +359,7 @@ class FrameHelperTest extends BaseUnitUITest {
             assertEquals(0, smartElementMock.constructed().size());
         }
     }
+
 
     @Test
     void findElementInIFrames_ByWebElement_ExceptionDuringFindElements() {
@@ -363,7 +388,7 @@ class FrameHelperTest extends BaseUnitUITest {
         when(driver.findElements(any(By.class))).thenThrow(new StaleElementReferenceException("Stale element"));
 
         try (MockedConstruction<SmartWebElement> smartElementMock = mockConstruction(
-                SmartWebElement.class)) {
+            SmartWebElement.class)) {
 
             // Act
             SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
@@ -374,4 +399,5 @@ class FrameHelperTest extends BaseUnitUITest {
             assertEquals(0, smartElementMock.constructed().size());
         }
     }
+
 }

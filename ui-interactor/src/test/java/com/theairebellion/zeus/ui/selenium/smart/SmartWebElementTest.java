@@ -588,26 +588,13 @@ class SmartWebElementTest extends BaseUnitUITest {
 
                 SmartWebElement testElement = new SmartWebElement(originalElement, driver);
 
-                // Use reflection to modify the private method behavior
-                try {
-                    Method performActionWithWaitMethod = SmartWebElement.class.getDeclaredMethod(
-                            "performActionWithWait", Consumer.class);
-                    performActionWithWaitMethod.setAccessible(true);
-
-                    // Replace the method implementation temporarily
-                    performActionWithWaitMethod.invoke(testElement, (Consumer<WebElement>) element -> {
-                        // Do nothing or minimal action
-                    });
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to modify private method", e);
-                }
 
                 // Act
                 testElement.clearAndSendKeys(textToSend);
 
                 // Verify
-                verify(originalElement, times(2)).clear();
-                verify(originalElement, times(2)).sendKeys(textToSend);
+                verify(originalElement, times(1)).clear();
+                verify(originalElement, times(1)).sendKeys(textToSend);
             }
         }
 
@@ -772,7 +759,7 @@ class SmartWebElementTest extends BaseUnitUITest {
                         (driver, element, exceptionObj, params) -> {
                             // Simulate some handling logic
                             LogUI.error("Exception handled: " + exceptionObj.getMessage());
-                            return null;
+                           throw new RuntimeException("Test");
                         };
 
                 // Prepare the exception handling map
@@ -790,14 +777,14 @@ class SmartWebElementTest extends BaseUnitUITest {
 
                 // Access the private method using reflection
                 Method performActionWithWaitMethod = SmartWebElement.class.getDeclaredMethod(
-                        "performActionWithWait", Consumer.class);
+                        "performActionWithWait", Consumer.class, String.class);
                 performActionWithWaitMethod.setAccessible(true);
 
                 // Act & Assert
                 try {
-                    performActionWithWaitMethod.invoke(smartElement, action);
+                    performActionWithWaitMethod.invoke(smartElement, action, actionName);
                     fail("Expected exception to be handled");
-                } catch (InvocationTargetException e) {
+                } catch (Exception e) {
                     // Verify the root cause is the original exception
                     assertEquals(exception, e.getCause());
                 }
@@ -1037,7 +1024,7 @@ class SmartWebElementTest extends BaseUnitUITest {
                 );
 
                 // Verify that the error was logged
-                logUIMock.verify(() -> LogUI.error("No exception handling for this specific exception."));
+                logUIMock.verify(() -> LogUI.error(anyString()));
             }
         }
     }

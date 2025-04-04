@@ -1,473 +1,367 @@
 package com.theairebellion.zeus.ui.insertion;
 
 import com.theairebellion.zeus.ui.components.base.ComponentType;
+import com.theairebellion.zeus.ui.components.input.InputComponentType;
+import com.theairebellion.zeus.ui.log.LogUI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Fail.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("all")
-@ExtendWith(MockitoExtension.class)
-//todo fix me
-class BaseInsertionServiceTest {
-    //
-    // @Mock
-    // private InsertionServiceRegistry serviceRegistry;
-    //
-    // @Mock
-    // private Insertion insertionService;
-    //
-    // private TestBaseInsertionService testService;
-    //
-    // // Simple test class with a field that should be processed
-    // static class TestData {
-    //     private String field1 = "test value";
-    //     private Integer field2 = 123;
-    //     private String field3 = null; // This should be skipped as it's null
-    // }
-    //
-    // // Create a concrete implementation of BaseInsertionService for testing
-    // static class TestBaseInsertionService extends BaseInsertionService {
-    //
-    //     private final List<Field> fieldsToProcess = new ArrayList<>();
-    //     private Object mockAnnotation;
-    //     private Class<? extends ComponentType> componentTypeToReturn;
-    //     private By locatorToReturn;
-    //     private Enum<?> enumValueToReturn;
-    //
-    //     private boolean beforeInsertionCalled = false;
-    //     private boolean afterInsertionCalled = false;
-    //
-    //     public TestBaseInsertionService(InsertionServiceRegistry serviceRegistry) {
-    //         super(serviceRegistry);
-    //     }
-    //
-    //     public void setMockAnnotation(Object annotation) {
-    //         this.mockAnnotation = annotation;
-    //     }
-    //
-    //     public void setComponentTypeToReturn(Class<? extends ComponentType> type) {
-    //         this.componentTypeToReturn = type;
-    //     }
-    //
-    //     public void setLocatorToReturn(By locator) {
-    //         this.locatorToReturn = locator;
-    //     }
-    //
-    //     public void setEnumValueToReturn(Enum<?> value) {
-    //         this.enumValueToReturn = value;
-    //     }
-    //
-    //     public void addFieldToProcess(Field field) {
-    //         fieldsToProcess.add(field);
-    //     }
-    //
-    //     public boolean wasBeforeInsertionCalled() {
-    //         return beforeInsertionCalled;
-    //     }
-    //
-    //     public boolean wasAfterInsertionCalled() {
-    //         return afterInsertionCalled;
-    //     }
-    //
-    //     @Override
-    //     protected Object getFieldAnnotation(Field field) {
-    //         return mockAnnotation;
-    //     }
-    //
-    //     @Override
-    //     protected Class<? extends ComponentType> getComponentType(Object annotation) {
-    //         return componentTypeToReturn;
-    //     }
-    //
-    //     @Override
-    //     protected By buildLocator(Object annotation) {
-    //         return locatorToReturn;
-    //     }
-    //
-    //     @Override
-    //     protected Enum<?> getEnumValue(Object annotation) {
-    //         return enumValueToReturn;
-    //     }
-    //
-    //     @Override
-    //     protected List<Field> filterAndSortFields(Field[] fields) {
-    //         return fieldsToProcess;
-    //     }
-    //
-    //     @Override
-    //     protected void beforeInsertion(Object annotation) {
-    //         beforeInsertionCalled = true;
-    //     }
-    //
-    //     @Override
-    //     protected void afterInsertion(Object annotation) {
-    //         afterInsertionCalled = true;
-    //     }
-    // }
-    //
-    // // Mock implementation of ComponentType for testing
-    // interface TestComponentType extends ComponentType {
-    //     @Override
-    //     default Enum<?> getType() {
-    //         return null;
-    //     }
-    // }
-    //
-    // // Mock enum that implements ComponentType
-    // enum TestEnum implements TestComponentType {
-    //     TEST_COMPONENT;
-    //
-    //     @Override
-    //     public Enum<?> getType() {
-    //         return this;
-    //     }
-    // }
-    //
-    // @BeforeEach
-    // void setUp() {
-    //     testService = new TestBaseInsertionService(serviceRegistry);
-    // }
-    //
-    // @Nested
-    // @DisplayName("insertData method tests")
-    // class InsertDataTests {
-    //
-    //     @Test
-    //     @DisplayName("Should process fields with non-null values")
-    //     void shouldProcessFieldsWithNonNullValues() throws NoSuchFieldException {
-    //         // Given
-    //         TestData testData = new TestData();
-    //         Field field1 = TestData.class.getDeclaredField("field1");
-    //         Field field2 = TestData.class.getDeclaredField("field2");
-    //
-    //         testService.addFieldToProcess(field1);
-    //         testService.addFieldToProcess(field2);
-    //
-    //         // Setup test service
-    //         TestEnum mockEnum = TestEnum.TEST_COMPONENT;
-    //         testService.setMockAnnotation(mock(Annotation.class));
-    //         testService.setComponentTypeToReturn(TestComponentType.class);
-    //         testService.setLocatorToReturn(By.id("test-id"));
-    //         testService.setEnumValueToReturn(mockEnum);
-    //
-    //         // Setup mock service registry
-    //         when(serviceRegistry.getService(TestComponentType.class)).thenReturn(insertionService);
-    //
-    //         // When
-    //         testService.insertData(testData);
-    //
-    //         // Then
-    //         verify(insertionService).insertion(eq(mockEnum), eq(By.id("test-id")), eq("test value"));
-    //         verify(insertionService).insertion(eq(mockEnum), eq(By.id("test-id")), eq(123));
-    //         assertTrue(testService.wasBeforeInsertionCalled());
-    //         assertTrue(testService.wasAfterInsertionCalled());
-    //     }
-    //
-    //     @Test
-    //     @DisplayName("Should skip fields with null values")
-    //     void shouldSkipFieldsWithNullValues() throws NoSuchFieldException {
-    //         // Given
-    //         TestData testData = new TestData();
-    //         Field field3 = TestData.class.getDeclaredField("field3");
-    //
-    //         testService.addFieldToProcess(field3);
-    //
-    //         // Setup test service
-    //         testService.setMockAnnotation(mock(Annotation.class));
-    //         testService.setComponentTypeToReturn(TestComponentType.class);
-    //         testService.setLocatorToReturn(By.id("test-id"));
-    //         testService.setEnumValueToReturn(TestEnum.TEST_COMPONENT);
-    //
-    //         // Setup mock service registry
-    //         when(serviceRegistry.getService(TestComponentType.class)).thenReturn(insertionService);
-    //
-    //         // When
-    //         testService.insertData(testData);
-    //
-    //         // Then
-    //         verify(insertionService, never()).insertion(any(), any(), any());
-    //         assertFalse(testService.wasBeforeInsertionCalled());
-    //         assertFalse(testService.wasAfterInsertionCalled());
-    //     }
-    //
-    //     @Test
-    //     @DisplayName("Should skip fields with empty annotation")
-    //     void shouldSkipFieldsWithEmptyAnnotation() throws NoSuchFieldException {
-    //         // Given
-    //         TestData testData = new TestData();
-    //         Field field1 = TestData.class.getDeclaredField("field1");
-    //
-    //         testService.addFieldToProcess(field1);
-    //
-    //         // Setup test service
-    //         testService.setMockAnnotation(null); // No annotation
-    //
-    //         // When
-    //         testService.insertData(testData);
-    //
-    //         // Then
-    //         verify(serviceRegistry, never()).getService(any());
-    //         verify(insertionService, never()).insertion(any(), any(), any());
-    //     }
-    //
-    //     @Test
-    //     @DisplayName("Should throw IllegalStateException when no insertion service is registered")
-    //     void shouldThrowIllegalStateExceptionWhenNoInsertionServiceIsRegistered() throws NoSuchFieldException {
-    //         // Given
-    //         TestData testData = new TestData();
-    //         Field field1 = TestData.class.getDeclaredField("field1");
-    //
-    //         testService.addFieldToProcess(field1);
-    //
-    //         // Setup test service
-    //         testService.setMockAnnotation(mock(Annotation.class));
-    //         testService.setComponentTypeToReturn(TestComponentType.class);
-    //
-    //         // Setup mock service registry to return null
-    //         when(serviceRegistry.getService(TestComponentType.class)).thenReturn(null);
-    //
-    //         // When & Then
-    //         IllegalStateException exception = assertThrows(
-    //                 IllegalStateException.class,
-    //                 () -> testService.insertData(testData)
-    //         );
-    //
-    //         assertTrue(exception.getMessage().contains("No InsertionService registered for"));
-    //     }
-    //
-    //     @Test
-    //     @DisplayName("Should throw RuntimeException when field access fails")
-    //     void shouldThrowRuntimeExceptionWhenFieldAccessFails() {
-    //         // Given
-    //         TestData testData = new TestData();
-    //
-    //         // Create a test implementation that will throw the exception we want to test
-    //         BaseInsertionService testService = new BaseInsertionService(serviceRegistry) {
-    //             @Override
-    //             protected Object getFieldAnnotation(Field field) {
-    //                 return mock(Annotation.class);
-    //             }
-    //
-    //             @Override
-    //             protected Class<? extends ComponentType> getComponentType(Object annotation) {
-    //                 return TestComponentType.class;
-    //             }
-    //
-    //             @Override
-    //             protected By buildLocator(Object annotation) {
-    //                 return By.id("test-id");
-    //             }
-    //
-    //             @Override
-    //             protected Enum<?> getEnumValue(Object annotation) {
-    //                 return TestEnum.TEST_COMPONENT;
-    //             }
-    //
-    //             @Override
-    //             protected List<Field> filterAndSortFields(Field[] fields) {
-    //                 try {
-    //                     Field field = TestData.class.getDeclaredField("field1");
-    //                     return List.of(field);
-    //                 } catch (NoSuchFieldException e) {
-    //                     throw new RuntimeException(e);
-    //                 }
-    //             }
-    //         };
-    //
-    //         // Create a spy on the test service
-    //         BaseInsertionService spyService = spy(testService);
-    //
-    //         // Setup the spy to throw the exception we want to test
-    //         doAnswer(invocation -> {
-    //             throw new RuntimeException("Failed to access field: field1",
-    //                     new IllegalAccessException("Test exception"));
-    //         }).when(spyService).insertData(any());
-    //
-    //         // When & Then
-    //         RuntimeException exception = assertThrows(
-    //                 RuntimeException.class,
-    //                 () -> spyService.insertData(testData)
-    //         );
-    //
-    //         // Verify the exception message
-    //         assertTrue(exception.getMessage().contains("Failed to access field"));
-    //     }
-    // }
-    //
-    // @Nested
-    // @DisplayName("Hook method tests")
-    // class HookMethodTests {
-    //
-    //     @Test
-    //     @DisplayName("Should call beforeInsertion and afterInsertion hooks")
-    //     void shouldCallBeforeAndAfterInsertionHooks() throws NoSuchFieldException {
-    //         // Given
-    //         TestData testData = new TestData();
-    //         Field field1 = TestData.class.getDeclaredField("field1");
-    //
-    //         testService.addFieldToProcess(field1);
-    //
-    //         // Setup test service
-    //         Object mockAnnotation = mock(Annotation.class);
-    //         testService.setMockAnnotation(mockAnnotation);
-    //         testService.setComponentTypeToReturn(TestComponentType.class);
-    //         testService.setLocatorToReturn(By.id("test-id"));
-    //         testService.setEnumValueToReturn(TestEnum.TEST_COMPONENT);
-    //
-    //         // Setup mock service registry
-    //         when(serviceRegistry.getService(TestComponentType.class)).thenReturn(insertionService);
-    //
-    //         // When
-    //         testService.insertData(testData);
-    //
-    //         // Then
-    //         assertTrue(testService.wasBeforeInsertionCalled());
-    //         assertTrue(testService.wasAfterInsertionCalled());
-    //     }
-    // }
-    //
-    // @Test
-    // @DisplayName("Should throw RuntimeException when IllegalAccessException occurs")
-    // void shouldThrowRuntimeExceptionWhenIllegalAccessExceptionOccurs() throws NoSuchFieldException {
-    //     // Given
-    //     TestData testData = new TestData();
-    //
-    //     // Create a field instance that will be used in our test
-    //     Field realField = TestData.class.getDeclaredField("field1");
-    //
-    //     // Create a custom BaseInsertionService that will trigger the exception
-    //     BaseInsertionService testService = new BaseInsertionService(serviceRegistry) {
-    //         @Override
-    //         protected Object getFieldAnnotation(Field field) {
-    //             return mock(Annotation.class);
-    //         }
-    //
-    //         @Override
-    //         protected Class<? extends ComponentType> getComponentType(Object annotation) {
-    //             return TestComponentType.class;
-    //         }
-    //
-    //         @Override
-    //         protected By buildLocator(Object annotation) {
-    //             return By.id("test-id");
-    //         }
-    //
-    //         @Override
-    //         protected Enum<?> getEnumValue(Object annotation) {
-    //             return TestEnum.TEST_COMPONENT;
-    //         }
-    //
-    //         @Override
-    //         protected List<Field> filterAndSortFields(Field[] fields) {
-    //             // Return the real field - we'll cause the exception through other means
-    //             return List.of(realField);
-    //         }
-    //     };
-    //
-    //     // Create a special RuntimeException that will be thrown for testing
-    //     IllegalAccessException illegalAccessException = new IllegalAccessException("Test exception");
-    //
-    //     // Using PowerMockito to mock the static Field.get method would be ideal here
-    //     // But since we're not using PowerMockito, we'll try a different approach
-    //
-    //     // Use a spy to intercept the field.get() call
-    //     BaseInsertionService spyService = spy(testService);
-    //
-    //     // Make the spy throw an exception when field.get is about to be called
-    //     doAnswer(invocation -> {
-    //         throw new RuntimeException("Failed to access field", illegalAccessException);
-    //     }).when(spyService).insertData(any());
-    //
-    //     // When & Then
-    //     RuntimeException exception = assertThrows(
-    //             RuntimeException.class,
-    //             () -> spyService.insertData(testData)
-    //     );
-    //
-    //     // Verify the cause is our IllegalAccessException
-    //     assertSame(illegalAccessException, exception.getCause());
-    // }
-    //
-    // @Test
-    // @DisplayName("Should catch IllegalAccessException and wrap it in RuntimeException")
-    // void shouldCatchIllegalAccessExceptionAndWrapIt() throws Exception {
-    //     // Given
-    //     Object testData = new Object(); // Simple test data
-    //
-    //     // Create a custom Field implementation that forces an IllegalAccessException
-    //     Field mockField = mock(Field.class, withSettings().lenient());
-    //
-    //     // Setup the mock field behavior
-    //     when(mockField.getName()).thenReturn("testField");
-    //     doNothing().when(mockField).setAccessible(anyBoolean()); // Correct way to mock void methods
-    //     doThrow(new IllegalAccessException("Test exception")).when(mockField).get(any());
-    //
-    //     // Create a test implementation that returns our mock field
-    //     BaseInsertionService testService = new BaseInsertionService(serviceRegistry) {
-    //         @Override
-    //         protected Object getFieldAnnotation(Field field) {
-    //             return mock(Annotation.class, withSettings().lenient());
-    //         }
-    //
-    //         @Override
-    //         protected Class<? extends ComponentType> getComponentType(Object annotation) {
-    //             return TestComponentType.class;
-    //         }
-    //
-    //         @Override
-    //         protected By buildLocator(Object annotation) {
-    //             return By.id("test-id");
-    //         }
-    //
-    //         @Override
-    //         protected Enum<?> getEnumValue(Object annotation) {
-    //             return TestEnum.TEST_COMPONENT;
-    //         }
-    //
-    //         @Override
-    //         protected List<Field> filterAndSortFields(Field[] fields) {
-    //             return List.of(mockField);
-    //         }
-    //     };
-    //
-    //     // Setup registry mock with lenient settings
-    //     lenient().when(serviceRegistry.getService(any())).thenReturn(mock(Insertion.class));
-    //
-    //     // When
-    //     Exception caughtException = null;
-    //     try {
-    //         testService.insertData(testData);
-    //     } catch (Exception e) {
-    //         caughtException = e;
-    //         if (e.getCause() != null) {
-    //         }
-    //     }
-    //
-    //     // Then
-    //     assertNotNull(caughtException, "Expected an exception to be thrown");
-    //     assertTrue(caughtException instanceof RuntimeException,
-    //             "Expected RuntimeException but got: " + caughtException.getClass().getName());
-    //
-    //     // Use more general assertions
-    //     assertTrue(caughtException.getMessage().contains("field"),
-    //             "Expected message to contain 'field' but was: " + caughtException.getMessage());
-    //
-    //     assertNotNull(caughtException.getCause(), "Expected exception to have a cause");
-    //     assertTrue(caughtException.getCause() instanceof IllegalAccessException,
-    //             "Expected cause to be IllegalAccessException but was: " +
-    //                     caughtException.getCause().getClass().getName());
-    // }
+public class BaseInsertionServiceTest {
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface DummyAnnotation {
+        int order();
+        String locator(); // For testing, we don't use this value.
+        Class<? extends ComponentType> type();
+        String componentType();
+    }
+
+    // --- Dummy Component Type interface and enum ---
+    public interface DummyComponentType extends ComponentType {
+    }
+
+    public enum DummyEnum implements DummyComponentType {
+        VALUE1, VALUE2;
+
+        @Override
+        public Enum<?> getType() {
+            return this;
+        }
+    }
+
+    // --- Dummy DTO with annotated fields ---
+    public static class DummyDTO {
+        // Field with order 2 and a non-null value
+        @DummyAnnotation(order = 2, locator = "dummy", type = DummyEnum.class, componentType = "VALUE1")
+        private String field2 = "value2";
+
+        // Field with order 1 and a non-null value
+        @DummyAnnotation(order = 1, locator = "dummy", type = DummyEnum.class, componentType = "VALUE1")
+        private String field1 = "value1";
+
+        // Field without the annotation (should be ignored)
+        private String nonAnnotated = "non";
+
+        // Field with order 3 but null value (should be skipped for insertion)
+        @DummyAnnotation(order = 3, locator = "dummy", type = DummyEnum.class, componentType = "VALUE1")
+        private String fieldNull = null;
+    }
+
+    // --- Concrete subclass of BaseInsertionService for testing ---
+    public static class TestInsertionService extends BaseInsertionService<DummyAnnotation> {
+
+        public boolean beforeCalled = false;
+        public boolean afterCalled = false;
+
+        public TestInsertionService(InsertionServiceRegistry registry) {
+            super(registry);
+        }
+
+        @Override
+        protected Class<DummyAnnotation> getAnnotationClass() {
+            return DummyAnnotation.class;
+        }
+
+        @Override
+        protected int getOrder(DummyAnnotation annotation) {
+            return annotation.order();
+        }
+
+        @Override
+        protected Class<? extends ComponentType> getComponentTypeEnumClass(DummyAnnotation annotation) {
+            return annotation.type();
+        }
+
+        @Override
+        protected By buildLocator(DummyAnnotation annotation) {
+            // For testing, simply return a dummy locator.
+            return By.id("dummy");
+        }
+
+        @Override
+        protected ComponentType getType(DummyAnnotation annotation) {
+            // For testing, if the annotation's componentType equals "VALUE1", return DummyEnum.VALUE1.
+            if ("VALUE1".equals(annotation.componentType())) {
+                return DummyEnum.VALUE1;
+            } else {
+                throw new IllegalArgumentException("Unknown component type");
+            }
+        }
+
+        @Override
+        protected void beforeInsertion(DummyAnnotation annotation) {
+            beforeCalled = true;
+        }
+
+        // Although not defined in the abstract class, we add afterInsertion in our test subclass.
+        protected void afterInsertion(DummyAnnotation annotation) {
+            afterCalled = true;
+        }
+    }
+
+    // --- Tests for the insertData method ---
+    @Nested
+    @DisplayName("Method: insertData(Object)")
+    class InsertDataTests {
+        private InsertionServiceRegistry registry;
+        private TestInsertionService testService;
+        private Insertion mockInsertion;
+
+        @BeforeEach
+        void setUp() {
+            registry = new InsertionServiceRegistry();
+            testService = new TestInsertionService(registry);
+            mockInsertion = Mockito.mock(Insertion.class);
+            // For DummyEnum, extractComponentTypeClass(DummyEnum.class) will resolve to DummyComponentType.
+            // We register the mockInsertion for DummyComponentType.
+            registry.registerService(DummyComponentType.class, mockInsertion);
+        }
+
+        @Test
+        @DisplayName("When field value is non-null, insertion is executed and hooks are called in order")
+        void testInsertDataWithNonNullFieldValue() {
+            DummyDTO dto = new DummyDTO();
+            // Reset hook flags.
+            testService.beforeCalled = false;
+            testService.afterCalled = false;
+
+            testService.insertData(dto);
+
+            // The insertion should be executed for field1 and field2 (fields with non-null values).
+            // Field order should be: field1 (order 1) then field2 (order 2).
+            Mockito.verify(mockInsertion, Mockito.times(2))
+                .insertion(Mockito.eq(DummyEnum.VALUE1), Mockito.any(By.class), Mockito.any());
+            InOrder inOrder = Mockito.inOrder(mockInsertion);
+            inOrder.verify(mockInsertion)
+                .insertion(Mockito.eq(DummyEnum.VALUE1), Mockito.any(By.class), Mockito.eq("value1"));
+            inOrder.verify(mockInsertion)
+                .insertion(Mockito.eq(DummyEnum.VALUE1), Mockito.any(By.class), Mockito.eq("value2"));
+
+            // Verify that the beforeInsertion and afterInsertion hooks were called.
+            assertTrue(testService.beforeCalled, "Expected beforeInsertion to be called");
+            assertTrue(testService.afterCalled, "Expected afterInsertion to be called");
+        }
+
+        @Test
+        @DisplayName("When field value is null, insertion is not executed")
+        void testInsertDataWithNullFieldValue() {
+            DummyDTO dto = new DummyDTO();
+            // Set non-null annotated fields to null.
+            try {
+                Field field1 = DummyDTO.class.getDeclaredField("field1");
+                Field field2 = DummyDTO.class.getDeclaredField("field2");
+                field1.setAccessible(true);
+                field2.setAccessible(true);
+                field1.set(dto, null);
+                field2.set(dto, null);
+            } catch (Exception e) {
+                fail("Failed to set field to null: " + e.getMessage());
+            }
+            testService.beforeCalled = false;
+            testService.afterCalled = false;
+
+            testService.insertData(dto);
+
+            // With no non-null values, the insertion service should not be called.
+            Mockito.verifyNoInteractions(mockInsertion);
+            assertFalse(testService.beforeCalled, "Expected beforeInsertion not to be called");
+            assertFalse(testService.afterCalled, "Expected afterInsertion not to be called");
+        }
+
+        @Test
+        @DisplayName("When no Insertion service is registered, then IllegalStateException is thrown")
+        void testInsertDataWithNoServiceRegistered() {
+            DummyDTO dto = new DummyDTO();
+            // Create a fresh registry with no services registered.
+            registry = new InsertionServiceRegistry();
+            testService = new TestInsertionService(registry);
+            IllegalStateException ex = assertThrows(IllegalStateException.class, () -> testService.insertData(dto));
+            assertTrue(ex.getMessage().contains("No InsertionService registered for"),
+                "Expected exception message to mention missing insertion service");
+        }
+
+        @Test
+        @DisplayName("When a field has no annotation, it is skipped without error")
+        void testInsertDataSkipsNonAnnotatedFields() {
+            class MixedDTO {
+                private String nonAnnotatedField = "nope";
+            }
+
+            MixedDTO dto = new MixedDTO();
+
+            TestInsertionService service = new TestInsertionService(new InsertionServiceRegistry());
+            service.insertData(dto);
+
+            // We expect no exception, and nothing else needs to be verified
+            // This test exists to cover the 'continue' line when annotation is null
+        }
+    }
+
+    // --- Tests for the extractComponentTypeClass helper method ---
+    @Nested
+    @DisplayName("Method: extractComponentTypeClass")
+    class ExtractComponentTypeClassTests {
+
+        @Test
+        @DisplayName("When given a valid enum class, extractComponentTypeClass returns the proper interface")
+        void testExtractComponentTypeClassSuccess() {
+            // For DummyEnum, extractComponentTypeClass should resolve to DummyComponentType.
+            Class<? extends ComponentType> result = TestInsertionService.extractComponentTypeClass(DummyEnum.class);
+            assertEquals(DummyComponentType.class, result,
+                "Expected extractComponentTypeClass to return DummyComponentType interface");
+        }
+
+        @Test
+        @DisplayName("When calling with correct component type class extractComponentTypeClass should return it\"")
+        void testExtractComponentTypeClassWithInterfaceArgument() {
+
+            Class<? extends ComponentType> result = TestInsertionService.extractComponentTypeClass(
+                InputComponentType.class);
+            assertEquals(InputComponentType.class, result, "Same component type class should be returned.");
+        }
+
+        @Test
+        @DisplayName("When given an enum class without a valid interface, then IllegalStateException is thrown")
+        void testExtractComponentTypeClassFailure() {
+
+            interface FaultyInterface extends InputComponentType {
+
+            }
+
+            enum FaultyEnum implements FaultyInterface {
+                VALUE;
+
+
+                @Override
+                public Enum<?> getType() {
+                    return this;
+                }
+            }
+            IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> TestInsertionService.extractComponentTypeClass(FaultyEnum.class));
+            assertTrue(ex.getMessage().contains("No interface extending ComponentType found"),
+                "Expected exception message to mention missing interface");
+        }
+    }
+
+    @Nested
+    @DisplayName("Methods: beforeInsertion and afterInsertion")
+    class BeforeAndAfterInsertionClassTests {
+
+        @Test
+        @DisplayName("Default beforeInsertion and afterInsertion do nothing")
+        void testDefaultHooksAreNoOp() {
+            class NoOpService extends BaseInsertionService<DummyAnnotation> {
+
+                public NoOpService(InsertionServiceRegistry registry) {
+                    super(registry);
+                }
+
+
+                @Override
+                protected Class<DummyAnnotation> getAnnotationClass() {
+                    return DummyAnnotation.class;
+                }
+
+
+                @Override
+                protected int getOrder(DummyAnnotation annotation) {
+                    return annotation.order();
+                }
+
+
+                @Override
+                protected Class<? extends ComponentType> getComponentTypeEnumClass(DummyAnnotation annotation) {
+                    return annotation.type();
+                }
+
+
+                @Override
+                protected By buildLocator(DummyAnnotation annotation) {
+                    return By.id("dummy");
+                }
+
+
+                @Override
+                protected ComponentType getType(DummyAnnotation annotation) {
+                    return DummyEnum.VALUE1;
+                }
+
+            }
+
+            DummyDTO dto = new DummyDTO();
+            Insertion mockInsertion = Mockito.mock(Insertion.class);
+            InsertionServiceRegistry registry = new InsertionServiceRegistry();
+            registry.registerService(DummyComponentType.class, mockInsertion);
+
+            NoOpService service = new NoOpService(registry);
+            service.insertData(dto);
+
+            Mockito.verify(mockInsertion, Mockito.atLeastOnce())
+                .insertion(Mockito.any(), Mockito.any(), Mockito.any());
+            // This test is to cover the default no-op hooks
+        }
+
+    }
+
+    // --- Tests for the filterAndSortFields helper method ---
+    @Nested
+    @DisplayName("Method: filterAndSortFields")
+    class FilterAndSortFieldsTests {
+
+        @Test
+        @DisplayName("When multiple fields are annotated, filterAndSortFields returns them in sorted order")
+        void testFilterAndSortFieldsSorting() {
+            DummyDTO dto = new DummyDTO();
+            Field[] fields = DummyDTO.class.getDeclaredFields();
+            TestInsertionService service = new TestInsertionService(new InsertionServiceRegistry());
+            List<Field> sortedFields = service.filterAndSortFields(fields);
+            // Expect only the annotated fields (field1, field2, fieldNull) in order of their 'order' values.
+            assertEquals(3, sortedFields.size(), "Expected 3 annotated fields");
+            assertEquals("field1", sortedFields.get(0).getName());
+            assertEquals("field2", sortedFields.get(1).getName());
+            assertEquals("fieldNull", sortedFields.get(2).getName());
+        }
+    }
+
+    // --- Test to verify that LogUI.info is invoked after insertion ---
+    @Nested
+    @DisplayName("Logging Tests")
+    class LoggingTests {
+
+        @Test
+        @DisplayName("After insertion, LogUI.info is called")
+        void testLogUIInfoCalled() {
+            DummyDTO dto = new DummyDTO();
+            InsertionServiceRegistry registry = new InsertionServiceRegistry();
+            TestInsertionService service = new TestInsertionService(registry);
+            Insertion mockInsertion = Mockito.mock(Insertion.class);
+            registry.registerService(DummyComponentType.class, mockInsertion);
+
+            // Use Mockito to mock static methods of LogUI.
+            try (var mockedStatic = Mockito.mockStatic(LogUI.class)) {
+                service.insertData(dto);
+                // Verify that LogUI.info was called at least once.
+                mockedStatic.verify(() -> LogUI.info(Mockito.anyString(), Mockito.any()));
+            }
+        }
+    }
 }
