@@ -42,13 +42,18 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T> List<AssertionResult<T>> validateResponse(final Response response, Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> validateResponse(final Response response, Assertion... assertions) {
         LogApi.info("Starting response validation with {} assertion(s).", assertions.length);
 
         Map<String, T> data = new HashMap<>();
 
-        for (Assertion<?> assertion : assertions) {
-            switch ((RestAssertionTarget) assertion.getTarget()) {
+        for (Assertion assertion : assertions) {
+            Object target = assertion.getTarget();
+            if (!(target instanceof RestAssertionTarget restTarget)) {
+                throw new InvalidAssertionException("Invalid or unknown assertion target: " + target);
+            }
+
+            switch (restTarget) {
                 case STATUS -> {
                     final String ASSERTION_KEY_FOR_STATUS = "AssertionKeyForStatus";
                     data.put(ASSERTION_KEY_FOR_STATUS, (T) Integer.valueOf(response.getStatusCode()));
@@ -80,11 +85,12 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
                     }
                     data.put(key, (T) header);
                 }
+                default -> throw new InvalidAssertionException("Unhandled assertion target: " + assertion.getTarget());
             }
         }
 
         printAssertionTarget((Map<String, Object>) data);
-        return AssertionUtil.validate(data, assertions);
+        return AssertionUtil.validate(data, List.of(assertions));
     }
 
     /**

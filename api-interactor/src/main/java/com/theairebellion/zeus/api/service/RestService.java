@@ -96,7 +96,7 @@ public class RestService {
      * @return A list of assertion results.
      * @throws IllegalArgumentException if the response or assertions are null.
      */
-    public <T> List<AssertionResult<T>> validate(Response response, Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> validate(Response response, Assertion... assertions) {
         if (response == null) {
             throw new IllegalArgumentException("Response cannot be null for validation.");
         }
@@ -114,7 +114,7 @@ public class RestService {
      * @param <T>        The type of the assertion results.
      * @return A list of assertion results.
      */
-    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint endpoint, Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint endpoint, Assertion... assertions) {
         return requestAndValidate(endpoint, null, assertions);
     }
 
@@ -127,7 +127,7 @@ public class RestService {
      * @param <T>        The type of the assertion results.
      * @return A list of assertion results.
      */
-    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint endpoint, Object body, Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint endpoint, Object body, Assertion... assertions) {
         Response response = request(endpoint, body);
         return validate(response, assertions);
     }
@@ -164,9 +164,10 @@ public class RestService {
      * @throws RestServiceException if an error occurs during request execution.
      */
     private Response executeRequest(Endpoint endpoint, Object body) {
+        if (endpoint == null) {
+            throw new RestServiceException("Endpoint cannot be null.");
+        }
         try {
-            Objects.requireNonNull(endpoint, "Endpoint cannot be null.");
-
             RequestSpecification spec = endpoint.prepareRequestSpec(body);
             if (baseAuthenticationClient != null) {
                 Header authenticationHeader = baseAuthenticationClient.getAuthentication(authenticationKey);

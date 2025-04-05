@@ -6,7 +6,7 @@ import com.theairebellion.zeus.ui.selenium.ModalUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * A fluent service class for interacting with modal UI elements in test automation.

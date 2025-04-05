@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.ui.extensions;
+package com.theairebellion.zeus.ui.storage;
 
 /**
  * Defines storage keys for UI-related data.

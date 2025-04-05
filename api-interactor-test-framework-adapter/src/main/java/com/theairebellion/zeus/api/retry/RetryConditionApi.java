@@ -28,8 +28,8 @@ public class RetryConditionApi {
      */
     public static RetryCondition<Integer> statusEquals(Endpoint endpoint, int status) {
         return new RetryConditionImpl<>(
-                fluentService -> {
-                    RestService restService = (RestService) fluentService;
+                service -> {
+                    RestService restService = (RestService) service;
                     Response response = restService.request(endpoint);
                     return response.getStatusCode();
                 }, responseStatus -> responseStatus == status
@@ -46,8 +46,8 @@ public class RetryConditionApi {
      */
     public static RetryCondition<Integer> statusEquals(Endpoint endpoint, Object body, int status) {
         return new RetryConditionImpl<>(
-                fluentService -> {
-                    RestService restService = (RestService) fluentService;
+                service -> {
+                    RestService restService = (RestService) service;
                     Response response = restService.request(endpoint, body);
                     return response.getStatusCode();
                 }, responseStatus -> responseStatus == status
@@ -84,8 +84,8 @@ public class RetryConditionApi {
     public static RetryCondition<Object> responseFieldEqualsTo(Endpoint endpoint, Object body, String jsonPath,
                                                                Object obj) {
         return new RetryConditionImpl<>(
-                fluentService -> {
-                    RestService restService = (RestService) fluentService;
+                service -> {
+                    RestService restService = (RestService) service;
                     Response response = restService.request(endpoint, body);
                     return response.getBody().jsonPath().get(jsonPath);
                 }, field -> field.equals(obj)

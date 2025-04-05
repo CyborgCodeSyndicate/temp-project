@@ -2,7 +2,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
-import com.theairebellion.zeus.ui.extensions.StorageKeysUi;
+import com.theairebellion.zeus.ui.storage.StorageKeysUi;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import io.qameta.allure.Allure;
 

@@ -328,6 +328,9 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     @Override
     public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
                                final String... values) {
+        if(!(componentType instanceof  InputComponentType)){
+            throw new IllegalArgumentException("Component type needs to be from: InputComponentType.");
+        }
         LogUI.step("Inserting values into table cell for component type: '{}'.", componentType.getType().name());
         getOrCreateComponent((InputComponentType) componentType).tableInsertion(cellElement, values);
     }
@@ -344,6 +347,9 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     public void tableFilter(final SmartWebElement cellElement, final ComponentType componentType,
                             final FilterStrategy filterStrategy,
                             final String... values) {
+        if(!(componentType instanceof  InputComponentType)){
+            throw new IllegalArgumentException("Component type needs to be from: InputComponentType.");
+        }
         LogUI.step("Applying table filter for component type: '{}' with strategy: '{}'.", componentType.getType().name(), filterStrategy);
         getOrCreateComponent((InputComponentType) componentType).tableFilter(cellElement, filterStrategy, values);
     }
@@ -357,6 +363,9 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        if(!(componentType instanceof  InputComponentType)){
+            throw new IllegalArgumentException("Component type needs to be from: InputComponentType.");
+        }
         LogUI.step("Inserting value into component of type: '{}' using locator.", componentType.getType().name());
         insert((InputComponentType) componentType, locator, (String) values[0]);
     }

@@ -8,6 +8,7 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemProperties;
@@ -28,6 +29,7 @@ import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemPro
         classes = {TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
+@Tag("exclude-from-verify")
 public class BaseTest {
 
     static {

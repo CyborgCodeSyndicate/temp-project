@@ -29,5 +29,5 @@ public interface QueryResponseValidator {
      * @param <T>           The expected data type for assertion validation.
      * @return A list of assertion results indicating pass or failure for each assertion.
      */
-    <T> List<AssertionResult<T>> validateQueryResponse(QueryResponse queryResponse, Assertion<?>... assertions);
+    <T> List<AssertionResult<T>> validateQueryResponse(QueryResponse queryResponse, Assertion... assertions);
 }

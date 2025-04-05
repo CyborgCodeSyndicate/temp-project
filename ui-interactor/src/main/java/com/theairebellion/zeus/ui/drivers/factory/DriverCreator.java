@@ -60,6 +60,8 @@ public class DriverCreator<T extends AbstractDriverOptions<?>> {
             driver = provider.createDriver(options);
         }
 
+        driver.manage().window().maximize();
+
         return Optional.ofNullable(config.getEventFiringDecorator())
                 .map(decorator -> decorator.decorate(driver))
                 .orElse(driver);

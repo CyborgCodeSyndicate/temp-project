@@ -19,7 +19,7 @@ public enum InputFieldTypes implements InputComponentType {
 
 
     @Override
-    public Enum getType() {
+    public Enum<?> getType() {
         return this;
     }
 }

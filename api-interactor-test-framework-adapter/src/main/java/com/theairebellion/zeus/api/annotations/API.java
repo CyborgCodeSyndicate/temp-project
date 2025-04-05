@@ -10,7 +10,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@ExtendWith({ApiTestExtension.class, ApiHookExtension.class})
 /**
  * Marks a test class as an API test.
  * <p>
@@ -25,10 +24,10 @@ import java.lang.annotation.Target;
  *
  * @author Cyborg Code Syndicate
  */
-@ExtendWith(ApiTestExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @FrameworkAdapter(basePackages = {"com.theairebellion.zeus.api"})
+@ExtendWith({ApiTestExtension.class, ApiHookExtension.class})
 public @interface API {
 
 }

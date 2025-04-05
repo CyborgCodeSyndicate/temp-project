@@ -2,6 +2,7 @@ package com.theairebellion.zeus.validator.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * Represents the result of an assertion evaluation.
@@ -28,12 +29,13 @@ public class AssertionResult<T> {
     /**
      * A brief description of the assertion being performed.
      */
+    @NonNull
     private final String description;
 
     /**
      * The expected value in the assertion.
      */
-    private final T expectedValue;
+    private final Object expectedValue;
 
     /**
      * The actual value retrieved during validation.
@@ -44,6 +46,7 @@ public class AssertionResult<T> {
      * Specifies if the assertion is a soft assertion.
      */
     private boolean soft;
+
 
     /**
      * Returns a formatted string representing the assertion outcome.

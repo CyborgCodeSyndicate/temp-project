@@ -79,8 +79,9 @@ public class LocatorParser {
             }
             xpath.append("]");
             return xpath.toString();
+        } else {
+            throw new IllegalArgumentException("Can't extract locator from exception message: " + exceptionMessage + ".");
         }
-        return null;
     }
 
     /**

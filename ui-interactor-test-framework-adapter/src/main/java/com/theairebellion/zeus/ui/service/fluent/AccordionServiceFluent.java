@@ -7,9 +7,7 @@ import com.theairebellion.zeus.ui.selenium.AccordionUIElement;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 
-import java.util.List;
-
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Provides fluent API methods for interacting with Accordion UI components.
@@ -92,54 +90,6 @@ public class AccordionServiceFluent<T extends UIServiceFluent<?>> {
         boolean enabled = accordionService.areEnabled((AccordionComponentType) element.componentType(), element.locator());
         element.after().accept(driver);
         storage.sub(UI).put(element.enumImpl(), enabled);
-        return uiServiceFluent;
-    }
-
-    /**
-     * Retrieves a list of expanded accordion sections.
-     *
-     * @param element The accordion UI element to check.
-     * @return The current fluent service instance for method chaining.
-     */
-    public T getExpanded(final AccordionUIElement element) {
-        Allure.step(String.format("[UI - Accordion] Getting expanded accordions for componentType: %s",
-                element.componentType()));
-        element.before().accept(driver);
-        List<String> expanded = accordionService.getExpanded(element.componentType()); // TODO: Implement further validation
-        element.after().accept(driver);
-        storage.sub(UI).put(element.enumImpl(), expanded);
-        return uiServiceFluent;
-    }
-
-    /**
-     * Retrieves a list of collapsed accordion sections.
-     *
-     * @param element The accordion UI element to check.
-     * @return The current fluent service instance for method chaining.
-     */
-    public T getCollapsed(final AccordionUIElement element) {
-        Allure.step(String.format("[UI - Accordion] Getting collapsed accordions for componentType: %s",
-                element.componentType()));
-        element.before().accept(driver);
-        List<String> collapsed = accordionService.getCollapsed(element.componentType()); // TODO: Implement further validation
-        element.after().accept(driver);
-        storage.sub(UI).put(element.enumImpl(), collapsed);
-        return uiServiceFluent;
-    }
-
-    /**
-     * Retrieves a list of all accordion sections.
-     *
-     * @param element The accordion UI element to check.
-     * @return The current fluent service instance for method chaining.
-     */
-    public T getAll(final AccordionUIElement element) {
-        Allure.step(String.format("[UI - Accordion] Getting all accordions for componentType: %s",
-                element.componentType()));
-        element.before().accept(driver);
-        List<String> all = accordionService.getAll(element.componentType()); // TODO: Implement further validation
-        element.after().accept(driver);
-        storage.sub(UI).put(element.enumImpl(), all);
         return uiServiceFluent;
     }
 

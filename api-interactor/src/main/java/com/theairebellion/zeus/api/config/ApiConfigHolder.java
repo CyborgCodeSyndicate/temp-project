@@ -14,6 +14,10 @@ import org.aeonbits.owner.ConfigCache;
  */
 public class ApiConfigHolder {
 
+    private ApiConfigHolder() {
+    }
+
+
     private static ApiConfig config;
 
     /**
