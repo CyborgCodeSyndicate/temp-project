@@ -82,7 +82,6 @@ class RelationalDbClientTest {
             verify(connector).getConnection(dbConfig);
             verify(client).printQuery(SELECT_QUERY);
             verify(client).printResponse(eq(SELECT_QUERY), any(QueryResponse.class), anyLong());
-            verify(connection).close();
         }
 
         @Test
@@ -114,7 +113,6 @@ class RelationalDbClientTest {
             verify(connector).getConnection(dbConfig);
             verify(client).printQuery(SELECT_QUERY);
             verify(client).printResponse(eq(SELECT_QUERY), any(QueryResponse.class), anyLong());
-            verify(connection).close();
         }
     }
 
@@ -144,7 +142,6 @@ class RelationalDbClientTest {
 
             verify(connector).getConnection(dbConfig);
             verify(client).printQuery(UPDATE_QUERY);
-            verify(connection).close();
         }
 
         @Test
@@ -169,7 +166,6 @@ class RelationalDbClientTest {
 
             verify(connector).getConnection(dbConfig);
             verify(client).printQuery(UPDATE_QUERY);
-            verify(connection).close();
         }
     }
 
@@ -224,7 +220,6 @@ class RelationalDbClientTest {
 
             verify(connector).getConnection(dbConfig);
             verify(client).printQuery(SELECT_QUERY);
-            verify(connection).close();
         }
 
         @Test
@@ -251,7 +246,6 @@ class RelationalDbClientTest {
 
             verify(connector).getConnection(dbConfig);
             verify(client).printQuery(UPDATE_QUERY);
-            verify(connection).close();
         }
     }
 

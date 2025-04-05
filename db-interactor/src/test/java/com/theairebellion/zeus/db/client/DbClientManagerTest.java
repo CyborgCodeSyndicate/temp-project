@@ -43,14 +43,15 @@ class DbClientManagerTest {
         @DisplayName("Should return cached client for same configuration")
         void testGetClient_ShouldReturnCachedClient() {
             // Given
-            var dbConfig = mock(DatabaseConfiguration.class);
-            var dbType = mock(DbType.class);
+            DbType dbType = mock(DbType.class);
+            var dbConfig = DatabaseConfiguration.builder()
+                               .dbType(dbType)
+                               .host(LOCALHOST)
+                               .port(DEFAULT_PORT)
+                               .database(TEST_DATABASE)
+                               .build();
 
-            when(dbConfig.getDbType()).thenReturn(dbType);
             when(dbType.protocol()).thenReturn(JDBC_PROTOCOL);
-            when(dbConfig.getHost()).thenReturn(LOCALHOST);
-            when(dbConfig.getPort()).thenReturn(DEFAULT_PORT);
-            when(dbConfig.getDatabase()).thenReturn(TEST_DATABASE);
 
             // When
             var client1 = manager.getClient(dbConfig);
@@ -65,22 +66,23 @@ class DbClientManagerTest {
         @DisplayName("Should return different clients for different configurations")
         void testGetClient_ShouldReturnDifferentClientsForDifferentConfigs() {
             // Given
-            var dbConfig1 = mock(DatabaseConfiguration.class);
-            var dbConfig2 = mock(DatabaseConfiguration.class);
             var dbType = mock(DbType.class);
 
-            when(dbConfig1.getDbType()).thenReturn(dbType);
-            when(dbConfig2.getDbType()).thenReturn(dbType);
+            var dbConfig1 = DatabaseConfiguration.builder()
+                                .dbType(dbType)
+                                .host(LOCALHOST)
+                                .port(DEFAULT_PORT)
+                                .database(TEST_DATABASE)
+                                .build();
+            var dbConfig2 = DatabaseConfiguration.builder()
+                                .dbType(dbType)
+                                .host("other-host")
+                                .port(DEFAULT_PORT)
+                                .database(TEST_DATABASE)
+                                .build();
+
             when(dbType.protocol()).thenReturn(JDBC_PROTOCOL);
 
-            when(dbConfig1.getHost()).thenReturn(LOCALHOST);
-            when(dbConfig2.getHost()).thenReturn("other-host");
-
-            when(dbConfig1.getPort()).thenReturn(DEFAULT_PORT);
-            when(dbConfig2.getPort()).thenReturn(DEFAULT_PORT);
-
-            when(dbConfig1.getDatabase()).thenReturn(TEST_DATABASE);
-            when(dbConfig2.getDatabase()).thenReturn(TEST_DATABASE);
 
             // When
             var client1 = manager.getClient(dbConfig1);
@@ -96,22 +98,22 @@ class DbClientManagerTest {
         @DisplayName("Should return different clients when port is different")
         void testGetClient_ShouldReturnDifferentClientsForDifferentPorts() {
             // Given
-            var dbConfig1 = mock(DatabaseConfiguration.class);
-            var dbConfig2 = mock(DatabaseConfiguration.class);
             var dbType = mock(DbType.class);
 
-            when(dbConfig1.getDbType()).thenReturn(dbType);
-            when(dbConfig2.getDbType()).thenReturn(dbType);
+            var dbConfig1 = DatabaseConfiguration.builder()
+                                .dbType(dbType)
+                                .host(LOCALHOST)
+                                .port(DEFAULT_PORT)
+                                .database(TEST_DATABASE)
+                                .build();
+            var dbConfig2 = DatabaseConfiguration.builder()
+                                .dbType(dbType)
+                                .host(LOCALHOST)
+                                .port(DEFAULT_PORT + 1)
+                                .database(TEST_DATABASE)
+                                .build();
+
             when(dbType.protocol()).thenReturn(JDBC_PROTOCOL);
-
-            when(dbConfig1.getHost()).thenReturn(LOCALHOST);
-            when(dbConfig2.getHost()).thenReturn(LOCALHOST);
-
-            when(dbConfig1.getPort()).thenReturn(DEFAULT_PORT);
-            when(dbConfig2.getPort()).thenReturn(DEFAULT_PORT + 1);
-
-            when(dbConfig1.getDatabase()).thenReturn(TEST_DATABASE);
-            when(dbConfig2.getDatabase()).thenReturn(TEST_DATABASE);
 
             // When
             var client1 = manager.getClient(dbConfig1);
@@ -125,22 +127,22 @@ class DbClientManagerTest {
         @DisplayName("Should return different clients when database is different")
         void testGetClient_ShouldReturnDifferentClientsForDifferentDatabases() {
             // Given
-            var dbConfig1 = mock(DatabaseConfiguration.class);
-            var dbConfig2 = mock(DatabaseConfiguration.class);
             var dbType = mock(DbType.class);
 
-            when(dbConfig1.getDbType()).thenReturn(dbType);
-            when(dbConfig2.getDbType()).thenReturn(dbType);
+            var dbConfig1 = DatabaseConfiguration.builder()
+                                .dbType(dbType)
+                                .host(LOCALHOST)
+                                .port(DEFAULT_PORT)
+                                .database(TEST_DATABASE)
+                                .build();
+            var dbConfig2 = DatabaseConfiguration.builder()
+                                .dbType(dbType)
+                                .host(LOCALHOST)
+                                .port(DEFAULT_PORT)
+                                .database("other-db")
+                                .build();
+
             when(dbType.protocol()).thenReturn(JDBC_PROTOCOL);
-
-            when(dbConfig1.getHost()).thenReturn(LOCALHOST);
-            when(dbConfig2.getHost()).thenReturn(LOCALHOST);
-
-            when(dbConfig1.getPort()).thenReturn(DEFAULT_PORT);
-            when(dbConfig2.getPort()).thenReturn(DEFAULT_PORT);
-
-            when(dbConfig1.getDatabase()).thenReturn(TEST_DATABASE);
-            when(dbConfig2.getDatabase()).thenReturn("other-db");
 
             // When
             var client1 = manager.getClient(dbConfig1);

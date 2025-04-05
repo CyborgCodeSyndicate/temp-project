@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +51,7 @@ class ServicesTest {
 
         reflectionUtilMock = mockStatic(ReflectionUtil.class);
         reflectionUtilMock.when(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class))
-                .thenReturn(mockService);
+                .thenReturn(List.of(mockService));
     }
 
     @AfterEach
@@ -118,7 +119,7 @@ class ServicesTest {
 
         // Setup the reflectionUtilMock to return a mock service for our real hook
         reflectionUtilMock.when(() -> ReflectionUtil.getFieldValues(realMockHook, MockService.class))
-                .thenReturn(mockService);
+                .thenReturn(List.of(mockService));
 
         // When
         MockService serviceInstance = testServices.service(MockClassLevelHook.class, MockService.class);

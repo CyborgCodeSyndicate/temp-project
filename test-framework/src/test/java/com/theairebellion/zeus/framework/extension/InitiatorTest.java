@@ -18,12 +18,15 @@ import org.mockito.MockedStatic;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -85,20 +88,20 @@ class InitiatorTest {
                 configMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
                 try (MockedStatic<ReflectionUtil> reflectionMock = mockStatic(ReflectionUtil.class)) {
                     reflectionMock.when(() ->
-                            ReflectionUtil.findEnumImplementationsOfInterface(eq(PreQuestJourney.class), eq("mockJourney"), eq(mockConfig.projectPackage()))
+                                            ReflectionUtil.findEnumImplementationsOfInterface(eq(PreQuestJourney.class), eq("mockJourney"), eq(mockConfig.projectPackage()))
                     ).thenReturn(mockPreQuestJourney);
                     MockLate mockLate = new MockLate();
                     MockDataForge mockDataForge = new MockDataForge(mockLate);
                     reflectionMock.when(() ->
-                            ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq("mockData"), eq(mockConfig.projectPackage()))
+                                            ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq("mockData"), eq(mockConfig.projectPackage()))
                     ).thenReturn(mockDataForge);
                     Storage subStorage = mock(Storage.class);
                     when(dummyStorage.sub(StorageKeysTest.PRE_ARGUMENTS)).thenReturn(subStorage);
                     MockInvocation invocation = new MockInvocation();
                     initiator.interceptTestMethod(invocation, invocationContext, extensionContext);
                     verify(subStorage).put(mockDataForge.enumImpl(), mockLate.join());
-                    assert (mockPreQuestJourney.invoked.get());
-                    assert (invocation.proceeded.get());
+                    assertTrue(mockPreQuestJourney.invoked.get());
+                    assertTrue(invocation.proceeded.get());
                 }
             }
         }
@@ -106,11 +109,11 @@ class InitiatorTest {
 
     @Test
     void processJourneyData_WhenLateIsTrue() throws Exception {
-        // Setup
         Initiator initiator = new Initiator();
-        JourneyData journeyData = mock(JourneyData.class);
-        when(journeyData.value()).thenReturn("mockData");
-        when(journeyData.late()).thenReturn(true);
+
+        Method method = this.getClass().getDeclaredMethod("annotatedLateTrue");
+        TestWrapper wrapper = method.getAnnotation(TestWrapper.class);
+        JourneyData journeyData = wrapper.value();
 
         SuperQuest quest = mock(SuperQuest.class);
         Storage storage = mock(Storage.class);
@@ -118,8 +121,6 @@ class InitiatorTest {
         Storage subStorage = mock(Storage.class);
         when(storage.sub(StorageKeysTest.PRE_ARGUMENTS)).thenReturn(subStorage);
 
-        // Create a spy of MockLate that will be used when late=true
-        // This allows us to verify the join() method is not called
         MockLate spyLate = spy(new MockLate());
         MockDataForge mockDataForge = new MockDataForge(spyLate);
 
@@ -130,16 +131,13 @@ class InitiatorTest {
             configMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
             reflectionMock.when(() ->
-                    ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq("mockData"), eq(mockConfig.projectPackage()))
+                                    ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq("mockData"), eq(mockConfig.projectPackage()))
             ).thenReturn(mockDataForge);
 
-            // Test the method using reflection to access private method
             Method processJourneyDataMethod = Initiator.class.getDeclaredMethod("processJourneyData", JourneyData.class, SuperQuest.class);
             processJourneyDataMethod.setAccessible(true);
-            Object result = processJourneyDataMethod.invoke(initiator, journeyData, quest);
+            processJourneyDataMethod.invoke(initiator, journeyData, quest);
 
-            // Verify
-            verify(journeyData).late();
             verify(spyLate, never()).join();
             verify(subStorage).put(eq(MockEnum.VALUE), any());
         }
@@ -147,11 +145,11 @@ class InitiatorTest {
 
     @Test
     void processJourneyData_WhenLateIsFalse() throws Exception {
-        // Setup
         Initiator initiator = new Initiator();
-        JourneyData journeyData = mock(JourneyData.class);
-        when(journeyData.value()).thenReturn("mockData");
-        when(journeyData.late()).thenReturn(false);  // Set late to false
+
+        Method method = this.getClass().getDeclaredMethod("annotatedLateFalse");
+        TestWrapper wrapper = method.getAnnotation(TestWrapper.class);
+        JourneyData journeyData = wrapper.value();
 
         SuperQuest quest = mock(SuperQuest.class);
         Storage storage = mock(Storage.class);
@@ -159,8 +157,6 @@ class InitiatorTest {
         Storage subStorage = mock(Storage.class);
         when(storage.sub(StorageKeysTest.PRE_ARGUMENTS)).thenReturn(subStorage);
 
-        // Create a spy of MockLate that will be used when late=false
-        // This allows us to verify the join() method is called
         MockLate spyLate = spy(new MockLate());
         MockDataForge mockDataForge = new MockDataForge(spyLate);
 
@@ -171,16 +167,13 @@ class InitiatorTest {
             configMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
             reflectionMock.when(() ->
-                    ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq("mockData"), eq(mockConfig.projectPackage()))
+                                    ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq("mockData"), eq(mockConfig.projectPackage()))
             ).thenReturn(mockDataForge);
 
-            // Test the method using reflection to access private method
             Method processJourneyDataMethod = Initiator.class.getDeclaredMethod("processJourneyData", JourneyData.class, SuperQuest.class);
             processJourneyDataMethod.setAccessible(true);
-            Object result = processJourneyDataMethod.invoke(initiator, journeyData, quest);
+            processJourneyDataMethod.invoke(initiator, journeyData, quest);
 
-            // Verify
-            verify(journeyData).late();
             verify(spyLate).join();
             verify(subStorage).put(eq(MockEnum.VALUE), eq("joinedValue"));
         }
@@ -188,7 +181,6 @@ class InitiatorTest {
 
     @Test
     void interceptTestMethod_WithNoTestMethod() throws Throwable {
-        // Setup
         Initiator initiator = new Initiator();
         ReflectiveInvocationContext<Method> invocationContext = mock(ReflectiveInvocationContext.class);
         ExtensionContext extensionContext = mock(ExtensionContext.class);
@@ -196,10 +188,22 @@ class InitiatorTest {
 
         MockInvocation invocation = new MockInvocation();
 
-        // Execute
         initiator.interceptTestMethod(invocation, invocationContext, extensionContext);
 
-        // Verify
-        assert(invocation.proceeded.get());
+        assertTrue(invocation.proceeded.get());
     }
+
+    // --- Annotation definitions and dummy annotated methods below ---
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface TestWrapper {
+        JourneyData value();
+    }
+
+    @TestWrapper(@JourneyData(value = "mockData", late = true))
+    public void annotatedLateTrue() {}
+
+    @TestWrapper(@JourneyData(value = "mockData", late = false))
+    public void annotatedLateFalse() {}
 }

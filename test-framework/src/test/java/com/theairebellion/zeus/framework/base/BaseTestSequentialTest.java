@@ -121,14 +121,14 @@ class BaseTestSequentialTest {
         // When
         Annotation beforeAllAnnotation = BaseTestSequential.class
                 .getDeclaredMethod("beforeAll")
-                .getAnnotation(org.junit.jupiter.api.AfterAll.class);
+                .getAnnotation(org.junit.jupiter.api.BeforeAll.class);
 
         Annotation afterAllAnnotation = BaseTestSequential.class
                 .getDeclaredMethod("afterAll")
                 .getAnnotation(org.junit.jupiter.api.AfterAll.class);
 
         // Then
-        assertNotNull(beforeAllAnnotation, "beforeAll should have @AfterAll annotation");
+        assertNotNull(beforeAllAnnotation, "beforeAll should have @BeforeAll annotation");
         assertNotNull(afterAllAnnotation, "afterAll should have @AfterAll annotation");
     }
 

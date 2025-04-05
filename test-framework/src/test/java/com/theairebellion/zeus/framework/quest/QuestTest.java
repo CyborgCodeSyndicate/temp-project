@@ -386,7 +386,7 @@ class QuestTest {
 
         // Use contains instead of exact match to handle anonymous class naming
         assertTrue(
-                exception.getMessage().contains("No field of type 'java.lang.String' found in class") &&
+                exception.getMessage().contains("No fields of type 'java.lang.String' found in class") &&
                         exception.getMessage().contains("NoMatchingFieldService"),
                 "Unexpected exception message: " + exception.getMessage()
         );
@@ -410,7 +410,7 @@ class QuestTest {
 
         // Verify exception message
         assertTrue(
-                exception.getMessage().contains("No field of type 'java.lang.String' found in class") &&
+                exception.getMessage().contains("No fields of type 'java.lang.String' found in class") &&
                         exception.getMessage().contains("TypeMismatchService"),
                 "Unexpected exception message: " + exception.getMessage()
         );

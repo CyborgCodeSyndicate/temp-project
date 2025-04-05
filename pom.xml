@@ -249,7 +249,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
+<!--                    <testFailureIgnore>true</testFailureIgnore>-->
+                    <excludedGroups>exclude-from-verify</excludedGroups>
                 </configuration>
             </plugin>
         </plugins>

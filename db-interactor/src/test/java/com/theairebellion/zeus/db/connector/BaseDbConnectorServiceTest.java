@@ -2,6 +2,7 @@ package com.theairebellion.zeus.db.connector;
 
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.config.DbType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,8 +36,7 @@ class BaseDbConnectorServiceTest {
     @Spy
     private BaseDbConnectorService dbConnectorService;
 
-    @Mock
-    private DatabaseConfiguration mockConfig;
+    private DatabaseConfiguration databaseConfiguration;
 
     @Mock
     private DbType mockDbType;
@@ -49,15 +49,21 @@ class BaseDbConnectorServiceTest {
 
     @BeforeEach
     void setup() {
-        // Configure mocks - use lenient for setup that might not be used in every test
-        lenient().when(mockConfig.getDbType()).thenReturn(mockDbType);
-        lenient().when(mockConfig.getHost()).thenReturn(HOST);
-        lenient().when(mockConfig.getPort()).thenReturn(PORT);
-        lenient().when(mockConfig.getDatabase()).thenReturn(DATABASE);
-        lenient().when(mockConfig.getDbUser()).thenReturn(DB_USER);
-        lenient().when(mockConfig.getDbPassword()).thenReturn(DB_PASSWORD);
+        databaseConfiguration = DatabaseConfiguration.builder()
+                                    .dbType(mockDbType)
+                                    .host(HOST)
+                                    .port(PORT)
+                                    .database(DATABASE)
+                                    .dbUser(DB_USER)
+                                    .dbPassword(DB_PASSWORD)
+                                    .build();
         lenient().when(mockDbType.protocol()).thenReturn(MOCK_PROTOCOL);
         lenient().when(mockDbType.driver()).thenReturn(mockDriver);
+    }
+
+    @AfterEach
+    void afterAll() {
+        dbConnectorService.closeConnections();
     }
 
     @Nested
@@ -81,8 +87,8 @@ class BaseDbConnectorServiceTest {
                         .thenReturn(mockConnection);
 
                 // When
-                Connection firstConnection = dbConnectorService.getConnection(mockConfig);
-                Connection secondConnection = dbConnectorService.getConnection(mockConfig);
+                Connection firstConnection = dbConnectorService.getConnection(databaseConfiguration);
+                Connection secondConnection = dbConnectorService.getConnection(databaseConfiguration);
 
                 // Then
                 assertNotNull(firstConnection, "Connection should not be null");
@@ -97,17 +103,16 @@ class BaseDbConnectorServiceTest {
         @DisplayName("Should create different connections for different URLs")
         void testGetConnection_ShouldCreateDifferentConnectionsForDifferentURLs() throws SQLException {
             // Given
-            DatabaseConfiguration otherConfig = mock(DatabaseConfiguration.class);
             String otherDatabase = "otherdb";
             Connection otherConnection = mock(Connection.class);
-
-            // Configure other config mock
-            when(otherConfig.getDbType()).thenReturn(mockDbType);
-            when(otherConfig.getHost()).thenReturn(HOST);
-            when(otherConfig.getPort()).thenReturn(PORT);
-            when(otherConfig.getDatabase()).thenReturn(otherDatabase);
-            when(otherConfig.getDbUser()).thenReturn(DB_USER);
-            when(otherConfig.getDbPassword()).thenReturn(DB_PASSWORD);
+            DatabaseConfiguration otherConfig = DatabaseConfiguration.builder()
+                                                    .dbType(mockDbType)
+                                                    .host(HOST)
+                                                    .port(PORT)
+                                                    .database(otherDatabase)
+                                                    .dbUser(DB_USER)
+                                                    .dbPassword(DB_PASSWORD)
+                                                    .build();
 
             lenient().when(mockDriver.acceptsURL(anyString())).thenReturn(true);
 
@@ -126,7 +131,7 @@ class BaseDbConnectorServiceTest {
                         .thenReturn(otherConnection);
 
                 // When
-                Connection firstConnection = dbConnectorService.getConnection(mockConfig);
+                Connection firstConnection = dbConnectorService.getConnection(databaseConfiguration);
                 Connection secondConnection = dbConnectorService.getConnection(otherConfig);
 
                 // Then
@@ -155,8 +160,8 @@ class BaseDbConnectorServiceTest {
                         .thenReturn(mockConnection);
 
                 // When
-                dbConnectorService.getConnection(mockConfig);
-                dbConnectorService.getConnection(mockConfig);
+                dbConnectorService.getConnection(databaseConfiguration);
+                dbConnectorService.getConnection(databaseConfiguration);
 
                 // Then
                 // Verify driver registration happens only once
@@ -178,7 +183,7 @@ class BaseDbConnectorServiceTest {
                 // When/Then
                 IllegalStateException exception = assertThrows(
                         IllegalStateException.class,
-                        () -> dbConnectorService.getConnection(mockConfig)
+                        () -> dbConnectorService.getConnection(databaseConfiguration)
                 );
 
                 // Verify message contains expected text
@@ -218,7 +223,7 @@ class BaseDbConnectorServiceTest {
                         .thenReturn(mockConnection);
 
                 // First get a connection to populate the map
-                dbConnectorService.getConnection(mockConfig);
+                dbConnectorService.getConnection(databaseConfiguration);
 
                 // When
                 dbConnectorService.closeConnections();
@@ -245,7 +250,7 @@ class BaseDbConnectorServiceTest {
                         .thenReturn(mockConnection);
 
                 // First get a connection to populate the map
-                dbConnectorService.getConnection(mockConfig);
+                dbConnectorService.getConnection(databaseConfiguration);
 
                 // When/Then
                 assertDoesNotThrow(() -> dbConnectorService.closeConnections(),
@@ -270,7 +275,7 @@ class BaseDbConnectorServiceTest {
                         .thenReturn(mockConnection);
 
                 // First get a connection to populate the map
-                dbConnectorService.getConnection(mockConfig);
+                dbConnectorService.getConnection(databaseConfiguration);
 
                 // When
                 dbConnectorService.closeConnections();
@@ -291,7 +296,7 @@ class BaseDbConnectorServiceTest {
                         .thenReturn(mockConnection);
 
                 // Call again and verify connection is fetched again (map was cleared)
-                dbConnectorService.getConnection(mockConfig);
+                dbConnectorService.getConnection(databaseConfiguration);
 
                 // Verify DriverManager.getConnection was called again
                 driverManagerMock.verify(() -> DriverManager.getConnection(
@@ -322,7 +327,7 @@ class BaseDbConnectorServiceTest {
                 // When/Then
                 IllegalStateException exception = assertThrows(
                         IllegalStateException.class,
-                        () -> dbConnectorService.getConnection(mockConfig)
+                        () -> dbConnectorService.getConnection(databaseConfiguration)
                 );
 
                 // Verify message contains expected text
@@ -341,11 +346,11 @@ class BaseDbConnectorServiceTest {
             // Use reflection to access private method
             try {
                 java.lang.reflect.Method method = BaseDbConnectorService.class.getDeclaredMethod(
-                        "buildConnectionUrl", DbType.class, DatabaseConfiguration.class);
+                        "buildConnectionUrl", DatabaseConfiguration.class);
                 method.setAccessible(true);
 
                 // When
-                String actualUrl = (String) method.invoke(dbConnectorService, mockDbType, mockConfig);
+                String actualUrl = (String) method.invoke(dbConnectorService, databaseConfiguration);
 
                 // Then
                 assertEquals(CONNECTION_URL, actualUrl, "URL should be formatted correctly");

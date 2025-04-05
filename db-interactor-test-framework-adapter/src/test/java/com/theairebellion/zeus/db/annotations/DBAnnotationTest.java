@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.db.annotations;
 
+import com.theairebellion.zeus.db.extensions.DbHookExtension;
 import com.theairebellion.zeus.db.extensions.DbTestExtension;
 import com.theairebellion.zeus.framework.annotation.FrameworkAdapter;
 import org.junit.jupiter.api.DisplayName;
@@ -31,33 +32,41 @@ class DBAnnotationTest {
         Target target = annotationType.getAnnotation(Target.class);
 
         // Then
+        // Validate @ExtendWith
         assertThat(extendWith)
-                .as("@ExtendWith meta-annotation should be present")
-                .isNotNull();
+            .as("@ExtendWith meta-annotation should be present")
+            .isNotNull();
+
         assertThat(extendWith.value())
-                .as("@ExtendWith should specify DbTestExtension")
-                .containsExactly(DbTestExtension.class);
+            .as("@ExtendWith should specify DbTestExtension and DbHookExtension")
+            .containsExactlyInAnyOrder(DbTestExtension.class, DbHookExtension.class);
 
+        // Validate @FrameworkAdapter
         assertThat(frameworkAdapter)
-                .as("@FrameworkAdapter meta-annotation should be present")
-                .isNotNull();
+            .as("@FrameworkAdapter meta-annotation should be present")
+            .isNotNull();
+
         assertThat(frameworkAdapter.basePackages())
-                .as("@FrameworkAdapter should have correct base package")
-                .containsExactly("com.theairebellion.zeus.db");
+            .as("@FrameworkAdapter should have correct base package")
+            .containsExactly("com.theairebellion.zeus.db");
 
+        // Validate @Retention
         assertThat(retention)
-                .as("@Retention meta-annotation should be present")
-                .isNotNull();
-        assertThat(retention.value())
-                .as("@Retention should be RUNTIME")
-                .isEqualTo(RetentionPolicy.RUNTIME);
+            .as("@Retention meta-annotation should be present")
+            .isNotNull();
 
+        assertThat(retention.value())
+            .as("@Retention should be RUNTIME")
+            .isEqualTo(RetentionPolicy.RUNTIME);
+
+        // Validate @Target
         assertThat(target)
-                .as("@Target meta-annotation should be present")
-                .isNotNull();
+            .as("@Target meta-annotation should be present")
+            .isNotNull();
+
         assertThat(target.value())
-                .as("@Target should only include TYPE")
-                .containsExactly(ElementType.TYPE);
+            .as("@Target should only include TYPE")
+            .containsExactly(ElementType.TYPE);
     }
 
     @Test

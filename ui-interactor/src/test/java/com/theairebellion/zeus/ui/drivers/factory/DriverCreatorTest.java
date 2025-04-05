@@ -48,84 +48,68 @@ class DriverCreatorTest {
     @Mock
     private EventFiringDecorator<WebDriver> eventFiringDecorator;
 
+    private void mockWindowMaximizeChain(WebDriver driver) {
+        WebDriver.Options mockedOptions = mock(WebDriver.Options.class);
+        WebDriver.Window mockedWindow = mock(WebDriver.Window.class);
+        when(driver.manage()).thenReturn(mockedOptions);
+        when(mockedOptions.window()).thenReturn(mockedWindow);
+    }
+
     @Test
     void testCreateLocalDriver() throws MalformedURLException {
-        // Given a configuration for a local driver
         when(config.isHeadless()).thenReturn(false);
         when(config.isRemote()).thenReturn(false);
         when(config.getOptionsCustomizer()).thenReturn(null);
         when(config.getEventFiringDecorator()).thenReturn(null);
-
-        // Also need to configure provider behavior for this specific test
         when(provider.createOptions()).thenReturn(options);
         when(provider.createDriver(options)).thenReturn(webDriver);
+        mockWindowMaximizeChain(webDriver);
 
-        // When creating a driver
         WebDriver result = driverCreator.createDriver(config, provider);
 
-        // Then the local driver should be created
-        assertNotNull(result, "createDriver should return non-null WebDriver");
-        assertSame(webDriver, result, "The local driver should be returned");
-
-        // And the provider methods should be called correctly
-        verify(provider, times(1)).createOptions();
-        verify(provider, times(1)).applyDefaultArguments(options);
-        verify(provider, times(1)).createDriver(options);
+        assertNotNull(result);
+        assertSame(webDriver, result);
+        verify(provider).createOptions();
+        verify(provider).applyDefaultArguments(options);
+        verify(provider).createDriver(options);
         verify(provider, never()).applyHeadlessArguments(any());
     }
 
     @Test
     void testCreateHeadlessDriver() throws MalformedURLException {
-        // Given a configuration for a headless driver
         when(config.isHeadless()).thenReturn(true);
         when(config.isRemote()).thenReturn(false);
         when(config.getOptionsCustomizer()).thenReturn(null);
         when(config.getEventFiringDecorator()).thenReturn(null);
-
-        // Also need to configure provider behavior for this specific test
         when(provider.createOptions()).thenReturn(options);
         when(provider.createDriver(options)).thenReturn(webDriver);
+        mockWindowMaximizeChain(webDriver);
 
-        // When creating a driver
         WebDriver result = driverCreator.createDriver(config, provider);
 
-        // Then the headless driver should be created
-        assertNotNull(result, "createDriver should return non-null WebDriver");
-        assertSame(webDriver, result, "The headless driver should be returned");
-
-        // And the headless arguments should be applied
-        verify(provider, times(1)).createOptions();
-        verify(provider, times(1)).applyDefaultArguments(options);
-        verify(provider, times(1)).applyHeadlessArguments(options);
-        verify(provider, times(1)).createDriver(options);
+        assertNotNull(result);
+        assertSame(webDriver, result);
+        verify(provider).createOptions();
+        verify(provider).applyDefaultArguments(options);
+        verify(provider).applyHeadlessArguments(options);
+        verify(provider).createDriver(options);
     }
 
     @Test
     void testCreateRemoteDriver() throws MalformedURLException {
-        // Given a configuration for a remote driver
         when(config.isHeadless()).thenReturn(false);
         when(config.isRemote()).thenReturn(true);
         when(config.getRemoteUrl()).thenReturn(REMOTE_URL);
         when(config.getOptionsCustomizer()).thenReturn(null);
         when(config.getEventFiringDecorator()).thenReturn(null);
-
-        // Configure provider options
         when(provider.createOptions()).thenReturn(options);
 
-        // Mock RemoteWebDriver construction
         try (MockedConstruction<RemoteWebDriver> mockedConstruction =
-                     mockConstruction(RemoteWebDriver.class, (mock, context) -> {
-                         // This will return a mocked RemoteWebDriver
-                     })) {
+                 mockConstruction(RemoteWebDriver.class, (mock, context) -> mockWindowMaximizeChain(mock))) {
 
-            // When creating a driver
             WebDriver result = driverCreator.createDriver(config, provider);
 
-            // Then a RemoteWebDriver should have been constructed
-            assertEquals(1, mockedConstruction.constructed().size(),
-                    "A RemoteWebDriver should have been constructed");
-
-            // Verify the provider methods were called
+            assertEquals(1, mockedConstruction.constructed().size());
             verify(provider).createOptions();
             verify(provider).applyDefaultArguments(options);
             verify(provider, never()).createDriver(any());
@@ -134,76 +118,61 @@ class DriverCreatorTest {
 
     @Test
     void testOptionsCustomizer() throws MalformedURLException {
-        // Given a configuration with an options customizer
         when(config.isHeadless()).thenReturn(false);
         when(config.isRemote()).thenReturn(false);
         when(config.getOptionsCustomizer()).thenReturn(optionsCustomizer);
         when(config.getEventFiringDecorator()).thenReturn(null);
-
-        // Also need to configure provider behavior for this specific test
         when(provider.createOptions()).thenReturn(options);
         when(provider.createDriver(options)).thenReturn(webDriver);
+        mockWindowMaximizeChain(webDriver);
 
-        // When creating a driver
         WebDriver result = driverCreator.createDriver(config, provider);
 
-        // Then the options customizer should be applied
-        verify(optionsCustomizer, times(1)).accept(options);
+        verify(optionsCustomizer).accept(options);
+        assertSame(webDriver, result);
     }
 
     @Test
     void testEventFiringDecorator() throws MalformedURLException {
-        // Given a configuration with an event firing decorator
         when(config.isHeadless()).thenReturn(false);
         when(config.isRemote()).thenReturn(false);
         when(config.getOptionsCustomizer()).thenReturn(null);
         when(config.getEventFiringDecorator()).thenReturn(eventFiringDecorator);
-
-        // Also need to configure provider and decorator behavior for this specific test
         when(provider.createOptions()).thenReturn(options);
         when(provider.createDriver(options)).thenReturn(webDriver);
         when(eventFiringDecorator.decorate(webDriver)).thenReturn(decoratedWebDriver);
+        mockWindowMaximizeChain(webDriver);
 
-        // When creating a driver
         WebDriver result = driverCreator.createDriver(config, provider);
 
-        // Then the driver should be decorated
-        assertNotNull(result, "createDriver should return non-null WebDriver");
-        assertSame(decoratedWebDriver, result, "The decorated driver should be returned");
-        verify(eventFiringDecorator, times(1)).decorate(webDriver);
+        assertNotNull(result);
+        assertSame(decoratedWebDriver, result);
+        verify(eventFiringDecorator).decorate(webDriver);
     }
 
     @Test
     void testNullOptionsCustomizerAndDecorator() throws MalformedURLException {
-        // Given a configuration with null customizer and decorator
         when(config.isHeadless()).thenReturn(false);
         when(config.isRemote()).thenReturn(false);
         when(config.getOptionsCustomizer()).thenReturn(null);
         when(config.getEventFiringDecorator()).thenReturn(null);
-
-        // Also need to configure provider behavior for this specific test
         when(provider.createOptions()).thenReturn(options);
         when(provider.createDriver(options)).thenReturn(webDriver);
+        mockWindowMaximizeChain(webDriver);
 
-        // When creating a driver
         WebDriver result = driverCreator.createDriver(config, provider);
 
-        // Then the driver should be created without customization or decoration
-        assertNotNull(result, "createDriver should return non-null WebDriver");
-        assertSame(webDriver, result, "The original driver should be returned");
+        assertNotNull(result);
+        assertSame(webDriver, result);
     }
 
     @Test
     void testMalformedUrlException() {
-        // Given a configuration with an invalid URL
         when(config.isHeadless()).thenReturn(false);
         when(config.isRemote()).thenReturn(true);
         when(config.getRemoteUrl()).thenReturn("invalid-url");
-
-        // Configure provider options
         when(provider.createOptions()).thenReturn(options);
 
-        // When creating a driver, then a MalformedURLException should be thrown
         assertThrows(MalformedURLException.class, () -> driverCreator.createDriver(config, provider));
     }
 }

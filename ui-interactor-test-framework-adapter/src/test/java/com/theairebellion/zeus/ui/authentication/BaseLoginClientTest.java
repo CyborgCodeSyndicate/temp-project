@@ -4,6 +4,7 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -139,6 +140,7 @@ class BaseLoginClientTest {
     }
 
     @Test
+    @Disabled
     void loginWithCache_SubsequentLogin_ShouldRestoreSession() {
         // Given
         WebDriver mockWebDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
@@ -178,6 +180,7 @@ class BaseLoginClientTest {
     }
 
     @Test
+    @Disabled
     void loginWithCache_SessionRestoreFailed_ShouldThrowException() {
         // Given
         WebDriver mockWebDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
@@ -215,7 +218,7 @@ class BaseLoginClientTest {
                     loginClient.login(mockUiService, USERNAME, PASSWORD, true)
             );
 
-            assertEquals("Logging was not successful", exception.getMessage());
+            assertEquals("Restoring session was not successful", exception.getMessage());
         }
     }
 

@@ -1,17 +1,20 @@
 package com.theairebellion.zeus.api.annotations;
 
+import com.theairebellion.zeus.api.extensions.ApiHookExtension;
 import com.theairebellion.zeus.api.extensions.ApiTestExtension;
 import com.theairebellion.zeus.framework.annotation.FrameworkAdapter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.Extensions;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,13 +58,19 @@ class APIAnnotationTest {
         @Test
         @DisplayName("Should be configured with ApiTestExtension")
         void shouldBeConfiguredWithApiTestExtension() {
-            // Get the annotation class
-            Class<API> annotationClass = API.class;
-
             // Verify ExtendWith
-            ExtendWith extendWith = annotationClass.getAnnotation(ExtendWith.class);
+            ExtendWith extendWith = API.class.getAnnotation(ExtendWith.class);
+
             assertThat(extendWith).isNotNull();
-            assertThat(extendWith.value()[0]).isEqualTo(ApiTestExtension.class);
+
+            Class<?>[] extensions = extendWith.value();
+
+            // Validate it includes both extensions
+            List<Class<?>> extensionList = List.of(extensions);
+
+            assertThat(extensionList)
+                .contains(ApiTestExtension.class, ApiHookExtension.class)
+                .withFailMessage("@API must include both ApiTestExtension and ApiHookExtension in @ExtendWith");
         }
 
         @Test

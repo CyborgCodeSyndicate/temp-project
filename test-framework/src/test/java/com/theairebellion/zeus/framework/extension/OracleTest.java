@@ -30,28 +30,39 @@ import static org.mockito.Mockito.*;
 class OracleTest {
 
     @Test
-    void supportsParameter_ReturnsTrue_ForQuestType() {
+    void supportsParameter_ReturnsTrue_ForQuestType() throws NoSuchMethodException {
+        Method method = getClass().getDeclaredMethod("methodWithQuestParam", Quest.class);
+        Parameter param = method.getParameters()[0];
+
         ParameterContext paramCtx = mock(ParameterContext.class);
-        Parameter param = mock(Parameter.class);
         when(paramCtx.getParameter()).thenReturn(param);
-        when(param.getType()).thenReturn((Class) Quest.class);
-        Oracle oracle = new Oracle();
+
         ExtensionContext extCtx = mock(ExtensionContext.class);
+        Oracle oracle = new Oracle();
+
         boolean result = oracle.supportsParameter(paramCtx, extCtx);
         assertTrue(result);
     }
 
     @Test
-    void supportsParameter_ReturnsFalse_ForNonQuestType() {
+    void supportsParameter_ReturnsFalse_ForNonQuestType() throws NoSuchMethodException {
+        Method method = getClass().getDeclaredMethod("methodWithStringParam", String.class);
+        Parameter param = method.getParameters()[0];
+
         ParameterContext paramCtx = mock(ParameterContext.class);
-        Parameter param = mock(Parameter.class);
         when(paramCtx.getParameter()).thenReturn(param);
-        when(param.getType()).thenReturn((Class) String.class);
-        Oracle oracle = new Oracle();
+
         ExtensionContext extCtx = mock(ExtensionContext.class);
+        Oracle oracle = new Oracle();
+
         boolean result = oracle.supportsParameter(paramCtx, extCtx);
         assertFalse(result);
     }
+
+    // Dummy methods to use for parameter reflection
+    private void methodWithQuestParam(Quest quest) {}
+    private void methodWithStringParam(String value) {}
+
 
     @Test
     void resolveParameter_NoStaticData_NoConsumers() {

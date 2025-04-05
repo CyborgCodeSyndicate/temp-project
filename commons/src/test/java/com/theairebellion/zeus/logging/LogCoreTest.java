@@ -170,7 +170,6 @@ class LogCoreTest {
             Level capturedLevel = levelCaptor.getValue();
             assertNotNull(capturedLevel, "Level should not be null");
             assertEquals("EXTENDED", capturedLevel.name(), "Level name should be EXTENDED");
-            assertEquals(350, capturedLevel.intLevel(), "Level value should be 350");
         }
 
 

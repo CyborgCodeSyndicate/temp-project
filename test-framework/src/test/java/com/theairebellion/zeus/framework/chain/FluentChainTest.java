@@ -111,8 +111,8 @@ class FluentChainTest {
                 verifyNoMoreInteractions(quest);
 
                 // Verify log messages
-                logTestMock.verify(() -> LogTest.validation("Starting hard validation."));
-                logTestMock.verify(() -> LogTest.validation("Hard validation has passed."));
+                logTestMock.verify(() -> LogTest.validation("Starting hard validation..."));
+                logTestMock.verify(() -> LogTest.validation("Hard validation completed successfully."));
 
                 assertSame(fluentChain, result, "Method should return this for chaining");
             }
@@ -188,8 +188,8 @@ class FluentChainTest {
                 verify(quest).complete();
 
                 // Verify log messages
-                logTestMock.verify(() -> LogTest.validation("Starting hard validation."));
-                logTestMock.verify(() -> LogTest.validation("Hard validation has passed."));
+                logTestMock.verify(() -> LogTest.validation("Starting hard validation..."));
+                logTestMock.verify(() -> LogTest.validation("Hard validation completed successfully."));
             }
         }
 

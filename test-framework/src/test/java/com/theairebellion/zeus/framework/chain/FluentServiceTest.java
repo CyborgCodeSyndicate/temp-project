@@ -73,17 +73,26 @@ class FluentServiceTest {
 
     @Nested
     @DisplayName("RetryUntil Tests")
+    @ExtendWith(MockitoExtension.class)
     class RetryUntilTests {
+
+        @Mock
+        RetryCondition<Object> retryCondition;
+
+        @Mock
+        Function<Object, Object> function;
+
+        @Mock
+        Predicate<Object> predicate;
+
         @Test
         @DisplayName("retryUntil should use RetryUtils and return self")
         void testRetryUntil() {
             try (MockedStatic<RetryUtils> retryUtilsMock = mockStatic(RetryUtils.class)) {
                 // Given
-                RetryCondition<Object> retryCondition = mock(RetryCondition.class);
-                Function<Object, Object> function = mock(Function.class);
-                Predicate<Object> predicate = mock(Predicate.class);
 
                 when(retryCondition.function()).thenReturn(function);
+
                 when(retryCondition.condition()).thenReturn(predicate);
 
                 Object testService = new Object();

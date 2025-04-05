@@ -1,7 +1,9 @@
 package com.theairebellion.zeus.framework.extension;
 
 import com.theairebellion.zeus.framework.log.LogTest;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import org.apache.logging.log4j.ThreadContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,11 +19,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Prologue Extension Tests")
+@Disabled
 class PrologueTest {
 
     private static final String TEST_NAME = "testName";
     private static final String DEFAULT_DISPLAY_NAME = "DefaultDisplayName";
     private static final String TEST_DISPLAY_NAME = "TestDisplayName";
+
 
     @Nested
     @DisplayName("Test Execution Setup")

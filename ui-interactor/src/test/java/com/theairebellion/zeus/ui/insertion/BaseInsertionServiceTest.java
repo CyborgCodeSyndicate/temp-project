@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class BaseInsertionServiceTest {
     @Retention(RetentionPolicy.RUNTIME)
@@ -129,7 +130,7 @@ public class BaseInsertionServiceTest {
         void setUp() {
             registry = new InsertionServiceRegistry();
             testService = new TestInsertionService(registry);
-            mockInsertion = Mockito.mock(Insertion.class);
+            mockInsertion = mock(Insertion.class);
             // For DummyEnum, extractComponentTypeClass(DummyEnum.class) will resolve to DummyComponentType.
             // We register the mockInsertion for DummyComponentType.
             registry.registerService(DummyComponentType.class, mockInsertion);
@@ -147,13 +148,13 @@ public class BaseInsertionServiceTest {
 
             // The insertion should be executed for field1 and field2 (fields with non-null values).
             // Field order should be: field1 (order 1) then field2 (order 2).
-            Mockito.verify(mockInsertion, Mockito.times(2))
-                .insertion(Mockito.eq(DummyEnum.VALUE1), Mockito.any(By.class), Mockito.any());
-            InOrder inOrder = Mockito.inOrder(mockInsertion);
+            verify(mockInsertion, times(2))
+                .insertion(eq(DummyEnum.VALUE1), any(By.class), any());
+            InOrder inOrder = inOrder(mockInsertion);
             inOrder.verify(mockInsertion)
-                .insertion(Mockito.eq(DummyEnum.VALUE1), Mockito.any(By.class), Mockito.eq("value1"));
+                .insertion(eq(DummyEnum.VALUE1), any(By.class), eq("value1"));
             inOrder.verify(mockInsertion)
-                .insertion(Mockito.eq(DummyEnum.VALUE1), Mockito.any(By.class), Mockito.eq("value2"));
+                .insertion(eq(DummyEnum.VALUE1), any(By.class), eq("value2"));
 
             // Verify that the beforeInsertion and afterInsertion hooks were called.
             assertTrue(testService.beforeCalled, "Expected beforeInsertion to be called");
@@ -181,7 +182,7 @@ public class BaseInsertionServiceTest {
             testService.insertData(dto);
 
             // With no non-null values, the insertion service should not be called.
-            Mockito.verifyNoInteractions(mockInsertion);
+            verifyNoInteractions(mockInsertion);
             assertFalse(testService.beforeCalled, "Expected beforeInsertion not to be called");
             assertFalse(testService.afterCalled, "Expected afterInsertion not to be called");
         }
@@ -308,15 +309,15 @@ public class BaseInsertionServiceTest {
             }
 
             DummyDTO dto = new DummyDTO();
-            Insertion mockInsertion = Mockito.mock(Insertion.class);
+            Insertion mockInsertion = mock(Insertion.class);
             InsertionServiceRegistry registry = new InsertionServiceRegistry();
             registry.registerService(DummyComponentType.class, mockInsertion);
 
             NoOpService service = new NoOpService(registry);
             service.insertData(dto);
 
-            Mockito.verify(mockInsertion, Mockito.atLeastOnce())
-                .insertion(Mockito.any(), Mockito.any(), Mockito.any());
+            verify(mockInsertion, atLeastOnce())
+                .insertion(any(), any(), any());
             // This test is to cover the default no-op hooks
         }
 
@@ -353,14 +354,14 @@ public class BaseInsertionServiceTest {
             DummyDTO dto = new DummyDTO();
             InsertionServiceRegistry registry = new InsertionServiceRegistry();
             TestInsertionService service = new TestInsertionService(registry);
-            Insertion mockInsertion = Mockito.mock(Insertion.class);
+            Insertion mockInsertion = mock(Insertion.class);
             registry.registerService(DummyComponentType.class, mockInsertion);
 
             // Use Mockito to mock static methods of LogUI.
-            try (var mockedStatic = Mockito.mockStatic(LogUI.class)) {
+            try (var mockedStatic = mockStatic(LogUI.class)) {
                 service.insertData(dto);
                 // Verify that LogUI.info was called at least once.
-                mockedStatic.verify(() -> LogUI.info(Mockito.anyString(), Mockito.any()));
+                mockedStatic.verify(() -> LogUI.info(anyString(), any()));
             }
         }
     }

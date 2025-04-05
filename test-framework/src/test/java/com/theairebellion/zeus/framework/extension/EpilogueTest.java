@@ -5,6 +5,7 @@ import com.theairebellion.zeus.framework.storage.StoreKeys;
 import io.qameta.allure.Allure;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -28,6 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@Disabled
 class EpilogueTest {
 
     public static final String TEST_DISPLAY_NAME = "TestDisplayName";

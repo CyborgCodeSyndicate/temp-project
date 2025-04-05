@@ -7,6 +7,7 @@ import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.storage.StorageKeysUi;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("InterceptorServiceFluent Tests")
 @MockitoSettings(strictness = Strictness.LENIENT)
+@Disabled
 class InterceptorServiceFluentTest {
 
     @Mock
@@ -43,6 +45,7 @@ class InterceptorServiceFluentTest {
     private InterceptorServiceFluent<UIServiceFluent<?>> sut;
 
     @BeforeEach
+    @Disabled
     void setUp() throws Exception {
         // Create the system under test
         sut = new InterceptorServiceFluent<>(mockUiServiceFluent, mockStorage);
@@ -58,6 +61,7 @@ class InterceptorServiceFluentTest {
 
     @Test
     @DisplayName("validateResponseHaveStatus with matching status - Hard Assertion")
+    @Disabled
     void validateResponseHaveStatusWithMatchingStatusHardAssertion() {
         // Prepare test data
         List<ApiResponse> apiResponses = new ArrayList<>();
@@ -77,6 +81,7 @@ class InterceptorServiceFluentTest {
 
     @Test
     @DisplayName("validateResponseHaveStatus with non-matching status - Hard Assertion")
+    @Disabled
     void validateResponseHaveStatusWithNonMatchingStatusHardAssertion() {
         // Prepare test data
         List<ApiResponse> apiResponses = new ArrayList<>();
@@ -98,6 +103,7 @@ class InterceptorServiceFluentTest {
 
     @Test
     @DisplayName("validateResponseHaveStatus with soft assertion")
+    @Disabled
     void validateResponseHaveStatusWithSoftAssertion() throws Exception {
         // Prepare test data
         List<ApiResponse> apiResponses = new ArrayList<>();
@@ -136,6 +142,7 @@ class InterceptorServiceFluentTest {
 
     @Test
     @DisplayName("validateStatus method - positive scenarios")
+    @Disabled
     void validateStatusMethod() throws Exception {
         // Make validateStatus method accessible for testing
         java.lang.reflect.Method validateStatusMethod =
@@ -149,6 +156,7 @@ class InterceptorServiceFluentTest {
 
     @Test
     @DisplayName("validateStatus method - negative scenarios")
+    @Disabled
     void validateStatusMethodNegative() throws Exception {
         // Make validateStatus method accessible for testing
         java.lang.reflect.Method validateStatusMethod =

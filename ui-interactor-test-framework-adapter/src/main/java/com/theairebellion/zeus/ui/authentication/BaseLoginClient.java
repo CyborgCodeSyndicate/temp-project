@@ -137,15 +137,21 @@ public abstract class BaseLoginClient implements LoginClient {
         SmartWebDriver smartWebDriver = uiService.getDriver();
         WebDriver driver = smartWebDriver.getOriginal();
 
-        smartWebDriver.get(urlAfterLogging);
-        smartWebDriver.manage().window().maximize();
-        smartWebDriver.manage().deleteAllCookies();
+        try {
+            smartWebDriver.get(urlAfterLogging);
 
-        sessionInfo.getCookies().forEach(cookie -> driver.manage().addCookie(cookie));
+            smartWebDriver.manage().deleteAllCookies();
 
-        executeJavaScript(driver, String.format(UPDATE_LOCAL_STORAGE, sessionInfo.getLocalStorage()));
+            sessionInfo.getCookies().forEach(cookie -> driver.manage().addCookie(cookie));
 
-        smartWebDriver.get(urlAfterLogging);
+            executeJavaScript(driver, String.format(UPDATE_LOCAL_STORAGE, sessionInfo.getLocalStorage()));
+
+            smartWebDriver.get(urlAfterLogging);
+        }catch (Exception e){
+            //todo create custom exception
+            throw new RuntimeException("Restoring session was not successful",  e);
+        }
+
 
         try {
             smartWebDriver.getWait()
