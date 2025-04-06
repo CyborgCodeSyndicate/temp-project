@@ -51,12 +51,9 @@ public class Epilogue implements AfterTestExecutionCallback {
         SuperQuest superQuest = getSuperQuest(context);
         Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
         String htmlContent = new ObjectFormatter().generateHtmlContent(arguments);
-        List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML, List.class);
-        if (htmlList == null) {
-            htmlList = new ArrayList<>();
-        }
+        List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL)
+                .getOrComputeIfAbsent(HTML, key -> new ArrayList<>(), List.class);
         htmlList.add(htmlContent);
-        context.getStore(ExtensionContext.Namespace.GLOBAL).put(HTML, htmlList);
         Throwable throwable = context.getExecutionException().orElse(null);
         String status = (throwable == null) ? "SUCCESS" : "FAILED";
         long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);

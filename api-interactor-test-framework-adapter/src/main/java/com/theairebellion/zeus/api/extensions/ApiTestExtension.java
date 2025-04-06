@@ -33,7 +33,7 @@ import static com.theairebellion.zeus.framework.allure.StepType.PERFORMING_PRE_Q
  *
  * @author Cyborg Code Syndicate
  */
-public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
+public class ApiTestExtension implements BeforeTestExecutionCallback {
 
     /**
      * Executes authentication before test execution.
@@ -46,16 +46,6 @@ public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestE
         context.getTestMethod()
                 .map(method -> method.getAnnotation(AuthenticateViaApiAs.class))
                 .ifPresent(annotation -> handleAuthentication(context, annotation));
-    }
-
-    /**
-     * Executes post-test cleanup after test execution.
-     *
-     * @param context The test execution context.
-     */
-    @Override
-    public void afterTestExecution(final ExtensionContext context) {
-        CustomAllureListener.stopParentStep();
     }
 
     private void handleAuthentication(final ExtensionContext context, final AuthenticateViaApiAs annotation) {

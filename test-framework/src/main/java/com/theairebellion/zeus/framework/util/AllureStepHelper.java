@@ -154,12 +154,9 @@ public class AllureStepHelper extends ObjectFormatter {
 
         String formattedHtml = placeholders.entrySet().stream()
                 .reduce(htmlTemplate, (html, entry) -> html.replace(entry.getKey(), entry.getValue()), (a, b) -> a);
-        List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML, List.class);
-        if (htmlList == null) {
-            htmlList = new ArrayList<>();
-        }
+        List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL)
+                .getOrComputeIfAbsent(HTML, key -> new ArrayList<>(), List.class);
         htmlList.add(formattedHtml);
-        context.getStore(ExtensionContext.Namespace.GLOBAL).put(HTML, htmlList);
     }
 
     /**

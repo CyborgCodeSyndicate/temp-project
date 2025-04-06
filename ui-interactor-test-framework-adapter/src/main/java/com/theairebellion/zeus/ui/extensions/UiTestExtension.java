@@ -289,8 +289,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName());
         }
-        List<Object> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES, Object.class);
-        if (!responses.isEmpty()) {
+        List<Object> responses = getSuperQuest(context).getStorage().sub(UI).getByClass(RESPONSES, List.class);
+        if (responses != null && !responses.isEmpty()) {
             String formattedResponses = new ObjectFormatter().formatResponses(Collections.singletonList(responses));
             Allure.addAttachment("Intercepted Requests", "text/html",
                 new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
@@ -395,7 +395,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
 
     private static void takeScreenshot(WebDriver driver, String testName) {
-        if (CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
+        if (!CustomAllureListener.isParentStepActive(TEAR_DOWN)) {
             CustomAllureListener.stopParentStep();
             CustomAllureListener.startParentStep(TEAR_DOWN);
         }
