@@ -27,16 +27,16 @@ import java.util.*;
 public class ReflectionUtil {
 
     /**
-     * Finds an enum class that implements a given interface within a specified package.
+     * Finds all enum classes that implement a given interface within a specified package.
      *
-     * @param interfaceClass The interface whose enum implementation is being searched.
-     * @param packagePrefix  The package to search within.
+     * @param interfaceClass The interface whose enum implementations are being searched for. Must not be null.
+     * @param packagePrefix  The root package to search within. Must not be null.
      * @param <T>            The type of the interface.
-     * @return The enum class implementing the specified interface.
-     * @throws ReflectionException If no matching enum is found.
+     * @return A list of enum classes that implement the specified interface.
+     * @throws ReflectionException If no matching enum classes are found or if the search fails.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Class<? extends Enum<?>> findEnumClassImplementationsOfInterface(
+    public static <T> List<Class<? extends Enum<?>>> findEnumClassImplementationsOfInterface(
             Class<T> interfaceClass, String packagePrefix) {
 
         validateInputs(interfaceClass, packagePrefix);
@@ -44,13 +44,21 @@ public class ReflectionUtil {
         Reflections reflections = new Reflections(packagePrefix);
         Set<Class<? extends T>> result = reflections.getSubTypesOf(interfaceClass);
 
-        return result.stream()
-                .filter(Class::isEnum)
-                .map(clazz -> (Class<? extends Enum<?>>) clazz)
-                .findFirst()
-                .orElseThrow(() -> new ReflectionException(String.format(
-                        "No Enum implementing interface '%s' found in package '%s'.",
-                        interfaceClass.getName(), packagePrefix)));
+        List<Class<? extends Enum<?>>> listOfEnumClasses = new ArrayList<>();
+        for (Class<? extends T> cls : result) {
+            if (cls.isEnum()) {
+                @SuppressWarnings("unchecked")
+                Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) cls;
+                listOfEnumClasses.add(enumClass);
+            }
+        }
+
+        if (listOfEnumClasses.isEmpty()) {
+            throw new ReflectionException(String.format(
+                    "No Enum implementing interface '%s' found in package '%s'.",
+                    interfaceClass.getName(), packagePrefix));
+        }
+        return listOfEnumClasses;
     }
 
     /**
@@ -67,13 +75,22 @@ public class ReflectionUtil {
     public static <T> T findEnumImplementationsOfInterface(
             Class<T> interfaceClass, String enumName, String packagePrefix) {
 
-        Class<? extends Enum<?>> enumClass = findEnumClassImplementationsOfInterface(interfaceClass, packagePrefix);
+        List<Class<? extends Enum<?>>> enumClassImplementationsOfInterface =
+                findEnumClassImplementationsOfInterface(interfaceClass, packagePrefix);
 
-        return (T) Arrays.stream(enumClass.getEnumConstants())
-                .filter(e -> e.name().equals(enumName))
-                .findFirst()
-                .orElseThrow(() -> new ReflectionException(String.format(
-                        "Enum value '%s' not found in Enum '%s'.", enumName, enumClass.getName())));
+        List<? extends Enum<?>> enumValuesList = enumClassImplementationsOfInterface.stream()
+                .flatMap(enumClass -> Arrays.stream(enumClass.getEnumConstants()))
+                .filter(anEnum -> anEnum.name().equals(enumName)).toList();
+
+        if (enumValuesList.isEmpty()) {
+            throw new ReflectionException(String.format(
+                    "Enum value '%s' not found in any enum class.", enumName));
+        }
+        if (enumValuesList.size() > 1) {
+            throw new ReflectionException(String.format(
+                    "There are more than one enum with value '%s'.", enumName));
+        }
+        return (T) enumValuesList.get(0);
     }
 
     /**
@@ -94,124 +111,64 @@ public class ReflectionUtil {
     }
 
     /**
-     * Retrieves a field value of a specified type from an object.
-     *
-     * @param instance  The object whose field value is being retrieved.
-     * @param fieldType The expected type of the field.
-     * @param <K>       The type parameter of the field value.
-     * @return The value of the field.
-     * @throws ReflectionException If the field is not found or cannot be accessed.
-     */
-    public static <K> K getFieldValue(Object instance, Class<K> fieldType) {
-        validateInputs(instance, fieldType);
+     * Retrieves all field values of a specified type from an object, including fields declared in superclasses.
 
+     * @param instance  The object whose field values are being retrieved. Must not be null.
+     * @param fieldType The expected type of the fields to retrieve. Must not be null.
+     * @param <K>       The type parameter representing the expected field value type.
+     * @return A list of field values of the specified type found in the object.
+     * @throws ReflectionException If no matching fields are found, if a field contains an incompatible value,
+     *                              or if a field cannot be accessed due to security restrictions.
+     */
+    public static <K> List<K> getFieldValues(Object instance, Class<K> fieldType) {
+        validateInputs(instance, fieldType);
 
         try {
             Class<?> currentClass = instance.getClass();
             List<Field> allFields = new ArrayList<>();
 
+            // Traverse class hierarchy to collect all declared fields
             while (currentClass != null && currentClass != Object.class) {
                 allFields.addAll(Arrays.asList(currentClass.getDeclaredFields()));
                 currentClass = currentClass.getSuperclass();
             }
 
-            Field field = allFields.stream()
-                    .filter(f -> {
-                        f.setAccessible(true);
-                        return fieldType.isAssignableFrom(f.getType());
-                    })
-                    .findFirst()
-                    .orElseThrow(() -> new ReflectionException(
-                            String.format("No field of type '%s' found in class '%s'.",
-                                    fieldType.getName(), instance.getClass().getName())));
+            List<K> matchingValues = new ArrayList<>();
 
-            Object value = field.get(instance);
-            if (!fieldType.isInstance(value)) {
-                throw new ReflectionException(String.format(
-                        "Field value is not of the expected type '%s'. Actual value type: '%s'.",
-                        fieldType.getName(), value != null ? value.getClass().getName() : "null"));
+            for (Field field : allFields) {
+                field.setAccessible(true);
+
+                // Check if the declared field type is compatible
+                if (fieldType.isAssignableFrom(field.getType())) {
+                    Object value = field.get(instance);
+
+                    if (fieldType.isInstance(value)) {
+                        matchingValues.add(fieldType.cast(value));
+                    } else {
+                        throw new ReflectionException(String.format(
+                                "Field '%s' in class '%s' is declared as assignable to '%s' but holds an incompatible value of type '%s'.",
+                                field.getName(),
+                                instance.getClass().getName(),
+                                fieldType.getName(),
+                                value != null ? value.getClass().getName() : "null"
+                        ));
+                    }
+                }
             }
-            return fieldType.cast(value);
+
+            if (matchingValues.isEmpty()) {
+                throw new ReflectionException(String.format(
+                        "No fields of type '%s' found in class '%s'.",
+                        fieldType.getName(), instance.getClass().getName()));
+            }
+
+            return matchingValues;
+
         } catch (IllegalAccessException e) {
-            throw new ReflectionException(
-                    String.format("Cannot access field of type '%s' in class '%s'.",
-                            fieldType.getName(), instance.getClass().getName()), e);
-        }
-    }
-
-    /**
-     * Retrieves a specific field value from an object's class hierarchy.
-     *
-     * @param fieldName  The name of the field to retrieve.
-     * @param object     The object from which the field value is retrieved.
-     * @param returnType The expected return type.
-     * @param <T>        The type parameter of the return value.
-     * @return The value of the field.
-     * @throws ReflectionException If the field is not found or is inaccessible.
-     */
-    public static <T> T getAttributeOfClass(String fieldName, Object object, Class<T> returnType) {
-        validateInputs(fieldName, object, returnType);
-
-        try {
-            Field field = getFieldFromClassHierarchy(object.getClass(), fieldName);
-            field.setAccessible(true);
-            Object value = field.get(object);
-
-            if (!returnType.isInstance(value)) {
-                throw new ReflectionException(String.format(
-                        "Field '%s' value is not of expected type '%s'. Actual value type: '%s'.",
-                        fieldName, returnType.getName(), value != null ? value.getClass().getName() : "null"));
-            }
-            return returnType.cast(value);
-        } catch (NoSuchFieldException e) {
             throw new ReflectionException(String.format(
-                    "Field '%s' not found in class hierarchy of '%s'.",
-                    fieldName, object.getClass().getName()), e);
-        } catch (IllegalAccessException e) {
-            throw new ReflectionException(
-                    String.format("Cannot access field '%s' in class hierarchy of '%s'.",
-                            fieldName, object.getClass().getName()), e);
+                    "Cannot access field(s) of type '%s' in class '%s'.",
+                    fieldType.getName(), instance.getClass().getName()), e);
         }
-    }
-
-    /**
-     * Finds a class that extends a given parent class within a package.
-     *
-     * @param parentClass    The parent class whose subclass is being searched for.
-     * @param packagePrefix  The package to search within.
-     * @param <T>            The type parameter for the parent class.
-     * @return The first subclass found or {@code null} if none exist.
-     */
-    public static <T> Class<? extends T> findClassThatExtendsClass(
-            Class<T> parentClass, String packagePrefix) {
-
-        validateInputs(parentClass, packagePrefix);
-
-        Reflections reflections = new Reflections(packagePrefix);
-        Set<Class<? extends T>> result = reflections.getSubTypesOf(parentClass);
-
-        Optional<Class<? extends T>> match = result.stream()
-                .findFirst();
-        return match.orElse(null);
-    }
-
-    /**
-     * Retrieves a field from a class hierarchy.
-     *
-     * @param clazz     The class to search.
-     * @param fieldName The field name to find.
-     * @return The matching field.
-     * @throws NoSuchFieldException If the field does not exist.
-     */
-    private static Field getFieldFromClassHierarchy(Class<?> clazz, String fieldName) throws NoSuchFieldException {
-        while (clazz != Object.class) {
-            try {
-                return clazz.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException ignored) {
-                clazz = clazz.getSuperclass();
-            }
-        }
-        throw new NoSuchFieldException("Field '" + fieldName + "' not found in class hierarchy.");
     }
 
     /**

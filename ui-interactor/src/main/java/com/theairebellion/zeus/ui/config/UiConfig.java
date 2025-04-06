@@ -60,6 +60,7 @@ public interface UiConfig extends PropertyConfig {
      *
      * @return The Selenium Grid or remote WebDriver URL.
      */
+    @DefaultValue("")
     @Key("remote.driver.url")
     String remoteDriverUrl();
 

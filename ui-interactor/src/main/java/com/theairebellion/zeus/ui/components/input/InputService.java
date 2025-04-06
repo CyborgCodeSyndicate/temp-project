@@ -438,8 +438,12 @@ public interface InputService extends Insertion, TableInsertion, TableFilter {
      * @return The default InputComponentType.
      */
     public static InputComponentType getDefaultType() {
+        try {
         return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
             getUiConfig().inputDefaultType(),
             getUiConfig().projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

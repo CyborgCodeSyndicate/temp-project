@@ -5,7 +5,7 @@ import com.theairebellion.zeus.ui.components.toggle.ToggleService;
 import com.theairebellion.zeus.ui.selenium.ToggleUIElement;
 import io.qameta.allure.Allure;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Provides fluent methods for interacting with toggle UI elements.

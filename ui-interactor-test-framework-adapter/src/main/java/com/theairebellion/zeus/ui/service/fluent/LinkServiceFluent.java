@@ -7,7 +7,7 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Provides a fluent interface for interacting with link UI elements.

@@ -44,7 +44,7 @@ public interface FluentChain {
     default FluentChain validate(Consumer<SoftAssertions> assertion) {
         Quest quest = then();
         LogTest.validation("Starting soft validation.");
-        assertion.accept(new SuperQuest(quest).getSoftAssertions());
+        assertion.accept(createSuperQuest(quest).getSoftAssertions());
         return this;
     }
 
@@ -77,6 +77,10 @@ public interface FluentChain {
      */
     default void complete() {
         then().complete();
+    }
+
+    default SuperQuest createSuperQuest(Quest quest) {
+        return new SuperQuest(quest);
     }
 
 }

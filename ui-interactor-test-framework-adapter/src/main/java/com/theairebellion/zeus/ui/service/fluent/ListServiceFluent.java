@@ -13,7 +13,7 @@ import io.qameta.allure.Allure;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Fluent service for interacting with list UI elements.

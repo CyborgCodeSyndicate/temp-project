@@ -115,7 +115,7 @@ public abstract class BaseLoginClient implements LoginClient {
                     .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
             //todo create custom exception
-            throw new RuntimeException("Logging was not successful");
+            throw new RuntimeException("Logging in was not successful");
         }
 
         urlAfterLogging = smartWebDriver.getCurrentUrl();
@@ -137,22 +137,28 @@ public abstract class BaseLoginClient implements LoginClient {
         SmartWebDriver smartWebDriver = uiService.getDriver();
         WebDriver driver = smartWebDriver.getOriginal();
 
-        smartWebDriver.get(urlAfterLogging);
-        smartWebDriver.manage().window().maximize();
-        smartWebDriver.manage().deleteAllCookies();
+        try {
+            smartWebDriver.get(urlAfterLogging);
 
-        sessionInfo.getCookies().forEach(cookie -> driver.manage().addCookie(cookie));
+            smartWebDriver.manage().deleteAllCookies();
 
-        executeJavaScript(driver, String.format(UPDATE_LOCAL_STORAGE, sessionInfo.getLocalStorage()));
+            sessionInfo.getCookies().forEach(cookie -> driver.manage().addCookie(cookie));
 
-        smartWebDriver.get(urlAfterLogging);
+            executeJavaScript(driver, String.format(UPDATE_LOCAL_STORAGE, sessionInfo.getLocalStorage()));
+
+            smartWebDriver.get(urlAfterLogging);
+        }catch (Exception e){
+            //todo create custom exception
+            throw new RuntimeException("Restoring session was not successful",  e);
+        }
+
 
         try {
             smartWebDriver.getWait()
                 .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
             //todo create custom exception
-            throw new RuntimeException("Logging was not successful");
+            throw new RuntimeException("Logging in was not successful");
         }
     }
 

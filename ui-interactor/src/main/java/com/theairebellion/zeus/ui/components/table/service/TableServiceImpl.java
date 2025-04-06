@@ -294,7 +294,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
      * @return A list of assertion results indicating the validation outcome.
      */
     @Override
-    public <T> List<AssertionResult<T>> validate(final Object table, final Assertion<?>... assertions) {
+    public <T> List<AssertionResult<T>> validate(final Object table, final Assertion... assertions) {
         if (table == null) {
             throw new IllegalArgumentException("Table cannot be null for validation.");
         }

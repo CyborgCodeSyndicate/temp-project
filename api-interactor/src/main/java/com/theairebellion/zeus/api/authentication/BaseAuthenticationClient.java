@@ -3,10 +3,11 @@ package com.theairebellion.zeus.api.authentication;
 import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
+import lombok.NonNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract base class for authentication clients.
@@ -20,7 +21,7 @@ import java.util.Objects;
 public abstract class BaseAuthenticationClient implements AuthenticationClient {
 
     /** Stores authentication headers mapped by their corresponding authentication keys. */
-    public static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new HashMap<>();
+    public static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new ConcurrentHashMap<>();
 
     /**
      * Authenticates a user and caches the authentication header if caching is enabled.
@@ -32,7 +33,7 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
      * @return The generated {@code AuthenticationKey}.
      */
     @Override
-    public AuthenticationKey authenticate(final RestService restService, final String username, final String password,
+    public AuthenticationKey authenticate(final @NonNull RestService restService, @NonNull final String username, final String password,
                                           boolean cache) {
         var authenticationKey = new AuthenticationKey(username, password, this.getClass());
         if (!cache) {
@@ -59,6 +60,10 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
      * @return The corresponding authentication header, or {@code null} if not found.
      */
     public Header getAuthentication(final AuthenticationKey authenticationKey) {
+        if (authenticationKey == null) {
+            LogApi.error("AuthenticationKey is null. Cannot retrieve authentication header.");
+            throw new IllegalArgumentException("AuthenticationKey cannot be null.");
+        }
         return userAuthenticationHeaderMap.get(authenticationKey);
     }
 

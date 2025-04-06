@@ -6,7 +6,6 @@ import com.theairebellion.zeus.validator.core.AssertionType;
 import com.theairebellion.zeus.validator.exceptions.InvalidAssertionException;
 import com.theairebellion.zeus.validator.registry.AssertionRegistry;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,10 @@ import java.util.Map;
  */
 public class AssertionUtil {
 
+    private AssertionUtil() {
+    }
+
+
     /**
      * Validates a set of assertions against a given data map.
      *
@@ -33,16 +36,17 @@ public class AssertionUtil {
      * @return A list of {@link AssertionResult} objects representing validation outcomes.
      * @throws IllegalArgumentException if the data map is null or no assertions are provided.
      */
-    public static <T> List<AssertionResult<T>> validate(Map<String, T> data, Assertion<?>... assertions) {
+    public static <T> List<AssertionResult<T>> validate(Map<String, T> data, List<Assertion> assertions) {
         if (data == null) {
             throw new IllegalArgumentException("The data map cannot be null.");
         }
-        if (assertions == null || assertions.length == 0) {
+        if (assertions == null || assertions.isEmpty()) {
             throw new IllegalArgumentException("At least one assertion must be provided.");
         }
 
-        return Arrays.stream(assertions).map(assertion -> validateSingle(data, assertion)).toList();
+        return assertions.stream().map(assertion -> validateSingle(data, assertion)).toList();
     }
+
 
     /**
      * Validates a single assertion against the data map.
@@ -53,7 +57,7 @@ public class AssertionUtil {
      * @return An {@link AssertionResult} indicating whether the assertion passed or failed.
      * @throws IllegalArgumentException if the key does not exist or has a null value.
      */
-    private static <T> AssertionResult<T> validateSingle(Map<String, T> data, Assertion<?> assertion) {
+    private static <T> AssertionResult<T> validateSingle(Map<String, T> data, Assertion assertion) {
         validateAssertion(assertion);
 
         String key = assertion.getKey();
@@ -61,7 +65,7 @@ public class AssertionUtil {
 
         if (actualValue == null) {
             throw new IllegalArgumentException(
-                    String.format("Key '%s' in assertion does not exist or has a null value in the data map.", key)
+                String.format("Key '%s' in assertion does not exist or has a null value in the data map.", key)
             );
         }
 
@@ -72,13 +76,14 @@ public class AssertionUtil {
         boolean passed = validator.apply(actualValue, assertion.getExpected());
 
         return new AssertionResult(
-                passed,
-                type.type().name(),
-                assertion.getExpected(),
-                actualValue,
-                assertion.isSoft()
+            passed,
+            type.type().name(),
+            assertion.getExpected(),
+            actualValue,
+            assertion.isSoft()
         );
     }
+
 
     /**
      * Ensures that the given assertion is valid.
@@ -86,7 +91,7 @@ public class AssertionUtil {
      * @param assertion The assertion to validate.
      * @throws InvalidAssertionException if any required field in the assertion is missing or null.
      */
-    private static void validateAssertion(Assertion<?> assertion) {
+    private static void validateAssertion(Assertion assertion) {
         if (assertion == null) {
             throw new InvalidAssertionException("Assertion cannot be null.");
         }
@@ -94,19 +99,8 @@ public class AssertionUtil {
         if (assertion.getKey() == null || assertion.getKey().isEmpty()) {
             throw new InvalidAssertionException("Assertion must have a non-empty key.");
         }
-
-        if (assertion.getType() == null) {
-            throw new InvalidAssertionException("Assertion must have a non-null type.");
-        }
-
-        if (assertion.getTarget() == null) {
-            throw new InvalidAssertionException("Assertion must have a non-null target.");
-        }
-
-        if (assertion.getExpected() == null) {
-            throw new InvalidAssertionException("Assertion must have a non-null expected.");
-        }
     }
+
 
     /**
      * Validates type compatibility between an assertion type and the actual value.
@@ -121,10 +115,10 @@ public class AssertionUtil {
 
         if (!supportedType.isAssignableFrom(actualValueClass)) {
             throw new IllegalArgumentException(
-                    String.format(
-                            "Assertion type '%s' is not compatible with the actual value type '%s'.",
-                            type, actualValueClass.getName()
-                    )
+                String.format(
+                    "Assertion type '%s' is not compatible with the actual value type '%s'.",
+                    type, actualValueClass.getName()
+                )
             );
         }
     }

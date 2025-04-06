@@ -20,6 +20,10 @@ import org.aeonbits.owner.ConfigCache;
  */
 public class UiConfigHolder {
 
+    private UiConfigHolder() {
+    }
+
+
     /**
      * Singleton instance of the UI configuration
      */

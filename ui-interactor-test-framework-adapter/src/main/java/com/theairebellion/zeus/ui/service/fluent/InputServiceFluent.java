@@ -9,7 +9,7 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 import io.qameta.allure.Allure;
 
 /**

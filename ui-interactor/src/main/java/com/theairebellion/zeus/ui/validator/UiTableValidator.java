@@ -28,5 +28,5 @@ public interface UiTableValidator {
      * @param <T>        The type of the expected assertion results.
      * @return A list of {@link AssertionResult} containing the validation outcomes.
      */
-    <T> List<AssertionResult<T>> validateTable(Object object, Assertion<?>... assertions);
+    <T> List<AssertionResult<T>> validateTable(Object object, Assertion... assertions);
 }

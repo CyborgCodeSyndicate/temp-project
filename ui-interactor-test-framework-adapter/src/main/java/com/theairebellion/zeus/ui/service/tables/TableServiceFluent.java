@@ -17,7 +17,7 @@ import io.qameta.allure.Allure;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * Provides fluent methods for interacting with table components in the UI.
@@ -497,7 +497,7 @@ public class TableServiceFluent<T extends UIServiceFluent<?>> {
      * @param assertions   The assertions to verify.
      * @return The fluent UI service instance.
      */
-    public T validate(TableElement tableElement, Assertion<?>... assertions) {
+    public T validate(TableElement tableElement, Assertion... assertions) {
         Allure.step("[UI - Table] Validating table element: " + tableElement + " with assertions: " + Arrays.toString(assertions));
         Object tableData = storage.sub(UI).get(tableElement.enumImpl(), Object.class);
         if (tableData == null) {

@@ -1,6 +1,7 @@
 package com.example.project.model;
 
 import com.example.project.ui.elements.InputFields;
+import com.example.project.ui.types.InputFieldTypes;
 import com.theairebellion.zeus.ui.annotations.InsertionElement;
 import com.theairebellion.zeus.ui.annotations.InsertionField;
 import com.theairebellion.zeus.ui.components.input.InputComponentType;

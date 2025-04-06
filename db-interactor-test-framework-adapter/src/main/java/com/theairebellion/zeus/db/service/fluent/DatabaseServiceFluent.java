@@ -75,7 +75,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
      * @param assertions    The assertions to apply.
      * @return The current {@code DatabaseServiceFluent} instance for method chaining.
      */
-    public DatabaseServiceFluent validate(final QueryResponse queryResponse, final Assertion<?>... assertions) {
+    public DatabaseServiceFluent validate(final QueryResponse queryResponse, final Assertion... assertions) {
         final List<AssertionResult<Object>> assertionResults = databaseService.validate(queryResponse, assertions);
         validation(assertionResults);
         return this;
@@ -88,7 +88,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
      * @param assertions The assertions to apply.
      * @return The current {@code DatabaseServiceFluent} instance for method chaining.
      */
-    public DatabaseServiceFluent queryAndValidate(final DbQuery query, final Assertion<?>... assertions) {
+    public DatabaseServiceFluent queryAndValidate(final DbQuery query, final Assertion... assertions) {
         final QueryResponse queryResponse = databaseService.query(query);
         quest.getStorage().sub(DB).put(query.enumImpl(), queryResponse);
         return validate(queryResponse, assertions);

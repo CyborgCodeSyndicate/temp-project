@@ -21,4 +21,8 @@ public class RestServiceException extends RuntimeException {
         super(message, throwable);
     }
 
+    public RestServiceException(String message) {
+        super(message);
+    }
+
 }

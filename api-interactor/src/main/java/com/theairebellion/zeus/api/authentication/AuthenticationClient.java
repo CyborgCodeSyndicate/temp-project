@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.api.authentication;
 
 import com.theairebellion.zeus.api.service.RestService;
+import lombok.NonNull;
 
 /**
  * Defines the contract for authentication mechanisms.
@@ -22,5 +23,5 @@ public interface AuthenticationClient {
      * @param cache       If {@code true}, the authentication result is cached for reuse.
      * @return The {@link AuthenticationKey} representing the authenticated session.
      */
-    AuthenticationKey authenticate(RestService restService, String username, String password, boolean cache);
+    AuthenticationKey authenticate(@NonNull RestService restService, @NonNull String username, String password, boolean cache);
 }

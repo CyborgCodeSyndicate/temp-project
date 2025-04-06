@@ -252,9 +252,12 @@ public interface ToggleService {
      * @return The default ToggleComponentType.
      */
     private static ToggleComponentType getDefaultType() {
-        return ReflectionUtil.findEnumImplementationsOfInterface(ToggleComponentType.class,
-                getUiConfig().toggleDefaultType(),
-                getUiConfig().projectPackage());
+        try {
+            return ReflectionUtil.findEnumImplementationsOfInterface(ToggleComponentType.class,
+                    getUiConfig().toggleDefaultType(),
+                    getUiConfig().projectPackage());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
-
 }

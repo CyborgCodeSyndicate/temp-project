@@ -14,7 +14,7 @@ import org.openqa.selenium.By;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * A fluent service class for interacting with radio button components in a UI automation framework.

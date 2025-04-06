@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.api.client;
 
-import com.theairebellion.zeus.api.config.ApiConfig;
 import com.theairebellion.zeus.api.log.LogApi;
 import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
@@ -8,13 +7,13 @@ import io.restassured.response.Response;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.RequestSpecification;
 import lombok.NoArgsConstructor;
-import org.aeonbits.owner.ConfigCache;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.theairebellion.zeus.api.config.ApiConfigHolder.getApiConfig;
 import static com.theairebellion.zeus.api.log.LogApi.extended;
 import static com.theairebellion.zeus.api.log.LogApi.step;
 
@@ -35,7 +34,6 @@ public class RestClientImpl implements RestClient {
      * This configuration provides settings for API request execution, including logging behavior,
      * response body truncation, and other configurable options.
      */
-    ApiConfig apiConfig = ConfigCache.getOrCreate(ApiConfig.class);
 
     private static final Map<Method, Function<RequestSpecification, Response>> METHOD_EXECUTORS = Map.of(
         Method.GET, RequestSpecification::get,
@@ -61,11 +59,13 @@ public class RestClientImpl implements RestClient {
      */
     @Override
     public Response execute(final RequestSpecification spec, final Method method) {
+        if (method == null) {
+            throw new IllegalArgumentException("HTTP method must not be null");
+        }
+
         if (!(spec instanceof FilterableRequestSpecification filterableSpec)) {
             throw new IllegalArgumentException("RequestSpecification is not of type FilterableRequestSpecification");
         }
-
-        long startTime = System.nanoTime();
 
         String url = filterableSpec.getURI();
         String methodName = method.name();
@@ -78,6 +78,8 @@ public class RestClientImpl implements RestClient {
                                     .orElse("");
 
         printRequest(methodName, url, prettyRequestBody, requestHeaders);
+
+        long startTime = System.nanoTime();
 
         Response response = Optional.ofNullable(METHOD_EXECUTORS.get(method))
                                 .orElseThrow(() -> new IllegalArgumentException("HTTP method " + method + " is not supported"))
@@ -120,11 +122,11 @@ public class RestClientImpl implements RestClient {
                                final long duration) {
         step("Response with status: {} received from endpoint: {}-{} in {}ms.",
                 response.getStatusCode(), methodName, finalUrl, duration);
-        if (apiConfig.logFullBody()) {
+        if (getApiConfig().logFullBody()) {
             extended("Response body: {}.", response.body() != null ? response.body().asPrettyString() : "");
         } else {
             extended("Response body: {}.", response.body() != null ? response.body().asPrettyString()
-                    .substring(0, apiConfig.shortenBody()) + "..." : "");
+                    .substring(0, getApiConfig().shortenBody()) + "..." : "");
         }
         extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");
     }

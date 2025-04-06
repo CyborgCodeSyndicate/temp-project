@@ -59,11 +59,11 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
     @Override
     @SuppressWarnings("unchecked")
     public <T> List<AssertionResult<T>> validateQueryResponse(final QueryResponse queryResponse,
-                                                              final Assertion<?>... assertions) {
+                                                              final Assertion... assertions) {
         LogDb.info("Starting query response validation with {} assertion(s).", assertions.length);
         Map<String, T> data = new HashMap<>();
 
-        for (Assertion<?> assertion : assertions) {
+        for (Assertion assertion : assertions) {
             String key = assertion.getKey();
             switch ((DbAssertionTarget) assertion.getTarget()) {
                 case NUMBER_ROWS -> data.put("numRows", (T) Integer.valueOf(queryResponse.getRows().size()));
@@ -98,7 +98,7 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
         }
         printAssertionTarget((Map<String, Object>) data);
 
-        return AssertionUtil.validate(data, assertions);
+        return AssertionUtil.validate(data, List.of(assertions));
     }
 
     /**

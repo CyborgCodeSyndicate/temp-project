@@ -17,6 +17,10 @@ import java.util.Objects;
  */
 public class AssertionFunctions {
 
+    private AssertionFunctions() {
+    }
+
+
     /**
      * Checks if the actual value is equal to the expected value.
      */

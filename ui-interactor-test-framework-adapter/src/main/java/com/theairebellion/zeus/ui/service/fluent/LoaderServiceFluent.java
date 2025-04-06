@@ -7,7 +7,7 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import org.assertj.core.api.Assertions;
 import io.qameta.allure.Allure;
 
-import static com.theairebellion.zeus.ui.extensions.StorageKeysUi.UI;
+import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 
 /**
  * A fluent service class for handling loader UI elements in test automation.

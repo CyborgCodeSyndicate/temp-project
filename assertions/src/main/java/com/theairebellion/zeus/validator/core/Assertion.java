@@ -3,6 +3,7 @@ package com.theairebellion.zeus.validator.core;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -18,11 +19,12 @@ import lombok.Setter;
  */
 @Getter
 @Builder
-public class Assertion<T> {
+public class Assertion {
 
     /**
      * The subject of the assertion, specifying what is being validated.
      */
+    @NonNull
     private final AssertionTarget target;
 
     /**
@@ -34,16 +36,19 @@ public class Assertion<T> {
     /**
      * Indicates the logical operation for this validation.
      */
+    @NonNull
     private final AssertionType type;
 
     /**
      * The reference value expected by this assertion.
      */
-    private final T expected;
+    @NonNull
+    private final Object expected;
 
     /**
      * Determines if the assertion is a soft assertion.
      */
     private final boolean soft;
+
 
 }

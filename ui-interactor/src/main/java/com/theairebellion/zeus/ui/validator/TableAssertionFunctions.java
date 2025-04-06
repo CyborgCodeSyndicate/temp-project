@@ -18,6 +18,10 @@ import java.util.Set;
  */
 public class TableAssertionFunctions {
 
+    private TableAssertionFunctions() {
+    }
+
+
     /**
      * Validates if a table is not empty.
      *

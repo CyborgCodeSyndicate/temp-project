@@ -4,8 +4,8 @@ import com.theairebellion.zeus.ui.drivers.base.DriverProvider;
 import com.theairebellion.zeus.ui.drivers.config.WebDriverConfig;
 import com.theairebellion.zeus.ui.drivers.providers.ChromeDriverProvider;
 import com.theairebellion.zeus.ui.drivers.providers.EdgeDriverProvider;
-import com.theairebellion.zeus.ui.log.LogUI;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.remote.AbstractDriverOptions;
 
 import java.util.Map;
@@ -26,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WebDriverFactory {
 
+    private WebDriverFactory() {
+    }
+
     /**
      * Stores registered WebDriver providers, mapped by browser type (e.g., "CHROME", "EDGE").
      */
@@ -45,10 +48,10 @@ public class WebDriverFactory {
      * @throws IllegalArgumentException If a driver for the specified type is already registered.
      */
     public static <T extends DriverProvider<?>> void registerDriver(String type, T provider) {
-        if (DRIVER_PROVIDERS.containsKey(type.toUpperCase())) {
+        if (DRIVER_PROVIDERS.containsKey(type.trim().toUpperCase())) {
             throw new IllegalArgumentException("Driver type already registered: " + type);
         }
-        DRIVER_PROVIDERS.put(type.toUpperCase(), provider);
+        DRIVER_PROVIDERS.put(type.trim().toUpperCase(), provider);
     }
 
     /**
@@ -61,17 +64,16 @@ public class WebDriverFactory {
      * @throws RuntimeException         If WebDriver creation fails due to an unexpected error.
      */
     public static WebDriver createDriver(String type, WebDriverConfig config) {
-        DriverProvider<?> provider = Optional.ofNullable(DRIVER_PROVIDERS.get(type.toUpperCase()))
+        DriverProvider<?> provider = Optional.ofNullable(DRIVER_PROVIDERS.get(type.trim().toUpperCase()))
                 .orElseThrow(() -> new IllegalArgumentException("No driver registered for type: " + type));
 
         provider.setupDriver(config.getVersion());
 
         try {
-            WebDriver driver = new DriverCreator<>().createDriver(config,
+            return new DriverCreator<>().createDriver(config,
                     (DriverProvider<AbstractDriverOptions<?>>) provider);
-            return driver;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create WebDriver for type: " + type, e);
+            throw new WebDriverException("Failed to create WebDriver for type: " + type, e);
         }
     }
 
