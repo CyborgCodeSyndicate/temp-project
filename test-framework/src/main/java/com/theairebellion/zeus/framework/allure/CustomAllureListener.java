@@ -46,11 +46,6 @@ public class CustomAllureListener extends AllureJunit5 {
     private static final ThreadLocal<String> PARENT_STEP_NAME = new ThreadLocal<>();
 
     /**
-     * Thread-local storage for tracking the test ID associated with the execution.
-     */
-    private static final ThreadLocal<String> TEST_ID = new ThreadLocal<>();
-
-    /**
      * Enumeration for defining different step status types in Allure reporting.
      */
     public enum StatusType {
@@ -109,6 +104,16 @@ public class CustomAllureListener extends AllureJunit5 {
     }
 
     /**
+     * Starts a parent step with a custom name and predefined {@link StatusType}.
+     *
+     * @param stepName The name of the step.
+     * @param statusType The predefined status type.
+     */
+    public static void startParentStepWithStatusType(String stepName, StatusType statusType) {
+        startParentStep(stepName, statusType);
+    }
+
+    /**
      * Stops the currently active parent step.
      */
     public static void stopParentStep() {
@@ -156,6 +161,16 @@ public class CustomAllureListener extends AllureJunit5 {
     }
 
     /**
+     * Starts a new step with a custom name and predefined {@link StatusType}.
+     *
+     * @param stepName The name of the step.
+     * @param statusType The predefined status type.
+     */
+    public static void startStepWithStatusType(String stepName, StatusType statusType) {
+        startStep(stepName, statusType);
+    }
+
+    /**
      * Stops the most recently started step.
      */
     public static void stopStep() {
@@ -176,28 +191,16 @@ public class CustomAllureListener extends AllureJunit5 {
     }
 
     /**
-     * Associates a test ID with the current test execution.
-     *
-     * @param id The test ID to set.
-     */
-    public static void setTestId(String id) {
-        TEST_ID.set(id);
-    }
-
-    /**
-     * Clears the test ID associated with the current test execution.
-     */
-    public static void clearTestId() {
-        TEST_ID.remove();
-    }
-
-    /**
      * Applies the appropriate Allure step status based on the provided {@link StatusType}.
      *
      * @param stepResult The step result to modify.
      * @param type       The status type to apply.
      */
     private static void applyStepType(StepResult stepResult, StatusType type) {
+        if (type == null) {
+            type = StatusType.DEFAULT;
+        }
+
         switch (type) {
             case INFO:
                 stepResult.setStatus(Status.SKIPPED);
