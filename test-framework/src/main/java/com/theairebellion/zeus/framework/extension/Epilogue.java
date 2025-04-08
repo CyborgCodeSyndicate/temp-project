@@ -9,10 +9,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
@@ -47,6 +44,9 @@ public class Epilogue implements AfterTestExecutionCallback {
      */
     @Override
     public void afterTestExecution(final ExtensionContext context) {
+        if (!Objects.equals(CustomAllureListener.getActiveStepName(), TEAR_DOWN.getDisplayName())) {
+            CustomAllureListener.stopStep();
+        }
         setUpTestMetadata(context);
         SuperQuest superQuest = getSuperQuest(context);
         Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
@@ -62,13 +62,15 @@ public class Epilogue implements AfterTestExecutionCallback {
         long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);
         long durationInSeconds = (System.currentTimeMillis() - startTime) / 1000;
         logTestOutcome(context.getDisplayName(), status, durationInSeconds, throwable);
-        if(!CustomAllureListener.isParentStepActive(TEAR_DOWN)) {
-            CustomAllureListener.stopParentStep();
-            CustomAllureListener.startParentStep(TEAR_DOWN);
+        if(!CustomAllureListener.isStepActive(TEAR_DOWN.getDisplayName())) {
+            CustomAllureListener.stopStep();
+            CustomAllureListener.startStep(TEAR_DOWN);
         }
         attachFilteredLogsToAllure(ThreadContext.get("testName"));
         ThreadContext.remove("testName");
         setDescription(context);
-        CustomAllureListener.stopParentStep();
+        if (CustomAllureListener.isStepActive(TEAR_DOWN.getDisplayName())) {
+            CustomAllureListener.stopStep();
+        }
     }
 }

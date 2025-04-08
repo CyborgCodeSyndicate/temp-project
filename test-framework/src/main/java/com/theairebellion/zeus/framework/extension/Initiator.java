@@ -72,11 +72,17 @@ public class Initiator implements InvocationInterceptor {
             ApplicationContext appCtx = SpringExtension.getApplicationContext(extensionContext);
             DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
             SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
-            CustomAllureListener.startParentStep(StepType.PROCESSING_PRE_QUESTS);
+            if (!CustomAllureListener.isStepActive(StepType.PROCESSING_PRE_QUESTS.getDisplayName())) {
+                CustomAllureListener.startStep(StepType.PROCESSING_PRE_QUESTS);
+            }
             sortedPreQuestAnnotations.forEach(preQuest -> processPreQuest(preQuest, superQuest));
-            CustomAllureListener.stopParentStep();
+            if (CustomAllureListener.isStepActive(StepType.PROCESSING_PRE_QUESTS.getDisplayName())) {
+                CustomAllureListener.stopStep();
+            }
         }
-        CustomAllureListener.startParentStep(StepType.TEST_EXECUTION);
+        if (!CustomAllureListener.isStepActive(StepType.TEST_EXECUTION.getDisplayName())) {
+            CustomAllureListener.startStep(StepType.TEST_EXECUTION);
+        }
         invocation.proceed();
     }
 
@@ -109,14 +115,17 @@ public class Initiator implements InvocationInterceptor {
                 .map(dataEnumStr -> processJourneyData(dataEnumStr, superQuest))
                 .toArray();
 
-        CustomAllureListener.startStep(StepType.PROCESSING_PRE_QUEST.getDisplayName() + ": " + preQuestJourney.toString());
+        String stepName = StepType.PROCESSING_PRE_QUEST.getDisplayName() + ": " + preQuestJourney.toString();
+        CustomAllureListener.startStep(stepName);
         String attachmentName = journey + "-Data";
 
         String formattedData = new ObjectFormatter().formatProcessedData(journeyData, processedData);
         Allure.addAttachment(attachmentName, formattedData);
 
         preQuestJourney.journey().accept(superQuest, processedData);
-        CustomAllureListener.stopStep();
+        if (CustomAllureListener.isStepActive(stepName)) {
+            CustomAllureListener.stopStep();
+        }
     }
 
     /**

@@ -5,8 +5,6 @@ import io.qameta.allure.junit5.AllureJunit5;
 import io.qameta.allure.model.Status;
 import io.qameta.allure.model.StepResult;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.UUID;
 
 /**
@@ -28,22 +26,9 @@ import java.util.UUID;
 public class CustomAllureListener extends AllureJunit5 {
 
     /**
-     * A thread-local stack for tracking active Allure steps.
-     * <p>
-     * Each test execution maintains its own stack to handle nested steps.
-     * </p>
+     * Thread-local storage for the current step name.
      */
-    private static final ThreadLocal<Deque<String>> STEP_STACK = ThreadLocal.withInitial(LinkedList::new);
-
-    /**
-     * Thread-local storage for the current parent step UUID.
-     */
-    private static final ThreadLocal<String> PARENT_STEP = new ThreadLocal<>();
-
-    /**
-     * Thread-local storage for the current parent step name.
-     */
-    private static final ThreadLocal<String> PARENT_STEP_NAME = new ThreadLocal<>();
+    private static final ThreadLocal<String> STEP_NAME = new ThreadLocal<>();
 
     /**
      * Enumeration for defining different step status types in Allure reporting.
@@ -76,58 +61,9 @@ public class CustomAllureListener extends AllureJunit5 {
     }
 
     /**
-     * Starts a parent step in Allure reporting.
+     * Starts a new step.
      * <p>
-     * The parent step will contain nested steps if applicable. The step type defines its visual status.
-     * </p>
-     *
-     * @param name The name of the parent step.
-     * @param type The status type of the parent step.
-     */
-    private static void startParentStep(String name, StatusType type) {
-        String uuid = UUID.randomUUID().toString();
-        StepResult stepResult = new StepResult().setName(name);
-        applyStepType(stepResult, type);
-
-        Allure.getLifecycle().startStep(uuid, stepResult);
-        PARENT_STEP.set(uuid);
-        PARENT_STEP_NAME.set(name);
-    }
-
-    /**
-     * Starts a parent step using a predefined {@link StepType}.
-     *
-     * @param parentStepType The predefined parent step type.
-     */
-    public static void startParentStep(StepType parentStepType) {
-        startParentStep(parentStepType.getDisplayName(), StatusType.DEFAULT);
-    }
-
-    /**
-     * Starts a parent step with a custom name and predefined {@link StatusType}.
-     *
-     * @param stepName The name of the step.
-     * @param statusType The predefined status type.
-     */
-    public static void startParentStepWithStatusType(String stepName, StatusType statusType) {
-        startParentStep(stepName, statusType);
-    }
-
-    /**
-     * Stops the currently active parent step.
-     */
-    public static void stopParentStep() {
-        if (PARENT_STEP.get() != null) {
-            Allure.getLifecycle().stopStep(PARENT_STEP.get());
-            PARENT_STEP.remove();
-            PARENT_STEP_NAME.remove();
-        }
-    }
-
-    /**
-     * Starts a new step within the current parent step.
-     * <p>
-     * This method creates a new step entry in Allure and pushes it onto the step stack.
+     * This method creates a new step entry in Allure and sets the step name variable.
      * </p>
      *
      * @param name The name of the step.
@@ -139,7 +75,7 @@ public class CustomAllureListener extends AllureJunit5 {
         applyStepType(stepResult, type);
 
         Allure.getLifecycle().startStep(uuid, stepResult);
-        STEP_STACK.get().push(uuid);
+        STEP_NAME.set(name);
     }
 
     /**
@@ -174,20 +110,27 @@ public class CustomAllureListener extends AllureJunit5 {
      * Stops the most recently started step.
      */
     public static void stopStep() {
-        if (!STEP_STACK.get().isEmpty()) {
-            String uuid = STEP_STACK.get().pop();
-            Allure.getLifecycle().stopStep(uuid);
-        }
+        Allure.getLifecycle().stopStep();
+        STEP_NAME.remove();
     }
 
     /**
-     * Checks if a specific parent step type is currently active.
+     * Checks if a specific step name is currently active.
      *
-     * @param parentStepType The parent step type to check.
-     * @return {@code true} if the specified parent step type is active, otherwise {@code false}.
+     * @param stepName The step name to check.
+     * @return {@code true} if the specified step with name is active, otherwise {@code false}.
      */
-    public static boolean isParentStepActive(StepType parentStepType) {
-        return parentStepType.getDisplayName().equals(PARENT_STEP_NAME.get());
+    public static boolean isStepActive(String stepName) {
+        return stepName.equals(STEP_NAME.get());
+    }
+
+    /**
+     * Retrieves active step name.
+     *
+     * @return active step name.
+     */
+    public static String getActiveStepName() {
+        return STEP_NAME.get();
     }
 
     /**

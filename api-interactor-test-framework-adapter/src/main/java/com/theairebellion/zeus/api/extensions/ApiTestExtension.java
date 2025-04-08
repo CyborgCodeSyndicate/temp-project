@@ -10,7 +10,6 @@ import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.ApplicationContext;
@@ -33,7 +32,7 @@ import static com.theairebellion.zeus.framework.allure.StepType.PERFORMING_PRE_Q
  *
  * @author Cyborg Code Syndicate
  */
-public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
+public class ApiTestExtension implements BeforeTestExecutionCallback {
 
     /**
      * Executes authentication before test execution.
@@ -46,16 +45,6 @@ public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestE
         context.getTestMethod()
                 .map(method -> method.getAnnotation(AuthenticateViaApiAs.class))
                 .ifPresent(annotation -> handleAuthentication(context, annotation));
-    }
-
-    /**
-     * Executes post-test cleanup after test execution.
-     *
-     * @param context The test execution context.
-     */
-    @Override
-    public void afterTestExecution(final ExtensionContext context) {
-        CustomAllureListener.stopParentStep();
     }
 
     private void handleAuthentication(final ExtensionContext context, final AuthenticateViaApiAs annotation) {
@@ -83,7 +72,9 @@ public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestE
                                                      final String password,
                                                      final Class<? extends BaseAuthenticationClient> clientType,
                                                      final boolean cacheCredentials) {
-        CustomAllureListener.startParentStep(PERFORMING_PRE_QUEST_AUTHENTICATION);
+        if (!CustomAllureListener.isStepActive(PERFORMING_PRE_QUEST_AUTHENTICATION.getDisplayName())) {
+            CustomAllureListener.startStep(PERFORMING_PRE_QUEST_AUTHENTICATION);
+        }
         return (SuperQuest quest) -> {
             quest.getStorage().sub(API).put(USERNAME, username);
             quest.getStorage().sub(API).put(PASSWORD, password);
@@ -94,7 +85,9 @@ public class ApiTestExtension implements BeforeTestExecutionCallback, AfterTestE
                     decoratorsFactory.decorate(restServiceFluent, SuperRestServiceFluent.class);
             superRestServiceFluent.getRestService().setCacheAuthentication(cacheCredentials);
             restServiceFluent.authenticate(username, password, clientType);
-            CustomAllureListener.stopParentStep();
+            if (CustomAllureListener.isStepActive(PERFORMING_PRE_QUEST_AUTHENTICATION.getDisplayName())) {
+                CustomAllureListener.stopStep();
+            }
         };
     }
 

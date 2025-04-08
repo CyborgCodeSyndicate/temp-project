@@ -44,15 +44,10 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
-import static com.theairebellion.zeus.framework.allure.StepType.TEST_EXECUTION;
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
@@ -405,9 +400,9 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
 
     private static void takeScreenshot(WebDriver driver, String testName) {
-        if (CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
-            CustomAllureListener.stopParentStep();
-            CustomAllureListener.startParentStep(TEAR_DOWN);
+        if (!Objects.equals(CustomAllureListener.getActiveStepName(), TEAR_DOWN.getDisplayName())) {
+            CustomAllureListener.stopStep();
+            CustomAllureListener.startStep(TEAR_DOWN);
         }
         try {
             TakesScreenshot screenshot = (TakesScreenshot) driver;
