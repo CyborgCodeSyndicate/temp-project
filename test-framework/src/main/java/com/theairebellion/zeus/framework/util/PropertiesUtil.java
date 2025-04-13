@@ -11,7 +11,7 @@ import java.util.Properties;
 public class PropertiesUtil {
 
     public static void addSystemProperties() {
-        Resource resource = new ClassPathResource("system.properties");
+        Resource resource = getResource();
         if (resource.exists()) {
             try {
                 Properties props = PropertiesLoaderUtils.loadProperties(resource);
@@ -25,6 +25,10 @@ public class PropertiesUtil {
                 throw new UncheckedIOException("Failed to load system.properties", e);
             }
         }
+    }
+
+    static Resource getResource() {
+        return new ClassPathResource("system.properties");
     }
 
 }

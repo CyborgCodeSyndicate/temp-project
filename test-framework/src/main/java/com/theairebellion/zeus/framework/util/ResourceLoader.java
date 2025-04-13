@@ -29,7 +29,7 @@ public class ResourceLoader {
      * @throws RuntimeException if the template file is not found or cannot be read
      */
     public static String loadResourceFile(String filePath) {
-        try (InputStream inputStream = Craftsman.class.getClassLoader().getResourceAsStream(filePath)) {
+        try (InputStream inputStream = getResourceAsStream(filePath)) {
             if (inputStream == null) {
                 throw new RuntimeException("File not found in resources: " + filePath);
             }
@@ -37,5 +37,20 @@ public class ResourceLoader {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load file from resources: " + filePath, e);
         }
+    }
+
+    /**
+     * Retrieves a resource file as an {@link InputStream} from the classpath.
+     * <p>
+     * This method uses the class loader of the {@link com.theairebellion.zeus.framework.extension.Craftsman}
+     * class to locate and open the specified file from the project's resources directory.
+     * It returns {@code null} if the file is not found.
+     * </p>
+     *
+     * @param filePath the name or path of the resource file within the classpath
+     * @return an {@link InputStream} of the resource file, or {@code null} if the file does not exist
+     */
+    static InputStream getResourceAsStream(String filePath) {
+        return Craftsman.class.getClassLoader().getResourceAsStream(filePath);
     }
 }
