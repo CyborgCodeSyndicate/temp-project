@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,10 +103,27 @@ public class ObjectFormatter {
         if (visited.contains(obj)) return "[Circular Reference Detected]";
         visited.add(obj);
 
-        StringBuilder result = new StringBuilder();
+        Class<?> objClass = obj.getClass();
+        if (objClass.isPrimitive() ||
+                objClass.getPackageName().startsWith("java.") ||
+                objClass.isEnum() ||
+                obj instanceof String || obj instanceof Number || obj instanceof Boolean || obj instanceof Character
+        ) {
+            visited.remove(obj);
+            return obj.toString();
+        }
+
+        StringBuilder result = new StringBuilder(objClass.getSimpleName()).append(" {\n");
         try {
-            for (Field field : FIELDS_CACHE.computeIfAbsent(obj.getClass(), Class::getDeclaredFields)) {
-                field.setAccessible(true);
+            for (Field field : FIELDS_CACHE.computeIfAbsent(objClass, Class::getDeclaredFields)) {
+                if (!field.canAccess(obj)) {
+                    try {
+                        field.setAccessible(true);
+                    } catch (InaccessibleObjectException e) {
+                        result.append(field.getName()).append(": [Inaccessible Field]\n");
+                        continue;
+                    }
+                }
                 result.append(field.getName()).append(": ")
                         .append(formatArgumentValue(field.get(obj), visited))
                         .append("\n");
@@ -113,6 +131,7 @@ public class ObjectFormatter {
         } catch (IllegalAccessException e) {
             result.append("[Error accessing fields]");
         }
+        result.append("}");
         visited.remove(obj);
         return result.toString();
     }
@@ -509,7 +528,7 @@ public class ObjectFormatter {
         }
 
         return htmlBuilder.toString();
-    }
+    } //
 
     /**
      * Retrieves the HTTP status code from a response object using reflection.
