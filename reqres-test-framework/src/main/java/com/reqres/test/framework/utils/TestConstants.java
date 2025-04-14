@@ -22,6 +22,7 @@ public class TestConstants {
         public static final String SUPPORT_URL_VALUE = "https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral";
         public static final String SUPPORT_TEXT_FULL = "Tired of writing endless social media content?";
         public static final String SUPPORT_TEXT_BRAND = "Content Caddy";
+        public static final String SUPPORT_TEXT_CADDY_FULL = "Tired of writing endless social media content? Let Content Caddy generate it for you.";
     }
 
     public static class FileConstants {
@@ -57,6 +58,8 @@ public class TestConstants {
         public static final int INVALID_USER_ID = 23;
         public static final String USER_TIMESTAMP_REGEX = "^\\d{4}-\\d{2}-\\d{2}T.*Z$";
         public static final String USER_EMAIL_DOMAIN = "@reqres.in";
+        public static final String USER_THREE_FIRST_NAME = "Emma";
+        public static final String USER_THREE_AVATAR = "https://reqres.in/img/faces/3-image.jpg";
     }
 
     public static class PageTwo {
