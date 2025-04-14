@@ -9,102 +9,108 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DbInteractionAutoConfigurationTest {
 
-    @InjectMocks
-    private DbInteractionAutoConfiguration configuration;
+   @InjectMocks
+   private DbInteractionAutoConfiguration configuration;
 
-    @Test
-    @DisplayName("Should create default ObjectMapper")
-    void testDefaultObjectMapper() {
-        // When
-        ObjectMapper objectMapper = configuration.defaultObjectMapper();
+   @Test
+   @DisplayName("Should create default ObjectMapper")
+   void testDefaultObjectMapper() {
+      // When
+      ObjectMapper objectMapper = configuration.defaultObjectMapper();
 
-        // Then
-        assertNotNull(objectMapper, "ObjectMapper should not be null");
-    }
+      // Then
+      assertNotNull(objectMapper, "ObjectMapper should not be null");
+   }
 
-    @Test
-    @DisplayName("Should create JsonPathExtractor with provided ObjectMapper")
-    void testJsonPathExtractor() throws JsonProcessingException {
-        // Given
-        ObjectMapper mockMapper = mock(ObjectMapper.class);
+   @Test
+   @DisplayName("Should create JsonPathExtractor with provided ObjectMapper")
+   void testJsonPathExtractor() throws JsonProcessingException {
+      // Given
+      ObjectMapper mockMapper = mock(ObjectMapper.class);
 
-        // When
-        JsonPathExtractor jsonPathExtractor = configuration.jsonPathExtractor(mockMapper);
+      // When
+      JsonPathExtractor jsonPathExtractor = configuration.jsonPathExtractor(mockMapper);
 
-        // Then
-        assertNotNull(jsonPathExtractor, "JsonPathExtractor should not be null");
+      // Then
+      assertNotNull(jsonPathExtractor, "JsonPathExtractor should not be null");
 
-        try {
-            java.lang.reflect.Field field = JsonPathExtractor.class.getDeclaredField("objectMapper");
-            field.setAccessible(true);
-            Object extractorMapper = field.get(jsonPathExtractor);
+      try {
+         java.lang.reflect.Field field = JsonPathExtractor.class.getDeclaredField("objectMapper");
+         field.setAccessible(true);
+         Object extractorMapper = field.get(jsonPathExtractor);
 
-            assertSame(mockMapper, extractorMapper, "JsonPathExtractor should use the provided ObjectMapper");
-        } catch (Exception e) {
-            verify(mockMapper, never()).readTree(anyString()); // Ensure no interactions yet
+         assertSame(mockMapper, extractorMapper, "JsonPathExtractor should use the provided ObjectMapper");
+      } catch (Exception e) {
+         verify(mockMapper, never()).readTree(anyString()); // Ensure no interactions yet
 
-            try {
-                // Try to trigger ObjectMapper usage
-                jsonPathExtractor.getClass().getMethod("getObjectMapper").invoke(jsonPathExtractor);
-            } catch (Exception ex) {
-                // Ignore if method doesn't exist
-            }
-        }
-    }
+         try {
+            // Try to trigger ObjectMapper usage
+            jsonPathExtractor.getClass().getMethod("getObjectMapper").invoke(jsonPathExtractor);
+         } catch (Exception ex) {
+            // Ignore if method doesn't exist
+         }
+      }
+   }
 
-    @Test
-    @DisplayName("Should create ObjectMapper with appropriate configuration")
-    void testObjectMapperConfiguration() {
-        // When
-        ObjectMapper objectMapper = configuration.defaultObjectMapper();
+   @Test
+   @DisplayName("Should create ObjectMapper with appropriate configuration")
+   void testObjectMapperConfiguration() {
+      // When
+      ObjectMapper objectMapper = configuration.defaultObjectMapper();
 
-        // Then
-        assertNotNull(objectMapper, "ObjectMapper should not be null");
+      // Then
+      assertNotNull(objectMapper, "ObjectMapper should not be null");
 
-        try {
-            TestData testData = new TestData("test", 123);
-            String json = objectMapper.writeValueAsString(testData);
-            assertNotNull(json, "Should be able to serialize objects");
-            assertTrue(json.contains("test"), "JSON should contain field values");
-        } catch (Exception e) {
-            fail("ObjectMapper should be able to serialize objects: " + e.getMessage());
-        }
-    }
+      try {
+         TestData testData = new TestData("test", 123);
+         String json = objectMapper.writeValueAsString(testData);
+         assertNotNull(json, "Should be able to serialize objects");
+         assertTrue(json.contains("test"), "JSON should contain field values");
+      } catch (Exception e) {
+         fail("ObjectMapper should be able to serialize objects: " + e.getMessage());
+      }
+   }
 
-    // Simple test class for serialization
-    private static class TestData {
-        private final String name;
-        private final int value;
+   // Simple test class for serialization
+   private static class TestData {
+      private final String name;
+      private final int value;
 
-        public TestData(String name, int value) {
-            this.name = name;
-            this.value = value;
-        }
+      public TestData(String name, int value) {
+         this.name = name;
+         this.value = value;
+      }
 
-        public String getName() {
-            return name;
-        }
+      public String getName() {
+         return name;
+      }
 
-        public int getValue() {
-            return value;
-        }
-    }
+      public int getValue() {
+         return value;
+      }
+   }
 
-    @Test
-    @DisplayName("Full auto-configuration should create properly configured beans")
-    void testFullConfiguration() {
-        // When
-        ObjectMapper objectMapper = configuration.defaultObjectMapper();
-        JsonPathExtractor jsonPathExtractor = configuration.jsonPathExtractor(objectMapper);
+   @Test
+   @DisplayName("Full auto-configuration should create properly configured beans")
+   void testFullConfiguration() {
+      // When
+      ObjectMapper objectMapper = configuration.defaultObjectMapper();
+      JsonPathExtractor jsonPathExtractor = configuration.jsonPathExtractor(objectMapper);
 
-        // Then
-        assertNotNull(objectMapper, "ObjectMapper should not be null");
-        assertNotNull(jsonPathExtractor, "JsonPathExtractor should not be null");
-    }
+      // Then
+      assertNotNull(objectMapper, "ObjectMapper should not be null");
+      assertNotNull(jsonPathExtractor, "JsonPathExtractor should not be null");
+   }
 }

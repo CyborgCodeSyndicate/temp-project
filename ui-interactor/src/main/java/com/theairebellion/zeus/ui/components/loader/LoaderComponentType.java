@@ -8,9 +8,9 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * represent different loader or spinner elements.
  *
  * <p>By categorizing loader elements, automation can consistently identify and interact
- * with various loading indicators throughout the UI.</p>
+ * with various loading indicators throughout the UI.
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface LoaderComponentType extends ComponentType {
 }

@@ -1,7 +1,6 @@
 package com.theairebellion.zeus.api.annotations;
 
 import com.theairebellion.zeus.framework.hooks.HookExecution;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -13,12 +12,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface ApiHook {
 
-    String type();
+   String type();
 
-    HookExecution when();
+   HookExecution when();
 
-    String[] arguments() default {};
+   String[] arguments() default {};
 
-    int order() default 0;
+   int order() default 0;
 
 }

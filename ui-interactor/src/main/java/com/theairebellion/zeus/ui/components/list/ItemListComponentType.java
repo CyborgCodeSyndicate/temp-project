@@ -11,7 +11,7 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * <p>Implementation classes will typically be used to label or categorize
  * different kinds of item list components for use in a UI automation framework.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface ItemListComponentType extends ComponentType {
 

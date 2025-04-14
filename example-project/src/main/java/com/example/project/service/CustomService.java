@@ -13,10 +13,10 @@ import static com.example.project.base.World.EARTH;
 public class CustomService extends FluentService {
 
 
-    public CustomService somethingCustom(Student student) {
-        quest.getStorage().sub(StorageKeysTest.ARGUMENTS).getAllByClass(TestDataCreator.VALID_STUDENT, Student.class);
-        SmartWebDriver artifact = quest.artifact(EARTH, SmartWebDriver.class);
+   public CustomService somethingCustom(Student student) {
+      quest.getStorage().sub(StorageKeysTest.ARGUMENTS).getAllByClass(TestDataCreator.VALID_STUDENT, Student.class);
+      SmartWebDriver artifact = quest.artifact(EARTH, SmartWebDriver.class);
 
-        return this;
-    }
+      return this;
+   }
 }

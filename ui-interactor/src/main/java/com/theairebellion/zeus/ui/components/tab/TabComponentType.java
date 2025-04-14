@@ -9,7 +9,7 @@ import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
  * <p>Implementation classes may represent various tab styles or configurations,
  * ensuring consistent handling of tab elements across different UI designs.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface TabComponentType extends ButtonComponentType {
 }

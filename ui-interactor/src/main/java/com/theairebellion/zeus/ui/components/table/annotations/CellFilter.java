@@ -1,7 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.annotations;
 
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,25 +27,25 @@ import java.lang.annotation.Target;
  * alongside other annotations (e.g., {@link CellInsertion}) to build a complete
  * picture of how each field in a row model should be handled.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface CellFilter {
 
-    /**
-     * Specifies the UI component type (e.g., an enum or class implementing
-     * {@link ComponentType}) that will handle filtering for this field.
-     *
-     * @return the class representing the component type.
-     */
-    Class<? extends ComponentType> type();
+   /**
+    * Specifies the UI component type (e.g., an enum or class implementing
+    * {@link ComponentType}) that will handle filtering for this field.
+    *
+    * @return the class representing the component type.
+    */
+   Class<? extends ComponentType> type();
 
-    /**
-     * Defines the component type identifier (e.g., an enum constant or
-     * string) to distinguish which specific filter mechanism to apply.
-     *
-     * @return a string matching a known component type identifier.
-     */
-    String componentType();
+   /**
+    * Defines the component type identifier (e.g., an enum constant or
+    * string) to distinguish which specific filter mechanism to apply.
+    *
+    * @return a string matching a known component type identifier.
+    */
+   String componentType();
 }

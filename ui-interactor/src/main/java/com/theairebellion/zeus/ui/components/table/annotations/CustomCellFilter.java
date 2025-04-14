@@ -1,7 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.annotations;
 
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterFunction;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,16 +17,16 @@ import java.lang.annotation.Target;
  * <p>The provided {@code cellFilterFunction} class must implement {@code CellFilterFunction}
  * to define the filtering logic.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface CustomCellFilter {
 
-    /**
-     * Specifies the filtering function used to filter table data dynamically.
-     *
-     * @return the class implementing {@link CellFilterFunction}.
-     */
-    Class<? extends CellFilterFunction> cellFilterFunction();
+   /**
+    * Specifies the filtering function used to filter table data dynamically.
+    *
+    * @return the class implementing {@link CellFilterFunction}.
+    */
+   Class<? extends CellFilterFunction> cellFilterFunction();
 }

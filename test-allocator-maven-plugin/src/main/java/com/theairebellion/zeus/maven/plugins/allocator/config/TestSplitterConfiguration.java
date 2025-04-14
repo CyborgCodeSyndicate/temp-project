@@ -1,10 +1,9 @@
 package com.theairebellion.zeus.maven.plugins.allocator.config;
 
+import java.io.File;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.maven.project.MavenProject;
-
-import java.io.File;
 
 /**
  * Configuration class for test splitting in a Maven project.
@@ -20,52 +19,51 @@ import java.io.File;
  *   <li>Determining if tests should be executed in parallel.</li>
  *   <li>Setting the maximum number of parallel test runners.</li>
  * </ul>
- * </p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 @AllArgsConstructor
 @Getter
 public class TestSplitterConfiguration {
 
-    /**
-     * Indicates whether test splitting is enabled.
-     */
-    private final boolean enabled;
+   /**
+    * Indicates whether test splitting is enabled.
+    */
+   private final boolean enabled;
 
-    /**
-     * Maximum number of test methods allowed per test bucket.
-     */
-    private final int maxMethodsPerBucket;
+   /**
+    * Maximum number of test methods allowed per test bucket.
+    */
+   private final int maxMethodsPerBucket;
 
-    /**
-     * Directory where test outputs are stored.
-     */
-    private final File testOutputDirectory;
+   /**
+    * Directory where test outputs are stored.
+    */
+   private final File testOutputDirectory;
 
-    /**
-     * The associated Maven project.
-     */
-    private final MavenProject mavenProject;
+   /**
+    * The associated Maven project.
+    */
+   private final MavenProject mavenProject;
 
-    /**
-     * Name of the output JSON file containing the test groups.
-     */
-    private final String jsonOutputFile;
+   /**
+    * Name of the output JSON file containing the test groups.
+    */
+   private final String jsonOutputFile;
 
-    /**
-     * Root directory of the project.
-     */
-    private final String projectRoot;
+   /**
+    * Root directory of the project.
+    */
+   private final String projectRoot;
 
-    /**
-     * Indicates whether test methods should be executed in parallel.
-     */
-    private final boolean parallelMethods;
+   /**
+    * Indicates whether test methods should be executed in parallel.
+    */
+   private final boolean parallelMethods;
 
-    /**
-     * Maximum number of parallel test runners allowed.
-     */
-    private int maxNumberOfParallelRunners;
+   /**
+    * Maximum number of parallel test runners allowed.
+    */
+   private int maxNumberOfParallelRunners;
 
 }

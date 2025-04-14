@@ -10,7 +10,7 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * widgets, ensuring that UI testing remains consistent when handling dropdowns
  * or multi-select elements within an application.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface SelectComponentType extends ComponentType {
 

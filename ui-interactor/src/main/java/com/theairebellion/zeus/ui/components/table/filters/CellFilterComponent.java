@@ -12,19 +12,19 @@ import lombok.Getter;
  * <p>It is used in conjunction with {@code CellLocator} to specify
  * filtering behaviors within a table structure.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 @AllArgsConstructor
 @Getter
 public class CellFilterComponent {
 
-    /**
-     * The type of UI component used for filtering.
-     */
-    private Class<? extends ComponentType> type;
+   /**
+    * The type of UI component used for filtering.
+    */
+   private Class<? extends ComponentType> type;
 
-    /**
-     * The specific component type as a string representation.
-     */
-    private String componentType;
+   /**
+    * The specific component type as a string representation.
+    */
+   private String componentType;
 }

@@ -4,11 +4,11 @@ import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 
 public enum TableTypes implements TableComponentType {
 
-    SIMPLE;
+   SIMPLE;
 
 
-    @Override
-    public Enum<?> getType() {
-        return this;
-    }
+   @Override
+   public Enum<?> getType() {
+      return this;
+   }
 }

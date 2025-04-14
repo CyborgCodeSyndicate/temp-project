@@ -2,8 +2,8 @@ package com.theairebellion.zeus.ui.parameters;
 
 public interface DataIntercept {
 
-    String getEndpointSubString();
+   String getEndpointSubString();
 
-    Enum<?> enumImpl();
+   Enum<?> enumImpl();
 
 }

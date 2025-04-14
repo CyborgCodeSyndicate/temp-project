@@ -18,7 +18,7 @@ import static com.bakery.project.base.World.UNDERWORLD;
 import static com.bakery.project.db.Queries.QUERY_SELLER_EMAIL;
 import static com.bakery.project.db.Queries.QUERY_SELLER_PASSWORD;
 import static com.bakery.project.rest.Endpoints.ENDPOINT_BAKERY;
-import static com.bakery.project.service.CustomService.getJSessionCookie;
+import static com.bakery.project.service.CustomService.getJsessionCookie;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
 import static com.theairebellion.zeus.db.validator.DbAssertionTarget.QUERY_RESULT;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.EQUALS_IGNORE_CASE;
@@ -27,51 +27,51 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 public class BakeryQuestPreconditionFunctions {
 
 
-    public static void loginUser(SuperQuest quest, Seller seller) {
-        quest
-                .enters(FORGE)
-                .loginUser(seller)
-                .then()
-                .enters(OLYMPYS)
-                .requestAndValidate(
-                        ENDPOINT_BAKERY.withHeader("Cookie", getJSessionCookie()),
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build());
-    }
+   public static void loginUser(SuperQuest quest, Seller seller) {
+      quest
+            .enters(FORGE)
+            .loginUser(seller)
+            .then()
+            .enters(OLYMPYS)
+            .requestAndValidate(
+                  ENDPOINT_BAKERY.withHeader("Cookie", getJsessionCookie()),
+                  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_OK).build());
+   }
 
-    public static void validSellerSetup(SuperQuest quest, Seller seller) {
-        quest
-                .enters(UNDERWORLD)
-                .query(QUERY_SELLER_EMAIL.withParam("id", 1))
-                .validate(quest.getStorage().sub(StorageKeysDb.DB).get(QUERY_SELLER_EMAIL, QueryResponse.class),
-                        Assertion.builder()
-                                .target(QUERY_RESULT).key(DbResponsesJsonPaths.EMAIL.getJsonPath(0))
-                                .type(EQUALS_IGNORE_CASE).expected(seller.getEmail()).soft(true)
-                                .build())
-                .query(QUERY_SELLER_PASSWORD.withParam("id", 1))
-                .validate(quest.getStorage().sub(StorageKeysDb.DB).get(QUERY_SELLER_PASSWORD, QueryResponse.class),
-                        Assertion.builder()
-                                .target(QUERY_RESULT).key(DbResponsesJsonPaths.PASSWORD.getJsonPath(0))
-                                .type(EQUALS_IGNORE_CASE).expected(seller.getPassword()).soft(true)
-                                .build()
-                );
-    }
+   public static void validSellerSetup(SuperQuest quest, Seller seller) {
+      quest
+            .enters(UNDERWORLD)
+            .query(QUERY_SELLER_EMAIL.withParam("id", 1))
+            .validate(quest.getStorage().sub(StorageKeysDb.DB).get(QUERY_SELLER_EMAIL, QueryResponse.class),
+                  Assertion.builder()
+                        .target(QUERY_RESULT).key(DbResponsesJsonPaths.EMAIL.getJsonPath(0))
+                        .type(EQUALS_IGNORE_CASE).expected(seller.getEmail()).soft(true)
+                        .build())
+            .query(QUERY_SELLER_PASSWORD.withParam("id", 1))
+            .validate(quest.getStorage().sub(StorageKeysDb.DB).get(QUERY_SELLER_PASSWORD, QueryResponse.class),
+                  Assertion.builder()
+                        .target(QUERY_RESULT).key(DbResponsesJsonPaths.PASSWORD.getJsonPath(0))
+                        .type(EQUALS_IGNORE_CASE).expected(seller.getPassword()).soft(true)
+                        .build()
+         );
+   }
 
-    public static void validSellerSetup(SuperQuest quest, Late<Seller> seller) {
-        String test = quest.getStorage().get(DataExtractorsTest.staticTestData("test"), String.class);
-        quest.enters(OLYMPYS)
-                .request(Endpoints.ENDPOINT_EXAMPLE, seller.join());
-    }
+   public static void validSellerSetup(SuperQuest quest, Late<Seller> seller) {
+      String test = quest.getStorage().get(DataExtractorsTest.staticTestData("test"), String.class);
+      quest.enters(OLYMPYS)
+            .request(Endpoints.ENDPOINT_EXAMPLE, seller.join());
+   }
 
-    public static void validOrderSetup(SuperQuest quest, Order order) {
-        quest
-                .enters(FORGE)
-                .createOrder(order);
-    }
+   public static void validOrderSetup(SuperQuest quest, Order order) {
+      quest
+            .enters(FORGE)
+            .createOrder(order);
+   }
 
-    public static void validOrderSetup(SuperQuest quest, Late<Order> order) {
-        quest
-                .enters(FORGE)
-                .createOrder(order.join());
-    }
+   public static void validOrderSetup(SuperQuest quest, Late<Order> order) {
+      quest
+            .enters(FORGE)
+            .createOrder(order.join());
+   }
 
 }

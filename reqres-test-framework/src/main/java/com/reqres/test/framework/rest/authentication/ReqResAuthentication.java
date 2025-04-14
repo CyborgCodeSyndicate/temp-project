@@ -9,14 +9,14 @@ import static com.reqres.test.framework.rest.Endpoints.LOGIN_USER;
 
 public class ReqResAuthentication extends BaseAuthenticationClient {
 
-    @Override
-    protected Header authenticateImpl(final RestService restService, final String username, final String password) {
-        String token = restService
-                .request(LOGIN_USER, new LoginUser(username, password))
-                .getBody()
-                .jsonPath()
-                .getString("token");
-        return new Header("Authorization", "Bearer " + token);
-    }
+   @Override
+   protected Header authenticateImpl(final RestService restService, final String username, final String password) {
+      String token = restService
+            .request(LOGIN_USER, new LoginUser(username, password))
+            .getBody()
+            .jsonPath()
+            .getString("token");
+      return new Header("Authorization", "Bearer " + token);
+   }
 
 }

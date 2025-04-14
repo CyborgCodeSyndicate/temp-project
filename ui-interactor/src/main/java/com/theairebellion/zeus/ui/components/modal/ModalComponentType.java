@@ -13,8 +13,7 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * <p>This interface helps group modal attributes and identification logic,
  * ensuring that all modals are managed under a common contract.</p>
  *
- *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface ModalComponentType extends ComponentType {
 }

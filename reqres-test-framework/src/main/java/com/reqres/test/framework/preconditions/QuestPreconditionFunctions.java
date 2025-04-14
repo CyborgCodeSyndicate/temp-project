@@ -12,16 +12,16 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 
 public class QuestPreconditionFunctions {
 
-    public static void createNewUser(SuperQuest quest, Object... objects) {
-        createNewUser(quest, (User) objects[0]);
-    }
+   public static void createNewUser(SuperQuest quest, Object... objects) {
+      createNewUser(quest, (User) objects[0]);
+   }
 
-    public static void createNewUser(SuperQuest quest, User userObject) {
-        quest.enters(OLYMPYS)
-                .requestAndValidate(
-                        CREATE_USER,
-                        userObject,
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build());
-    }
+   public static void createNewUser(SuperQuest quest, User userObject) {
+      quest.enters(OLYMPYS)
+            .requestAndValidate(
+                  CREATE_USER,
+                  userObject,
+                  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build());
+   }
 
 }

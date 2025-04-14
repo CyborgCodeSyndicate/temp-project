@@ -4,11 +4,10 @@ import com.theairebellion.zeus.ui.components.alert.AlertComponentType;
 
 public enum MockAlertComponentType implements AlertComponentType {
 
-    DUMMY
-    ;
+   DUMMY;
 
-    @Override
-    public Enum<?> getType() {
-        return this;
-    }
+   @Override
+   public Enum<?> getType() {
+      return this;
+   }
 }

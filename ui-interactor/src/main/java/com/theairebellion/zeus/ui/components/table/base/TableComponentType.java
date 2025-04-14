@@ -13,7 +13,7 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * <p>Typically used in conjunction with {@code TableService} and
  * {@code TableElement} to manage different table types dynamically.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface TableComponentType extends ComponentType {
 }

@@ -5,15 +5,11 @@ import org.aeonbits.owner.ConfigCache;
 
 public class Data {
 
-
-    public static TestData testData() {
-        return getTestDataConfig();
-    }
-
-
-    private static TestData getTestDataConfig() {
-        return ConfigCache.getOrCreate(TestData.class);
-    }
-
+   public static TestData testData() {
+      return getTestDataConfig();
+   }
+   private static TestData getTestDataConfig() {
+      return ConfigCache.getOrCreate(TestData.class);
+   }
 
 }

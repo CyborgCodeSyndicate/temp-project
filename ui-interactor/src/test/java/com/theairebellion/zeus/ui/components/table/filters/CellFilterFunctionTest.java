@@ -15,17 +15,17 @@ import static org.mockito.Mockito.mock;
 @SuppressWarnings("all")
 public class CellFilterFunctionTest extends BaseUnitUITest {
 
-    @Test
-    void testAcceptCallsCellFilterFunction() {
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        var function = new TestCellFilterFunction();
-        SmartWebElement element = new MockSmartWebElement(webElement, driver);
-        FilterStrategy strategy = FilterStrategy.SELECT;
-        String[] values = {"val1", "val2"};
-        function.accept(element, strategy, values);
-        assertSame(element, function.capturedElement);
-        assertSame(strategy, function.capturedStrategy);
-        assertArrayEquals(values, function.capturedValues);
-    }
+   @Test
+   void testAcceptCallsCellFilterFunction() {
+      WebElement webElement = mock(WebElement.class);
+      WebDriver driver = mock(WebDriver.class);
+      var function = new TestCellFilterFunction();
+      SmartWebElement element = new MockSmartWebElement(webElement, driver);
+      FilterStrategy strategy = FilterStrategy.SELECT;
+      String[] values = {"val1", "val2"};
+      function.accept(element, strategy, values);
+      assertSame(element, function.capturedElement);
+      assertSame(strategy, function.capturedStrategy);
+      assertArrayEquals(values, function.capturedValues);
+   }
 }

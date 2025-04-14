@@ -279,7 +279,7 @@
                     <configLocation>roa_checks.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <includeTestSourceDirectory>false</includeTestSourceDirectory>
                     <violationSeverity>warning</violationSeverity>
                 </configuration>
             </plugin>

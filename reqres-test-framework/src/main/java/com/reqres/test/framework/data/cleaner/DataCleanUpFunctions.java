@@ -11,12 +11,12 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 
 public class DataCleanUpFunctions {
 
-    public static void deleteAdminUser(SuperQuest quest) {
-        quest.enters(OLYMPYS)
-                .requestAndValidate(
-                        DELETE_USER.withPathParam("id", 2),
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
-                );
-    }
+   public static void deleteAdminUser(SuperQuest quest) {
+      quest.enters(OLYMPYS)
+            .requestAndValidate(
+                  DELETE_USER.withPathParam("id", 2),
+                  Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
+         );
+   }
 
 }

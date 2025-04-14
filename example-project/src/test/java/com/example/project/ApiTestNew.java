@@ -17,13 +17,11 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
 @API
 public class ApiTestNew extends BaseTest {
 
-    @Test
-    public void testPet(Quest quest, @Craft(model = TestDataCreator.Data.DOG_PET) Pet pet) {
-        quest.enters(World.OLYMPYS)
-                .requestAndValidate(CREATE_PET, pet,
-                        Assertion.builder().target(STATUS).type(IS).expected(200).build())
-                .complete();
-    }
-
-
+   @Test
+   public void testPet(Quest quest, @Craft(model = TestDataCreator.Data.DOG_PET) Pet pet) {
+      quest.enters(World.OLYMPYS)
+            .requestAndValidate(CREATE_PET, pet,
+                  Assertion.builder().target(STATUS).type(IS).expected(200).build())
+            .complete();
+   }
 }

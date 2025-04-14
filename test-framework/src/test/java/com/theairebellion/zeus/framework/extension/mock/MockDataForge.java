@@ -5,19 +5,19 @@ import com.theairebellion.zeus.framework.parameters.Late;
 
 public class MockDataForge implements DataForge {
 
-    private final Late<Object> late;
+   private final Late<Object> late;
 
-    public MockDataForge(Late<Object> late) {
-        this.late = late;
-    }
+   public MockDataForge(Late<Object> late) {
+      this.late = late;
+   }
 
-    @Override
-    public Late<Object> dataCreator() {
-        return late;
-    }
+   @Override
+   public Late<Object> dataCreator() {
+      return late;
+   }
 
-    @Override
-    public Enum<?> enumImpl() {
-        return MockEnum.VALUE;
-    }
+   @Override
+   public Enum<?> enumImpl() {
+      return MockEnum.VALUE;
+   }
 }
