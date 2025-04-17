@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.api.core;
 
 import com.theairebellion.zeus.api.core.mock.TestEnum;
+import com.theairebellion.zeus.api.log.LogApi;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
@@ -315,5 +317,99 @@ class ParametrizedEndpointTest {
             verify(requestSpecMock).queryParams(argThat(map -> map.containsKey("q")));
             verify(requestSpecMock).header(eq("X-Hdr"), anyString());
         }
+
+        @Test
+        @DisplayName("prepareRequestSpec should join multiple header values with commas")
+        void prepareRequestSpecHeaderJoin() {
+            // Arrange: stub the chaining methods
+            when(requestSpecMock.pathParams(anyMap())).thenReturn(requestSpecMock);
+            when(requestSpecMock.queryParams(anyMap())).thenReturn(requestSpecMock);
+            when(requestSpecMock.header(anyString(), anyString()))
+                    .thenReturn(requestSpecMock);
+
+            // Act: inject two header values
+            ParametrizedEndpoint ep = parametrized.withHeader("H", List.of("A", "B"));
+            ep.prepareRequestSpec(null);
+
+            // Assert: exact comma‑join
+            verify(requestSpecMock).header("H", "A,B");
+        }
+
+        @Test
+        @DisplayName("withQueryParam chaining accumulates parameters")
+        void withQueryParamChainingAccumulates() {
+            // Arrange: stub only the injection point
+            when(requestSpecMock.queryParams(anyMap())).thenReturn(requestSpecMock);
+            // we don’t care here about path/header
+
+            // Act: chain two query additions
+            ParametrizedEndpoint ep2 = parametrized
+                    .withQueryParam("a", "1")
+                    .withQueryParam("b", "2");
+            ep2.prepareRequestSpec(null);
+
+            // Assert: the final map has both
+            verify(requestSpecMock).queryParams(argThat(map ->
+                    map.size() == 2 &&
+                            "1".equals(map.get("a")) &&
+                            "2".equals(map.get("b"))
+            ));
+        }
+
+        @Test
+        @DisplayName("withPathParam chaining accumulates parameters")
+        void withPathParamChainingAccumulates() {
+            // Arrange
+            when(requestSpecMock.pathParams(anyMap())).thenReturn(requestSpecMock);
+
+            // Act
+            ParametrizedEndpoint ep2 = parametrized
+                    .withPathParam("x", 42)
+                    .withPathParam("y", 99);
+            ep2.prepareRequestSpec(null);
+
+            // Assert
+            verify(requestSpecMock).pathParams(argThat(map ->
+                    map.size() == 2 &&
+                            Integer.valueOf(42).equals(map.get("x")) &&
+                            Integer.valueOf(99).equals(map.get("y"))
+            ));
+        }
+    }
+
+    @Nested
+    @DisplayName("Logging Tests")
+    class LoggingTests {
+
+        @Test
+        @DisplayName("prepareRequestSpec should call LogApi.info with path/query/header maps")
+        void prepareRequestSpecLogsInfo() {
+            // Arrange: stub all mutation points
+            when(requestSpecMock.pathParams(anyMap())).thenReturn(requestSpecMock);
+            when(requestSpecMock.queryParams(anyMap())).thenReturn(requestSpecMock);
+            when(requestSpecMock.header(anyString(), anyString()))
+                    .thenReturn(requestSpecMock);
+
+            // Scope static‑mock of LogApi
+            try (MockedStatic<LogApi> logApi = mockStatic(LogApi.class)) {
+                // Act: mix one of each
+                ParametrizedEndpoint ep = parametrized
+                        .withQueryParam("q", "v1")
+                        .withPathParam("p", 123)
+                        .withHeader("H", List.of("X"));
+                ep.prepareRequestSpec("body");
+
+                // Assert: info was called exactly once, with the correct template
+                logApi.verify(() ->
+                        LogApi.info(
+                                eq("Prepared RequestSpecification with pathParams: {}, queryParams: {}, headers: {}"),
+                                anyMap(),   // pathParams
+                                anyMap(),   // queryParams
+                                anyMap()    // headers
+                        ), times(1)
+                );
+            }
+        }
+
     }
 }
