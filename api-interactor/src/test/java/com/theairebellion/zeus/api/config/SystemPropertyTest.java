@@ -15,20 +15,17 @@ class SystemPropertyTest {
     private static final String TEST_PROPERTY_KEY = "test.property.key";
     private static final String TEST_PROPERTY_VALUE = "test.property.value";
 
-
     @BeforeEach
     void setUp() {
         // Make sure the property is not set initially
         System.clearProperty(TEST_PROPERTY_KEY);
     }
 
-
     @AfterEach
     void tearDown() {
         // Clean up after the test
         System.clearProperty(TEST_PROPERTY_KEY);
     }
-
 
     // Define a simple test config interface
     interface TestConfig extends ApiConfig {
@@ -37,7 +34,6 @@ class SystemPropertyTest {
         String testProperty();
 
     }
-
 
     @Test
     @DisplayName("Owner ConfigFactory should recognize system properties")
@@ -54,7 +50,7 @@ class SystemPropertyTest {
 
         // Verify the property is read correctly
         assertEquals(TEST_PROPERTY_VALUE, configAfterSet.testProperty(),
-            "System property should be recognized by the config");
+                "System property should be recognized by the config");
     }
 
 }

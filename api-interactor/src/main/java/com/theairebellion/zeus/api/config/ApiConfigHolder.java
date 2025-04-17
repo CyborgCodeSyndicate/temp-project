@@ -17,7 +17,6 @@ public class ApiConfigHolder {
     private ApiConfigHolder() {
     }
 
-
     private static ApiConfig config;
 
     /**
@@ -34,6 +33,17 @@ public class ApiConfigHolder {
             config = ConfigCache.getOrCreate(ApiConfig.class);
         }
         return config;
+    }
+
+    /**
+     * For testing purposes only.
+     * <p>
+     * Resets the cached {@link ApiConfig} instance. This method should only be used in unit tests
+     * to ensure test isolation and prevent state leakage between tests.
+     * </p>
+     */
+    static void resetForTest() {
+        config = null;
     }
 
 }
