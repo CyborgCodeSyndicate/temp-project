@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.api.service.fluent.mock;
+package com.theairebellion.zeus.api.mock;
 
 import com.theairebellion.zeus.framework.storage.Storage;
 

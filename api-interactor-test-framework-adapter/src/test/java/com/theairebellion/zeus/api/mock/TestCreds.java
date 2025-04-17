@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.api.annotations.mock;
+package com.theairebellion.zeus.api.mock;
 
 import com.theairebellion.zeus.api.authentication.Credentials;
 

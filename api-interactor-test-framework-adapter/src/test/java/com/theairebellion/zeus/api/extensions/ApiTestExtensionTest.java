@@ -1,11 +1,13 @@
 package com.theairebellion.zeus.api.extensions;
 
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
-import com.theairebellion.zeus.api.annotations.mock.TestAuthClient;
-import com.theairebellion.zeus.api.annotations.mock.TestCreds;
+import com.theairebellion.zeus.api.authentication.Credentials;
+import com.theairebellion.zeus.api.mock.TestAuthClient;
+import com.theairebellion.zeus.api.mock.TestCreds;
 import com.theairebellion.zeus.api.service.RestService;
 import com.theairebellion.zeus.api.service.fluent.RestServiceFluent;
 import com.theairebellion.zeus.api.service.fluent.SuperRestServiceFluent;
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -32,6 +35,8 @@ import java.util.function.Function;
 
 import static com.theairebellion.zeus.api.storage.StorageKeysApi.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -52,7 +57,7 @@ class ApiTestExtensionTest {
     @Mock
     private DecoratorsFactory decoratorsFactory;
 
-    private ApiTestExtension extension = new ApiTestExtension();
+    private final ApiTestExtension extension = new ApiTestExtension();
 
     @AuthenticateViaApiAs(credentials = TestCreds.class, type = TestAuthClient.class)
     void dummyTestMethod() {
@@ -140,6 +145,19 @@ class ApiTestExtensionTest {
                 assertThat(actualConsumers[0]).hasSize(1);
             }
         }
+
+        @Test
+        @DisplayName("Should do nothing when getTestMethod() is empty")
+        void shouldDoNothingWhenNoTestMethod() throws Exception {
+            // Arrange: no test method present
+            when(context.getTestMethod()).thenReturn(Optional.empty());
+
+            // Act
+            extension.beforeTestExecution(context);
+
+            // Assert: store() should never be touched
+            verify(context, never()).getStore(any(ExtensionContext.Namespace.class));
+        }
     }
 
     @Nested
@@ -168,7 +186,6 @@ class ApiTestExtensionTest {
             );
             createMethod.setAccessible(true);
 
-            @SuppressWarnings("unchecked")
             Consumer<SuperQuest> consumer = (Consumer<SuperQuest>) createMethod.invoke(
                     extension,
                     decoratorsFactory,
@@ -205,6 +222,65 @@ class ApiTestExtensionTest {
             verify(subStorage).put(PASSWORD, password);
             verify(restServiceMock).setCacheAuthentication(cacheCredentials);
             verify(fluentMock).authenticate(eq(username), eq(password), eq(authAs.type()));
+        }
+    }
+
+    @Nested
+    @DisplayName("AfterTestExecution Tests")
+    class AfterTestExecutionTests {
+        @Test
+        @DisplayName("afterTestExecution should stop the Allure parent step")
+        void afterTestExecutionShouldStopParentStep() {
+            try (MockedStatic<CustomAllureListener> mockedAllure = mockStatic(CustomAllureListener.class)) {
+                // Act
+                extension.afterTestExecution(context);
+
+                // Assert
+                mockedAllure.verify(CustomAllureListener::stopParentStep, times(1));
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Authentication Instantiation Failure Tests")
+    class AuthenticationInstantiationFailureTests {
+
+        /**
+         * A dummy test method annotated with a credentials class
+         * that has no public no‑arg constructor, so instantiation fails.
+         */
+        @AuthenticateViaApiAs(
+                credentials      = NoDefaultCtorCreds.class,
+                type             = TestAuthClient.class,
+                cacheCredentials = false
+        )
+        void methodWithoutNoArgConstructor() { /* nothing */ }
+
+        /**
+         * Credentials impl with only a non‑default ctor, so newInstance() will throw.
+         */
+        static class NoDefaultCtorCreds implements Credentials {
+            public NoDefaultCtorCreds(String foo) { /* no no‑arg */ }
+            @Override public String username() { return "u"; }
+            @Override public String password() { return "p"; }
+        }
+
+        @Test
+        @DisplayName("beforeTestExecution should wrap instantiation errors in IllegalStateException")
+        void shouldWrapInstantiationErrors() throws Exception {
+            // Arrange: only stub getTestMethod()
+            Method m = AuthenticationInstantiationFailureTests.class
+                    .getDeclaredMethod("methodWithoutNoArgConstructor");
+            when(context.getTestMethod()).thenReturn(Optional.of(m));
+
+            // Act & Assert: the missing no‑arg ctor causes an IllegalStateException
+            IllegalStateException ex = assertThrows(
+                    IllegalStateException.class,
+                    () -> extension.beforeTestExecution(context),
+                    "Expected instantiation failure to be wrapped"
+            );
+            assertTrue(ex.getMessage().contains("Failed to instantiate credentials"),
+                    "Exception message should mention instantiation failure");
         }
     }
 

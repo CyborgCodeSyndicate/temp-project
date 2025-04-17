@@ -1,10 +1,10 @@
 package com.theairebellion.zeus.api.service.fluent;
 
-import com.theairebellion.zeus.api.annotations.mock.TestAuthClient;
-import com.theairebellion.zeus.api.annotations.mock.TestEnum;
+import com.theairebellion.zeus.api.mock.TestAuthClient;
+import com.theairebellion.zeus.api.mock.TestEnum;
 import com.theairebellion.zeus.api.core.Endpoint;
 import com.theairebellion.zeus.api.service.RestService;
-import com.theairebellion.zeus.api.service.fluent.mock.StorageDouble;
+import com.theairebellion.zeus.api.mock.StorageDouble;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.retry.RetryCondition;

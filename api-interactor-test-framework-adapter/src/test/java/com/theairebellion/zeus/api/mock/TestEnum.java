@@ -1,4 +1,4 @@
-package com.theairebellion.zeus.api.annotations.mock;
+package com.theairebellion.zeus.api.mock;
 
 public enum TestEnum {
     MOCK_ENDPOINT,

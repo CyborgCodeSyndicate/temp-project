@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.api.storage;
 
-import com.theairebellion.zeus.api.annotations.mock.TestEnum;
+import com.theairebellion.zeus.api.mock.TestEnum;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;

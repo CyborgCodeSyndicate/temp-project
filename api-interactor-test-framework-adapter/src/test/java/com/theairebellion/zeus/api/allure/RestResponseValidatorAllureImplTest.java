@@ -250,6 +250,45 @@ class RestResponseValidatorAllureImplTest {
                 }
             }
         }
+
+        @Test
+        @DisplayName("printAssertionTarget should handle body‑only data")
+        void printAssertionTargetShouldHandleBodyOnlyData() {
+            try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
+                Map<String, Object> data = Map.of("body", "{\"foo\":\"bar\"}");
+
+                // capture the lambda
+                ArgumentCaptor<Allure.ThrowableRunnableVoid> cap =
+                        ArgumentCaptor.forClass(Allure.ThrowableRunnableVoid.class);
+
+                validator.printAssertionTarget(data);
+
+                // step headline
+                mockedAllure.verify(() ->
+                        Allure.step(eq("Validating response with 1 assertion(s)"), cap.capture())
+                );
+
+                // run the lambda so attachments fire
+                cap.getValue().run();
+
+                // should add the generic data attachment...
+                mockedAllure.verify(() ->
+                        Allure.addAttachment(eq("Data to be validated"), anyString())
+                );
+                // ...and only the body attachment
+                mockedAllure.verify(() ->
+                        Allure.addAttachment(eq("Expected Response Body"), anyString())
+                );
+                mockedAllure.verify(() ->
+                        Allure.addAttachment(eq("Expected Status Code"), anyString()), never()
+                );
+                mockedAllure.verify(() ->
+                        Allure.addAttachment(eq("Expected Headers"), anyString()), never()
+                );
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Nested
