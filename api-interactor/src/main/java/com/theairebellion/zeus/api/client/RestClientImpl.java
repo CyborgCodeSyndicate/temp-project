@@ -30,19 +30,27 @@ import static com.theairebellion.zeus.api.log.LogApi.step;
 @NoArgsConstructor
 public class RestClientImpl implements RestClient {
 
+    private static final long SLOW_REQUEST_THRESHOLD_MS = 2000;
+
     /**
      * This configuration provides settings for API request execution, including logging behavior,
      * response body truncation, and other configurable options.
      */
-
     private static final Map<Method, Function<RequestSpecification, Response>> METHOD_EXECUTORS = Map.of(
-        Method.GET, RequestSpecification::get,
-        Method.POST, RequestSpecification::post,
-        Method.PUT, RequestSpecification::put,
-        Method.DELETE, RequestSpecification::delete,
-        Method.PATCH, RequestSpecification::patch,
-        Method.HEAD, RequestSpecification::head
+            Method.GET, RequestSpecification::get,
+            Method.POST, RequestSpecification::post,
+            Method.PUT, RequestSpecification::put,
+            Method.DELETE, RequestSpecification::delete,
+            Method.PATCH, RequestSpecification::patch,
+            Method.HEAD, RequestSpecification::head
     );
+
+    /**
+     * Hook for measuring time—override in tests to simulate slow calls.
+     */
+    protected long currentTimeNanos() {
+        return System.nanoTime();
+    }
 
     /**
      * Executes an API request with the specified request specification and HTTP method.
@@ -74,21 +82,21 @@ public class RestClientImpl implements RestClient {
         String prettyRequestBody = tryPrettyPrintJson(rawRequestBody);
 
         String requestHeaders = Optional.ofNullable(filterableSpec.getHeaders())
-                                    .map(Object::toString)
-                                    .orElse("");
+                .map(Object::toString)
+                .orElse("");
 
         printRequest(methodName, url, prettyRequestBody, requestHeaders);
 
-        long startTime = System.nanoTime();
+        long startTime = currentTimeNanos();
 
         Response response = Optional.ofNullable(METHOD_EXECUTORS.get(method))
-                                .orElseThrow(() -> new IllegalArgumentException("HTTP method " + method + " is not supported"))
-                                .apply(spec);
+                .orElseThrow(() -> new IllegalArgumentException("HTTP method " + method + " is not supported"))
+                .apply(spec);
 
-        long duration = (System.nanoTime() - startTime) / 1_000_000;
+        long duration = (currentTimeNanos() - startTime) / 1_000_000;
         printResponse(methodName, url, response, duration);
 
-        if (duration > 2000) {
+        if (duration > SLOW_REQUEST_THRESHOLD_MS) {
             LogApi.warn("Request to endpoint {}-{} took too long: {}ms.", methodName, url, duration);
         }
 
@@ -119,15 +127,22 @@ public class RestClientImpl implements RestClient {
      * @param duration   The duration of the request execution in milliseconds.
      */
     protected void printResponse(final String methodName, final String finalUrl, final Response response,
-                               final long duration) {
+                                 final long duration) {
         step("Response with status: {} received from endpoint: {}-{} in {}ms.",
                 response.getStatusCode(), methodName, finalUrl, duration);
-        if (getApiConfig().logFullBody()) {
-            extended("Response body: {}.", response.body() != null ? response.body().asPrettyString() : "");
+
+        if (response.body() != null) {
+            String bodyStr = response.body().asPrettyString();
+            if (getApiConfig().logFullBody()) {
+                extended("Response body: {}.", bodyStr);
+            } else {
+                int limit = Math.min(bodyStr.length(), getApiConfig().shortenBody());
+                extended("Response body: {}.", bodyStr.substring(0, limit) + (bodyStr.length() > limit ? "..." : ""));
+            }
         } else {
-            extended("Response body: {}.", response.body() != null ? response.body().asPrettyString()
-                    .substring(0, getApiConfig().shortenBody()) + "..." : "");
+            extended("Response body: {}.", "");
         }
+
         extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");
     }
 

@@ -22,20 +22,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.matches;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("RestClientImpl Tests")
@@ -68,13 +56,13 @@ class RestClientImplTest {
 
             // Act & Assert
             IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> restClientImpl.execute(plainSpec, Method.GET),
-                "Should throw IllegalArgumentException for non-filterable spec"
+                    IllegalArgumentException.class,
+                    () -> restClientImpl.execute(plainSpec, Method.GET),
+                    "Should throw IllegalArgumentException for non-filterable spec"
             );
             assertEquals(
-                "RequestSpecification is not of type FilterableRequestSpecification",
-                exception.getMessage()
+                    "RequestSpecification is not of type FilterableRequestSpecification",
+                    exception.getMessage()
             );
         }
 
@@ -125,57 +113,53 @@ class RestClientImplTest {
 
 
         @Test
-        @DisplayName("Warn Message in log if requests takes more than 2 seconds")
+        @DisplayName("execute should warn when response takes longer than threshold")
         void warnMessageShouldBePrintedInLogIfExecuteTakesLongTime() {
             // Arrange
+            doReturn(0L, 3_000_000_000L)
+                    .when(restClientImpl)
+                    .currentTimeNanos();
+
             when(filterableRequestSpec.getURI()).thenReturn(V1_TEST_URL);
             when(filterableRequestSpec.getBody()).thenReturn(null);
             when(filterableRequestSpec.getHeaders()).thenReturn(null);
 
-            // Mock the appropriate method call based on the HTTP method
             Response mockResponse = mock(Response.class);
             when(mockResponse.getStatusCode()).thenReturn(200);
             when(mockResponse.body()).thenReturn(null);
             when(mockResponse.getHeaders()).thenReturn(null);
-            when(filterableRequestSpec.get()).thenAnswer(invocation -> {
-                Thread.sleep(3000); // delay for 3 seconds
-                return mockResponse;
-            });
+            when(filterableRequestSpec.get()).thenReturn(mockResponse);
 
-            try (MockedStatic<LogApi> logApiMock = mockStatic(LogApi.class)) {
+            try (MockedStatic<LogApi> logApi = mockStatic(LogApi.class)) {
                 // Act
                 restClientImpl.execute(filterableRequestSpec, Method.GET);
 
                 // Assert
-                logApiMock.verify(() ->
-                                      LogApi.warn(
-                                          matches("Request to endpoint .* took too long: .*ms."),
-                                          eq("GET"),
-                                          eq(V1_TEST_URL),
-                                          anyLong()
-                                      ), times(1)
+                logApi.verify(() ->
+                        LogApi.warn(
+                                "Request to endpoint {}-{} took too long: {}ms.",
+                                "GET", V1_TEST_URL, 3000L
+                        ), times(1)
                 );
-            } catch (Exception e) {
-                fail("Test interrupted during sleep");
             }
         }
 
 
         @Test
-        @DisplayName("Unsupported HTTP method should throw IllegalArgumentException")
+        @DisplayName("execute should throw for unsupported HTTP method OPTIONS")
         void unsupportedMethodShouldThrowException() {
             // Arrange
             when(filterableRequestSpec.getURI()).thenReturn(V1_OPTIONS_URL);
 
             // Act & Assert
             IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> restClientImpl.execute(filterableRequestSpec, Method.OPTIONS),
-                "Should throw IllegalArgumentException for unsupported method"
+                    IllegalArgumentException.class,
+                    () -> restClientImpl.execute(filterableRequestSpec, Method.OPTIONS),
+                    "Should throw IllegalArgumentException for unsupported method"
             );
             assertTrue(
-                exception.getMessage().contains("HTTP method OPTIONS is not supported"),
-                "Exception message should mention unsupported method"
+                    exception.getMessage().contains("HTTP method OPTIONS is not supported"),
+                    "Exception message should mention unsupported method"
             );
         }
 
@@ -200,36 +184,36 @@ class RestClientImplTest {
 
             // Verify logging was called with correct parameters
             verify(restClientImpl).printRequest(
-                eq("GET"),
-                eq(V1_TEST_URL),
-                anyString(), // The pretty-printed JSON
-                anyString()  // The headers
+                    eq("GET"),
+                    eq(V1_TEST_URL),
+                    anyString(), // The pretty-printed JSON
+                    anyString()  // The headers
             );
 
             verify(restClientImpl).printResponse(
-                eq("GET"),
-                eq(V1_TEST_URL),
-                eq(responseMock),
-                anyLong()    // The duration
+                    eq("GET"),
+                    eq(V1_TEST_URL),
+                    eq(responseMock),
+                    anyLong()    // The duration
             );
         }
 
 
         @Test
-        @DisplayName("Non-filterable specification should throw IllegalArgumentException")
-        void nullForMethodArgumentShouldThrowException() {
+        @DisplayName("execute should throw IllegalArgumentException for null HTTP method")
+        void shouldThrowExceptionForNullMethod() {
             // Arrange
             RequestSpecification plainSpec = mock(RequestSpecification.class);
 
             // Act & Assert
             IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> restClientImpl.execute(plainSpec, null),
-                "Should throw IllegalArgumentException for null as method"
+                    IllegalArgumentException.class,
+                    () -> restClientImpl.execute(plainSpec, null),
+                    "Should throw IllegalArgumentException for null as method"
             );
             assertEquals(
-                "HTTP method must not be null",
-                exception.getMessage()
+                    "HTTP method must not be null",
+                    exception.getMessage()
             );
         }
 
@@ -245,7 +229,7 @@ class RestClientImplTest {
         @DisplayName("tryPrettyPrintJson should handle null and empty inputs")
         void shouldHandleNullAndEmptyInputs(String input) {
             assertEquals(input, restClientImpl.tryPrettyPrintJson(input),
-                "Should return input unchanged for null or empty strings");
+                    "Should return input unchanged for null or empty strings");
         }
 
 
@@ -257,8 +241,8 @@ class RestClientImplTest {
 
             // Assert
             assertTrue(
-                prettyJson.contains("\n") || prettyJson.contains("\r"),
-                "Pretty-printed JSON should contain line breaks"
+                    prettyJson.contains("\n") || prettyJson.contains("\r"),
+                    "Pretty-printed JSON should contain line breaks"
             );
         }
 
@@ -288,13 +272,13 @@ class RestClientImplTest {
 
                 // Assert
                 logApiMock.verify(() ->
-                                      LogApi.step("Sending request to endpoint {}-{}.", "GET", BASE_URL), times(1)
+                        LogApi.step("Sending request to endpoint {}-{}.", "GET", BASE_URL), times(1)
                 );
                 logApiMock.verify(() ->
-                                      LogApi.extended("Request body: {}.", ""), times(1)
+                        LogApi.extended("Request body: {}.", ""), times(1)
                 );
                 logApiMock.verify(() ->
-                                      LogApi.extended("Request headers: {}.", ""), times(1)
+                        LogApi.extended("Request headers: {}.", ""), times(1)
                 );
             } catch (Exception e) {
                 fail("Test failed with exception: " + e.getMessage());
@@ -302,64 +286,141 @@ class RestClientImplTest {
 
         }
 
+        @Test
+        @DisplayName("printResponse should abbreviate body when shortenBody() is enabled")
+        void shouldClampResponseBodyWhenShortenEnabled() {
+            Response mockResp = mock(Response.class);
+            when(mockResp.getStatusCode()).thenReturn(200);
+            when(mockResp.body()).thenReturn(mockResp);
+            when(mockResp.asPrettyString()).thenReturn("ABCDEFGHIJK");
+            when(mockResp.getHeaders()).thenReturn(mock(Headers.class));
 
+            ApiConfig cfg = mock(ApiConfig.class);
+            when(cfg.logFullBody()).thenReturn(false);
+            when(cfg.shortenBody()).thenReturn(5);
 
-        @ParameterizedTest(name = "Should log response correctly when logFullBody = {0}")
-        @DisplayName("Logs full or shortened response body based on ApiConfig")
+            try (
+                    MockedStatic<ApiConfigHolder> apiCfg = mockStatic(ApiConfigHolder.class);
+                    MockedStatic<LogApi> logApi = mockStatic(LogApi.class)
+            ) {
+                apiCfg.when(ApiConfigHolder::getApiConfig).thenReturn(cfg);
+
+                restClientImpl.printResponse("GET", BASE_URL, mockResp, 10L);
+
+                logApi.verify(() ->
+                        LogApi.extended("Response body: {}.", "ABCDE..."), times(1)
+                );
+            }
+        }
+
+        @ParameterizedTest(name = "Should log response correctly when logFullBody={0}, nullBody={2}")
+        @DisplayName("Logs response body according to ApiConfig and null‐body flag")
         @CsvSource({
-            "true,  { \"message\": \"OK\" },  { \"message\": \"OK\" }, false",
-            "false, ABCDEFGHIJKLMNOPQRSTUVWXYZ, ABCDEFGHIJ..., false",
-            "true, '', '', true",
-            "false, '', '', true"
+                // logFullBody,               fullBody,                          nullBody
+                "true,  { \"message\": \"OK\" },          false",
+                "false, ABCDEFGHIJKLMNOPQRSTUVWXYZ,      false",
+                "true,  '',                              true",
+                "false, '',                              true"
         })
-        void shouldLogResponseBodyBasedOnConfig(boolean logFullBody, String fullBody, String expectedBody, boolean nullBody) {
-            // Arrange
+        void shouldLogResponseBodyBasedOnConfig(
+                boolean logFullBody,
+                String fullBody,
+                boolean nullBody
+        ) {
+            // Arrange the response
             Response mockResponse = mock(Response.class);
             Headers mockHeaders = mock(Headers.class);
 
             when(mockResponse.getStatusCode()).thenReturn(200);
-            if(nullBody){
+            if (nullBody) {
                 when(mockResponse.body()).thenReturn(null);
-            }else {
+            } else {
                 when(mockResponse.body()).thenReturn(mockResponse);
                 when(mockResponse.asPrettyString()).thenReturn(fullBody);
             }
             when(mockResponse.getHeaders()).thenReturn(mockHeaders);
             when(mockHeaders.toString()).thenReturn("Content-Type: application/json");
 
+            // Arrange the config only if body != null
             ApiConfig mockApiConfig = mock(ApiConfig.class);
-            when(mockApiConfig.logFullBody()).thenReturn(logFullBody);
-            if (!logFullBody && !nullBody) {
-                when(mockApiConfig.shortenBody()).thenReturn(10);
+            if (!nullBody) {
+                when(mockApiConfig.logFullBody()).thenReturn(logFullBody);
+                if (!logFullBody) {
+                    when(mockApiConfig.shortenBody()).thenReturn(10);
+                }
             }
 
             try (
-                MockedStatic<ApiConfigHolder> apiConfigMock = mockStatic(ApiConfigHolder.class);
-                MockedStatic<LogApi> logApiMock = mockStatic(LogApi.class)
+                    MockedStatic<ApiConfigHolder> apiCfg = mockStatic(ApiConfigHolder.class);
+                    MockedStatic<LogApi> logApi = mockStatic(LogApi.class)
             ) {
-                // Mock static call
-                apiConfigMock.when(ApiConfigHolder::getApiConfig).thenReturn(mockApiConfig);
+                apiCfg.when(ApiConfigHolder::getApiConfig).thenReturn(mockApiConfig);
 
                 // Act
                 restClientImpl.printResponse("GET", BASE_URL, mockResponse, 1234L);
 
-                // Assert
-                logApiMock.verify(() -> LogApi.step(
-                    "Response with status: {} received from endpoint: {}-{} in {}ms.",
-                    200, "GET", BASE_URL, 1234L
-                ), times(1));
+                // Assert step‐log
+                logApi.verify(() ->
+                        LogApi.step(
+                                "Response with status: {} received from endpoint: {}-{} in {}ms.",
+                                200, "GET", BASE_URL, 1234L
+                        ), times(1)
+                );
 
-                logApiMock.verify(() -> LogApi.extended(
-                    "Response body: {}.", expectedBody
-                ), times(1));
+                // Compute expected body
+                String expectedBody;
+                if (nullBody) {
+                    expectedBody = "";
+                } else if (logFullBody) {
+                    expectedBody = fullBody;
+                } else {
+                    int limit = Math.min(fullBody.length(), 10);
+                    expectedBody = fullBody.substring(0, limit) + (fullBody.length() > limit ? "..." : "");
+                }
 
-                logApiMock.verify(() -> LogApi.extended(
-                    "Response headers: {}.", "Content-Type: application/json"
-                ), times(1));
+                // Assert body‐log
+                logApi.verify(() ->
+                                LogApi.extended("Response body: {}.", expectedBody),
+                        times(1)
+                );
+
+                // Assert headers‐log
+                logApi.verify(() ->
+                                LogApi.extended("Response headers: {}.", "Content-Type: application/json"),
+                        times(1)
+                );
             }
         }
 
+        @Test
+        @DisplayName("printResponse should not append ellipsis when body shorter than shortenBody()")
+        void shouldNotAppendEllipsisWhenBodyShorterThanLimit() {
+            // Arrange
+            Response mockResp = mock(Response.class);
+            when(mockResp.getStatusCode()).thenReturn(200);
+            when(mockResp.body()).thenReturn(mockResp);
+            when(mockResp.asPrettyString()).thenReturn("SHORT");    // length = 5
+            when(mockResp.getHeaders()).thenReturn(mock(Headers.class));
 
+            ApiConfig cfg = mock(ApiConfig.class);
+            when(cfg.logFullBody()).thenReturn(false);
+            when(cfg.shortenBody()).thenReturn(10);                // limit > body length
+
+            try (
+                    MockedStatic<ApiConfigHolder> apiCfg = mockStatic(ApiConfigHolder.class);
+                    MockedStatic<LogApi> logApi = mockStatic(LogApi.class)
+            ) {
+                apiCfg.when(ApiConfigHolder::getApiConfig).thenReturn(cfg);
+
+                // Act
+                restClientImpl.printResponse("PUT", BASE_URL, mockResp, 50L);
+
+                // Assert
+                logApi.verify(() ->
+                                LogApi.extended("Response body: {}.", "SHORT"),
+                        times(1)
+                );
+            }
+        }
     }
-
 }
