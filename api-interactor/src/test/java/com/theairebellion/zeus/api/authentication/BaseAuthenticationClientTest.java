@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.api.authentication;
 
+import com.theairebellion.zeus.api.authentication.mock.AnotherAuthClient;
 import com.theairebellion.zeus.api.authentication.mock.TestAuthenticationClient;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
@@ -12,17 +13,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("BaseAuthenticationClient Tests")
@@ -63,8 +56,8 @@ class BaseAuthenticationClientTest {
         void shouldAddToCacheWhenCacheFalse() {
             // Arrange
             doReturn(new Header(AUTH_HEADER_KEY, BEARER_TOKEN))
-                .when(spyClient)
-                .authenticateImpl(mockRestService, USERNAME, PASSWORD);
+                    .when(spyClient)
+                    .authenticateImpl(mockRestService, USERNAME, PASSWORD);
 
             // Act
             AuthenticationKey key = spyClient.authenticate(mockRestService, USERNAME, PASSWORD, false);
@@ -72,7 +65,7 @@ class BaseAuthenticationClientTest {
             // Assert
             assertNotNull(key, "Authentication key should not be null");
             assertTrue(BaseAuthenticationClient.userAuthenticationHeaderMap.containsKey(key),
-                "Key should be added to cache");
+                    "Key should be added to cache");
             assertEquals(USERNAME, key.getUsername(), "Username should match");
             assertEquals(PASSWORD, key.getPassword(), "Password should match");
             assertEquals(TestAuthenticationClient.class, key.getType(), "Type should match");
@@ -87,15 +80,15 @@ class BaseAuthenticationClientTest {
         void shouldThrowExceptionForNullServiceOrUsername() {
             // Act & Assert
             assertThrows(
-                NullPointerException.class,
-                () -> spyClient.authenticate(null, USERNAME, PASSWORD, false),
-                "Should throw NullPointerException"
+                    NullPointerException.class,
+                    () -> spyClient.authenticate(null, USERNAME, PASSWORD, false),
+                    "Should throw NullPointerException"
             );
 
             assertThrows(
-                NullPointerException.class,
-                () -> spyClient.authenticate(mockRestService, null, PASSWORD, false),
-                "Should throw NullPointerException"
+                    NullPointerException.class,
+                    () -> spyClient.authenticate(mockRestService, null, PASSWORD, false),
+                    "Should throw NullPointerException"
             );
         }
 
@@ -105,8 +98,8 @@ class BaseAuthenticationClientTest {
         void shouldAddToCacheWhenCacheTrueAndKeyNotPresent() {
             // Arrange
             doReturn(new Header(AUTH_HEADER_KEY, BEARER_TOKEN))
-                .when(spyClient)
-                .authenticateImpl(mockRestService, USERNAME, PASSWORD);
+                    .when(spyClient)
+                    .authenticateImpl(mockRestService, USERNAME, PASSWORD);
 
             // Act
             AuthenticationKey key = spyClient.authenticate(mockRestService, USERNAME, PASSWORD, true);
@@ -114,7 +107,7 @@ class BaseAuthenticationClientTest {
             // Assert
             assertNotNull(key, "Authentication key should not be null");
             assertTrue(BaseAuthenticationClient.userAuthenticationHeaderMap.containsKey(key),
-                "Key should be added to cache");
+                    "Key should be added to cache");
 
             // Verify
             verify(spyClient).authenticateImpl(mockRestService, USERNAME, PASSWORD);
@@ -127,7 +120,7 @@ class BaseAuthenticationClientTest {
             // Arrange
             AuthenticationKey existingKey = new AuthenticationKey(USERNAME, PASSWORD, spyClient.getClass());
             BaseAuthenticationClient.userAuthenticationHeaderMap.put(
-                existingKey, new Header(AUTH_HEADER_KEY, BEARER_TOKEN));
+                    existingKey, new Header(AUTH_HEADER_KEY, BEARER_TOKEN));
 
             // Act
             AuthenticationKey returnedKey = spyClient.authenticate(mockRestService, USERNAME, PASSWORD, true);
@@ -147,7 +140,7 @@ class BaseAuthenticationClientTest {
             AuthenticationKey existingKey = new AuthenticationKey(USERNAME, PASSWORD, spyClient.getClass());
             Header firstHeader = new Header(AUTH_HEADER_KEY, "Bearer dummy-token");
             BaseAuthenticationClient.userAuthenticationHeaderMap.put(
-                existingKey, firstHeader);
+                    existingKey, firstHeader);
 
             // Act
             AuthenticationKey returnedKey = spyClient.authenticate(mockRestService, USERNAME, PASSWORD, false);
@@ -202,10 +195,21 @@ class BaseAuthenticationClientTest {
         @DisplayName("getAuthentication should throw exception when null is send for authentication key")
         void shouldThrowExceptionWhenNullAsKeyForGetAuthentication() {
             assertThrows(
-                IllegalArgumentException.class,
-                () -> testClient.getAuthentication(null),
-                "Should throw IllegalArgumentException when assertion key is null"
+                    IllegalArgumentException.class,
+                    () -> testClient.getAuthentication(null),
+                    "Should throw IllegalArgumentException when assertion key is null"
             );
+        }
+
+        @Test
+        @DisplayName("AuthenticationKey equals/hashCode by value")
+        void authenticationKeyEquality() {
+            AuthenticationKey k1 = new AuthenticationKey("u", "p", TestAuthenticationClient.class);
+            AuthenticationKey k2 = new AuthenticationKey("u", "p", TestAuthenticationClient.class);
+            AuthenticationKey k3 = new AuthenticationKey("u", "p", AnotherAuthClient.class);
+            assertEquals(k1, k2, "same ctor args should be equal");
+            assertEquals(k1.hashCode(), k2.hashCode(), "equal objects must have same hashCode");
+            assertNotEquals(k1, k3, "different type should not be equal");
         }
 
     }

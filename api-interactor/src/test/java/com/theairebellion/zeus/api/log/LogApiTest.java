@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.api.log;
 
-import com.theairebellion.zeus.logging.LogCommon;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,7 +108,7 @@ class LogApiTest {
 
         // Then
         assertSame(mockInstance, instanceField.get(null),
-            "Instance field should be set to the mock");
+                "Instance field should be set to the mock");
 
         // Restore original instance
         instanceField.set(null, originalInstance);

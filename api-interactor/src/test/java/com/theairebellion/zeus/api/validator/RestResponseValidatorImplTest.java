@@ -17,10 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,15 +43,24 @@ class RestResponseValidatorImplTest {
             // Arrange
             Assertion statusAssertion = Assertion.builder()
                     .target(RestAssertionTarget.STATUS)
-                    .key("AssertionKeyForStatus")
+                    .key("AssertionKeyForStatus")            // initial key (will be reset by validator)
                     .type(AssertionTypes.IS)
                     .expected(200)
                     .build();
-
             when(responseMock.getStatusCode()).thenReturn(200);
 
-            // Act & Assert
-            assertNotNull(validator.validateResponse(responseMock, statusAssertion));
+            // Act
+            List<AssertionResult<Integer>> results =
+                    validator.validateResponse(responseMock, statusAssertion);
+
+            // Assert – we should get exactly one passing result…
+            assertEquals(1, results.size(), "Should return exactly one result");
+            assertTrue(results.get(0).isPassed(), "Status assertion should pass");
+
+            // …and the validator will have reset the assertion’s key
+            assertEquals("AssertionKeyForStatus",
+                    statusAssertion.getKey(),
+                    "Validator should have set the key to 'AssertionKeyForStatus'");
         }
     }
 
@@ -62,58 +68,68 @@ class RestResponseValidatorImplTest {
     @DisplayName("Body Assertion Tests")
     class BodyAssertionTests {
         @Test
-        @DisplayName("Validate response body")
+        @DisplayName("Validate response body value and assertion key remains unchanged")
         void testValidateResponseBody() {
             // Arrange
+            String json = "{\"user\":{\"id\":42}}";
             Assertion bodyAssertion = Assertion.builder()
                     .target(RestAssertionTarget.BODY)
-                    .key("some.json.path")
+                    .key("user.id")
                     .type(AssertionTypes.IS)
-                    .expected("val")
+                    .expected(42)
                     .build();
 
-            when(responseMock.jsonPath()).thenReturn(
-                    new JsonPath("{\"some\":{\"json\":{\"path\":\"val\"}}}")
-            );
+            when(responseMock.jsonPath()).thenReturn(new JsonPath(json));
 
-            // Act & Assert
-            List<AssertionResult<Object>> results = validator.validateResponse(responseMock, bodyAssertion);
-            assertEquals(1, results.size(), "The size of the list of results is not correct");
-            assertTrue(results.get(0).isPassed(), "Assertion should be pass");
+            // Act
+            List<AssertionResult<Integer>> results =
+                    validator.validateResponse(responseMock, bodyAssertion);
+
+            // Assert: one passing result
+            assertEquals(1, results.size(), "Should return exactly one result");
+            assertTrue(results.get(0).isPassed(), "Body assertion should pass");
+
+            // And key should still be the JSON path we set
+            assertEquals("user.id",
+                    bodyAssertion.getKey(),
+                    "Validator should not change the assertion key for BODY");
         }
 
         @Test
-        @DisplayName("Validate response body with null key")
+        @DisplayName("Validate response body with null key throws InvalidAssertionException")
         void testValidateResponseBodyNoKey() {
             // Arrange
             Assertion bodyAssertion = Assertion.builder()
                     .target(RestAssertionTarget.BODY)
                     .key(null)
                     .type(AssertionTypes.IS)
-                    .expected("value")
+                    .expected("anything")
                     .build();
 
             // Act & Assert
             assertThrows(InvalidAssertionException.class,
-                    () -> validator.validateResponse(responseMock, bodyAssertion));
+                    () -> validator.validateResponse(responseMock, bodyAssertion),
+                    "Null key should trigger InvalidAssertionException");
         }
 
         @Test
-        @DisplayName("Validate response body with null path value")
+        @DisplayName("Validate response body with missing JSON path throws IllegalArgumentException")
         void testValidateResponseBodyNullPathValue() {
             // Arrange
+            when(responseMock.jsonPath()).thenReturn(new JsonPath("{}"));
             Assertion bodyAssertion = Assertion.builder()
                     .target(RestAssertionTarget.BODY)
-                    .key("not.existing")
+                    .key("does.not.exist")
                     .type(AssertionTypes.IS)
-                    .expected("someValue")
+                    .expected("value")
                     .build();
 
-            when(responseMock.jsonPath()).thenReturn(new JsonPath("{}"));
-
             // Act & Assert
-            assertThrows(IllegalArgumentException.class,
-                    () -> validator.validateResponse(responseMock, bodyAssertion));
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                    () -> validator.validateResponse(responseMock, bodyAssertion),
+                    "Missing path should trigger IllegalArgumentException");
+            assertTrue(ex.getMessage().contains("JsonPath expression"),
+                    "Exception message should mention JsonPath");
         }
     }
 
@@ -182,19 +198,19 @@ class RestResponseValidatorImplTest {
         void testInvalidateAssertionTargetThrowsException() {
             // Arrange
             Assertion invalidAssertion = Assertion.builder()
-                                            .target(AssertionTargetImpl.INVALID)
-                                            .key("AssertionKeyForStatus")
-                                            .type(AssertionTypes.IS)
-                                            .expected(200)
-                                            .build();
+                    .target(AssertionTargetImpl.INVALID)
+                    .key("AssertionKeyForStatus")
+                    .type(AssertionTypes.IS)
+                    .expected(200)
+                    .build();
 
             assertThrows(InvalidAssertionException.class,
-                () -> validator.validateResponse(responseMock, invalidAssertion));
+                    () -> validator.validateResponse(responseMock, invalidAssertion));
 
         }
 
 
-        private enum AssertionTargetImpl implements AssertionTarget{
+        private enum AssertionTargetImpl implements AssertionTarget {
             INVALID;
 
 
@@ -205,7 +221,5 @@ class RestResponseValidatorImplTest {
         }
 
     }
-
-
 
 }
