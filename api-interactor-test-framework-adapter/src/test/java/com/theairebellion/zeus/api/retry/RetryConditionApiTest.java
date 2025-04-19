@@ -128,6 +128,26 @@ class RetryConditionApiTest {
             verify(restService).request(endpoint, requestBody);
             verify(response).getStatusCode();
         }
+
+        @Test
+        @DisplayName("Should return false when actual status does not match expected (with body)")
+        void shouldReturnFalseWhenStatusDoesNotMatchWithBody() {
+            // Arrange
+            Object body = new Object();
+            when(restService.request(endpoint, body)).thenReturn(response);
+            when(response.getStatusCode()).thenReturn(404); // Mismatch
+
+            RetryCondition<Integer> condition = RetryConditionApi.statusEquals(endpoint, body, 200);
+
+            // Act
+            Integer result = condition.function().apply(restService);
+            boolean matches = condition.condition().test(result);
+
+            // Assert
+            assertThat(matches).isFalse(); // This triggers the false predicate branch
+            verify(restService).request(endpoint, body);
+            verify(response).getStatusCode();
+        }
     }
 
     @Nested

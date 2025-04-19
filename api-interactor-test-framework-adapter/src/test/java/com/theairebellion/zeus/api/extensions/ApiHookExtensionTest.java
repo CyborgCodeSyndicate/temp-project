@@ -78,7 +78,7 @@ class ApiHookExtensionTest {
                         () -> extension.beforeAll(context),
                         "Expected reflection failure to be wrapped"
                 );
-                assertThat(ex.getMessage()).contains("Error executing DbHook: failType");
+                assertThat(ex.getMessage()).contains("Error executing ApiHook: failType");
                 assertThat(ex.getCause()).hasMessage("boom-from-reflection");
             }
         }
