@@ -19,7 +19,8 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("DataExtractorsApi Tests")
@@ -128,7 +129,7 @@ class DataExtractorsApiTest {
         @ParameterizedTest(name = "Status code {0} should be extracted correctly")
         @MethodSource("statusCodesProvider")
         @DisplayName("Should extract different status codes")
-        void shouldExtractDifferentStatusCodes(int statusCode, String description) {
+        void shouldExtractDifferentStatusCodes(int statusCode) {
             // Arrange
             when(response.statusCode()).thenReturn(statusCode);
             DataExtractor<Integer> extractor = DataExtractorsApi.statusExtraction(TestEnum.API_RESPONSE);
@@ -151,6 +152,22 @@ class DataExtractorsApiTest {
             // Act & Assert
             assertThatThrownBy(() -> extractor.extract(notAResponse))
                     .isInstanceOf(ClassCastException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("Utility Constructor Test")
+    class UtilityConstructorTest {
+
+        @Test
+        @DisplayName("Should instantiate DataExtractorsApi via reflection")
+        void shouldInstantiateViaReflection() throws Exception {
+            var constructor = DataExtractorsApi.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+
+            Object instance = constructor.newInstance();
+
+            assertThat(instance).isNotNull();
         }
     }
 }
