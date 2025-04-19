@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SuperRestServiceFluent Tests")
@@ -39,6 +39,7 @@ class SuperRestServiceFluentTest {
         // Arrange
         when(mockRestServiceFluent.getRestService()).thenReturn(mockRestService);
         SuperRestServiceFluent superRestServiceFluent = new SuperRestServiceFluent(mockRestServiceFluent);
+        clearInvocations(mockRestServiceFluent);
 
         // Act - Reset the mock to verify exactly one call
         when(mockRestServiceFluent.getRestService()).thenReturn(mockRestService);
@@ -46,5 +47,6 @@ class SuperRestServiceFluentTest {
 
         // Assert
         assertThat(result).isSameAs(mockRestService);
+        verify(mockRestServiceFluent, times(1)).getRestService();
     }
 }
