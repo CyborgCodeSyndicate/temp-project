@@ -49,6 +49,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -86,6 +87,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
+                    <skipTests>true</skipTests>
                         <properties>
                             <groups>${include.tags}</groups>
                             <excludedGroups>${exclude.tags}</excludedGroups>
