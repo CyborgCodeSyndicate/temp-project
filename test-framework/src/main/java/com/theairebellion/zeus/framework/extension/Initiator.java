@@ -112,7 +112,7 @@ public class Initiator implements InvocationInterceptor {
         CustomAllureListener.startStep(StepType.PROCESSING_PRE_QUEST.getDisplayName() + ": " + preQuestJourney.toString());
         String attachmentName = journey + "-Data";
 
-        String formattedData = new ObjectFormatter().formatProcessedData(journeyData, processedData);
+        String formattedData = ObjectFormatter.formatProcessedData(journeyData, processedData);
         Allure.addAttachment(attachmentName, formattedData);
 
         preQuestJourney.journey().accept(superQuest, processedData);

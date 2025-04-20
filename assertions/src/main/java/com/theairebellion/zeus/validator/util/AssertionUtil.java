@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author Cyborg Code Syndicate
  */
-public class AssertionUtil {
+public final class AssertionUtil {
 
     private AssertionUtil() {
     }

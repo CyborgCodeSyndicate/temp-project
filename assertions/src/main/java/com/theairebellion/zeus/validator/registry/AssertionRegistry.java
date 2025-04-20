@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
  *
  * @author Cyborg Code Syndicate
  */
-public class AssertionRegistry {
+public final class AssertionRegistry {
 
     private AssertionRegistry() {
     }

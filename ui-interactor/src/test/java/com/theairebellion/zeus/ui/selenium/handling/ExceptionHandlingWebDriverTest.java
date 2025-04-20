@@ -86,14 +86,14 @@ class ExceptionHandlingWebDriverTest {
                     ExceptionHandlingWebDriver.FIND_ELEMENT.getExceptionHandlingMap();
 
             assertEquals(methodName, ExceptionHandlingWebDriver.FIND_ELEMENT.getMethodName());
-            assertSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENT.getExceptionHandlingMap());
+            assertNotSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENT.getExceptionHandlingMap());
 
             // Test for FIND_ELEMENTS enum
             methodName = "findElements";
             exceptionMap = ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap();
 
             assertEquals(methodName, ExceptionHandlingWebDriver.FIND_ELEMENTS.getMethodName());
-            assertSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap());
+            assertNotSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap());
         }
     }
 

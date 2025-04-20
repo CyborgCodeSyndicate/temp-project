@@ -15,7 +15,7 @@ import java.util.Objects;
  *
  * @author Cyborg Code Syndicate
  */
-public class AssertionFunctions {
+public final class AssertionFunctions {
 
     private AssertionFunctions() {
     }

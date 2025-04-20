@@ -23,12 +23,6 @@ import java.util.Map;
 public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentType, Toggle> implements ToggleService {
 
     /**
-     * Map storing references to toggle components by their type.
-     * Currently unused, but declared for potential future caching or sharing of components.
-     */
-    private static Map<ToggleComponentType, Toggle> components;
-
-    /**
      * Constructs a new {@code ToggleServiceImpl} with the specified {@link SmartWebDriver}.
      *
      * @param driver the smart web driver for interacting with browser elements.

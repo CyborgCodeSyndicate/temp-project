@@ -14,12 +14,13 @@ class ApiResponseTest {
 
     private static final String TEST_URL = "https://api.example.com/test";
     private static final int TEST_STATUS = 200;
+    private static final String TEST_METHOD = "GET";
     private static final String TEST_BODY = "{\"key\": \"value\"}";
 
     @Test
     void constructor_ShouldInitializeUrlAndStatus() {
         // Act
-        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_STATUS);
+        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_METHOD, TEST_STATUS);
 
         // Assert
         assertEquals(TEST_URL, apiResponse.getUrl());
@@ -31,7 +32,7 @@ class ApiResponseTest {
     @MethodSource("urlAndStatusProvider")
     void constructor_WithVariousInputs_ShouldInitializeCorrectly(String url, int status) {
         // Act
-        ApiResponse apiResponse = new ApiResponse(url, status);
+        ApiResponse apiResponse = new ApiResponse(url, TEST_METHOD, status);
 
         // Assert
         assertEquals(url, apiResponse.getUrl());
@@ -41,7 +42,7 @@ class ApiResponseTest {
     @Test
     void setBody_ShouldUpdateBody() {
         // Arrange
-        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_STATUS);
+        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_METHOD, TEST_STATUS);
 
         // Act
         apiResponse.setBody(TEST_BODY);
@@ -53,7 +54,7 @@ class ApiResponseTest {
     @Test
     void getters_ShouldReturnCorrectValues() {
         // Arrange
-        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_STATUS);
+        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_METHOD, TEST_STATUS);
         apiResponse.setBody(TEST_BODY);
 
         // Act & Assert
@@ -65,7 +66,7 @@ class ApiResponseTest {
     @Test
     void setBody_WithNull_ShouldSetBodyToNull() {
         // Arrange
-        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_STATUS);
+        ApiResponse apiResponse = new ApiResponse(TEST_URL, TEST_METHOD, TEST_STATUS);
         apiResponse.setBody(TEST_BODY);
 
         // Act

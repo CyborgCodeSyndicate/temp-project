@@ -6,6 +6,7 @@ import com.theairebellion.zeus.ui.util.FourFunction;
 import lombok.Getter;
 import org.openqa.selenium.*;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -17,7 +18,6 @@ import java.util.Map;
  *
  * @author Cyborg Code Syndicate
  */
-@Getter
 public enum ExceptionHandlingWebElement {
 
     /**
@@ -101,6 +101,7 @@ public enum ExceptionHandlingWebElement {
     /**
      * The name of the method being handled.
      */
+    @Getter
     private final String methodName;
 
     /**
@@ -120,4 +121,8 @@ public enum ExceptionHandlingWebElement {
         this.exceptionHandlingMap = exceptionHandlingMap;
     }
 
+
+    public Map<Class<? extends Throwable>, FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object>> getExceptionHandlingMap() {
+        return Collections.unmodifiableMap(exceptionHandlingMap);
+    }
 }

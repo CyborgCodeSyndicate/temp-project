@@ -8,7 +8,6 @@ import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
-import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
@@ -19,6 +18,7 @@ import com.theairebellion.zeus.ui.parameters.DataIntercept;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
+import com.theairebellion.zeus.ui.util.ResponseFormatter;
 import com.theairebellion.zeus.ui.validator.TableAssertionFunctions;
 import com.theairebellion.zeus.ui.validator.TableAssertionTypes;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -36,6 +36,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v85.network.Network;
+import org.openqa.selenium.devtools.v85.network.model.RequestId;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -48,7 +49,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
@@ -141,7 +144,6 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     }
 
 
-
     private void processInterceptRequestsAnnotation(ExtensionContext context, Method method) {
         Optional.ofNullable(method.getAnnotation(InterceptRequests.class))
             .ifPresent(intercept -> {
@@ -160,7 +162,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                         Class<? extends Enum> enumClass = enumClassImplementations.get(0);
 
                         List<String> resolvedEndpoints = Arrays.stream(intercept.requestUrlSubStrings())
-                                                             .map(target -> ((DataIntercept) Enum.valueOf(enumClass, target))
+                                                             .map(target -> ((DataIntercept) Enum.valueOf(enumClass,
+                                                                 target))
                                                                                 .getEndpointSubString())
                                                              .toList();
 
@@ -169,8 +172,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                         } else {
                             urlsForIntercepting = resolvedEndpoints.toArray(new String[0]);
                         }
-                    }
-                    else {
+                    } else {
                         urlsForIntercepting = intercept.requestUrlSubStrings();
                     }
                 } catch (Exception e) {
@@ -192,10 +194,22 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             DevTools chromeDevTools = ((ChromeDriver) driver).getDevTools();
             chromeDevTools.createSession();
             chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+
+            Map<String, String> requestMethodMap = new ConcurrentHashMap<>();
+
+
+            chromeDevTools.addListener(Network.requestWillBeSent(), event -> {
+                String method = event.getRequest().getMethod();
+                RequestId requestId = event.getRequestId();
+                requestMethodMap.put(requestId.toJson(), method);
+            });
+
             chromeDevTools.addListener(Network.responseReceived(), entry -> {
+                RequestId requestId = entry.getRequestId();
                 int statusCode = entry.getResponse().getStatus();
+                String method = requestMethodMap.get(requestId.toString());
                 String url = entry.getResponse().getUrl();
-                ApiResponse response = new ApiResponse(url, statusCode);
+                ApiResponse response = new ApiResponse(url, method, statusCode);
 
                 if (checkUrl(urlsForIntercepting, url)) {
                     try {
@@ -269,7 +283,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             responses = new ArrayList<>();
         }
         responses.add(apiResponse);
-        storage.sub(UI).put(RESPONSES, apiResponse);
+        storage.sub(UI).put(RESPONSES, responses);
 
         LogUI.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
     }
@@ -299,9 +313,10 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             LogUI.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
             takeScreenshot(driver, context.getDisplayName());
         }
-        List<Object> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES, Object.class);
+        List<ApiResponse> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES,
+            ApiResponse.class);
         if (!responses.isEmpty()) {
-            String formattedResponses = new ObjectFormatter().formatResponses(Collections.singletonList(responses));
+            String formattedResponses = ResponseFormatter.formatResponses(responses);
             Allure.addAttachment("Intercepted Requests", "text/html",
                 new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
         }
@@ -322,6 +337,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
      */
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+        throwable.printStackTrace();
+
         ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
         DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 

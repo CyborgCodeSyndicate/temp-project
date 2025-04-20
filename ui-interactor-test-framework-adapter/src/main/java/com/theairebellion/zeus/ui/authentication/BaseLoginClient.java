@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.authentication;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
@@ -10,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,7 +44,7 @@ public abstract class BaseLoginClient implements LoginClient {
     private static final Map<LoginKey, SessionInfo> userLoginMap = new ConcurrentHashMap<>();
 
     //todo: javaDocs
-    public static final List<SmartWebDriver> driverToKeep = new ArrayList<>();
+    public static final List<SmartWebDriver> driverToKeep = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * JavaScript command to retrieve local storage data.
@@ -59,6 +61,7 @@ public abstract class BaseLoginClient implements LoginClient {
      */
     private static String urlAfterLogging;
 
+
     /**
      * Logs in the user and optionally caches session data for reuse.
      *
@@ -68,6 +71,7 @@ public abstract class BaseLoginClient implements LoginClient {
      * @param cache     Whether to cache the session for future reuse.
      */
     @Override
+    @SuppressFBWarnings("JLM_JSR166_UTILCONCURRENT_MONITORENTER")
     public void login(final SuperUIServiceFluent<?> uiService, final String username, final String password,
                       final boolean cache) {
         LoginKey loginKey = new LoginKey(username, password, this.getClass());
@@ -85,6 +89,7 @@ public abstract class BaseLoginClient implements LoginClient {
         }
     }
 
+
     /**
      * Retrieves cached authentication session info if available.
      *
@@ -94,6 +99,7 @@ public abstract class BaseLoginClient implements LoginClient {
     public Optional<SessionInfo> getAuthentication(final LoginKey loginKey) {
         return Optional.ofNullable(userLoginMap.get(loginKey));
     }
+
 
     /**
      * Performs login and caches session cookies and local storage data.
@@ -112,7 +118,7 @@ public abstract class BaseLoginClient implements LoginClient {
 
         try {
             smartWebDriver.getWait()
-                    .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
+                .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
             //todo create custom exception
             throw new RuntimeException("Logging in was not successful");
@@ -126,6 +132,7 @@ public abstract class BaseLoginClient implements LoginClient {
 
         userLoginMap.put(loginKey, new SessionInfo(cookies, localStorage));
     }
+
 
     /**
      * Restores a previously cached session by injecting cookies and local storage data.
@@ -147,9 +154,9 @@ public abstract class BaseLoginClient implements LoginClient {
             executeJavaScript(driver, String.format(UPDATE_LOCAL_STORAGE, sessionInfo.getLocalStorage()));
 
             smartWebDriver.get(urlAfterLogging);
-        }catch (Exception e){
+        } catch (Exception e) {
             //todo create custom exception
-            throw new RuntimeException("Restoring session was not successful",  e);
+            throw new RuntimeException("Restoring session was not successful", e);
         }
 
 
@@ -161,6 +168,7 @@ public abstract class BaseLoginClient implements LoginClient {
             throw new RuntimeException("Logging in was not successful");
         }
     }
+
 
     /**
      * Executes JavaScript in the browser.
@@ -176,6 +184,7 @@ public abstract class BaseLoginClient implements LoginClient {
             throw new IllegalStateException("Driver does not support JavaScript execution");
         }
     }
+
 
     /**
      * Performs the actual login operation.

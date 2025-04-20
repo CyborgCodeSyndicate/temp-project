@@ -16,6 +16,7 @@ import lombok.Setter;
 public class ApiResponse {
 
     private final String url;
+    private final String method;
     private final int status;
 
     @Setter
@@ -25,10 +26,12 @@ public class ApiResponse {
      * Constructs an {@code ApiResponse} with the specified URL and HTTP status.
      *
      * @param url    the URL of the intercepted request.
+     * @param method the HTTP method of the intercepted request.
      * @param status the HTTP status code of the response.
      */
-    public ApiResponse(final String url, final int status) {
+    public ApiResponse(final String url, final String method, final int status) {
         this.url = url;
+        this.method = method;
         this.status = status;
     }
 }

@@ -5,23 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.theairebellion.zeus</groupId>
-        <artifactId>automation-testing-libraries</artifactId>
+        <artifactId>library-parent-pom</artifactId>
         <version>1.0.0</version>
+        <relativePath>../library-parent-pom</relativePath>
     </parent>
 
     <artifactId>commons</artifactId>
 
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.nashorn</groupId>
-            <artifactId>nashorn-core</artifactId>
-            <version>15.4</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-layout-template-json</artifactId>
@@ -31,13 +23,9 @@
             <artifactId>reflections</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <groupId>org.aeonbits.owner</groupId>
+            <artifactId>owner</artifactId>
         </dependency>
-        <dependency>
-        <groupId>org.aeonbits.owner</groupId>
-        <artifactId>owner</artifactId>
-    </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -46,10 +34,17 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>ready</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
 
 
 </project>
