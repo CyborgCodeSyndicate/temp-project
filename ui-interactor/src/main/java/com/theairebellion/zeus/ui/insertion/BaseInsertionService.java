@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Abstract base class for insertion services that handle inserting data into UI components.
@@ -153,7 +152,7 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
                    .filter(field -> field.isAnnotationPresent(getAnnotationClass()))
                    .sorted(Comparator.comparingInt(field ->
                                                        getOrder(field.getAnnotation(getAnnotationClass()))))
-                   .collect(Collectors.toList());
+                   .toList();
     }
 
     //todo: javaDocs

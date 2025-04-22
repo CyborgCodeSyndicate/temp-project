@@ -27,7 +27,7 @@ class AssertionTest {
                             .key(MY_KEY)
                             .type(AssertionTypes.IS)
                             .expected(MY_VAL)
-                            .target(() -> TestTarget.FIELD_ONE)
+                            .target(TestTarget.FIELD_ONE)
                             .soft(true)
                             .build();
 
@@ -50,7 +50,7 @@ class AssertionTest {
                             .key(MY_KEY)
                             .type(AssertionTypes.IS)
                             .expected(MY_VAL)
-                            .target(() -> TestTarget.FIELD_ONE)
+                            .target(TestTarget.FIELD_ONE)
                             .build();
 
         // Then
@@ -66,7 +66,7 @@ class AssertionTest {
                             .key(null)
                             .type(AssertionTypes.IS)
                             .expected(MY_VAL)
-                            .target(() -> TestTarget.FIELD_ONE)
+                            .target(TestTarget.FIELD_ONE)
                             .build();
 
         // Then
@@ -99,7 +99,7 @@ class AssertionTest {
             Assertion.<String>builder()
                 .key(MY_KEY)
                 .expected(MY_VAL)
-                .target(() -> TestTarget.FIELD_ONE)
+                .target(TestTarget.FIELD_ONE)
                 .soft(true)
                 .build();
             ;
@@ -115,7 +115,7 @@ class AssertionTest {
             Assertion.<String>builder()
                 .key(MY_KEY)
                 .type(AssertionTypes.IS)
-                .target(() -> TestTarget.FIELD_ONE)
+                .target(TestTarget.FIELD_ONE)
                 .soft(true)
                 .build();
             ;
@@ -129,7 +129,7 @@ class AssertionTest {
         // When
         var assertion = Assertion.<String>builder()
                             .type(AssertionTypes.IS)
-                            .target(() -> TestTarget.FIELD_ONE)
+                            .target(TestTarget.FIELD_ONE)
                             .soft(true)
                             .expected(MY_VAL)
                             .build();
@@ -147,7 +147,7 @@ class AssertionTest {
                             .key(MY_KEY)
                             .type(AssertionTypes.CONTAINS)
                             .expected(MY_VAL)
-                            .target(() -> TestTarget.FIELD_TWO)
+                            .target(TestTarget.FIELD_TWO)
                             .soft(false)
                             .build();
 
@@ -167,7 +167,7 @@ class AssertionTest {
                             .key(MY_KEY)
                             .type(AssertionTypes.CONTAINS)
                             .expected(MY_VAL)
-                            .target(() -> TestTarget.FIELD_TWO)
+                            .target(TestTarget.FIELD_TWO)
                             .build();
 
         // When
@@ -187,7 +187,7 @@ class AssertionTest {
                             .key(MY_KEY)
                             .type(type)
                             .expected("value")
-                            .target(() -> TestTarget.FIELD_ONE)
+                            .target(TestTarget.FIELD_ONE)
                             .soft(false)
                             .build();
 
@@ -200,13 +200,13 @@ class AssertionTest {
 
 
     // Test enum for AssertionTarget implementation
-    private enum TestTarget implements AssertionTarget {
+    private enum TestTarget implements AssertionTarget<TestTarget> {
         FIELD_ONE,
         FIELD_TWO;
 
 
         @Override
-        public Enum<?> target() {
+        public TestTarget target() {
             return this;
         }
     }

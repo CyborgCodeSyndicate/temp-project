@@ -50,7 +50,7 @@ public final class AssertionFunctions {
      */
     public static boolean notNull(Object actual, Object expected) {
         boolean condition = Objects.nonNull(actual);
-        return expected instanceof Boolean && condition == (Boolean) expected;
+        return expected instanceof Boolean e && condition == e;
     }
 
     /**
@@ -58,7 +58,7 @@ public final class AssertionFunctions {
      */
     public static boolean isNull(Object actual, Object expected) {
         boolean condition = Objects.isNull(actual);
-        return expected instanceof Boolean && condition == (Boolean) expected;
+        return expected instanceof Boolean e && condition == e;
     }
 
     /**
@@ -69,7 +69,7 @@ public final class AssertionFunctions {
             return false;
         }
         boolean condition = ((Collection<?>) actual).stream().allMatch(Objects::nonNull);
-        return expected instanceof Boolean && condition == (Boolean) expected;
+        return expected instanceof Boolean exp && condition == exp;
     }
 
     /**
@@ -80,7 +80,7 @@ public final class AssertionFunctions {
             return false;
         }
         boolean condition = ((Collection<?>) actual).stream().allMatch(Objects::isNull);
-        return expected instanceof Boolean && condition == (Boolean) expected;
+        return expected instanceof Boolean exp && condition == exp;
     }
 
     /**
@@ -154,10 +154,10 @@ public final class AssertionFunctions {
         }
         int expectedLength = ((Number) expected).intValue();
 
-        if (actual instanceof String) {
-            return ((String) actual).length() == expectedLength;
-        } else if (actual instanceof Collection) {
-            return ((Collection<?>) actual).size() == expectedLength;
+        if (actual instanceof String str) {
+            return str.length() == expectedLength;
+        } else if (actual instanceof Collection<?> coll) {
+            return coll.size() == expectedLength;
         }
         return false;
     }
@@ -180,7 +180,7 @@ public final class AssertionFunctions {
      */
     public static boolean isEmpty(Object actual, Object expected) {
         boolean condition = (actual instanceof Collection) && ((Collection<?>) actual).isEmpty();
-        return expected instanceof Boolean && condition == (Boolean) expected;
+        return expected instanceof Boolean exp && condition == exp;
     }
 
     /**
@@ -188,7 +188,7 @@ public final class AssertionFunctions {
      */
     public static boolean isNotEmpty(Object actual, Object expected) {
         boolean condition = (actual instanceof Collection) && !((Collection<?>) actual).isEmpty();
-        return expected instanceof Boolean && condition == (Boolean) expected;
+        return expected instanceof Boolean exp && condition == exp;
     }
 
     /**

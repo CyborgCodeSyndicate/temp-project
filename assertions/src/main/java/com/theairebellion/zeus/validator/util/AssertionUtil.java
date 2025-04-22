@@ -69,13 +69,13 @@ public final class AssertionUtil {
             );
         }
 
-        AssertionType type = assertion.getType();
+        AssertionType<?> type = assertion.getType();
         validateTypeCompatibility(type, actualValue);
 
         var validator = AssertionRegistry.getValidator(type);
-        boolean passed = validator.apply(actualValue, assertion.getExpected());
+        boolean passed = validator.test(actualValue, assertion.getExpected());
 
-        return new AssertionResult(
+        return new AssertionResult<>(
             passed,
             type.type().name(),
             assertion.getExpected(),
@@ -109,7 +109,7 @@ public final class AssertionUtil {
      * @param actualValue The actual value to be validated.
      * @throws IllegalArgumentException if the actual value type does not match the expected type.
      */
-    private static void validateTypeCompatibility(AssertionType type, Object actualValue) {
+    private static void validateTypeCompatibility(AssertionType<?> type, Object actualValue) {
         Class<?> supportedType = type.getSupportedType();
         Class<?> actualValueClass = actualValue.getClass();
 

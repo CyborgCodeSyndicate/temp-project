@@ -7,7 +7,7 @@ import com.theairebellion.zeus.validator.functions.AssertionFunctions;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 
 /**
  * Manages the registry of assertion types and their corresponding validation functions.
@@ -26,7 +26,7 @@ public final class AssertionRegistry {
     private AssertionRegistry() {
     }
 
-    private static final Map<AssertionType, BiFunction<Object, Object, Boolean>> VALIDATORS = new ConcurrentHashMap<>();
+    private static final Map<AssertionType<?>, BiPredicate<Object, Object>> VALIDATORS = new ConcurrentHashMap<>();
 
     static {
         VALIDATORS.put(AssertionTypes.IS, AssertionFunctions::equals);
@@ -57,7 +57,7 @@ public final class AssertionRegistry {
      * @param validator The validation function that will be used to evaluate this assertion type.
      * @throws NullPointerException if {@code type} or {@code validator} is null.
      */
-    public static void registerCustomAssertion(AssertionType type, BiFunction<Object, Object, Boolean> validator) {
+    public static void registerCustomAssertion(AssertionType<?> type, BiPredicate<Object, Object> validator) {
         Objects.requireNonNull(type, "AssertionType must not be null");
         Objects.requireNonNull(validator, "Validator must not be null");
 
@@ -72,9 +72,9 @@ public final class AssertionRegistry {
      * @throws NullPointerException     if {@code type} is null.
      * @throws IllegalArgumentException if no validator is registered for the given assertion type.
      */
-    public static BiFunction<Object, Object, Boolean> getValidator(AssertionType type) {
+    public static BiPredicate<Object, Object> getValidator(AssertionType<?> type) {
         Objects.requireNonNull(type, "AssertionType must not be null");
-        BiFunction<Object, Object, Boolean> validator = VALIDATORS.get(type);
+        BiPredicate<Object, Object> validator = VALIDATORS.get(type);
 
         if (validator == null) {
             throw new IllegalArgumentException("No validator registered for AssertionType: " + type.type().name());

@@ -28,7 +28,7 @@ class LogCommonTest {
     private static final String TRACE = "trace";
     private static final String STEP = "step";
     private static final String EXTENDED = "extended";
-    private static final String INSTANCE_FIELD = "INSTANCE";
+    private static final String INSTANCE_FIELD = "instance";
 
     @Nested
     @DisplayName("Static Logging Methods Tests")

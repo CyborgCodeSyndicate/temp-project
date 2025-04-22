@@ -6,7 +6,6 @@ import io.restassured.http.Header;
 import lombok.NonNull;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class BaseAuthenticationClient implements AuthenticationClient {
 
     /** Stores authentication headers mapped by their corresponding authentication keys. */
-    public static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new ConcurrentHashMap<>();
+    protected static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new ConcurrentHashMap<>();
 
     /**
      * Authenticates a user and caches the authentication header if caching is enabled.

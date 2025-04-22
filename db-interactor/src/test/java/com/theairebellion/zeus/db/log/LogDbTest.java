@@ -26,7 +26,7 @@ class LogDbTest {
     @BeforeEach
     void setUp() throws Exception {
         // Store the original instance
-        Field instanceField = LogDb.class.getDeclaredField("INSTANCE");
+        Field instanceField = LogDb.class.getDeclaredField("instance");
         instanceField.setAccessible(true);
         originalInstance = (LogDb) instanceField.get(null);
     }
@@ -34,7 +34,7 @@ class LogDbTest {
     @AfterEach
     void tearDown() throws Exception {
         // Restore the original instance
-        Field instanceField = LogDb.class.getDeclaredField("INSTANCE");
+        Field instanceField = LogDb.class.getDeclaredField("instance");
         instanceField.setAccessible(true);
         instanceField.set(null, originalInstance);
     }
@@ -71,7 +71,7 @@ class LogDbTest {
     @DisplayName("Should create instance on first call")
     void testSingletonInitialization() throws Exception {
         // Given - reset the instance for this test
-        Field instanceField = LogDb.class.getDeclaredField("INSTANCE");
+        Field instanceField = LogDb.class.getDeclaredField("instance");
         instanceField.setAccessible(true);
         instanceField.set(null, null);
 
@@ -87,7 +87,7 @@ class LogDbTest {
     @DisplayName("Should reuse the same instance")
     void testSingletonReuse() throws Exception {
         // Given - reset the instance for this test
-        Field instanceField = LogDb.class.getDeclaredField("INSTANCE");
+        Field instanceField = LogDb.class.getDeclaredField("instance");
         instanceField.setAccessible(true);
         instanceField.set(null, null);
 

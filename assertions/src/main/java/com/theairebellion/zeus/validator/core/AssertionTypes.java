@@ -12,7 +12,7 @@ import java.util.Collection;
  *
  * @author Cyborg Code Syndicate
  */
-public enum AssertionTypes implements AssertionType {
+public enum AssertionTypes implements AssertionType<AssertionTypes> {
     /**
      * Checks if two values are equal.
      */
@@ -121,7 +121,7 @@ public enum AssertionTypes implements AssertionType {
     }
 
     @Override
-    public Enum<?> type() {
+    public AssertionTypes type() {
         return this;
     }
 

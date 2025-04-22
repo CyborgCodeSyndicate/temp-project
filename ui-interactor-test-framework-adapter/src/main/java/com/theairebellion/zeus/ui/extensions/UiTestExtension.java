@@ -149,7 +149,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             .ifPresent(intercept -> {
                 String[] urlsForIntercepting;
                 try {
-                    List<Class<? extends Enum<?>>> enumClassImplementations =
+                    List<Class<? extends Enum>> enumClassImplementations =
                         ReflectionUtil.findEnumClassImplementationsOfInterface(
                             DataIntercept.class, getFrameworkConfig().projectPackage());
 

@@ -13,7 +13,7 @@ import com.theairebellion.zeus.logging.LogCore;
  */
 public final class LogApi extends LogCore {
 
-    private static LogApi INSTANCE;
+    private static LogApi instance;
 
     private LogApi() {
         super("Zeus.API", "API");
@@ -102,11 +102,11 @@ public final class LogApi extends LogCore {
     /**
      * Extends the logging functionality using a custom log core instance.
      *
-     * @param INSTANCE The custom log instance to extend.
+     * @param instance The custom log instance to extend.
      * @param <T>      A subclass of {@link LogCore}.
      */
-    public static <T extends LogCore> void extend(final T INSTANCE) {
-        LogApi.INSTANCE = (LogApi) INSTANCE;
+    public static <T extends LogCore> void extend(final T instance) {
+        LogApi.instance = (LogApi) instance;
     }
 
     /**
@@ -115,10 +115,10 @@ public final class LogApi extends LogCore {
      * @return The singleton instance of {@code LogApi}.
      */
     private static LogApi getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new LogApi();
+        if (instance == null) {
+            instance = new LogApi();
         }
-        return INSTANCE;
+        return instance;
     }
 
 }
