@@ -7,10 +7,7 @@ import io.qameta.allure.internal.shadowed.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -104,11 +101,7 @@ public class ObjectFormatter {
         visited.add(obj);
 
         Class<?> objClass = obj.getClass();
-        if (objClass.isPrimitive() ||
-                objClass.getPackageName().startsWith("java.") ||
-                objClass.isEnum() ||
-                obj instanceof String || obj instanceof Number || obj instanceof Boolean || obj instanceof Character
-        ) {
+        if (objClass.getPackageName().startsWith("java.") || objClass.isEnum()) {
             visited.remove(obj);
             return obj.toString();
         }
@@ -116,7 +109,9 @@ public class ObjectFormatter {
         StringBuilder result = new StringBuilder(objClass.getSimpleName()).append(" {\n");
         try {
             for (Field field : FIELDS_CACHE.computeIfAbsent(objClass, Class::getDeclaredFields)) {
-                if (!field.canAccess(obj)) {
+                boolean isStatic = Modifier.isStatic(field.getModifiers());
+                Object target = isStatic ? null : obj;
+                if (!field.canAccess(target)) {
                     try {
                         field.setAccessible(true);
                     } catch (InaccessibleObjectException e) {
@@ -198,7 +193,6 @@ public class ObjectFormatter {
      * @return a string containing HTML table rows
      */
     private String buildRowsFromMap(String label, Map<Enum<?>, LinkedList<Object>> map) {
-        if ("PreArguments".equals(label)) return "";
         return map.entrySet().stream()
                 .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())
                 .map(entry -> String.format("<tr><td>%s</td><td>%s</td></tr>",
@@ -213,12 +207,11 @@ public class ObjectFormatter {
      * @return a string representation of the formatted objects
      */
     private String formatObject(LinkedList<Object> objects) {
-        return objects == null || objects.isEmpty() ? "" :
-                objects.stream()
-                        .filter(Objects::nonNull)
-                        .filter(obj -> !obj.getClass().getName().contains("Lambda"))
-                        .map(ObjectFormatter::formatObjectFields)
-                        .collect(Collectors.joining(", "));
+        return objects.stream()
+                .filter(Objects::nonNull)
+                .filter(obj -> !obj.getClass().getName().contains("Lambda"))
+                .map(ObjectFormatter::formatObjectFields)
+                .collect(Collectors.joining(", "));
     }
 
     /**
@@ -271,48 +264,9 @@ public class ObjectFormatter {
      */
     private static String formatAnnotation(Annotation annotation) {
         String annotationName = annotation.annotationType().getSimpleName();
-        String args = Arrays.stream(annotation.annotationType().getDeclaredMethods())
-                .filter(method -> method.getParameterCount() == 0)
-                .map(method -> getAnnotationArgument(annotation, method))
-                .collect(Collectors.joining(", "));
+        String arguments = formatAnnotationArguments(annotation);
 
-        return "@" + annotationName + (args.isEmpty() ? "" : "(" + args + ")");
-    }
-
-    /**
-     * Retrieves the value of an annotation's method as a string, handling arrays appropriately.
-     *
-     * @param annotation the annotation instance
-     * @param method     the annotation method to invoke
-     * @return a string representing the method name and its value
-     */
-    private static String getAnnotationArgument(Annotation annotation, Method method) {
-        try {
-            Object value = method.invoke(annotation);
-            return value.getClass().isArray() ? method.getName() + "=" + arrayToString(value) : method.getName() + "=" + value;
-        } catch (Exception e) {
-            return method.getName() + "=error";
-        }
-    }
-
-    /**
-     * Converts an array to a string representation.
-     *
-     * @param array the array to convert
-     * @return a string representing the array contents
-     */
-    private static String arrayToString(Object array) {
-        if (array.getClass().isArray()) {
-            int length = Array.getLength(array);
-            StringBuilder sb = new StringBuilder("[");
-            for (int i = 0; i < length; i++) {
-                if (i > 0) sb.append(", ");
-                sb.append(Array.get(array, i));
-            }
-            sb.append("]");
-            return sb.toString();
-        }
-        return array.toString();
+        return "@" + annotationName + (arguments.isEmpty() ? "" : arguments);
     }
 
     /**
@@ -323,7 +277,17 @@ public class ObjectFormatter {
      */
     private static boolean annotationHasArguments(Annotation annotation) {
         return Arrays.stream(annotation.annotationType().getDeclaredMethods())
-                .anyMatch(method -> method.getParameterCount() > 0);
+                .anyMatch(method -> {
+                    try {
+                        Object defaultValue = method.getDefaultValue();
+                        Object actualValue = method.invoke(annotation);
+                        return defaultValue == null || !defaultValue.equals(actualValue);
+                    } catch (Exception e) {
+                        return false;
+                        // Reflection exceptions are caught for compliance with Method.invoke() API.
+                        // This fallback is not unit tested due to extremely low likelihood of failure in known annotation usage.
+                    }
+            });
     }
 
     /**
@@ -333,16 +297,26 @@ public class ObjectFormatter {
      * @return a string representation of the annotation's arguments
      */
     private static String formatAnnotationArguments(Annotation annotation) {
-        return Arrays.stream(annotation.annotationType().getDeclaredMethods())
-                .filter(method -> method.getParameterCount() == 0)
+        List<String> args = Arrays.stream(annotation.annotationType().getDeclaredMethods())
                 .map(method -> {
                     try {
-                        return method.getName() + "=" + method.invoke(annotation);
+                        Object value = method.invoke(annotation);
+                        if (value.getClass().isArray()) {
+                            value = Arrays.toString((Object[]) value)
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .replace(",", "");
+                        }
+                        if (value.equals(method.getDefaultValue())) return "";
+                        return method.getName() + "=" + value;
                     } catch (Exception e) {
                         return method.getName() + "=error";
                     }
                 })
-                .collect(Collectors.joining(", ", "(", ")"));
+                .filter(arg -> !arg.isEmpty())
+                .toList();
+
+        return args.isEmpty() ? "" : args.stream().collect(Collectors.joining(", ", "(", ")"));
     }
 
     /**
@@ -528,7 +502,7 @@ public class ObjectFormatter {
         }
 
         return htmlBuilder.toString();
-    } //
+    }
 
     /**
      * Retrieves the HTTP status code from a response object using reflection.

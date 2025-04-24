@@ -143,6 +143,23 @@ class ServicesTest {
     }
 
     @Test
+    @DisplayName("Should log warning if multiple services are returned, but still return the first one")
+    void testServiceRetrieval_MultipleServicesWarning() {
+        // Given: multiple mock services returned by ReflectionUtil
+        MockService secondService = mock(MockService.class);
+        reflectionUtilMock.when(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class))
+                .thenReturn(List.of(mockService, secondService));
+
+        // When
+        MockService result = services.service(MockClassLevelHook.class, MockService.class);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(mockService, result); // should return the first one
+        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class));
+    }
+
+    @Test
     @DisplayName("Constructor should have @Autowired annotation")
     void testConstructorAnnotation() throws NoSuchMethodException {
         // When

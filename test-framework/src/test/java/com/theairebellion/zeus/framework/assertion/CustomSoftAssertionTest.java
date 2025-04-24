@@ -240,4 +240,74 @@ class CustomSoftAssertionTest {
         assertFalse(spyAssertions.errorsCollected().isEmpty(),
                 "Error should be collected by parent class");
     }
+
+    @Test
+    @DisplayName("Should throw exception when null object is registered")
+    void testRegisterNullObject() {
+        assertThrows(NullPointerException.class, () -> softAssertions.registerObjectForPostErrorHandling(String.class, null));
+    }
+
+    @Test
+    @DisplayName("Should call different handlers based on stack trace conditions")
+    void testMultipleErrorHandlersWithDifferentConditions() {
+        // Given
+        AssertionError testError = new AssertionError("Test error");
+        AtomicInteger stringHandlerCallCount = new AtomicInteger(0);
+        AtomicInteger integerHandlerCallCount = new AtomicInteger(0);
+
+        // Create different checkers for string and integer handlers
+        Predicate<StackTraceElement[]> stringChecker = stackTrace -> {
+            System.out.println("Checking stack trace for String handler...");
+            for (StackTraceElement element : stackTrace) {
+                System.out.println("Element: " + element.getClassName());
+                if (element.getClassName().contains("CustomSoftAssertionTest")) {
+                    return true;  // Custom condition for string handler
+                }
+            }
+            return false;
+        };
+
+        Predicate<StackTraceElement[]> integerChecker = stackTrace -> {
+            System.out.println("Checking stack trace for Integer handler...");
+            for (StackTraceElement element : stackTrace) {
+                System.out.println("Element: " + element.getClassName());
+                if (element.getClassName().contains("CustomSoftAssertion") && !element.getClassName().contains("CustomSoftAssertionTest")) {
+                    return true;  // Custom condition for integer handler
+                }
+            }
+            return false;
+        };
+
+        // Handlers that increment their respective call counts
+        BiConsumer<AssertionError, String> stringHandler = (error, obj) -> stringHandlerCallCount.incrementAndGet();
+        BiConsumer<AssertionError, Integer> integerHandler = (error, obj) -> integerHandlerCallCount.incrementAndGet();
+
+        // Register both handlers with different predicates
+        CustomSoftAssertion.registerCustomAssertion(
+                String.class,
+                stringHandler,
+                stringChecker
+        );
+        CustomSoftAssertion.registerCustomAssertion(
+                Integer.class,
+                integerHandler,
+                integerChecker
+        );
+
+        // Register corresponding objects
+        softAssertions.registerObjectForPostErrorHandling(String.class, "Test String");
+        softAssertions.registerObjectForPostErrorHandling(Integer.class, 42);
+
+        // When
+        softAssertions.collectAssertionError(testError);
+
+        // Then
+        // The string handler should be called because the stack trace should contain "CustomSoftAssertionTest"
+        assertEquals(1, stringHandlerCallCount.get(), "String handler should be called for matching stack trace condition");
+
+        // The integer handler should NOT be called because the stack trace doesn't match its condition
+        assertEquals(0, integerHandlerCallCount.get(), "Integer handler should not be called for non-matching stack trace condition");
+    }
+
+
 }
