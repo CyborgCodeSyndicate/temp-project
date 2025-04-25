@@ -10,19 +10,19 @@ import io.qameta.allure.Allure;
 import org.aeonbits.owner.Config;
 import org.aeonbits.owner.ConfigCache;
 import org.apache.logging.log4j.ThreadContext;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.*;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,45 +43,116 @@ public class AllureStepHelperTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
-    public @interface DummyTestAnnotation {
+    public @interface CustomTestAnnotation {
         String value();
     }
 
-    @DummyTestAnnotation("SomeValue")
-    public void annotatedDummyTestMethod() {
-        // Nothing here, just for metadata testing
+    @CustomTestAnnotation("SomeValue")
+    public void customAnnotatedTestMethod() {
     }
 
+    // Config with a method that lacks a key annotation
+    public interface MissingKeyConfig extends PropertyConfig {
+        String noKey();
+    }
+
+    @ConfigSource("noKeySource")
+    public static class MissingKeyConfigImpl implements MissingKeyConfig {
+        public String noKey() {
+            return "valueShouldBeIgnored";
+        }
+    }
+
+    // Config with a key returning whitespace
+    public interface WhitespaceValueConfig extends PropertyConfig {
+        @Config.Key("white.key")
+        String getWhiteValue();
+    }
+
+    @ConfigSource("whitespaceSource")
+    public static class WhitespaceValueConfigImpl implements WhitespaceValueConfig {
+        public String getWhiteValue() {
+            return "   ";
+        }
+    }
+
+    // General dummy property config with typical keys
+    @ConfigSource("dummy")
+    public static class BasicPropertyConfig implements PropertyConfig {
+
+        @Config.Key("browser")
+        String browser() {
+            return "chrome";
+        }
+
+        @Config.Key("env")
+        String env() {
+            return "staging";
+        }
+
+        @Config.Key("features")
+        List<String> features() {
+            return List.of("login", "checkout");
+        }
+    }
+
+    // Simple config interface with a key
+    public interface SimpleKeyedConfig extends PropertyConfig {
+        @Config.Key("test.key")
+        String testMethod();
+    }
+
+    @ConfigSource("testSource")
+    public static class SimpleKeyedConfigImpl implements SimpleKeyedConfig {
+        @Override
+        public String testMethod() {
+            return "value123";
+        }
+    }
+
+    // Config interface and class returning an empty string
+    public interface EmptyValueConfig {
+        @Config.Key("empty.key")
+        String testMethod();
+    }
+
+    public static class EmptyValueConfigImpl implements PropertyConfig, EmptyValueConfig {
+        @Override
+        public String testMethod() {
+            return "";
+        }
+    }
+
+    // Config that throws an exception on method call
+    @ConfigSource(value = "testSource")
+    public class ExceptionThrowingConfig implements PropertyConfig {
+
+        @Config.Key("exception.key")
+        public String getExceptionKey() throws Exception {
+            throw new Exception("Simulating an exception during method invocation");
+        }
+    }
+
+    //setDescription - START
     @Test
     void testSetDescription() {
-        // Arrange
         List<String> htmlContent = List.of("<td>Some content</td>", "<td>Other content</td>");
-
-        // Mock behavior: getStore returns the mocked store
         lenient().when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
-
-        // Mock the store's behavior: get("HTML") returns the htmlContent
         lenient().when(mockStore.get(HTML)).thenReturn(htmlContent);
-
-        // Mock Allure's static method descriptionHtml
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
-            // Act
             AllureStepHelper.setDescription(mockContext);
-
-            // Assert: Verify that Allure.descriptionHtml was called with the correct combinedHtml
             String expectedHtml = "<div style='margin: 20px;'><td>Some content</td><td>Other content</td></div>";
             mockedAllure.verify(() -> Allure.descriptionHtml(eq(expectedHtml)), times(1));
         }
     }
+    //setDescription - END
 
+    //attachFilteredLogsToAllure - START
     @Test
     void testAttachFilteredLogsToAllure() {
         String testName = "testScenario";
-
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.attachFilteredLogsToAllure(testName);
-
-            // Verify that logs are added as an attachment
             mockedAllure.verify(() ->
                             Allure.addAttachment(anyString(), eq("text/plain"), anyString(), eq(".log")),
                     times(1)
@@ -147,7 +218,6 @@ public class AllureStepHelperTest {
     void testAttachFilteredLogsToAllure_NoLogsFound() {
         String testName = "nonExistentScenario";
 
-        // Clear the property so default path ("logs/zeus.log") is used
         System.clearProperty("logFileName");
 
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
@@ -172,7 +242,6 @@ public class AllureStepHelperTest {
         String matchingLine1 = testIdentifier + " Log line 1";
         String matchingLine2 = testIdentifier + " Log line 2";
 
-        // Create a temporary file and write matching lines
         Path tempLogFile = Files.createTempFile("logfile", ".log");
         Files.write(tempLogFile, List.of(
                 "[scenario=someOtherScenario] Not related log",
@@ -180,7 +249,6 @@ public class AllureStepHelperTest {
                 matchingLine2
         ));
 
-        // Point system property to the custom log file
         System.setProperty("logFileName", tempLogFile.toAbsolutePath().toString());
 
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
@@ -200,8 +268,10 @@ public class AllureStepHelperTest {
             Files.deleteIfExists(tempLogFile);
         }
     }
+    //attachFilteredLogsToAllure - END
 
 
+    //logTestOutcome - START
     @Test
     void testLogTestOutcome_Success() {
         String testName = "testScenario";
@@ -210,7 +280,6 @@ public class AllureStepHelperTest {
         try (MockedStatic<LogTest> mockedLogTest = mockStatic(LogTest.class)) {
             AllureStepHelper.logTestOutcome(testName, "SUCCESS", durationInSeconds, null);
 
-            // Verify that LogTest.info was called
             mockedLogTest.verify(() ->
                             LogTest.info(anyString(), eq(testName), eq("SUCCESS"), eq(durationInSeconds)),
                     times(1)
@@ -227,7 +296,6 @@ public class AllureStepHelperTest {
         try (MockedStatic<LogTest> mockedLogTest = mockStatic(LogTest.class)) {
             AllureStepHelper.logTestOutcome(testName, "FAILED", durationInSeconds, throwable);
 
-            // Verify that LogTest.info and LogTest.debug were called
             mockedLogTest.verify(() ->
                             LogTest.info(anyString(), eq(testName), eq("FAILED"), eq(durationInSeconds)),
                     times(1)
@@ -238,88 +306,65 @@ public class AllureStepHelperTest {
             );
         }
     }
+    //logTestOutcome - END
 
+    //setUpTestMetadata - START
     @Test
     void testSetUpTestMetadata() {
 
-        // Mock the static method ResourceLoader.loadResourceFile
         try (MockedStatic<ResourceLoader> mockedStatic = mockStatic(ResourceLoader.class)) {
-            // Mock the ResourceLoader to return a simple HTML template
             String htmlTemplate = "<html><body>{{testName}} {{className}} {{methodAnnotations}}</body></html>";
             mockedStatic.when(() -> ResourceLoader.loadResourceFile("allure/html/test-details.html"))
                     .thenReturn(htmlTemplate);
 
-            // Mock the context methods
             Method mockMethod = mock(Method.class);
             when(mockMethod.getName()).thenReturn("testMethod");
 
-            // Mock getAnnotations() to return an empty array or a mock annotation array
-            Annotation[] annotations = {}; // You can also use mock annotations if needed
+            Annotation[] annotations = {};
             when(mockMethod.getAnnotations()).thenReturn(annotations);
 
             Class<?> testClass = AllureStepHelperTest.class;
             when(mockContext.getRequiredTestMethod()).thenReturn(mockMethod);
             when(mockContext.getRequiredTestClass()).thenReturn((Class) testClass);
-
-            // Mock the global store and the list that will hold the formatted HTML
-            ExtensionContext.Store mockStore = mock(ExtensionContext.Store.class);
             when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
             List<String> htmlList = new ArrayList<>();
             when(mockStore.get(HTML, List.class)).thenReturn(htmlList);
 
-            // Act
             AllureStepHelper.setUpTestMetadata(mockContext);
 
-            // Assert: Verify that the formatted HTML was added to the list and put into the store
-            verify(mockStore, times(1)).put(eq(HTML), eq(htmlList));  // Verify that put was called once with the correct arguments
+            verify(mockStore, times(1)).put(eq(HTML), eq(htmlList));
         }
     }
 
     @Test
     void testSetUpTestMetadata_WhenHtmlListIsNull() throws NoSuchMethodException {
-        // Arrange
-        ExtensionContext mockContext = mock(ExtensionContext.class);
-        ExtensionContext.Store mockStore = mock(ExtensionContext.Store.class);
-
-        // Mocking the store to return the mockStore
         when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
-
-        // Simulate null value for HTML
         when(mockStore.get(HTML, List.class)).thenReturn(null);
 
-        // Mock ResourceLoader to avoid file reading
         try (MockedStatic<ResourceLoader> mockedResourceLoader = mockStatic(ResourceLoader.class)) {
             String mockHtmlTemplate = "<html>{{testName}}</html>";
             mockedResourceLoader.when(() -> ResourceLoader.loadResourceFile("allure/html/test-details.html"))
                     .thenReturn(mockHtmlTemplate);
 
-            // Mock getRequiredTestMethod() to return a valid Method
             Method mockMethod = AllureStepHelperTest.class.getDeclaredMethod("testSetUpTestMetadata_WhenHtmlListIsNull");
             when(mockContext.getRequiredTestMethod()).thenReturn(mockMethod);
 
-            // Mock getRequiredTestClass() if needed
             when(mockContext.getRequiredTestClass()).thenReturn((Class) AllureStepHelperTest.class);
 
-            // Act
             AllureStepHelper.setUpTestMetadata(mockContext);
 
-            // Assert
-            verify(mockStore).put(eq(HTML), anyList()); // Ensure the list is added to the store
+            verify(mockStore).put(eq(HTML), anyList());
         }
     }
 
     @Test
     void testSetUpTestMetadata_WithCustomAnnotation() throws NoSuchMethodException {
         try (MockedStatic<ResourceLoader> mockedResourceLoader = mockStatic(ResourceLoader.class)) {
-            // Simulate loading a template that expects annotations
             String template = "<html>{{methodAnnotations}}</html>";
             mockedResourceLoader.when(() -> ResourceLoader.loadResourceFile("allure/html/test-details.html"))
                     .thenReturn(template);
 
-            // Find the annotated method
-            Method annotatedMethod = AllureStepHelperTest.class.getDeclaredMethod("annotatedDummyTestMethod");
-
-            // Mock the context and store
+            Method annotatedMethod = AllureStepHelperTest.class.getDeclaredMethod("customAnnotatedTestMethod");
             when(mockContext.getRequiredTestMethod()).thenReturn(annotatedMethod);
             when(mockContext.getRequiredTestClass()).thenReturn((Class) AllureStepHelperTest.class);
             when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
@@ -327,64 +372,106 @@ public class AllureStepHelperTest {
             List<String> htmlList = new ArrayList<>();
             when(mockStore.get(HTML, List.class)).thenReturn(htmlList);
 
-            // Act
             AllureStepHelper.setUpTestMetadata(mockContext);
 
-            // Assert the HTML list contains the processed annotation string
             assertFalse(htmlList.isEmpty());
-            assertTrue(htmlList.get(0).contains("DummyTestAnnotation")); // or "SomeValue", depending on your reduce logic
+            assertTrue(htmlList.get(0).contains("CustomTestAnnotation"));
         }
     }
+    //setUpTestMetadata - END
 
+    //setupTestContext - START
     @Test
     void testSetupTestContext() throws NoSuchMethodException {
-        // Mocking ExtensionContext
-        ExtensionContext mockContext = mock(ExtensionContext.class);
         when(mockContext.getTestClass()).thenReturn(Optional.of(AllureStepHelperTest.class));
         when(mockContext.getTestMethod()).thenReturn(Optional.of(AllureStepHelperTest.class.getDeclaredMethod("testSetDescription")));
         when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
 
-        // Mocking static method in ThreadContext using mockStatic
         try (MockedStatic<ThreadContext> mockedThreadContext = mockStatic(ThreadContext.class)) {
             AllureStepHelper.setupTestContext(mockContext);
 
-            // Verify that the static method ThreadContext.put was called
             mockedThreadContext.verify(() ->
                             ThreadContext.put(eq("testName"), eq("AllureStepHelperTest.testSetDescription")),
                     times(1)
             );
         }
     }
+    //setupTestContext - END
 
+    //initializeTestEnvironment - START
     @Test
     void testInitializeTestEnvironment_withMockedReflectionUtil() {
         try (MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
              MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class)) {
 
-            // Dummy class to simulate found config
-            List<Class<? extends PropertyConfig>> dummyConfigs = List.of(DummyPropertyConfig.class);
+            List<Class<? extends PropertyConfig>> dummyConfigs = List.of(BasicPropertyConfig.class);
             mockedReflectionUtil.when(() ->
                     ReflectionUtil.findImplementationsOfInterface(any(), any())
             ).thenReturn(dummyConfigs);
 
-            // Dummy config object
-            DummyPropertyConfig dummyConfig = new DummyPropertyConfig();
-            mockedConfigCache.when(() -> ConfigCache.getOrCreate(DummyPropertyConfig.class))
+            BasicPropertyConfig dummyConfig = new BasicPropertyConfig();
+            mockedConfigCache.when(() -> ConfigCache.getOrCreate(BasicPropertyConfig.class))
                     .thenReturn(dummyConfig);
 
-            // ⬇️ Fix for null FrameworkConfig
             FrameworkConfig dummyFrameworkConfig = mock(FrameworkConfig.class);
             lenient().when(dummyFrameworkConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
 
             mockedConfigCache.when(() -> ConfigCache.getOrCreate(FrameworkConfig.class))
                     .thenReturn(dummyFrameworkConfig);
 
-            // Act
             AllureStepHelper.initializeTestEnvironment();
-            // Optionally assert that files were written, etc.
         }
     }
 
+    @Test
+    void testInitializeTestEnvironment_noDirectoryCreation() {
+        Map<String, List<String>> propertiesMap = Map.of(
+                "key1", List.of("value1"),
+                "key2", List.of("value2")
+        );
+
+        File allureResultsDir = mock(File.class);
+        File environmentFile = mock(File.class);
+
+        try (MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
+             MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class);
+             MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class)) {
+            try (MockedConstruction<FileWriter> mockFileWriter = mockConstruction(FileWriter.class,
+                    (mock, context) -> {
+                        try {
+                            mock.write("key1=value1\n");
+                            mock.write("key2=value2\n");
+                        } catch (IOException e) {
+                        }
+                    }
+            )) {
+                lenient().when(allureResultsDir.exists()).thenReturn(true);
+                BasicPropertyConfig dummyConfig = new BasicPropertyConfig();
+                mockedConfigCache.when(() -> ConfigCache.getOrCreate(BasicPropertyConfig.class))
+                        .thenReturn(dummyConfig);
+                FrameworkConfig mockConfig = mock(FrameworkConfig.class);
+                when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
+                mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
+                FrameworkConfig dummyFrameworkConfig = mock(FrameworkConfig.class);
+                lenient().when(dummyFrameworkConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
+
+                AllureStepHelper.initializeTestEnvironment();
+
+                verify(allureResultsDir, never()).mkdirs();
+
+                mockFileWriter.constructed().forEach(mockWriter -> {
+                    try {
+                        verify(mockWriter).write("key1=value1\n");
+                        verify(mockWriter).write("key2=value2\n");
+                    } catch (IOException e) {
+                    }
+                });
+            }
+        }
+    }
+    //initializeTestEnvironment - END
+
+    //collectConfigurationProperties - START
     @Test
     void test_collectConfigurationProperties_withValidConfig() throws Exception {
         try (
@@ -392,27 +479,22 @@ public class AllureStepHelperTest {
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
                 MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class)
         ) {
-            // Mock implementation return
             mockedReflectionUtil.when(() ->
                     ReflectionUtil.findImplementationsOfInterface(PropertyConfig.class, "com.theairebellion.zeus")
-            ).thenReturn(List.of(DummyConfig.class));
+            ).thenReturn(List.of(SimpleKeyedConfigImpl.class));
 
 
-            // Mock ConfigCache.getOrCreate
-            DummyConfig dummyConfig = new DummyConfig();
-            mockedConfigCache.when(() -> ConfigCache.getOrCreate(DummyConfig.class)).thenReturn(dummyConfig);
+            SimpleKeyedConfigImpl simpleKeyedConfigImpl = new SimpleKeyedConfigImpl();
+            mockedConfigCache.when(() -> ConfigCache.getOrCreate(SimpleKeyedConfigImpl.class)).thenReturn(simpleKeyedConfigImpl);
 
-            // Mock FrameworkConfigHolder.getFrameworkConfig
             FrameworkConfig mockConfig = mock(FrameworkConfig.class);
             when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
             mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
-            // Call private method via reflection
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
             Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
             System.out.println("Collected result: " + result);
-            // Verify results
             assertNotNull(result);
             assertTrue(result.containsKey("test.key"));
             assertEquals("value123 (Source: testSource)", result.get("test.key").get(0));
@@ -424,19 +506,18 @@ public class AllureStepHelperTest {
         try (
                 MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
-                MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class) // add the mock for FrameworkConfigHolder
+                MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class)
         ) {
-            // Mock FrameworkConfigHolder.getFrameworkConfig()
             FrameworkConfig mockConfig = mock(FrameworkConfig.class);
             when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
             mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
             mockedReflectionUtil.when(() ->
                     ReflectionUtil.findImplementationsOfInterface(eq(PropertyConfig.class), anyString())
-            ).thenReturn(List.of(DummyEmptyConfig.class));
+            ).thenReturn(List.of(EmptyValueConfigImpl.class));
 
-            DummyEmptyConfig emptyConfig = new DummyEmptyConfig();
-            mockedConfigCache.when(() -> ConfigCache.getOrCreate(DummyEmptyConfig.class)).thenReturn(emptyConfig);
+            EmptyValueConfigImpl emptyConfig = new EmptyValueConfigImpl();
+            mockedConfigCache.when(() -> ConfigCache.getOrCreate(EmptyValueConfigImpl.class)).thenReturn(emptyConfig);
 
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
@@ -455,136 +536,116 @@ public class AllureStepHelperTest {
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
                 MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class)
         ) {
-            // ✅ Mock config holder
             FrameworkConfig mockConfig = mock(FrameworkConfig.class);
             when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
             mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
-            // Setup class that will be processed
             mockedReflectionUtil.when(() ->
                     ReflectionUtil.findImplementationsOfInterface(eq(PropertyConfig.class), anyString())
-            ).thenReturn(List.of(DummyThrowsConfig.class));
+            ).thenReturn(List.of(ExceptionThrowingConfig.class));
 
-            // Return the real class that throws
-            DummyThrowsConfig dummy = new DummyThrowsConfig();
-            mockedConfigCache.when(() -> ConfigCache.getOrCreate(DummyThrowsConfig.class)).thenReturn(dummy);
+            ExceptionThrowingConfig dummy = new ExceptionThrowingConfig();
+            mockedConfigCache.when(() -> ConfigCache.getOrCreate(ExceptionThrowingConfig.class)).thenReturn(dummy);
 
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
             Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
 
-            assertNotNull(result); // Should still return a map
-            assertTrue(result.isEmpty()); // Because the method throws, nothing is added
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
         }
     }
 
-//    @Test
-//    void test_collectConfigurationProperties_skipsMethodsWithoutKeyAnnotation() throws Exception {
-//        try (
-//                MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
-//                MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
-//                MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class)
-//        ) {
-//            // Mock FrameworkConfigHolder.getFrameworkConfig()
-//            FrameworkConfig mockConfig = mock(FrameworkConfig.class);
-//            when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
-//            mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
-//
-//            // Mock ReflectionUtil to return DummyConfigWithoutKey class
-//            mockedReflectionUtil.when(() ->
-//                    ReflectionUtil.findImplementationsOfInterface(eq(PropertyConfig.class), anyString())
-//            ).thenReturn(List.of(DummyConfigWithoutKey.class));
-//
-//            // Create the DummyConfigWithoutKey instance and mock ConfigCache.getOrCreate
-//            DummyConfigWithoutKey dummyConfigWithoutKey = new DummyConfigWithoutKey();
-//            mockedConfigCache.when(() -> ConfigCache.getOrCreate(DummyConfigWithoutKey.class)).thenReturn(dummyConfigWithoutKey);
-//
-//            // Call the method
-//            Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
-//            method.setAccessible(true);
-//
-//            Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
-//
-//            // Assert the result and verify that methods without @Config.Key are skipped
-//            assertNotNull(result);
-//            assertTrue(result.containsKey("valid.key"));
-//            assertFalse(result.containsKey("invalidMethod"));  // This should be skipped because it has no @Config.Key
-//        }
-//    }
+    @Test
+    void test_collectConfigurationProperties_skipsMethodWithoutKeyAnnotation() throws Exception {
+        try (
+                MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
+                MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
+                MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class)
+        ) {
+            FrameworkConfig mockConfig = mock(FrameworkConfig.class);
+            when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
+            mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
-    @ConfigSource("testSource")
-    public static class DummyConfigWithoutKey implements PropertyConfig {
-        // Method with @Config.Key annotation
-        @Config.Key("valid.key")
-        public String validMethod() {
-            return "valid value";
-        }
+            mockedReflectionUtil.when(() ->
+                    ReflectionUtil.findImplementationsOfInterface(PropertyConfig.class, "com.theairebellion.zeus")
+            ).thenReturn(List.of(MissingKeyConfigImpl.class));
 
-        // Method without @Config.Key annotation (This is what we're testing for)
-        public String invalidMethod() {
-            return "invalid value";
+            MissingKeyConfigImpl dummy = new MissingKeyConfigImpl();
+            mockedConfigCache.when(() -> ConfigCache.getOrCreate(MissingKeyConfigImpl.class)).thenReturn(dummy);
+
+            Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
+            method.setAccessible(true);
+            Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
+
+            assertNotNull(result);
+            assertTrue(result.isEmpty(), "Expected result to be empty because no method has @Config.Key");
         }
     }
 
-    @ConfigSource("dummy")
-    public static class DummyPropertyConfig implements PropertyConfig {
-        public interface DummyInner extends PropertyConfig {
-            @Config.Key("dummy.key")
-            String dummyValue();
-        }
+    @Test
+    void test_collectConfigurationProperties_skipsWhitespaceOnlyValues() throws Exception {
+        try (
+                MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
+                MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
+                MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class)
+        ) {
+            FrameworkConfig mockConfig = mock(FrameworkConfig.class);
+            when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
+            mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
-        public String dummyValue() {
-            return "dummyValue";
-        }
-    }
+            mockedReflectionUtil.when(() ->
+                    ReflectionUtil.findImplementationsOfInterface(PropertyConfig.class, "com.theairebellion.zeus")
+            ).thenReturn(List.of(WhitespaceValueConfigImpl.class));
 
-    @ConfigSource("testSource")
-    public static class DummyConfig implements DummyConfigInterface {
-        @Override
-        public String testMethod() {
-            return "value123";
-        }
-    }
+            WhitespaceValueConfigImpl dummy = new WhitespaceValueConfigImpl();
+            mockedConfigCache.when(() -> ConfigCache.getOrCreate(WhitespaceValueConfigImpl.class)).thenReturn(dummy);
 
-    public interface DummyConfigInterface extends PropertyConfig {
-        @Config.Key("test.key")
-        String testMethod();
-    }
+            Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
+            method.setAccessible(true);
+            Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
 
-    public static class DummyEmptyConfig implements PropertyConfig, DummyEmptyConfigInterface {
-        @Override
-        public String testMethod() {
-            return "";
+            assertNotNull(result);
+            assertTrue(result.isEmpty(), "Expected result to be empty because value is only whitespace");
         }
     }
+    //collectConfigurationProperties - END
 
-    public interface DummyEmptyConfigInterface {
-        @Config.Key("empty.key")
-        String testMethod();
-    }
+    //writeEnvironmentProperties - START
+    @Test
+    void testWriteEnvironmentProperties_writeKeyValues() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Arrange: Mock propertiesMap with sample data
+        Map<String, List<String>> propertiesMap = Map.of(
+                "key1", List.of("value1", "value2"),
+                "key2", List.of("value3")
+        );
 
-    @ConfigSource(value = "testSource")
-    public class DummyThrowsConfig implements PropertyConfig {
+        // Mock the directory and file creation
+        File allureResultsDir = mock(File.class);
+        File environmentFile = mock(File.class);
 
-        @Config.Key("exception.key")
-        public String getExceptionKey() throws Exception {
-            throw new Exception("Simulating an exception during method invocation");
+        // Mock behavior for allureResultsDir.exists() returning true (so mkdirs should NOT be called)
+        lenient().when(allureResultsDir.exists()).thenReturn(true);
+
+        // Mock FileWriter behavior using mockConstruction
+        try (MockedConstruction<FileWriter> mockFileWriter = mockConstruction(FileWriter.class)) {
+            // Act: Call the method under test
+            Method method = AllureStepHelper.class.getDeclaredMethod("writeEnvironmentProperties", Map.class);
+            method.setAccessible(true);
+            method.invoke(null, propertiesMap);
+
+            // Assert: Verify that mkdirs() was NOT called since the directory already exists
+            verify(allureResultsDir, never()).mkdirs();
+
+            // Assert: Verify the write method was called for each entry with the expected value format
+            mockFileWriter.constructed().forEach(mockWriter -> {
+                try {
+                    verify(mockWriter).write("key1=value1; value2\n");
+                    verify(mockWriter).write("key2=value3\n");
+                } catch (IOException e) {
+                    // Handle IOException
+                }
+            });
         }
-
-        // other methods as needed...
     }
-
-    public interface DummyThrowsInterface extends PropertyConfig {
-
-        @Config.Key("exception.key")
-        String getExceptionKey() throws Exception;
-    }
-
-//    @Retention(RetentionPolicy.RUNTIME)
-//    public @interface Config {
-//        @Retention(RetentionPolicy.RUNTIME)
-//        public @interface Key {
-//            String value();
-//        }
-//    }
 }
