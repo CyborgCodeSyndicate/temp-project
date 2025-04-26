@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.db.validator;
 
 import com.theairebellion.zeus.db.json.JsonPathExtractor;
+import com.theairebellion.zeus.db.log.LogDb;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
@@ -302,5 +304,31 @@ class QueryResponseValidatorImplTest {
 
         verify(jsonPathExtractor).extract(queryResponse.getRows(), KEY_JSON_PATH_NAME, Object.class);
         verify(jsonPathExtractor).extract(row.keySet(), KEY_COLUMN_NAME, Object.class);
+    }
+
+    @Test
+    @DisplayName("Should log extended validation target after processing assertions")
+    void testPrintAssertionTarget_LogsExtended() {
+        // Arrange: a 2‐row response and a simple row‐count assertion
+        QueryResponse queryResponse = new QueryResponse(List.of(
+                Map.of("id", 1),
+                Map.of("id", 2)
+        ));
+        Assertion assertion = Assertion.builder()
+                .key("numRows")
+                .type(AssertionTypes.IS)
+                .target(DbAssertionTarget.NUMBER_ROWS)
+                .expected(2)
+                .soft(false)
+                .build();
+
+        // Act & Assert: static‐mock LogDb and verify extended() was called once
+        try (MockedStatic<LogDb> logs = mockStatic(LogDb.class)) {
+            validator.validateQueryResponse(queryResponse, assertion);
+            logs.verify(() -> LogDb.extended(
+                    eq("Validation target: [{}]"),
+                    any(String.class)
+            ), times(1));
+        }
     }
 }

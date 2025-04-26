@@ -143,6 +143,43 @@ class DatabaseConfigurationTest {
         }
     }
 
+    @Test
+    @DisplayName("Should have a toString representation")
+    void testToString() {
+        // Given
+        DbType mockDbType = createMockDbType();
+        DatabaseConfiguration config = DatabaseConfiguration.builder()
+                .dbType(mockDbType)
+                .host(HOST)
+                .port(PORT)
+                .database(DATABASE)
+                .dbUser(USER)
+                .dbPassword(PASSWORD)
+                .build();
+
+        // When
+        String toString = config.toString();
+
+        // Then
+        assertNotNull(toString, "toString should not be null");
+        // Lombok's default toString might not include field values with just @Getter and @Builder
+        // So we're just checking that toString() returns something
+    }
+
+    @Test
+    @DisplayName("buildUrlKey() should return protocol://host:port/database")
+    void testBuildUrlKey() {
+        DbType dbType = createMockDbType(); // protocol() → "mock-protocol"
+        DatabaseConfiguration cfg = DatabaseConfiguration.builder()
+                .dbType(dbType)
+                .host("h")
+                .port(1234)
+                .database("db")
+                .build();
+
+        assertEquals("mock-protocol://h:1234/db", cfg.buildUrlKey());
+    }
+
     private static Stream<Arguments> configurationVariations() {
         DbType mockDbType1 = createMockDbType();
         DbType mockDbType2 = createAnotherMockDbType();
@@ -167,29 +204,6 @@ class DatabaseConfigurationTest {
                         "host", true
                 )
         );
-    }
-
-    @Test
-    @DisplayName("Should have a toString representation")
-    void testToString() {
-        // Given
-        DbType mockDbType = createMockDbType();
-        DatabaseConfiguration config = DatabaseConfiguration.builder()
-                .dbType(mockDbType)
-                .host(HOST)
-                .port(PORT)
-                .database(DATABASE)
-                .dbUser(USER)
-                .dbPassword(PASSWORD)
-                .build();
-
-        // When
-        String toString = config.toString();
-
-        // Then
-        assertNotNull(toString, "toString should not be null");
-        // Lombok's default toString might not include field values with just @Getter and @Builder
-        // So we're just checking that toString() returns something
     }
 
     private static DbType createMockDbType() {

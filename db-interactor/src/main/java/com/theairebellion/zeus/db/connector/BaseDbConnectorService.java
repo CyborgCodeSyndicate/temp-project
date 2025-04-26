@@ -114,5 +114,4 @@ public class BaseDbConnectorService {
         registeredTypes.clear();
         LogDb.info("Cleared all connections and registered types.");
     }
-
 }

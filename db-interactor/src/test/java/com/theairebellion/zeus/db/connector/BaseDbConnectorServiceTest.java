@@ -2,17 +2,15 @@ package com.theairebellion.zeus.db.connector;
 
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.config.DbType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import com.theairebellion.zeus.db.log.LogDb;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -50,13 +48,13 @@ class BaseDbConnectorServiceTest {
     @BeforeEach
     void setup() {
         databaseConfiguration = DatabaseConfiguration.builder()
-                                    .dbType(mockDbType)
-                                    .host(HOST)
-                                    .port(PORT)
-                                    .database(DATABASE)
-                                    .dbUser(DB_USER)
-                                    .dbPassword(DB_PASSWORD)
-                                    .build();
+                .dbType(mockDbType)
+                .host(HOST)
+                .port(PORT)
+                .database(DATABASE)
+                .dbUser(DB_USER)
+                .dbPassword(DB_PASSWORD)
+                .build();
         lenient().when(mockDbType.protocol()).thenReturn(MOCK_PROTOCOL);
         lenient().when(mockDbType.driver()).thenReturn(mockDriver);
     }
@@ -106,13 +104,13 @@ class BaseDbConnectorServiceTest {
             String otherDatabase = "otherdb";
             Connection otherConnection = mock(Connection.class);
             DatabaseConfiguration otherConfig = DatabaseConfiguration.builder()
-                                                    .dbType(mockDbType)
-                                                    .host(HOST)
-                                                    .port(PORT)
-                                                    .database(otherDatabase)
-                                                    .dbUser(DB_USER)
-                                                    .dbPassword(DB_PASSWORD)
-                                                    .build();
+                    .dbType(mockDbType)
+                    .host(HOST)
+                    .port(PORT)
+                    .database(otherDatabase)
+                    .dbUser(DB_USER)
+                    .dbPassword(DB_PASSWORD)
+                    .build();
 
             lenient().when(mockDriver.acceptsURL(anyString())).thenReturn(true);
 
@@ -356,6 +354,104 @@ class BaseDbConnectorServiceTest {
                 assertEquals(CONNECTION_URL, actualUrl, "URL should be formatted correctly");
             } catch (Exception e) {
                 fail("Failed to invoke buildConnectionUrl method: " + e.getMessage());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Private Method Coverage")
+    class PrivateMethodCoverage {
+        @Spy
+        BaseDbConnectorService svc;
+        @Mock
+        DbType mockType;
+
+        @Test
+        @DisplayName("buildConnectionUrl uses fullConnectionString when non-null")
+        void buildConnectionUrl_prefersFullConnectionString() throws Exception {
+            var dbConfig = spy(DatabaseConfiguration.builder()
+                    .dbType(mockType)
+                    .host("x").port(1).database("y")
+                    .build());
+            doReturn("jdbc:foo/bar").when(dbConfig).getFullConnectionString();
+
+            Method m = BaseDbConnectorService.class
+                    .getDeclaredMethod("buildConnectionUrl", DatabaseConfiguration.class);
+            m.setAccessible(true);
+
+            try (MockedStatic<LogDb> logs = mockStatic(LogDb.class)) {
+                String url = (String) m.invoke(svc, dbConfig);
+                assertEquals("jdbc:foo/bar", url);
+                logs.verify(() -> LogDb.debug("Built connection URL: {}", "jdbc:foo/bar"), times(1));
+            }
+        }
+
+        @Test
+        @DisplayName("registerDriverIfNecessary skips registration on second call")
+        void innerIfFalsePath() throws Exception {
+            // 1) Arrange: have our DbType return a fake Driver
+            java.sql.Driver fakeDriver = mock(java.sql.Driver.class);
+            when(mockType.driver()).thenReturn(fakeDriver);
+
+            // 2) Reflectively grab the private registerDriverIfNecessary(DbType) method
+            Method register = BaseDbConnectorService.class
+                    .getDeclaredMethod("registerDriverIfNecessary", DbType.class);
+            register.setAccessible(true);
+
+            try (
+                    MockedStatic<DriverManager> dm = mockStatic(DriverManager.class);
+                    MockedStatic<LogDb> logs = mockStatic(LogDb.class)
+            ) {
+                // 3) Stub out DriverManager.registerDriver so it doesn't actually register
+                dm.when(() -> DriverManager.registerDriver(fakeDriver)).then(inv -> null);
+
+                // --- First invocation: should register & log once ---
+                register.invoke(dbConnectorService, mockType);
+                logs.verify(() ->
+                                LogDb.info("Registered database driver for type: {}", mockType),
+                        times(1)
+                );
+
+                // --- Second invocation: because it's now “already registered,” it should do nothing ---
+                register.invoke(dbConnectorService, mockType);
+
+                // verify that registerDriver was still only called once
+                dm.verify(() -> DriverManager.registerDriver(fakeDriver), times(1));
+
+                // and no further logs
+                logs.verifyNoMoreInteractions();
+            }
+        }
+
+        @Test
+        @DisplayName("registerDriverIfNecessary logs info on first registration")
+        void registerDriver_logsOnFirstCall() throws Exception {
+            // clear out any previously registered types
+            svc.closeConnections();
+
+            // stub mockType.driver() to return a fake Driver
+            Driver fakeDriver = mock(Driver.class);
+            when(mockType.driver()).thenReturn(fakeDriver);
+
+            try (MockedStatic<DriverManager> dm = mockStatic(DriverManager.class);
+                 MockedStatic<LogDb> logs = mockStatic(LogDb.class)) {
+
+                // stub the void registerDriver call
+                dm.when(() -> DriverManager.registerDriver(fakeDriver))
+                        .then(invocation -> null);
+
+                // reflectively grab the private method
+                Method reg = BaseDbConnectorService.class
+                        .getDeclaredMethod("registerDriverIfNecessary", DbType.class);
+                reg.setAccessible(true);
+
+                // first invocation: should register and log once
+                reg.invoke(svc, mockType);
+                logs.verify(() -> LogDb.info("Registered database driver for type: {}", mockType), times(1));
+
+                // second invocation: already registered, so no more logs
+                reg.invoke(svc, mockType);
+                logs.verifyNoMoreInteractions();
             }
         }
     }

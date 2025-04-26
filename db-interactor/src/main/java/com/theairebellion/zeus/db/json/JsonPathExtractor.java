@@ -33,8 +33,7 @@ public class JsonPathExtractor {
     /**
      * Constructs a {@code JsonPathExtractor} with a default JsonPath configuration.
      * <p>
-     * The default configuration enables {@code ALWAYS_RETURN_LIST} and
-     * {@code SUPPRESS_EXCEPTIONS} options.
+     * The default configuration enables {@code SUPPRESS_EXCEPTIONS} option.
      * </p>
      *
      * @param objectMapper The {@link ObjectMapper} for JSON processing.

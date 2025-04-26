@@ -194,6 +194,18 @@ class ParametrizedQueryTest {
                 "withParam() should create a new instance");
     }
 
+    @Test
+    @DisplayName("Should leave placeholder unreplaced if parameter not provided")
+    void testUnprovidedPlaceholderRemains() {
+        DbQuery originalQuery = createQuery(QUERY_SELECT_USERS_WITH_ID_AND_NAME);
+        ParametrizedQuery query = new ParametrizedQuery(originalQuery);
+
+        DbQuery parametrizedQuery = query.withParam(PARAM_ID, VALUE_ID_1);
+
+        assertEquals("SELECT * FROM users WHERE id = 1 AND name = {name}", parametrizedQuery.query(),
+                "Unprovided placeholder should remain unchanged");
+    }
+
     private DbQuery createQuery(String query) {
         return new DbQuery() {
             @Override

@@ -46,10 +46,18 @@ public class DatabaseConfiguration {
      */
     private String dbPassword;
 
-    //todo: javaDocs
+    /**
+     * If set, this full JDBC URL will be used as the cache key instead
+     * of the host/port/database combination.
+     */
     private String fullConnectionString;
 
-    //todo: javaDocs
+    /**
+     * Builds a unique key from protocol, host, port and database name.
+     * Used when {@link #fullConnectionString} is null.
+     *
+     * @return A string of the form "protocol://host:port/database"
+     */
     public String buildUrlKey() {
         return String.format("%s://%s:%d/%s",
                 dbType.protocol(),

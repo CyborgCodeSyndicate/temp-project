@@ -151,6 +151,56 @@ class DbClientManagerTest {
             // Then
             assertNotSame(client1, client2, DIFFERENT_CLIENT_ERROR);
         }
+
+        @Test
+        @DisplayName("When fullConnectionString is non-null we use it as cache key")
+        void testGetClient_UsesFullConnectionStringIfPresent() {
+            // Given a config whose getFullConnectionString() is non-null:
+            DatabaseConfiguration stubConfig = mock(DatabaseConfiguration.class);
+            when(stubConfig.getFullConnectionString()).thenReturn("jdbc://foo/bar");
+            // → drop the buildUrlKey() stub entirely
+
+            // When
+            var client1 = manager.getClient(stubConfig);
+            var client2 = manager.getClient(stubConfig);
+
+            // Then
+            assertSame(client1, client2, "Same full‐URI config must return cached client");
+            verify(manager, times(1)).initializeDbClient(stubConfig);
+            // We still assert that buildUrlKey() was never invoked:
+            verify(stubConfig, never()).buildUrlKey();
+        }
+
+        @Test
+        @DisplayName("Should use buildUrlKey when fullConnectionString is null")
+        void testGetClient_UsesBuildUrlKeyWhenFullConnectionStringNull() {
+            // Given
+            DbType dbType = mock(DbType.class);
+            when(dbType.protocol()).thenReturn(JDBC_PROTOCOL);
+
+            // spy the configuration so we can stub getFullConnectionString()
+            var dbConfig = spy(DatabaseConfiguration.builder()
+                    .dbType(dbType)
+                    .host(LOCALHOST)
+                    .port(DEFAULT_PORT)
+                    .database(TEST_DATABASE)
+                    .build());
+            // force fullConnectionString to be null
+            doReturn(null).when(dbConfig).getFullConnectionString();
+
+            // When — call getClient twice (to also exercise the cache path)
+            var client1 = manager.getClient(dbConfig);
+            var client2 = manager.getClient(dbConfig);
+
+            // Then — buildUrlKey() is invoked once per getClient call
+            verify(dbConfig, times(2)).buildUrlKey();
+
+            // And because of caching, initializeDbClient should only have been invoked once
+            verify(manager, times(1)).initializeDbClient(dbConfig);
+
+            // And both returned clients are the same instance
+            assertSame(client1, client2);
+        }
     }
 
     @Nested

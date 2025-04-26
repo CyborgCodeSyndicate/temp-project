@@ -1,10 +1,7 @@
 package com.theairebellion.zeus.db.config;
 
 import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -131,5 +128,33 @@ class DbConfigHolderTest {
             // We can't easily verify the property was used since it happens inside ConfigCache,
             // but this test confirms the ConfigCache.getOrCreate method is called
         }
+    }
+
+    @Test
+    @DisplayName("getDbConfig should return existing instance without calling ConfigCache again")
+    void testGetDbConfig_WhenAlreadyInitialized_SkipsConfigCache() throws Exception {
+        // 1) Pre-seed the private static field to our mock
+        Field cfgField = DbConfigHolder.class.getDeclaredField("config");
+        cfgField.setAccessible(true);
+        cfgField.set(null, mockDbConfig);
+
+        // 2) Now call getDbConfig() while verifying ConfigCache is never touched
+        try (var cache = mockStatic(org.aeonbits.owner.ConfigCache.class)) {
+            DbConfig result = DbConfigHolder.getDbConfig();
+
+            // 3) Should return the very same mock we injected:
+            assertSame(mockDbConfig, result, "Should hand back the pre-initialized instance");
+
+            // 4) And because it was non-null, ConfigCache.getOrCreate must not be invoked:
+            cache.verifyNoInteractions();
+        }
+    }
+
+    @Test
+    @DisplayName("Cover the default constructor")
+    void testConstructorCoverage() {
+        // simply instantiate to exercise the implicit <init>
+        DbConfigHolder holder = new DbConfigHolder();
+        assertNotNull(holder, "Just ensure we called the constructor");
     }
 }

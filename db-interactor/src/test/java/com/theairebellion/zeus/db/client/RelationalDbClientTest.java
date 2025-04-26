@@ -3,6 +3,7 @@ package com.theairebellion.zeus.db.client;
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.connector.BaseDbConnectorService;
 import com.theairebellion.zeus.db.exceptions.DatabaseOperationException;
+import com.theairebellion.zeus.db.log.LogDb;
 import com.theairebellion.zeus.db.query.QueryResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Method;
 import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -292,6 +295,72 @@ class RelationalDbClientTest {
             // Then
             verify(spyClient).printQuery(SELECT_QUERY);
             verify(spyClient).printResponse(eq(SELECT_QUERY), any(QueryResponse.class), anyLong());
+        }
+    }
+
+    @Nested
+    @DisplayName("Slow-Query Warning Tests")
+    class SlowQueryWarningTests {
+
+        @Test
+        @DisplayName("executeSelectQuery should log a warning when duration > 1000ms")
+        void selectQuery_slowness_triggersWarning() throws Exception {
+            // 1) Prepare a fake Connection/PreparedStatement/ResultSet chain:
+            Connection connection          = mock(Connection.class);
+            PreparedStatement ps           = mock(PreparedStatement.class);
+            ResultSet rs                   = mock(ResultSet.class);
+            ResultSetMetaData meta         = mock(ResultSetMetaData.class);
+
+            when(connection.prepareStatement(SELECT_QUERY)).thenReturn(ps);
+            when(ps.executeQuery()).thenReturn(rs);
+            when(rs.getMetaData()).thenReturn(meta);
+            when(meta.getColumnCount()).thenReturn(0);
+            when(rs.next()).thenReturn(false);
+
+            // 2) Grab the private method
+            Method m = RelationalDbClient.class
+                    .getDeclaredMethod("executeSelectQuery", Connection.class, String.class, long.class);
+            m.setAccessible(true);
+
+            // 3) Run it as if the query took 2 seconds
+            try (MockedStatic<LogDb> logs = mockStatic(LogDb.class)) {
+                long start = System.currentTimeMillis() - 2_000;
+                QueryResponse qr = (QueryResponse) m.invoke(client, connection, SELECT_QUERY, start);
+                assertNotNull(qr);
+
+                // 4) Verify the slow-warning
+                logs.verify(() -> LogDb.warn(
+                        eq("Slow query detected: '{}' took {}ms"),
+                        eq(SELECT_QUERY),
+                        anyLong()
+                ), times(1));
+            }
+        }
+
+        @Test
+        @DisplayName("executeUpdateQuery should log a warning when duration > 1000ms")
+        void updateQuery_slowness_triggersWarning() throws Exception {
+            Connection conn    = mock(Connection.class);
+            Statement stmt     = mock(Statement.class);
+
+            when(conn.createStatement()).thenReturn(stmt);
+            when(stmt.executeUpdate(UPDATE_QUERY)).thenReturn(0);
+
+            Method m = RelationalDbClient.class
+                    .getDeclaredMethod("executeUpdateQuery", Connection.class, String.class, long.class);
+            m.setAccessible(true);
+
+            try (MockedStatic<LogDb> logs = mockStatic(LogDb.class)) {
+                long start = System.currentTimeMillis() - 2_000;
+                QueryResponse qr = (QueryResponse) m.invoke(client, conn, UPDATE_QUERY, start);
+                assertNotNull(qr);
+
+                logs.verify(() -> LogDb.warn(
+                        eq("Slow update query detected: '{}' took {}ms"),
+                        eq(UPDATE_QUERY),
+                        anyLong()
+                ), times(1));
+            }
         }
     }
 }

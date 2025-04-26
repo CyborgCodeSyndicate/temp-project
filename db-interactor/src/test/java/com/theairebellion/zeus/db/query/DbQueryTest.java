@@ -1,21 +1,21 @@
 package com.theairebellion.zeus.db.query;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.config.DbConfig;
 import com.theairebellion.zeus.db.config.DbConfigHolder;
 import com.theairebellion.zeus.db.config.DbType;
 import com.theairebellion.zeus.db.query.mock.DummyDbQuery;
 import com.theairebellion.zeus.db.query.mock.TestEnum;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DbQueryTest {
@@ -29,6 +29,7 @@ class DbQueryTest {
     private static final TestEnum EXPECTED_ENUM = TestEnum.VALUE;
     private static final String PARAM_KEY = "key";
     private static final String PARAM_VALUE = "value";
+    private static final String MOCK_CONNECTION_STRING = "jdbc:override";
 
     @Mock
     private DbType mockDbType;
@@ -60,6 +61,7 @@ class DbQueryTest {
         when(mockDbConfig.name()).thenReturn(MOCK_DATABASE);
         when(mockDbConfig.username()).thenReturn(MOCK_USER);
         when(mockDbConfig.password()).thenReturn(MOCK_PASSWORD);
+        when(mockDbConfig.fullConnectionString()).thenReturn(MOCK_CONNECTION_STRING);
 
         try (MockedStatic<DbConfigHolder> mockedHolder = mockStatic(DbConfigHolder.class)) {
             mockedHolder.when(DbConfigHolder::getDbConfig).thenReturn(mockDbConfig);
@@ -76,7 +78,8 @@ class DbQueryTest {
                     () -> assertEquals(MOCK_PORT, config.getPort(), "Port should match"),
                     () -> assertEquals(MOCK_DATABASE, config.getDatabase(), "Database name should match"),
                     () -> assertEquals(MOCK_USER, config.getDbUser(), "Username should match"),
-                    () -> assertEquals(MOCK_PASSWORD, config.getDbPassword(), "Password should match")
+                    () -> assertEquals(MOCK_PASSWORD, config.getDbPassword(), "Password should match"),
+                    () -> assertEquals(MOCK_CONNECTION_STRING, config.getFullConnectionString())
             );
         }
     }
