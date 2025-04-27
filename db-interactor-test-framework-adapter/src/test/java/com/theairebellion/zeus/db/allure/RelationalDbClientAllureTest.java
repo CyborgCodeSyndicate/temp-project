@@ -136,23 +136,6 @@ class RelationalDbClientAllureTest {
     }
 
     @Test
-    @DisplayName("printResponse should call super.printResponse")
-    void testPrintResponseCallsSuper() {
-        // Arrange
-        RelationalDbClientAllure clientSpy = spy(createClientUnderTest());
-        when(queryResponse.getRows()).thenReturn(Collections.emptyList());
-        long duration = 50;
-
-        try (MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            // Act
-            clientSpy.printResponse(QUERY_SELECT_1, queryResponse, duration);
-
-            // Assert
-            verify(clientSpy).printResponse(QUERY_SELECT_1, queryResponse, duration);
-        }
-    }
-
-    @Test
     @DisplayName("addAttachmentIfPresent should handle null content")
     void testAddAttachmentIfPresentWithNull() throws Exception {
         // Arrange

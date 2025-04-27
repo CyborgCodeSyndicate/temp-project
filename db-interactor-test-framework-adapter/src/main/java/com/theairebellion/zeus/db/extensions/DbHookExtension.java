@@ -23,6 +23,15 @@ import java.util.Map;
 import static com.theairebellion.zeus.db.config.DbConfigHolder.getDbConfig;
 import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemProperties;
 
+/**
+ * JUnit 5 extension that processes {@link DbHook} annotations on the test class.
+ * <p>
+ * Executes database-related hooks before and after all tests, ordered by the
+ * {@code order} attribute on the {@code @DbHook} annotation, and stores the hook
+ * parameters in the global ExtensionContext store under {@link StoreKeys#HOOKS_PARAMS}.
+ *
+ * @author Cyborg Code Syndicate
+ */
 public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
 
     static {
@@ -31,9 +40,18 @@ public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
         }
     }
 
+    /**
+     * Cached instance of {@link DatabaseService} used to execute hooks.
+     */
     private DatabaseService databaseService;
 
-
+    /**
+     * Executes all {@link DbHook} annotations on the test class with {@link HookExecution#BEFORE}.
+     * Hooks are sorted by {@code order}, executed, and their parameters stored.
+     *
+     * @param context the JUnit extension context for the test class
+     * @throws Exception if any hook execution fails
+     */
     @Override
     public void beforeAll(final ExtensionContext context) throws Exception {
         Map<Object, Object> hooksStorage = new HashMap<>();
@@ -45,7 +63,13 @@ public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
         context.getStore(ExtensionContext.Namespace.GLOBAL).put(StoreKeys.HOOKS_PARAMS, hooksStorage);
     }
 
-
+    /**
+     * Executes all {@link DbHook} annotations on the test class with {@link HookExecution#AFTER}.
+     * Hooks are sorted by {@code order}, executed, and their parameters stored.
+     *
+     * @param context the JUnit extension context for the test class
+     * @throws Exception if any hook execution fails
+     */
     @Override
     public void afterAll(final ExtensionContext context) throws Exception {
         Map<Object, Object> hooksStorage = new HashMap<>();
@@ -57,7 +81,13 @@ public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
         context.getStore(ExtensionContext.Namespace.GLOBAL).put(StoreKeys.HOOKS_PARAMS, hooksStorage);
     }
 
-
+    /**
+     * Resolves and executes a single {@link DbHook} by locating the corresponding {@link DbHookFlow}
+     * implementation and invoking its flow.
+     *
+     * @param dbHook      the annotation instance containing hook metadata
+     * @param storageHooks the map used to accumulate hook results and arguments
+     */
     private void executeHook(DbHook dbHook, Map<Object, Object> storageHooks) {
         try {
             DbHookFlow hookFlow = ReflectionUtil.findEnumImplementationsOfInterface(
@@ -68,7 +98,13 @@ public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
         }
     }
 
-
+    /**
+     * Lazily initializes and returns the singleton {@link DatabaseService}.
+     * <p>
+     * Configures JSON path extraction, a database connector manager, and an Allure result validator.
+     *
+     * @return the shared {@code DatabaseService} instance
+     */
     private DatabaseService dbService() {
         if (databaseService == null) {
             JsonPathExtractor jsonPathExtractor = new JsonPathExtractor(new ObjectMapper());
