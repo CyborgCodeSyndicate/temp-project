@@ -9,6 +9,8 @@ import static com.theairebellion.zeus.framework.util.ObjectFormatter.escapeHtml;
 
 public final class ResponseFormatter {
 
+    public static final String DIV_CLOSE = "</div>";
+
     private ResponseFormatter() {
     }
 
@@ -66,26 +68,30 @@ public final class ResponseFormatter {
             int status = response.getStatus();
             String body = response.getBody();
 
-            String statusClass = (status >= 400) ? "status-error" :
-                                     (status >= 300) ? "status-warning" :
-                                         "status-success";
+            String statusClass = "status-success";
+            if (status >= 400) {
+                statusClass = "status-error";
+            } else if (status >= 300) {
+                statusClass = "status-warning";
+            }
 
             String endpoint = extractEndpoint(url);
 
             html.append("<div class='accordion'>")
                 .append("<div class='accordion-header' id='header-").append(index)
                 .append("' onclick='toggleAccordion(").append(index).append(")'>")
-                .append("<div class='method'>").append(method).append("</div>")
-                .append("<div class='url'>").append(endpoint).append("</div>")
+                .append("<div class='method'>").append(method).append(DIV_CLOSE)
+                .append("<div class='url'>").append(endpoint).append(DIV_CLOSE)
                 .append("<div class='status ").append(statusClass).append("'>")
-                .append(status).append("</div>")
+                .append(status).append(DIV_CLOSE)
                 .append("<span class='chevron'>&#9660;</span>")
-                .append("</div>")
+                .append(DIV_CLOSE)
                 .append("<div id='content-").append(index).append("' class='accordion-content'>")
                 .append("<pre>").append(escapeHtml(body != null ? body : "")).append("</pre>")
-                .append("</div>")
-                .append("</div>");
+                .append(DIV_CLOSE)
+                .append(DIV_CLOSE);
         } catch (Exception ignore) {
+            //ignore exception
         }
     }
 

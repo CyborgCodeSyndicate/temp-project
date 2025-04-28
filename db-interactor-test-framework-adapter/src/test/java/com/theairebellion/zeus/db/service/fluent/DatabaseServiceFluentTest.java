@@ -218,20 +218,14 @@ class DatabaseServiceFluentTest {
     }
 
     @Nested
-    @DisplayName("Private method coverage")
+    @DisplayName("Protected method coverage")
     class PrivateMethodCoverage {
 
         @Test
         @DisplayName("getDatabaseService() should return the database service instance")
         void getDatabaseServiceShouldReturnDatabaseServiceInstance() throws Exception {
-            // Given
-            // Access the private method using reflection
-            java.lang.reflect.Method getDatabaseServiceMethod =
-                    DatabaseServiceFluent.class.getDeclaredMethod("getDatabaseService");
-            getDatabaseServiceMethod.setAccessible(true);
-
             // When
-            Object result = getDatabaseServiceMethod.invoke(fluent);
+            Object result = fluent.getDatabaseService();
 
             // Then
             assertThat(result)

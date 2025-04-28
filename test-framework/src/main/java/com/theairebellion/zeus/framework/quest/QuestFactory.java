@@ -29,7 +29,6 @@ public final class QuestFactory {
     /**
      * Factory responsible for creating and applying decorators to objects.
      */
-    @Autowired
     private DecoratorsFactory decoratorsFactory;
 
     /**
@@ -45,6 +44,11 @@ public final class QuestFactory {
     @Autowired
     public QuestFactory(Collection<FluentService> fluentServices) {
         this.fluentServices = fluentServices;
+    }
+
+    @Autowired
+    public void setDecoratorsFactory(DecoratorsFactory decoratorsFactory) {
+        this.decoratorsFactory = decoratorsFactory;
     }
 
     /**

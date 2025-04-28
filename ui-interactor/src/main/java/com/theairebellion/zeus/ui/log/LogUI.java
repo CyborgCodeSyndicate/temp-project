@@ -13,7 +13,7 @@ import com.theairebellion.zeus.logging.LogCore;
  */
 public final class LogUI extends LogCore {
 
-    private static LogUI INSTANCE;
+    private static LogUI instance;
 
     private LogUI() {
         super("Zeus.UI", "UI");
@@ -105,10 +105,10 @@ public final class LogUI extends LogCore {
      * @return The singleton instance of {@code LogUI}.
      */
     private static LogUI getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new LogUI();
+        if (instance == null) {
+            instance = new LogUI();
         }
-        return INSTANCE;
+        return instance;
     }
 
 }

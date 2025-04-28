@@ -7,8 +7,6 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 
-import java.util.Map;
-
 /**
  * Implementation of the {@link ToggleService} interface, providing methods to activate or
  * deactivate toggles, as well as check if they are enabled or activated. Extends
@@ -21,6 +19,22 @@ import java.util.Map;
  * @author Cyborg Code Syndicate
  */
 public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentType, Toggle> implements ToggleService {
+
+    private static final String ACTIVATE_TEXT = "Activating toggle %s for toggle component %s";
+    private static final String ACTIVATE_LOCATOR = "Activating toggle with locator %s for toggle component %s";
+    private static final String ACTIVATE_CONTAINER = "Activating toggle %s in container %s for toggle component %s";
+
+    private static final String DEACTIVATE_TEXT = "Deactivating toggle %s for toggle component %s";
+    private static final String DEACTIVATE_LOCATOR = "Deactivating toggle with locator %s for toggle component %s";
+    private static final String DEACTIVATE_CONTAINER = "Deactivating toggle %s in container %s for toggle component %s";
+
+    private static final String IS_ENABLED_TEXT = "Checking if toggle %s is enabled for toggle component %s";
+    private static final String IS_ENABLED_LOCATOR = "Checking if toggle with locator %s is enabled for toggle component %s";
+    private static final String IS_ENABLED_CONTAINER = "Checking if toggle %s is enabled in container %s for toggle component %s";
+
+    private static final String IS_ACTIVATED_TEXT = "Checking if toggle %s is activated for toggle component %s";
+    private static final String IS_ACTIVATED_LOCATOR = "Checking if toggle with locator %s is activated for toggle component %s";
+    private static final String IS_ACTIVATED_CONTAINER = "Checking if toggle %s is activated in container %s for toggle component %s";
 
     /**
      * Constructs a new {@code ToggleServiceImpl} with the specified {@link SmartWebDriver}.
@@ -51,7 +65,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public void activate(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
-        LogUI.step("Activating toggle " + toggleText + " in container " + container + " for toggle component " + componentType);
+        LogUI.step(String.format(ACTIVATE_CONTAINER, toggleText, container, componentType));
         toggleComponent(componentType).activate(container, toggleText);
     }
 
@@ -63,7 +77,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public void activate(final ToggleComponentType componentType, final String toggleText) {
-        LogUI.step("Activating toggle " + toggleText + " for toggle component " + componentType);
+        LogUI.step(String.format(ACTIVATE_TEXT, toggleText, componentType));
         toggleComponent(componentType).activate(toggleText);
     }
 
@@ -75,7 +89,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public void activate(final ToggleComponentType componentType, final By toggleLocator) {
-        LogUI.step("Activating toggle with locator " + toggleLocator + " for toggle component " + componentType);
+        LogUI.step(String.format(ACTIVATE_LOCATOR, toggleLocator, componentType));
         toggleComponent(componentType).activate(toggleLocator);
     }
 
@@ -88,7 +102,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public void deactivate(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
-        LogUI.step("Deactivating toggle " + toggleText + " in container " + container + " for toggle component " + componentType);
+        LogUI.step(String.format(DEACTIVATE_CONTAINER, toggleText, container, componentType));
         toggleComponent(componentType).deactivate(container, toggleText);
     }
 
@@ -100,7 +114,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public void deactivate(final ToggleComponentType componentType, final String toggleText) {
-        LogUI.step("Deactivating toggle " + toggleText + " for toggle component " + componentType);
+        LogUI.step(String.format(DEACTIVATE_TEXT, toggleText, componentType));
         toggleComponent(componentType).deactivate(toggleText);
     }
 
@@ -112,7 +126,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public void deactivate(final ToggleComponentType componentType, final By toggleLocator) {
-        LogUI.step("Deactivating toggle with locator " + toggleLocator + " for toggle component " + componentType);
+        LogUI.step(String.format(DEACTIVATE_LOCATOR, toggleLocator, componentType));
         toggleComponent(componentType).deactivate(toggleLocator);
     }
 
@@ -126,7 +140,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public boolean isEnabled(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
-        LogUI.step("Checking if toggle " + toggleText + " is enabled in container " + container + " for toggle component " + componentType);
+        LogUI.step(String.format(IS_ENABLED_CONTAINER, toggleText, container, componentType));
         return toggleComponent(componentType).isEnabled(container, toggleText);
     }
 
@@ -139,7 +153,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public boolean isEnabled(final ToggleComponentType componentType, final String toggleText) {
-        LogUI.step("Checking if toggle " + toggleText + " is enabled for toggle component " + componentType);
+        LogUI.step(String.format(IS_ENABLED_TEXT, toggleText, componentType));
         return toggleComponent(componentType).isEnabled(toggleText);
     }
 
@@ -152,7 +166,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public boolean isEnabled(final ToggleComponentType componentType, final By toggleLocator) {
-        LogUI.step("Checking if toggle with locator " + toggleLocator + " is enabled for toggle component " + componentType);
+        LogUI.step(String.format(IS_ENABLED_LOCATOR, toggleLocator, componentType));
         return toggleComponent(componentType).isEnabled(toggleLocator);
     }
 
@@ -166,7 +180,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public boolean isActivated(final ToggleComponentType componentType, final SmartWebElement container, final String toggleText) {
-        LogUI.step("Checking if toggle " + toggleText + " is activated in container " + container + " for toggle component " + componentType);
+        LogUI.step(String.format(IS_ACTIVATED_CONTAINER, toggleText, container, componentType));
         return toggleComponent(componentType).isActivated(container, toggleText);
     }
 
@@ -179,7 +193,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public boolean isActivated(final ToggleComponentType componentType, final String toggleText) {
-        LogUI.step("Checking if toggle " + toggleText + " is activated for toggle component " + componentType);
+        LogUI.step(String.format(IS_ACTIVATED_TEXT, toggleText, componentType));
         return toggleComponent(componentType).isActivated(toggleText);
     }
 
@@ -192,7 +206,7 @@ public class ToggleServiceImpl extends AbstractComponentService<ToggleComponentT
      */
     @Override
     public boolean isActivated(final ToggleComponentType componentType, final By toggleLocator) {
-        LogUI.step("Checking if toggle with locator " + toggleLocator + " is activated for toggle component " + componentType);
+        LogUI.step(String.format(IS_ACTIVATED_LOCATOR, toggleLocator, componentType));
         return toggleComponent(componentType).isActivated(toggleLocator);
     }
 

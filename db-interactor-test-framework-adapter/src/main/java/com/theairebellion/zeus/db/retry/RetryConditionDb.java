@@ -19,6 +19,9 @@ import java.util.function.Predicate;
  */
 public class RetryConditionDb {
 
+    private RetryConditionDb() {
+    }
+
     /**
      * Creates a retry condition that waits until a query returns at least one row.
      * <p>
@@ -29,7 +32,7 @@ public class RetryConditionDb {
      * @param query The database query to execute.
      * @return A {@code RetryCondition} that evaluates to {@code true} when the query returns rows.
      */
-    public static RetryCondition<Boolean> queryReturnsRows(DbQuery query) {
+    public static RetryCondition<Boolean> queryReturnsRows(DbQuery<?> query) {
         return new RetryConditionImpl<>(
                 service -> {
                     DatabaseService databaseService = (DatabaseService) service;
@@ -50,7 +53,7 @@ public class RetryConditionDb {
      * @param value    The expected value to match.
      * @return A {@code RetryCondition} that evaluates to {@code true} when the field matches the expected value.
      */
-    public static RetryCondition<Object> queryReturnsValueForField(DbQuery query, String jsonPath, Object value) {
+    public static RetryCondition<Object> queryReturnsValueForField(DbQuery<?> query, String jsonPath, Object value) {
         return new RetryConditionImpl<>(
                 service -> {
                     DatabaseService databaseService = (DatabaseService) service;

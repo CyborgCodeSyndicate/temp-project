@@ -31,6 +31,17 @@ import org.openqa.selenium.By;
  */
 public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentType, Loader> implements LoaderService {
 
+    private static final String CHECK_VISIBILITY_USING_CONTAINER      = "Checking visibility of loader %s using container";
+    private static final String CHECK_VISIBILITY_USING_LOCATOR        = "Checking visibility of loader %s using locator %s";
+
+    private static final String WAIT_TO_BE_SHOWN_USING_CONTAINER      = "Waiting for loader %s to be shown using container for %d seconds";
+    private static final String WAIT_TO_BE_SHOWN                       = "Waiting for loader %s to be shown for %d seconds";
+    private static final String WAIT_TO_BE_SHOWN_USING_LOCATOR        = "Waiting for loader %s to be shown using locator %s for %d seconds";
+
+    private static final String WAIT_TO_BE_REMOVED_USING_CONTAINER    = "Waiting for loader %s to be removed using container for %d seconds";
+    private static final String WAIT_TO_BE_REMOVED                     = "Waiting for loader %s to be removed for %d seconds";
+    private static final String WAIT_TO_BE_REMOVED_USING_LOCATOR      = "Waiting for loader %s to be removed using locator %s for %d seconds";
+
     /**
      * Constructs a {@code LoaderServiceImpl} with the provided {@link SmartWebDriver}.
      *
@@ -61,7 +72,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public boolean isVisible(final LoaderComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Checking visibility of loader " + componentType + " using container");
+        LogUI.step(String.format(CHECK_VISIBILITY_USING_CONTAINER, componentType));
         return loaderComponent(componentType).isVisible(container);
     }
 
@@ -74,7 +85,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public boolean isVisible(final LoaderComponentType componentType, final By loaderLocator) {
-        LogUI.step("Checking visibility of loader " + componentType + " using locator " + loaderLocator);
+        LogUI.step(String.format(CHECK_VISIBILITY_USING_LOCATOR, componentType, loaderLocator));
         return loaderComponent(componentType).isVisible(loaderLocator);
     }
 
@@ -88,7 +99,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
     @Override
     public void waitToBeShown(final LoaderComponentType componentType, final SmartWebElement container,
                               final int secondsShown) {
-        LogUI.step("Waiting for loader " + componentType + " to be shown using container for " + secondsShown + " seconds");
+        LogUI.step(String.format(WAIT_TO_BE_SHOWN_USING_CONTAINER, componentType, secondsShown));
         loaderComponent(componentType).waitToBeShown(container, secondsShown);
     }
 
@@ -100,7 +111,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public void waitToBeShown(final LoaderComponentType componentType, final int secondsShown) {
-        LogUI.step("Waiting for loader " + componentType + " to be shown for " + secondsShown + " seconds");
+        LogUI.step(String.format(WAIT_TO_BE_SHOWN, componentType, secondsShown));
         loaderComponent(componentType).waitToBeShown(secondsShown);
     }
 
@@ -113,7 +124,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public void waitToBeShown(final LoaderComponentType componentType, final By loaderLocator, final int secondsShown) {
-        LogUI.step("Waiting for loader " + componentType + " to be shown using locator " + loaderLocator + " for " + secondsShown + " seconds");
+        LogUI.step(String.format(WAIT_TO_BE_SHOWN_USING_LOCATOR, componentType, loaderLocator, secondsShown));
         loaderComponent(componentType).waitToBeShown(loaderLocator, secondsShown);
     }
 
@@ -127,7 +138,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final SmartWebElement container,
                                 final int secondsRemoved) {
-        LogUI.step("Waiting for loader " + componentType + " to be removed using container for " + secondsRemoved + " seconds");
+        LogUI.step(String.format(WAIT_TO_BE_REMOVED_USING_CONTAINER, componentType, secondsRemoved));
         loaderComponent(componentType).waitToBeRemoved(container, secondsRemoved);
     }
 
@@ -139,7 +150,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
      */
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final int secondsRemoved) {
-        LogUI.step("Waiting for loader " + componentType + " to be removed for " + secondsRemoved + " seconds");
+        LogUI.step(String.format(WAIT_TO_BE_REMOVED, componentType, secondsRemoved));
         loaderComponent(componentType).waitToBeRemoved(secondsRemoved);
     }
 
@@ -153,7 +164,7 @@ public class LoaderServiceImpl extends AbstractComponentService<LoaderComponentT
     @Override
     public void waitToBeRemoved(final LoaderComponentType componentType, final By loaderLocator,
                                 final int secondsRemoved) {
-        LogUI.step("Waiting for loader " + componentType + " to be removed using locator " + loaderLocator + " for " + secondsRemoved + " seconds");
+        LogUI.step(String.format(WAIT_TO_BE_REMOVED_USING_LOCATOR, componentType, loaderLocator, secondsRemoved));
         loaderComponent(componentType).waitToBeRemoved(loaderLocator, secondsRemoved);
     }
 

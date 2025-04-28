@@ -27,7 +27,10 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
+
+    private static final String UI_RADIO_VALIDATING_IF_RADIO_BUTTON_IS = "[UI - Radio] Validating if radio button is ";
 
     private final RadioService radioService;
     private final T uiServiceFluent;
@@ -122,7 +125,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
     private T validateIsEnabled(final RadioUIElement element, boolean shouldBeEnabled, boolean soft) {
-        Allure.step("[UI - Radio] Validating if radio button is " + (shouldBeEnabled ? "enabled" : "disabled") + ": " + element.enumImpl());
+        Allure.step(UI_RADIO_VALIDATING_IF_RADIO_BUTTON_IS + (shouldBeEnabled ? "enabled" : "disabled") + ": " + element.enumImpl());
         element.before().accept(driver);
         boolean enabled = radioService.isEnabled(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -215,7 +218,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
     private T validateIsSelected(final RadioUIElement element, boolean shouldBeSelected, boolean soft) {
-        Allure.step("[UI - Radio] Validating if radio button is " + (shouldBeSelected ? "selected" : "not selected") + ": " + element.enumImpl());
+        Allure.step(UI_RADIO_VALIDATING_IF_RADIO_BUTTON_IS + (shouldBeSelected ? "selected" : "not selected") + ": " + element.enumImpl());
         element.before().accept(driver);
         boolean selected = radioService.isSelected(element.componentType(), element.locator());
         element.after().accept(driver);
@@ -308,7 +311,7 @@ public class RadioServiceFluent<T extends UIServiceFluent<?>> implements Inserti
     }
 
     private T validateIsVisible(final RadioUIElement element, boolean shouldBeVisible, boolean soft) {
-        Allure.step("[UI - Radio] Validating if radio button is " + (shouldBeVisible ? "visible" : "hidden") + ": " + element.enumImpl());
+        Allure.step(UI_RADIO_VALIDATING_IF_RADIO_BUTTON_IS + (shouldBeVisible ? "visible" : "hidden") + ": " + element.enumImpl());
         element.before().accept(driver);
         boolean visible = radioService.isVisible(element.componentType(), element.locator());
         element.after().accept(driver);

@@ -1,21 +1,18 @@
 package com.theairebellion.zeus.ui.authentication;
 
+import com.theairebellion.zeus.ui.exceptions.AuthenticationUiException;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUIServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UIServiceFluent;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.Getter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,8 +40,15 @@ public abstract class BaseLoginClient implements LoginClient {
      */
     private static final Map<LoginKey, SessionInfo> userLoginMap = new ConcurrentHashMap<>();
 
-    //todo: javaDocs
-    public static final List<SmartWebDriver> driverToKeep = Collections.synchronizedList(new ArrayList<>());
+    /**
+     * Keeps track of the {@link SmartWebDriver} instances that are used for copying sessions
+     * to other drivers in order to enable login session caching and bypass repeated logins.
+     * <p>
+     * These drivers are preserved throughout the execution and are closed at the end of the run.
+     */
+    @Getter
+    @SuppressFBWarnings("MS_EXPOSE_REP")
+    private static final List<SmartWebDriver> driverToKeep = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * JavaScript command to retrieve local storage data.
@@ -54,12 +58,16 @@ public abstract class BaseLoginClient implements LoginClient {
     /**
      * JavaScript command to restore local storage data.
      */
-    private static final String UPDATE_LOCAL_STORAGE = "let data = %s; for (let key in data) { window.localStorage.setItem(key, data[key]); }";
+    private static final String UPDATE_LOCAL_STORAGE =
+            "let data = %s; for (let key in data) { window.localStorage.setItem(key, data[key]); }";
 
     /**
-     * URL of the page after a successful login.
+     * Stores the URL obtained after a successful login for each session.
+     * <p>
+     * This allows the system to directly navigate to the appropriate URL when session caching is used.
+     * The map key is a {@link LoginKey} containing the username, password, and login type information.
      */
-    private static String urlAfterLogging;
+    private static final Map<LoginKey, String> urlAfterLoggingMap = new ConcurrentHashMap<>();
 
 
     /**
@@ -83,7 +91,7 @@ public abstract class BaseLoginClient implements LoginClient {
                 if (userLoginMap.get(loginKey) == null) {
                     performLoginAndCache(uiService, loginKey, username, password);
                 } else {
-                    restoreSession(uiService, userLoginMap.get(loginKey));
+                    restoreSession(uiService, userLoginMap.get(loginKey), urlAfterLoggingMap.get(loginKey));
                 }
             }
         }
@@ -118,13 +126,12 @@ public abstract class BaseLoginClient implements LoginClient {
 
         try {
             smartWebDriver.getWait()
-                .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
+                    .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
-            //todo create custom exception
-            throw new RuntimeException("Logging in was not successful");
+            throw new AuthenticationUiException("Logging in was not successful", e);
         }
 
-        urlAfterLogging = smartWebDriver.getCurrentUrl();
+        urlAfterLoggingMap.put(loginKey, smartWebDriver.getCurrentUrl());
 
         WebDriver driver = smartWebDriver.getOriginal();
         Set<Cookie> cookies = driver.manage().getCookies();
@@ -140,7 +147,7 @@ public abstract class BaseLoginClient implements LoginClient {
      * @param uiService   The UI service used for browser interactions.
      * @param sessionInfo The stored session information.
      */
-    private void restoreSession(SuperUIServiceFluent<?> uiService, SessionInfo sessionInfo) {
+    private void restoreSession(SuperUIServiceFluent<?> uiService, SessionInfo sessionInfo, String urlAfterLogging) {
         SmartWebDriver smartWebDriver = uiService.getDriver();
         WebDriver driver = smartWebDriver.getOriginal();
 
@@ -155,17 +162,15 @@ public abstract class BaseLoginClient implements LoginClient {
 
             smartWebDriver.get(urlAfterLogging);
         } catch (Exception e) {
-            //todo create custom exception
-            throw new RuntimeException("Restoring session was not successful", e);
+            throw new AuthenticationUiException("Restoring session was not successful", e);
         }
 
 
         try {
             smartWebDriver.getWait()
-                .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
+                    .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
         } catch (Exception e) {
-            //todo create custom exception
-            throw new RuntimeException("Logging in was not successful");
+            throw new AuthenticationUiException("Logging in was not successful", e);
         }
     }
 

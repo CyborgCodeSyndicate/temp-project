@@ -43,14 +43,14 @@ public enum WebElementAction {
         public Object performActionWebElement(WebDriver driver, WebElement element, Object... args) {
             return element.findElements((By) args[0]).stream()
                     .map(e -> new SmartWebElement(e, driver))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         @Override
         public Object performActionWebDriver(WebDriver driver, Object... args) {
             return driver.findElements((By) args[0]).stream()
                     .map(e -> new SmartWebElement(e, driver))
-                    .collect(Collectors.toList());
+                    .toList();
         }
     },
 

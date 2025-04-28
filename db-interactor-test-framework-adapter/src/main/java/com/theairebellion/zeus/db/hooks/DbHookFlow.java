@@ -5,11 +5,11 @@ import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.Map;
 
-public interface DbHookFlow {
+public interface DbHookFlow<T extends Enum<T>> {
 
     TriConsumer<DatabaseService, Map<Object, Object>, String[]> flow();
 
-    Enum<?> enumImpl();
+    T enumImpl();
 
 
 }

@@ -30,6 +30,7 @@ import static com.theairebellion.zeus.api.storage.StorageKeysApi.API;
  * @author Cyborg Code Syndicate
  */
 @TestService("API")
+@SuppressWarnings("java:S6832")
 public class RestServiceFluent extends FluentService implements ClassLevelHook {
 
     private final RestService restService;

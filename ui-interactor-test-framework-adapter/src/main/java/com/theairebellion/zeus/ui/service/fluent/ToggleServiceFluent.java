@@ -13,10 +13,10 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate
  */
-public class ToggleServiceFluent {
+public class ToggleServiceFluent<T extends UIServiceFluent<?>> {
 
     private final ToggleService toggleService;
-    private final UIServiceFluent uiServiceFluent;
+    private final T uiServiceFluent;
     private final Storage storage;
 
     /**
@@ -26,7 +26,7 @@ public class ToggleServiceFluent {
      * @param storage         The storage instance for storing toggle states.
      * @param toggleService   The toggle service responsible for interacting with toggle components.
      */
-    public ToggleServiceFluent(UIServiceFluent uiServiceFluent, Storage storage, ToggleService toggleService) {
+    public ToggleServiceFluent(T uiServiceFluent, Storage storage, ToggleService toggleService) {
         this.uiServiceFluent = uiServiceFluent;
         this.toggleService = toggleService;
         this.storage = storage;
@@ -38,7 +38,7 @@ public class ToggleServiceFluent {
      * @param element The {@link ToggleUIElement} representing the toggle component.
      * @return The fluent UI service instance.
      */
-    public UIServiceFluent activate(final ToggleUIElement element) {
+    public T activate(final ToggleUIElement element) {
         Allure.step("[UI - Toggle] Activating the toggle element: " + element);
         toggleService.activate(element.componentType(), element.locator());
         return uiServiceFluent;
@@ -50,7 +50,7 @@ public class ToggleServiceFluent {
      * @param element The {@link ToggleUIElement} representing the toggle component.
      * @return The fluent UI service instance.
      */
-    public UIServiceFluent deactivate(final ToggleUIElement element) {
+    public T deactivate(final ToggleUIElement element) {
         Allure.step("[UI - Toggle] Deactivating the toggle element: " + element);
         toggleService.deactivate(element.componentType(), element.locator());
         return uiServiceFluent;
@@ -62,7 +62,7 @@ public class ToggleServiceFluent {
      * @param element The {@link ToggleUIElement} representing the toggle component.
      * @return The fluent UI service instance.
      */
-    public UIServiceFluent isActivated(final ToggleUIElement element) {
+    public T isActivated(final ToggleUIElement element) {
         Allure.step("[UI - Toggle] Checking if the toggle element is activated: " + element);
         boolean enabled = toggleService.isActivated(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);
@@ -75,7 +75,7 @@ public class ToggleServiceFluent {
      * @param element The {@link ToggleUIElement} representing the toggle component.
      * @return The fluent UI service instance.
      */
-    public UIServiceFluent isEnabled(final ToggleUIElement element) {
+    public T isEnabled(final ToggleUIElement element) {
         Allure.step("[UI - Toggle] Checking if the toggle element is enabled: " + element);
         boolean enabled = toggleService.isEnabled(element.componentType(), element.locator());
         storage.sub(UI).put(element.enumImpl(), enabled);

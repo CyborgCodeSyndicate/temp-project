@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 import static com.bakery.project.ui.elements.TableTypes.SIMPLE;
 
-public enum Tables implements TableElement {
+public enum Tables implements TableElement<Tables> {
 
     CAMPAIGNS(TableEntry.class),
     ORDERS(TableEntry.class, SIMPLE);
@@ -68,7 +68,7 @@ public enum Tables implements TableElement {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public Tables enumImpl() {
         return this;
     }
 

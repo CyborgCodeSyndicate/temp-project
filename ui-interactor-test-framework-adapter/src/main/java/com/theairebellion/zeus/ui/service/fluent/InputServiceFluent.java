@@ -25,6 +25,7 @@ import io.qameta.allure.Allure;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class InputServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
 
     private final InputService inputService;

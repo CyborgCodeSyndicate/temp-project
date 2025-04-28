@@ -19,6 +19,9 @@ import org.openqa.selenium.WebElement;
  */
 public class ExceptionHandlingWebDriverFunctions {
 
+    private ExceptionHandlingWebDriverFunctions() {
+    }
+
     /**
      * Handles {@link NoSuchElementException} by attempting to locate the element within iFrames.
      * <p>

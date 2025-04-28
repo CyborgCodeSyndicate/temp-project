@@ -20,6 +20,7 @@ import java.util.Objects;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
 
     private final T uiServiceFluent;

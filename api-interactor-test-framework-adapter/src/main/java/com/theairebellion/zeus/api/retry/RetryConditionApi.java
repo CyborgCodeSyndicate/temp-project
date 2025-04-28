@@ -19,6 +19,9 @@ import java.util.Objects;
  */
 public class RetryConditionApi {
 
+    private RetryConditionApi() {
+    }
+
     /**
      * Creates a retry condition that checks if the response status matches the expected value.
      *

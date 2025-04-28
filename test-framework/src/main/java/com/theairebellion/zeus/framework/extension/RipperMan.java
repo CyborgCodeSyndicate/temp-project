@@ -73,7 +73,7 @@ public class RipperMan implements AfterTestExecutionCallback {
         superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).joinLateArguments();
 
         Arrays.stream(targets).forEach(target -> {
-            DataRipper dataRipper = ReflectionUtil.findEnumImplementationsOfInterface(
+            DataRipper<?> dataRipper = ReflectionUtil.findEnumImplementationsOfInterface(
                     DataRipper.class, target, getFrameworkConfig().projectPackage());
 
             dataRipper.eliminate().accept(superQuest);

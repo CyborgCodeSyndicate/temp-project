@@ -19,8 +19,14 @@ import java.util.stream.Collectors;
  */
 public class LoggingFunctions {
 
+    private static final String OUTER_HTML = "outerHTML";
+    private static final String INNER_HTML = "innerHTML";
     private static final int MAX_LENGTH = 1000;
     private static final String PAGE_SOURCE_UNAVAILABLE = "Page source unavailable.";
+
+
+    private LoggingFunctions() {
+    }
 
     /**
      * Logs a {@link NoSuchElementException} when an element cannot be found from the root level.
@@ -56,15 +62,15 @@ public class LoggingFunctions {
                                                  final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();
         By locator = LocatorParser.extractLocator(args);
-        WebElement element = target instanceof WebElement ? (WebElement) target : null;
+        WebElement element = target instanceof WebElement we ? we : null;
         if (element == null) {
             logException(cause.getClass(), target, action.getMethodName(), args,
                     "Exception [" + cause.getClass().getSimpleName() +
                             "]: Element is null, possibly due to a stale reference or incorrect locator.");
             return;
         }
-        String outerHtml = truncateString(element.getAttribute("outerHTML"), MAX_LENGTH);
-        String innerHtml = truncateString(element.getAttribute("innerHTML"), MAX_LENGTH);
+        String outerHtml = truncateString(element.getAttribute(OUTER_HTML), MAX_LENGTH);
+        String innerHtml = truncateString(element.getAttribute(INNER_HTML), MAX_LENGTH);
         String elementDetails = LocatorParser.getElementDetails(element, outerHtml, innerHtml);
         String actionMessage = switch (action) {
             case FIND_ELEMENT, FIND_ELEMENTS -> locator != null
@@ -95,14 +101,14 @@ public class LoggingFunctions {
     public static void logElementNotInteractableException(final Object target, final WebElementAction action,
                                                           final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();
-        WebElement element = target instanceof WebElement ? (WebElement) target : null;
+        WebElement element = target instanceof WebElement we ? we : null;
         if (element == null) {
             logException(cause.getClass(), target, action.getMethodName(), args,
                     "Element is null, cannot log additional info.");
             return;
         }
-        String outerHtml = truncateString(element.getAttribute("outerHTML"), MAX_LENGTH);
-        String innerHtml = truncateString(element.getAttribute("innerHTML"), MAX_LENGTH);
+        String outerHtml = truncateString(element.getAttribute(OUTER_HTML), MAX_LENGTH);
+        String innerHtml = truncateString(element.getAttribute(INNER_HTML), MAX_LENGTH);
         String elementDetails = LocatorParser.getElementDetails(element, outerHtml, innerHtml);
         String additionalInfo = String.format(
                 "Exception [%s]: Element [%s] with text [%s] is not interactable when attempting to perform %s().%n" +
@@ -139,14 +145,17 @@ public class LoggingFunctions {
     public static void logElementClickInterceptedException(final Object target, final WebElementAction action,
                                                            final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();
-        WebElement element = target instanceof WebElement ? (WebElement) target : null;
+        WebElement element = null;
+        if (target instanceof WebElement webElement) {
+            element = webElement;
+        }
         if (element == null) {
             logException(cause.getClass(), target, action.getMethodName(), args,
                     "Element is null, cannot log additional info.");
             return;
         }
-        String outerHtml = truncateString(element.getAttribute("outerHTML"), MAX_LENGTH);
-        String innerHtml = truncateString(element.getAttribute("innerHTML"), MAX_LENGTH);
+        String outerHtml = truncateString(element.getAttribute(OUTER_HTML), MAX_LENGTH);
+        String innerHtml = truncateString(element.getAttribute(INNER_HTML), MAX_LENGTH);
         String elementDetails = LocatorParser.getElementDetails(element, outerHtml, innerHtml);
         String blockingLocator = LocatorParser.extractLocatorFromMessage(cause.getMessage());
         String additionalInfo = String.format(
@@ -167,7 +176,10 @@ public class LoggingFunctions {
                                                 final Object[] args, final InvocationTargetException e) {
         Throwable cause = e.getCause();
         By locator = LocatorParser.extractLocator(args);
-        long timeout = (args != null && args.length > 1 && args[1] instanceof Long) ? (Long) args[1] : 0L;
+        long timeout = 0L;
+        if (args != null && args.length > 1 && args[1] instanceof Long l) {
+            timeout = l;
+        }
         String timeoutMessage = timeout > 0 ? "Waited for " + timeout + " milliseconds." : "No specific timeout set.";
         String additionalInfo = String.format(
                 "Timeout while waiting for element to meet condition: [%s]. Locator: [%s]. %s",

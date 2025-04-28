@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.insertion;
 
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
 import org.openqa.selenium.By;
 
 import java.lang.annotation.Annotation;
@@ -62,6 +63,7 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
      * @throws IllegalStateException If no insertion service is found for a component type.
      * @throws RuntimeException If field access fails.
      */
+    @SuppressWarnings("java:S3011")
     @Override
     public void insertData(final Object data) {
         final Field[] fields = data.getClass().getDeclaredFields();
@@ -90,7 +92,7 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
                     afterInsertion(annotation);
                 }
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to access field: " + field.getName(), e);
+                throw new ReflectionException("Failed to access field: " + field.getName(), e);
             }
         }
         LogUI.info("Finished data insertion for [{}].", data.getClass().getSimpleName());
