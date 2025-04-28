@@ -39,6 +39,7 @@ public class SuperUIServiceFluent<T extends UIServiceFluent<?>> extends UIServic
      *
      * @return The {@link SmartWebDriver} instance.
      */
+    @Override
     public SmartWebDriver getDriver() {
         return original.getDriver();
     }

@@ -3,7 +3,6 @@ package com.theairebellion.zeus.ui.drivers.config;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.AbstractDriverOptions;
 import org.openqa.selenium.support.events.EventFiringDecorator;

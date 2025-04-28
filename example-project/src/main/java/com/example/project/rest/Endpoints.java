@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public enum Endpoints implements Endpoint {
+public enum Endpoints implements Endpoint<Endpoints> {
     ENDPOINT_EXAMPLE(Method.POST, "/create/{campaignId}/get"),
     CREATE_PET(Method.POST, "/pet");
 
@@ -38,7 +38,7 @@ public enum Endpoints implements Endpoint {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public Endpoints enumImpl() {
         return this;
     }
 

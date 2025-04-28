@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Cyborg Code Syndicate
  */
-public enum TableAssertionTypes implements AssertionType {
+public enum TableAssertionTypes implements AssertionType<TableAssertionTypes> {
 
     /**
      * Asserts that the table is not empty.
@@ -108,7 +108,7 @@ public enum TableAssertionTypes implements AssertionType {
      * @return The current enum instance.
      */
     @Override
-    public Enum<?> type() {
+    public TableAssertionTypes type() {
         return this;
     }
 

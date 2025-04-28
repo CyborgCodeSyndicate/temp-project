@@ -5,8 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.theairebellion.zeus</groupId>
-        <artifactId>automation-testing-libraries</artifactId>
+        <artifactId>library-parent-pom</artifactId>
         <version>1.0.0</version>
+        <relativePath>../library-parent-pom</relativePath>
     </parent>
 
     <artifactId>assertions</artifactId>

@@ -3,7 +3,7 @@ package com.bakery.project.preconditions;
 import com.theairebellion.zeus.ui.parameters.DataIntercept;
 
 
-public enum BakeryInterceptRequests implements DataIntercept {
+public enum BakeryInterceptRequests implements DataIntercept<BakeryInterceptRequests> {
     INTERCEPT_REQUEST_AUTH( "?v-r=uidl"),
     INTERCEPT_REQUEST_LOGIN("/login");
 
@@ -30,7 +30,7 @@ public enum BakeryInterceptRequests implements DataIntercept {
     }
 
     @Override
-    public Enum<?> enumImpl() {
+    public BakeryInterceptRequests enumImpl() {
         return this;
     }
 

@@ -28,6 +28,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class CheckboxServiceFluent<T extends UIServiceFluent<?>> implements Insertion {
 
     private final CheckboxService checkboxService;

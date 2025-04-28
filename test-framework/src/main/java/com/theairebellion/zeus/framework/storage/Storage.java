@@ -1,11 +1,12 @@
 package com.theairebellion.zeus.framework.storage;
 
 import com.theairebellion.zeus.framework.parameters.Late;
-import lombok.Getter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.get
  *
  * @author Cyborg Code Syndicate
  */
-@Getter
 public class Storage {
 
     private final Map<Enum<?>, LinkedList<Object>> data = new ConcurrentHashMap<>();
@@ -187,6 +187,10 @@ public class Storage {
      * @return The {@code Storage} instance corresponding to the sub-key.
      * @throws IllegalStateException if the key is already used for a non-storage value.
      */
+    @SuppressFBWarnings(
+        value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
+        justification = "This write is intentional for initializing defaultStorageEnum under controlled conditions."
+    )
     public Storage sub(Enum<?> subKey) {
 
         List<Object> values = data.get(subKey);
@@ -248,10 +252,18 @@ public class Storage {
     //todo: javaDocs
     public <T> T getHookData(Object value, Class<T> clazz) {
         Map<Object, Object> values = get(StorageKeysTest.HOOKS, Map.class);
-        if (values == null || values.get(values) == null) {
+        if (values == null || values.get(value) == null) {
             return null;
         }
         return clazz.cast(values.get(value));
+    }
+
+    public Map<Enum<?>, List<Object>> getData() {
+        Map<Enum<?>, List<Object>> copy = new HashMap<>();
+        for (Map.Entry<Enum<?>, LinkedList<Object>> entry : data.entrySet()) {
+            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return copy;
     }
 
     /**

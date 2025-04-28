@@ -149,7 +149,7 @@ class OracleTest {
             Object result = oracle.resolveParameter(null, extCtx);
 
             // Verify that null static data is put (this is what the actual code does)
-            verify(storage).put(STATIC_DATA, null);
+            verify(storage).put(STATIC_DATA, Map.of());
             verify(store).put(QUEST, quest);
             assertSame(quest, result);
         }

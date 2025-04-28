@@ -1,6 +1,7 @@
 package com.bakery.project;
 
 import com.bakery.project.data.creator.TestDataCreator;
+import com.bakery.project.data.extractions.CustomDataExtractor;
 import com.bakery.project.db.hooks.DbHookFlows;
 import com.bakery.project.model.bakery.Order;
 import com.bakery.project.model.bakery.Seller;
@@ -183,7 +184,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                 .then()
                 .enters(EARTH)
                 .validate(() -> assertEquals(List.of("$197.54"),
-                        retrieve(DataExtractorsUi
+                        retrieve(CustomDataExtractor
                                         .responseBodyExtraction(BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpointSubString(),
                                                 "$[0].changes[?(@.key=='totalPrice')].value", "for(;;);"),
                                 List.class)))

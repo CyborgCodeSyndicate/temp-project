@@ -26,7 +26,7 @@ public class JsonPathExtractor {
      * @param jsonPathConfig The {@link Configuration} for JsonPath evaluation.
      */
     public JsonPathExtractor(ObjectMapper objectMapper, Configuration jsonPathConfig) {
-        this.objectMapper = objectMapper;
+        this.objectMapper = objectMapper.copy();
         this.jsonPathConfig = jsonPathConfig;
     }
 
@@ -40,7 +40,7 @@ public class JsonPathExtractor {
      * @param objectMapper The {@link ObjectMapper} for JSON processing.
      */
     public JsonPathExtractor(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        this.objectMapper = objectMapper.copy();
         this.jsonPathConfig = Configuration.builder()
                 .options(Option.SUPPRESS_EXCEPTIONS)
                 .build();

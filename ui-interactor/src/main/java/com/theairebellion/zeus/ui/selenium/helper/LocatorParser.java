@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.helper;
 
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.selenium.exceptions.UiInteractionException;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
@@ -25,6 +26,9 @@ import java.util.regex.Pattern;
  */
 public class LocatorParser {
 
+    private LocatorParser() {
+    }
+
     private static final String LOCATOR_NOT_FOUND_MESSAGE = "Locator not found";
     private static final String NO_MESSAGE_AVAILABLE = "No message available";
 
@@ -41,9 +45,10 @@ public class LocatorParser {
         try {
             locatorsList = parseLocators(element.toString());
         } catch (Exception ignore) {
+            // Parsing failed; fallback behavior will attempt updateWebElement with empty locator list.
         }
         if (locatorsList.isEmpty()) {
-            throw new RuntimeException("Element can't be auto updated");
+            throw new UiInteractionException("Element can't be auto updated");
         }
         return new SmartWebDriver(driver).findSmartElement(
                 new ByChained(locatorsList.toArray(new By[0])), 10);
@@ -65,6 +70,7 @@ public class LocatorParser {
                 return "//" + tag;
             }
             String[] attrPairs = attributes.split("\\s+");
+            @SuppressWarnings("java:S1075")
             StringBuilder xpath = new StringBuilder("//" + tag + "[");
             for (int i = 0; i < attrPairs.length; i++) {
                 String[] keyValue = attrPairs[i].split("=");
@@ -91,8 +97,8 @@ public class LocatorParser {
      * @return The extracted By locator, or null if not found.
      */
     public static By extractLocator(Object[] args) {
-        if (args != null && args.length > 0 && args[0] instanceof By) {
-            return (By) args[0];
+        if (args != null && args.length > 0 && args[0] instanceof By by) {
+            return by;
         }
         return null;
     }

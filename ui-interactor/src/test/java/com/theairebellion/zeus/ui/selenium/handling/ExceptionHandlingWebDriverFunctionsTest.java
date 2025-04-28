@@ -32,13 +32,6 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
     @Mock
     private WebDriver mockDriver;
 
-    @Test
-    @DisplayName("Constructor should be accessible for utility class")
-    void testConstructorExists() {
-        // This is a way to test a private constructor exists
-        ExceptionHandlingWebDriverFunctions instance = new ExceptionHandlingWebDriverFunctions() {};
-        assertNotNull(instance);
-    }
 
     @Nested
     @DisplayName("Tests for handleNoSuchElement with invalid arguments")

@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.insertion;
 
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
 import org.openqa.selenium.By;
 
 import java.lang.annotation.Annotation;
@@ -9,7 +10,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Abstract base class for insertion services that handle inserting data into UI components.
@@ -63,6 +63,7 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
      * @throws IllegalStateException If no insertion service is found for a component type.
      * @throws RuntimeException If field access fails.
      */
+    @SuppressWarnings("java:S3011")
     @Override
     public void insertData(final Object data) {
         final Field[] fields = data.getClass().getDeclaredFields();
@@ -91,7 +92,7 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
                     afterInsertion(annotation);
                 }
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to access field: " + field.getName(), e);
+                throw new ReflectionException("Failed to access field: " + field.getName(), e);
             }
         }
         LogUI.info("Finished data insertion for [{}].", data.getClass().getSimpleName());
@@ -153,7 +154,7 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
                    .filter(field -> field.isAnnotationPresent(getAnnotationClass()))
                    .sorted(Comparator.comparingInt(field ->
                                                        getOrder(field.getAnnotation(getAnnotationClass()))))
-                   .collect(Collectors.toList());
+                   .toList();
     }
 
     //todo: javaDocs

@@ -10,7 +10,7 @@ package com.theairebellion.zeus.db.config;
  *
  * @author Cyborg Code Syndicate
  */
-public interface DbType {
+public interface DbType<T extends Enum<T>> {
 
     /**
      * Retrieves the driver associated with the database type.
@@ -31,5 +31,5 @@ public interface DbType {
      *
      * @return An enumeration representing the database type.
      */
-    Enum<?> enumImpl();
+    T enumImpl();
 }

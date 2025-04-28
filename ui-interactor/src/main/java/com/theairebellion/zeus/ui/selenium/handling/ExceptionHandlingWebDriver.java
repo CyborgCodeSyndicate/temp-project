@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -17,7 +18,6 @@ import java.util.Map;
  *
  * @author Cyborg Code Syndicate
  */
-@Getter
 public enum ExceptionHandlingWebDriver {
 
     /**
@@ -45,6 +45,7 @@ public enum ExceptionHandlingWebDriver {
     /**
      * The name of the WebDriver method associated with this exception handler.
      */
+    @Getter
     private final String methodName;
 
     /**
@@ -63,6 +64,10 @@ public enum ExceptionHandlingWebDriver {
                                Map<Class<? extends Throwable>, BiFunction<WebDriver, Object[], Object>> exceptionHandlingMap) {
         this.methodName = methodName;
         this.exceptionHandlingMap = exceptionHandlingMap;
+    }
+
+    public Map<Class<? extends Throwable>, BiFunction<WebDriver, Object[], Object>> getExceptionHandlingMap() {
+        return Collections.unmodifiableMap(exceptionHandlingMap);
     }
 
 }

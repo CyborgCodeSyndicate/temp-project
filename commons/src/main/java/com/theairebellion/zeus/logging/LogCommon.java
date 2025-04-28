@@ -24,7 +24,7 @@ public final class LogCommon extends LogCore {
     /**
      * Singleton instance of {@code LogCommon}.
      */
-    private static LogCommon INSTANCE;
+    private static LogCommon instance;
 
     /**
      * Private constructor to enforce singleton pattern.
@@ -106,11 +106,11 @@ public final class LogCommon extends LogCore {
     /**
      * Replaces the current singleton instance with a new {@code LogCommon} instance.
      *
-     * @param INSTANCE The new instance of {@code LogCommon} to use.
+     * @param instance The new instance of {@code LogCommon} to use.
      * @param <T>      A type extending {@code LogCore}.
      */
-    public static <T extends LogCore> void extend(final T INSTANCE) {
-        LogCommon.INSTANCE = (LogCommon) INSTANCE;
+    public static <T extends LogCore> void extend(final T instance) {
+        LogCommon.instance = (LogCommon) instance;
     }
 
     /**
@@ -122,10 +122,10 @@ public final class LogCommon extends LogCore {
      * @return The {@code LogCommon} singleton instance.
      */
     private static LogCommon getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new LogCommon();
+        if (instance == null) {
+            instance = new LogCommon();
         }
-        return INSTANCE;
+        return instance;
     }
 
 }

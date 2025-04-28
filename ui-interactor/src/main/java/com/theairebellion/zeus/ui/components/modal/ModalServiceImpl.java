@@ -27,6 +27,15 @@ import org.openqa.selenium.By;
 public class ModalServiceImpl extends AbstractComponentService<ModalComponentType, Modal>
         implements ModalService {
 
+    private static final String CHECK_MODAL_OPENED                   = "Checking if modal %s is opened";
+    private static final String CLICK_BUTTON_WITH_TEXT_CONTAINER     = "Clicking button with text %s in modal %s using container";
+    private static final String CLICK_BUTTON_WITH_TEXT               = "Clicking button with text %s in modal %s";
+    private static final String CLICK_BUTTON_WITH_LOCATOR            = "Clicking button with locator %s in modal %s";
+    private static final String GET_MODAL_TITLE                      = "Getting title of modal %s";
+    private static final String GET_MODAL_BODY_TEXT                  = "Getting body text of modal %s";
+    private static final String GET_MODAL_CONTENT_TITLE              = "Getting content title of modal %s";
+    private static final String CLOSE_MODAL                          = "Closing modal %s";
+
     /**
      * Constructs a new {@code ModalServiceImpl} with the provided {@link SmartWebDriver}.
      *
@@ -56,7 +65,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public boolean isOpened(final ModalComponentType componentType) {
-        LogUI.step("Checking if modal " + componentType + " is opened");
+        LogUI.step(String.format(CHECK_MODAL_OPENED, componentType));
         return modalComponent(componentType).isOpened();
     }
 
@@ -69,7 +78,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public void clickButton(final ModalComponentType componentType, final SmartWebElement container, final String modalButtonText) {
-        LogUI.step("Clicking button with text " + modalButtonText + " in modal " + componentType + " using container");
+        LogUI.step(String.format(CLICK_BUTTON_WITH_TEXT_CONTAINER, modalButtonText, componentType));
         modalComponent(componentType).clickButton(container, modalButtonText);
     }
 
@@ -81,7 +90,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public void clickButton(final ModalComponentType componentType, final String modalButtonText) {
-        LogUI.step("Clicking button with text " + modalButtonText + " in modal " + componentType);
+        LogUI.step(String.format(CLICK_BUTTON_WITH_TEXT, modalButtonText, componentType));
         modalComponent(componentType).clickButton(modalButtonText);
     }
 
@@ -93,7 +102,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public void clickButton(final ModalComponentType componentType, final By modalButtonLocator) {
-        LogUI.step("Clicking button with locator " + modalButtonLocator + " in modal " + componentType);
+        LogUI.step(String.format(CLICK_BUTTON_WITH_LOCATOR, modalButtonLocator, componentType));
         modalComponent(componentType).clickButton(modalButtonLocator);
     }
 
@@ -105,7 +114,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public String getTitle(final ModalComponentType componentType) {
-        LogUI.step("Getting title of modal " + componentType);
+        LogUI.step(String.format(GET_MODAL_TITLE, componentType));
         return modalComponent(componentType).getTitle();
     }
 
@@ -117,7 +126,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public String getBodyText(final ModalComponentType componentType) {
-        LogUI.step("Getting body text of modal " + componentType);
+        LogUI.step(String.format(GET_MODAL_BODY_TEXT, componentType));
         return modalComponent(componentType).getBodyText();
     }
 
@@ -129,7 +138,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public String getContentTitle(final ModalComponentType componentType) {
-        LogUI.step("Getting content title of modal " + componentType);
+        LogUI.step(String.format(GET_MODAL_CONTENT_TITLE, componentType));
         return modalComponent(componentType).getContentTitle();
     }
 
@@ -140,7 +149,7 @@ public class ModalServiceImpl extends AbstractComponentService<ModalComponentTyp
      */
     @Override
     public void close(final ModalComponentType componentType) {
-        LogUI.step("Closing modal " + componentType);
+        LogUI.step(String.format(CLOSE_MODAL, componentType));
         modalComponent(componentType).close();
     }
 

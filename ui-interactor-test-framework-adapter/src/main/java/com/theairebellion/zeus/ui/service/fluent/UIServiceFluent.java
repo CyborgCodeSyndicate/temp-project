@@ -94,6 +94,7 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
      * @param assertion The assertion to validate.
      * @return The current instance of {@code UIServiceFluent} for method chaining.
      */
+    @Override
     public T validate(Runnable assertion) {
         return (T) super.validate(assertion);
     }
@@ -104,6 +105,7 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
      * @param assertion The assertion to validate with soft assertions.
      * @return The current instance of {@code UIServiceFluent} for method chaining.
      */
+    @Override
     public T validate(Consumer<SoftAssertions> assertion) {
         return (T) super.validate(assertion);
     }
@@ -113,6 +115,7 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
      * This method is automatically called after setup.
      */
     @Override
+    @SuppressWarnings("java:S3740")
     protected void postQuestSetupInitialization() {
         ButtonServiceImpl buttonService = new ButtonServiceImpl(driver);
         LinkServiceImpl linkService = new LinkServiceImpl(driver);
@@ -187,6 +190,7 @@ public class UIServiceFluent<T extends UIServiceFluent<?>> extends FluentService
      * @param assertionResults The list of assertion results.
      */
     @Override
+    @SuppressWarnings("java:S1185")
     protected void validation(List<AssertionResult<Object>> assertionResults) {
         super.validation(assertionResults);
     }

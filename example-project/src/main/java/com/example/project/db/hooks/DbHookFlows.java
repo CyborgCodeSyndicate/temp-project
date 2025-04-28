@@ -13,7 +13,7 @@ import static com.example.project.db.hooks.QueriesH2.CREATE_TABLE_SELLERS;
 import static com.example.project.db.hooks.QueriesH2.INSERT_ORDERS;
 import static com.example.project.db.hooks.QueriesH2.INSERT_SELLERS;
 
-public enum DbHookFlows implements DbHookFlow {
+public enum DbHookFlows implements DbHookFlow<DbHookFlows> {
 
     INITIALIZE_H2(DbHookFlows::initializeH2),
     QUERY_SAVE_IN_STORAGE_H2(DbHookFlows::getFromDbSaveInStorage);
@@ -44,7 +44,7 @@ public enum DbHookFlows implements DbHookFlow {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public DbHookFlows enumImpl() {
         return this;
     }
 

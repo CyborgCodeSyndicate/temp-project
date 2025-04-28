@@ -34,7 +34,7 @@ class PreQuestJourneyTest {
             // Given
             AtomicBoolean executed = new AtomicBoolean(false);
             BiConsumer<SuperQuest, Object[]> consumer = (quest, args) -> executed.set(true);
-            PreQuestJourney preQuestJourney = new MockPreQuestJourney(consumer);
+            PreQuestJourney<?> preQuestJourney = new MockPreQuestJourney(consumer);
             Object[] testArgs = new Object[]{ARG_1, ARG_2};
 
             // When
@@ -56,7 +56,7 @@ class PreQuestJourneyTest {
                 capturedArgs.set(args);
             };
 
-            PreQuestJourney preQuestJourney = new MockPreQuestJourney(consumer);
+            PreQuestJourney<?> preQuestJourney = new MockPreQuestJourney(consumer);
             Object[] testArgs = new Object[]{ARG_1, ARG_2};
 
             // When
@@ -78,7 +78,7 @@ class PreQuestJourneyTest {
         void testEnumImpl() {
             // Given
             BiConsumer<SuperQuest, Object[]> consumer = (quest, args) -> {};
-            PreQuestJourney preQuestJourney = new MockPreQuestJourney(consumer);
+            PreQuestJourney<?> preQuestJourney = new MockPreQuestJourney(consumer);
 
             // When
             Enum<?> result = preQuestJourney.enumImpl();
