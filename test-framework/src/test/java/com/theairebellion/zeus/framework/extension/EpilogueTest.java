@@ -1,283 +1,174 @@
 package com.theairebellion.zeus.framework.extension;
 
-import com.theairebellion.zeus.framework.log.LogTest;
-import com.theairebellion.zeus.framework.storage.StoreKeys;
-import io.qameta.allure.Allure;
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
+import com.theairebellion.zeus.framework.allure.StepType;
+import com.theairebellion.zeus.framework.quest.SuperQuest;
+import com.theairebellion.zeus.framework.storage.Storage;
+import com.theairebellion.zeus.framework.storage.StorageKeysTest;
+import com.theairebellion.zeus.framework.util.AllureStepHelper;
+import com.theairebellion.zeus.framework.util.ResourceLoader;
+import com.theairebellion.zeus.framework.util.TestContextManager;
 import org.apache.logging.log4j.ThreadContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled
 class EpilogueTest {
 
-    public static final String TEST_DISPLAY_NAME = "TestDisplayName";
-    public static final String ERROR = "Error";
-    public static final String TEST_NAME = "testName";
-    public static final String EMPTY_LOGS = "emptyLogs";
-    public static final String LOG_FILE_NAME = "logFileName";
-    public static final String NO_MATCHES = "NoMatches";
-    public static final String SOME_TEST = "SomeTest";
-    public static final String TEST_WITH_LOGS = "TestWithLogs";
-    public static final String THISPATHDOESNOTEXIST = "thispathdoesnotexist";
-    public static final String IO_EXCEPTION_TEST = "IOExceptionTest";
+    @Mock
+    private ExtensionContext mockContext;
+
+    @Mock
+    private ExtensionContext.Store mockStore;
+
+    @Mock
+    private SuperQuest mockSuperQuest;
+
+    @Mock
+    private Storage subStorage;
 
     private Epilogue epilogue;
-    private ExtensionContext extensionContext;
-    private ExtensionContext.Store store;
+
+    private MockedStatic<CustomAllureListener> customAllureMock;
+    private MockedStatic<ResourceLoader> resourceLoaderMock;
+    private MockedStatic<TestContextManager> testContextManagerMock;
 
     @BeforeEach
-    void setUp() {
-        epilogue = new Epilogue();
-        extensionContext = mock(ExtensionContext.class);
-        store = mock(ExtensionContext.Store.class);
-        lenient().when(extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
+    void setUp() throws NoSuchMethodException {
+        epilogue = spy(new Epilogue());
+
+        // Initialize static mocks *within* each test setup
+        customAllureMock = mockStatic(CustomAllureListener.class);
+        resourceLoaderMock = mockStatic(ResourceLoader.class);
+        testContextManagerMock = mockStatic(TestContextManager.class);
+
+        // Mock TestContextManager
+        testContextManagerMock.when(() -> TestContextManager.getSuperQuest(mockContext)).thenReturn(mockSuperQuest);
+        Storage dummyStorage = mock(Storage.class);
+        when(mockSuperQuest.getStorage()).thenReturn(dummyStorage);
+        when(dummyStorage.sub(eq(StorageKeysTest.ARGUMENTS))).thenReturn(subStorage);
+
+        // Mock ResourceLoader
+        resourceLoaderMock.when(() -> ResourceLoader.loadResourceFile(anyString()))
+                .thenReturn("<html><body>{{testName}} {{className}}</body></html>");
+
+        // Setup common mocks for each test
+        when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
+        when(mockStore.get(eq(START_TIME), eq(long.class))).thenReturn(123L);
+        when(mockContext.getExecutionException()).thenReturn(Optional.empty());
+
+        // Setup method mock
+        Method mockMethod = EpilogueTest.class.getDeclaredMethod("shouldStopStep_WhenActiveStepIsNotTearDown");
+        lenient().when(mockContext.getRequiredTestMethod()).thenReturn(mockMethod);
+        lenient().when(mockContext.getRequiredTestClass()).thenReturn((Class) EpilogueTest.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        // Close static mocks *within* each test teardown
+        if (customAllureMock != null) {
+            customAllureMock.close();
+        }
+        if (resourceLoaderMock != null) {
+            resourceLoaderMock.close();
+        }
+        if (testContextManagerMock != null) {
+            testContextManagerMock.close();
+        }
+
+        // Clear thread context for each test
+        ThreadContext.clearAll();
     }
 
     @Test
-    void testAfterTestExecutionSuccess() {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis() - 2000);
-        when(extensionContext.getDisplayName()).thenReturn(TEST_DISPLAY_NAME);
-        when(extensionContext.getExecutionException()).thenReturn(Optional.empty());
-        try (MockedStatic<ThreadContext> threadContextMock = mockStatic(ThreadContext.class);
-             MockedStatic<LogTest> logTestMock = mockStatic(LogTest.class)) {
+    @DisplayName("Should stop step when active step is NOT TEAR_DOWN")
+    void shouldStopStep_WhenActiveStepIsNotTearDown() {
+        // Given
+        customAllureMock.when(CustomAllureListener::getActiveStepName).thenReturn("Some Other Step");
+        customAllureMock.when(() -> CustomAllureListener.isStepActive("Some Other Step")).thenReturn(true);
+        List<String> htmlContent = new ArrayList<>(List.of("<td>Some content</td>", "<td>Other content</td>"));
+        when(mockStore.get(HTML, List.class)).thenReturn(htmlContent);
+        when(mockStore.get(HTML)).thenReturn(htmlContent);
 
-            epilogue.afterTestExecution(extensionContext);
+        // When
+        epilogue.afterTestExecution(mockContext);
 
-            // Verify the success log message was called
-            logTestMock.verify(() ->
-                    LogTest.info(
-                            eq("The quest of '{}' has concluded with glory. Status: {}. Duration: {} seconds."),
-                            eq(TEST_DISPLAY_NAME),
-                            eq("SUCCESS"),
-                            anyLong()
+        // Then
+        customAllureMock.verify(CustomAllureListener::stopStep, times(2));
+    }
+
+    @Test
+    @DisplayName("Should NOT stop step when active step IS TEAR_DOWN")
+    void shouldNotStopStep_WhenActiveStepIsTearDown() {
+        // Given
+        customAllureMock.when(CustomAllureListener::getActiveStepName).thenReturn(StepType.TEAR_DOWN.getDisplayName());
+        customAllureMock.when(() -> CustomAllureListener.isStepActive(StepType.TEAR_DOWN.getDisplayName()))
+                .thenReturn(true);
+        List<String> htmlContent = new ArrayList<>(List.of("<td>Some content</td>", "<td>Other content</td>"));
+        when(mockStore.get(HTML, List.class)).thenReturn(htmlContent);
+        when(mockStore.get(HTML)).thenReturn(htmlContent);
+
+        // When
+        epilogue.afterTestExecution(mockContext);
+
+        // Then
+        customAllureMock.verify(CustomAllureListener::stopStep, times(1));
+    }
+
+    @Test
+    @DisplayName("Should create new list when html list don't exist")
+    void shouldCreateNewList_WhenHtmlListDontExist() {
+        // Given
+        try (MockedStatic<AllureStepHelper> allureStepHelperMockedStatic = mockStatic(AllureStepHelper.class)) {
+            customAllureMock.when(CustomAllureListener::getActiveStepName).thenReturn(StepType.TEAR_DOWN.getDisplayName());
+            customAllureMock.when(() -> CustomAllureListener.isStepActive(StepType.TEAR_DOWN.getDisplayName()))
+                    .thenReturn(true);
+            when(mockStore.get(HTML)).thenReturn(null);
+            when(mockStore.get(eq(HTML), eq(List.class))).thenReturn(null);
+            when(mockContext.getExecutionException()).thenReturn(Optional.of(new RuntimeException("Test failure")));
+            Epilogue spyEpilogue = spy(new Epilogue());
+
+            List<String> htmlContent = new ArrayList<>(List.of("<td>Some content</td>", "<td>Other content</td>"));
+            lenient().when(mockStore.get(HTML)).thenReturn(htmlContent);
+
+            // When
+            spyEpilogue.afterTestExecution(mockContext);
+
+            // Then
+            ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+            verify(mockStore, atLeastOnce()).put(eq(HTML), captor.capture());
+
+            List<List> allPuts = captor.getAllValues();
+            List capturedHtmlList = allPuts.get(allPuts.size() - 1);
+
+            assertNotNull(capturedHtmlList);
+            assertFalse(capturedHtmlList.isEmpty());
+            allureStepHelperMockedStatic.verify(() ->
+                    AllureStepHelper.logTestOutcome(
+                            nullable(String.class), eq("FAILED"), anyLong(), any(Throwable.class)
                     )
             );
-
-            // Verify ThreadContext.remove was called
-            threadContextMock.verify(() -> ThreadContext.remove(TEST_NAME));
-        }
-    }
-
-    @Test
-    void testAfterTestExecutionFailure() {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis() - 3000);
-        when(extensionContext.getDisplayName()).thenReturn(TEST_DISPLAY_NAME);
-        RuntimeException exception = new RuntimeException(ERROR);
-        when(extensionContext.getExecutionException()).thenReturn(Optional.of(exception));
-
-        try (MockedStatic<ThreadContext> threadContextMock = mockStatic(ThreadContext.class);
-             MockedStatic<LogTest> logTestMock = mockStatic(LogTest.class)) {
-
-            epilogue.afterTestExecution(extensionContext);
-
-            // Verify the failure log message was called
-            logTestMock.verify(() ->
-                    LogTest.info(
-                            eq("The quest of '{}' has ended in defeat. Status: {}. Duration: {} seconds."),
-                            eq(TEST_DISPLAY_NAME),
-                            eq("FAILED"),
-                            anyLong()
-                    )
-            );
-
-            // Verify debug log with the exception
-            logTestMock.verify(() -> LogTest.debug(eq("Failure reason:"), eq(exception)));
-
-            // Verify ThreadContext.remove was called
-            threadContextMock.verify(() -> ThreadContext.remove(TEST_NAME));
-        }
-    }
-
-    @Test
-    void testAttachFilteredLogsNullName() {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis());
-        try (MockedStatic<ThreadContext> threadContextMock = mockStatic(ThreadContext.class);
-             MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            threadContextMock.when(() -> ThreadContext.get(TEST_NAME)).thenReturn(null);
-
-            epilogue.afterTestExecution(extensionContext);
-
-            // Verify correct Allure attachment for null test name
-            allureMock.verify(() ->
-                    Allure.addAttachment(
-                            eq("Filtered Logs"),
-                            eq("text/plain"),
-                            eq("Test name is not available."),
-                            eq(".log")
-                    )
-            );
-
-            // Verify ThreadContext.remove was called
-            threadContextMock.verify(() -> ThreadContext.remove(TEST_NAME));
-        }
-    }
-
-    @Test
-    void testAttachFilteredLogsEmptyName() {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis());
-        try (MockedStatic<ThreadContext> threadContextMock = mockStatic(ThreadContext.class);
-             MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            threadContextMock.when(() -> ThreadContext.get(TEST_NAME)).thenReturn("");
-
-            epilogue.afterTestExecution(extensionContext);
-
-            // Verify correct Allure attachment for empty test name
-            allureMock.verify(() ->
-                    Allure.addAttachment(
-                            eq("Filtered Logs"),
-                            eq("text/plain"),
-                            eq("Test name is not available."),
-                            eq(".log")
-                    )
-            );
-
-            // Verify ThreadContext.remove was called
-            threadContextMock.verify(() -> ThreadContext.remove(TEST_NAME));
-        }
-    }
-
-    @Test
-    void testAttachFilteredLogsNoLogsFound() throws IOException {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis());
-        var tempFile = File.createTempFile(EMPTY_LOGS, ".log");
-        tempFile.deleteOnExit();
-        System.setProperty(LOG_FILE_NAME, tempFile.getAbsolutePath());
-
-        try (MockedStatic<ThreadContext> threadContextMock = mockStatic(ThreadContext.class);
-             MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            threadContextMock.when(() -> ThreadContext.get(TEST_NAME)).thenReturn(NO_MATCHES);
-
-            epilogue.afterTestExecution(extensionContext);
-
-            // Verify correct Allure attachment for no matching logs
-            allureMock.verify(() ->
-                    Allure.addAttachment(
-                            eq("Filtered Logs for Test: " + NO_MATCHES),
-                            eq("text/plain"),
-                            eq("No logs found for test: " + NO_MATCHES),
-                            eq(".log")
-                    )
-            );
-
-            // Verify ThreadContext.remove was called
-            threadContextMock.verify(() -> ThreadContext.remove(TEST_NAME));
-        }
-    }
-
-    @Test
-    void testAttachFilteredLogsWithMatchingContent(@TempDir Path tempDir) throws IOException {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis());
-
-        // Create a temporary log file with matching content
-        Path logFile = tempDir.resolve("test.log");
-        String testName = TEST_WITH_LOGS;
-        String testIdentifier = "[scenario=" + testName + "]";
-
-        // Create log entries with the test identifier
-        List<String> logEntries = List.of(
-                "2023-05-01 10:00:00 INFO " + testIdentifier + " Log entry 1",
-                "2023-05-01 10:00:01 INFO Some other log without identifier",
-                "2023-05-01 10:00:02 ERROR " + testIdentifier + " Log entry 2",
-                "2023-05-01 10:00:03 INFO [scenario=otherTest] Other test log"
-        );
-
-        Files.write(logFile, logEntries);
-        System.setProperty(LOG_FILE_NAME, logFile.toString());
-
-        ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
-
-        try (MockedStatic<ThreadContext> threadContextMock = mockStatic(ThreadContext.class);
-             MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            threadContextMock.when(() -> ThreadContext.get(TEST_NAME)).thenReturn(testName);
-
-            epilogue.afterTestExecution(extensionContext);
-
-            // Verify Allure attachment was called with the filtered content
-            allureMock.verify(() ->
-                    Allure.addAttachment(
-                            eq("Filtered Logs for Test: " + testName),
-                            eq("text/plain"),
-                            contentCaptor.capture(),
-                            eq(".log")
-                    )
-            );
-
-            // Verify the content contains only logs with the test identifier
-            String capturedContent = contentCaptor.getValue();
-            assertTrue(capturedContent.contains("Log entry 1"));
-            assertTrue(capturedContent.contains("Log entry 2"));
-            assertFalse(capturedContent.contains("Some other log without identifier"));
-            assertFalse(capturedContent.contains("Other test log"));
-
-            // Verify ThreadContext.remove was called
-            threadContextMock.verify(() -> ThreadContext.remove(TEST_NAME));
-        }
-    }
-
-    @Test
-    void testAttachFilteredLogsIOException() {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis());
-        System.setProperty(LOG_FILE_NAME, File.separator + THISPATHDOESNOTEXIST + File.separator + "fake.log");
-
-        try (MockedStatic<ThreadContext> threadContextMock = mockStatic(ThreadContext.class);
-             MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
-            threadContextMock.when(() -> ThreadContext.get(TEST_NAME)).thenReturn(IO_EXCEPTION_TEST);
-
-            epilogue.afterTestExecution(extensionContext);
-
-            // Verify correct Allure attachment for IO exception
-            allureMock.verify(() ->
-                    Allure.addAttachment(
-                            eq("Filtered Logs for Test: " + IO_EXCEPTION_TEST),
-                            eq("text/plain"),
-                            contains("Failed to read or filter logs for test: " + IO_EXCEPTION_TEST),
-                            eq(".log")
-                    )
-            );
-
-            // Verify ThreadContext.remove was called
-            threadContextMock.verify(() -> ThreadContext.remove(TEST_NAME));
-        }
-    }
-
-    @Test
-    void testStoreNullStartTimeThrowsNPE() {
-        when(store.get(StoreKeys.START_TIME, long.class)).thenReturn(null);
-        try (MockedStatic<ThreadContext> ignored = mockStatic(ThreadContext.class)) {
-            assertThrows(NullPointerException.class, () -> epilogue.afterTestExecution(extensionContext));
-        }
-    }
-
-    @Test
-    void testNoExceptionWhenStoreNotNull() {
-        when(store.get(START_TIME, long.class)).thenReturn(System.currentTimeMillis());
-        when(extensionContext.getExecutionException()).thenReturn(Optional.empty());
-        when(extensionContext.getDisplayName()).thenReturn(SOME_TEST);
-
-        try (MockedStatic<ThreadContext> ignored = mockStatic(ThreadContext.class)) {
-            assertDoesNotThrow(() -> epilogue.afterTestExecution(extensionContext));
         }
     }
 }

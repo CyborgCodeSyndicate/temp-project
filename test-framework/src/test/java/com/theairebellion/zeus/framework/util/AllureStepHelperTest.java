@@ -10,6 +10,7 @@ import io.qameta.allure.Allure;
 import org.aeonbits.owner.Config;
 import org.aeonbits.owner.ConfigCache;
 import org.apache.logging.log4j.ThreadContext;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -135,12 +136,18 @@ public class AllureStepHelperTest {
 
     //setDescription - START
     @Test
-    void testSetDescription() {
+    @DisplayName("Should set Allure description using HTML content from context store")
+    void shouldSetAllureHtmlDescriptionFromContext() {
+        // Given
         List<String> htmlContent = List.of("<td>Some content</td>", "<td>Other content</td>");
-        lenient().when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
-        lenient().when(mockStore.get(HTML)).thenReturn(htmlContent);
+        when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
+        when(mockStore.get(HTML)).thenReturn(htmlContent);
+
+        // When
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.setDescription(mockContext);
+
+            // Then
             String expectedHtml = "<div style='margin: 20px;'><td>Some content</td><td>Other content</td></div>";
             mockedAllure.verify(() -> Allure.descriptionHtml(eq(expectedHtml)), times(1));
         }
@@ -149,10 +156,16 @@ public class AllureStepHelperTest {
 
     //attachFilteredLogsToAllure - START
     @Test
-    void testAttachFilteredLogsToAllure() {
+    @DisplayName("Should attach filtered logs to Allure when test name is provided")
+    void shouldAttachFilteredLogsToAllureWhenTestNameProvided() {
+        // Given
         String testName = "testScenario";
+
+        // When
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.attachFilteredLogsToAllure(testName);
+
+            // Then
             mockedAllure.verify(() ->
                             Allure.addAttachment(anyString(), eq("text/plain"), anyString(), eq(".log")),
                     times(1)
@@ -161,10 +174,13 @@ public class AllureStepHelperTest {
     }
 
     @Test
-    void testAttachFilteredLogsToAllure_NullTestName() {
+    @DisplayName("Should attach message when test name is null")
+    void shouldAttachMessageWhenTestNameIsNull() {
+        // When
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.attachFilteredLogsToAllure(null);
 
+            // Then
             mockedAllure.verify(() ->
                             Allure.addAttachment(
                                     eq("Filtered Logs"),
@@ -178,10 +194,13 @@ public class AllureStepHelperTest {
     }
 
     @Test
-    void testAttachFilteredLogsToAllure_EmptyTestName() {
+    @DisplayName("Should attach message when test name is empty")
+    void shouldAttachMessageWhenTestNameIsEmpty() {
+        // When
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.attachFilteredLogsToAllure("");
 
+            // Then
             mockedAllure.verify(() ->
                             Allure.addAttachment(
                                     eq("Filtered Logs"),
@@ -195,14 +214,18 @@ public class AllureStepHelperTest {
     }
 
     @Test
-    void testAttachFilteredLogsToAllure_WhenIOExceptionOccurs() {
+    @DisplayName("Should attach error message when IOException occurs during log reading")
+    void shouldAttachErrorMessageWhenIOExceptionOccurs() {
+        // Given
         String testName = "testScenario";
         String invalidLogPath = "invalid/path/to/logfile.log";
         System.setProperty("logFileName", invalidLogPath);
 
+        // When
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.attachFilteredLogsToAllure(testName);
 
+            // Then
             mockedAllure.verify(() ->
                     Allure.addAttachment(
                             eq("Filtered Logs for Test: " + testName),
@@ -215,14 +238,17 @@ public class AllureStepHelperTest {
     }
 
     @Test
-    void testAttachFilteredLogsToAllure_NoLogsFound() {
+    @DisplayName("Should attach fallback message when no logs are found for test")
+    void shouldAttachFallbackMessageWhenNoLogsAreFound() {
+        // Given
         String testName = "nonExistentScenario";
-
         System.clearProperty("logFileName");
 
+        // When
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.attachFilteredLogsToAllure(testName);
 
+            // Then
             mockedAllure.verify(() ->
                             Allure.addAttachment(
                                     eq("Filtered Logs for Test: nonExistentScenario"),
@@ -236,7 +262,9 @@ public class AllureStepHelperTest {
     }
 
     @Test
-    void testAttachFilteredLogsToAllure_WhenMatchingLogsExist() throws IOException {
+    @DisplayName("Should attach only matching log lines when logs exist for the test")
+    void shouldAttachOnlyMatchingLogLines() throws IOException {
+        // Given
         String testName = "myScenario";
         String testIdentifier = "[scenario=" + testName + "]";
         String matchingLine1 = testIdentifier + " Log line 1";
@@ -248,12 +276,13 @@ public class AllureStepHelperTest {
                 matchingLine1,
                 matchingLine2
         ));
-
         System.setProperty("logFileName", tempLogFile.toAbsolutePath().toString());
 
+        // When
         try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
             AllureStepHelper.attachFilteredLogsToAllure(testName);
 
+            // Then
             String expectedAttachment = matchingLine1 + System.lineSeparator() + matchingLine2;
 
             mockedAllure.verify(() ->
@@ -273,13 +302,17 @@ public class AllureStepHelperTest {
 
     //logTestOutcome - START
     @Test
-    void testLogTestOutcome_Success() {
+    @DisplayName("Should log SUCCESS outcome without exception")
+    void shouldLogSuccessOutcomeWithoutException() {
+        // Given
         String testName = "testScenario";
         long durationInSeconds = 5;
 
+        // When
         try (MockedStatic<LogTest> mockedLogTest = mockStatic(LogTest.class)) {
             AllureStepHelper.logTestOutcome(testName, "SUCCESS", durationInSeconds, null);
 
+            // Then
             mockedLogTest.verify(() ->
                             LogTest.info(anyString(), eq(testName), eq("SUCCESS"), eq(durationInSeconds)),
                     times(1)
@@ -288,14 +321,18 @@ public class AllureStepHelperTest {
     }
 
     @Test
-    void testLogTestOutcome_Failure() {
+    @DisplayName("Should log FAILED outcome and debug throwable when exception is provided")
+    void shouldLogFailedOutcomeWithException() {
+        // Given
         String testName = "testScenario";
         long durationInSeconds = 5;
         Throwable throwable = new RuntimeException("Test failed");
 
+        // When
         try (MockedStatic<LogTest> mockedLogTest = mockStatic(LogTest.class)) {
             AllureStepHelper.logTestOutcome(testName, "FAILED", durationInSeconds, throwable);
 
+            // Then
             mockedLogTest.verify(() ->
                             LogTest.info(anyString(), eq(testName), eq("FAILED"), eq(durationInSeconds)),
                     times(1)
@@ -310,8 +347,9 @@ public class AllureStepHelperTest {
 
     //setUpTestMetadata - START
     @Test
-    void testSetUpTestMetadata() {
-
+    @DisplayName("Should set up test metadata and store rendered HTML when HTML list is already present")
+    void shouldSetUpTestMetadata_WhenHtmlListIsAlreadyPresent() {
+        // Given
         try (MockedStatic<ResourceLoader> mockedStatic = mockStatic(ResourceLoader.class)) {
             String htmlTemplate = "<html><body>{{testName}} {{className}} {{methodAnnotations}}</body></html>";
             mockedStatic.when(() -> ResourceLoader.loadResourceFile("allure/html/test-details.html"))
@@ -330,14 +368,18 @@ public class AllureStepHelperTest {
             List<String> htmlList = new ArrayList<>();
             when(mockStore.get(HTML, List.class)).thenReturn(htmlList);
 
+            // When
             AllureStepHelper.setUpTestMetadata(mockContext);
 
+            // Then
             verify(mockStore, times(1)).put(eq(HTML), eq(htmlList));
         }
     }
 
     @Test
-    void testSetUpTestMetadata_WhenHtmlListIsNull() throws NoSuchMethodException {
+    @DisplayName("Should initialize new HTML list if not present in store")
+    void shouldInitializeHtmlList_WhenHtmlListIsNull() throws NoSuchMethodException {
+        // Given
         when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
         when(mockStore.get(HTML, List.class)).thenReturn(null);
 
@@ -346,19 +388,22 @@ public class AllureStepHelperTest {
             mockedResourceLoader.when(() -> ResourceLoader.loadResourceFile("allure/html/test-details.html"))
                     .thenReturn(mockHtmlTemplate);
 
-            Method mockMethod = AllureStepHelperTest.class.getDeclaredMethod("testSetUpTestMetadata_WhenHtmlListIsNull");
+            Method mockMethod = AllureStepHelperTest.class.getDeclaredMethod("shouldInitializeHtmlList_WhenHtmlListIsNull");
             when(mockContext.getRequiredTestMethod()).thenReturn(mockMethod);
-
             when(mockContext.getRequiredTestClass()).thenReturn((Class) AllureStepHelperTest.class);
 
+            // When
             AllureStepHelper.setUpTestMetadata(mockContext);
 
+            // Then
             verify(mockStore).put(eq(HTML), anyList());
         }
     }
 
     @Test
-    void testSetUpTestMetadata_WithCustomAnnotation() throws NoSuchMethodException {
+    @DisplayName("Should capture and store method annotations in HTML template")
+    void shouldRenderCustomAnnotationsIntoHtmlTemplate() throws NoSuchMethodException {
+        // Given
         try (MockedStatic<ResourceLoader> mockedResourceLoader = mockStatic(ResourceLoader.class)) {
             String template = "<html>{{methodAnnotations}}</html>";
             mockedResourceLoader.when(() -> ResourceLoader.loadResourceFile("allure/html/test-details.html"))
@@ -372,8 +417,10 @@ public class AllureStepHelperTest {
             List<String> htmlList = new ArrayList<>();
             when(mockStore.get(HTML, List.class)).thenReturn(htmlList);
 
+            // When
             AllureStepHelper.setUpTestMetadata(mockContext);
 
+            // Then
             assertFalse(htmlList.isEmpty());
             assertTrue(htmlList.get(0).contains("CustomTestAnnotation"));
         }
@@ -382,16 +429,21 @@ public class AllureStepHelperTest {
 
     //setupTestContext - START
     @Test
-    void testSetupTestContext() throws NoSuchMethodException {
+    @DisplayName("Should set up test context by storing test name in thread context")
+    void shouldStoreTestNameInThreadContext_WhenTestClassAndMethodArePresent() throws NoSuchMethodException {
+        // Given
         when(mockContext.getTestClass()).thenReturn(Optional.of(AllureStepHelperTest.class));
-        when(mockContext.getTestMethod()).thenReturn(Optional.of(AllureStepHelperTest.class.getDeclaredMethod("testSetDescription")));
+        when(mockContext.getTestMethod())
+                .thenReturn(Optional.of(AllureStepHelperTest.class.getDeclaredMethod("shouldSetAllureHtmlDescriptionFromContext")));
         when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
 
+        // When
         try (MockedStatic<ThreadContext> mockedThreadContext = mockStatic(ThreadContext.class)) {
             AllureStepHelper.setupTestContext(mockContext);
 
+            // Then
             mockedThreadContext.verify(() ->
-                            ThreadContext.put(eq("testName"), eq("AllureStepHelperTest.testSetDescription")),
+                            ThreadContext.put(eq("testName"), eq("AllureStepHelperTest.shouldSetAllureHtmlDescriptionFromContext")),
                     times(1)
             );
         }
@@ -400,10 +452,12 @@ public class AllureStepHelperTest {
 
     //initializeTestEnvironment - START
     @Test
-    void testInitializeTestEnvironment_withMockedReflectionUtil() {
+    @DisplayName("Should initialize test environment with mocked ReflectionUtil and ConfigCache")
+    void shouldInitializeTestEnvironment_WhenReflectionAndConfigAreMocked() {
         try (MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
              MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class)) {
 
+            // Given
             List<Class<? extends PropertyConfig>> dummyConfigs = List.of(BasicPropertyConfig.class);
             mockedReflectionUtil.when(() ->
                     ReflectionUtil.findImplementationsOfInterface(any(), any())
@@ -415,56 +469,64 @@ public class AllureStepHelperTest {
 
             FrameworkConfig dummyFrameworkConfig = mock(FrameworkConfig.class);
             lenient().when(dummyFrameworkConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
-
             mockedConfigCache.when(() -> ConfigCache.getOrCreate(FrameworkConfig.class))
                     .thenReturn(dummyFrameworkConfig);
 
+            // When / Then
             AllureStepHelper.initializeTestEnvironment();
         }
     }
 
     @Test
-    void testInitializeTestEnvironment_noDirectoryCreation() {
+    @DisplayName("Should write environment properties and skip directory creation if directory exists")
+    void shouldWriteEnvironmentPropertiesWithoutCreatingDirectory_WhenDirectoryAlreadyExists() {
+        // Given
         Map<String, List<String>> propertiesMap = Map.of(
                 "key1", List.of("value1"),
                 "key2", List.of("value2")
         );
 
         File allureResultsDir = mock(File.class);
-        File environmentFile = mock(File.class);
+//        File environmentFile = mock(File.class);
 
         try (MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
              MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class);
              MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class)) {
+
             try (MockedConstruction<FileWriter> mockFileWriter = mockConstruction(FileWriter.class,
                     (mock, context) -> {
                         try {
                             mock.write("key1=value1\n");
                             mock.write("key2=value2\n");
-                        } catch (IOException e) {
-                        }
-                    }
-            )) {
+                        } catch (IOException ignored) {}
+                    })) {
+
+                // Set up mocks
                 lenient().when(allureResultsDir.exists()).thenReturn(true);
+
                 BasicPropertyConfig dummyConfig = new BasicPropertyConfig();
                 mockedConfigCache.when(() -> ConfigCache.getOrCreate(BasicPropertyConfig.class))
                         .thenReturn(dummyConfig);
+
                 FrameworkConfig mockConfig = mock(FrameworkConfig.class);
                 when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
-                mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
+                mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig)
+                        .thenReturn(mockConfig);
+
                 FrameworkConfig dummyFrameworkConfig = mock(FrameworkConfig.class);
                 lenient().when(dummyFrameworkConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
 
+                // When
                 AllureStepHelper.initializeTestEnvironment();
 
+                // Then
                 verify(allureResultsDir, never()).mkdirs();
 
                 mockFileWriter.constructed().forEach(mockWriter -> {
                     try {
                         verify(mockWriter).write("key1=value1\n");
                         verify(mockWriter).write("key2=value2\n");
-                    } catch (IOException e) {
-                    }
+                    } catch (IOException ignored) {}
                 });
             }
         }
@@ -473,7 +535,9 @@ public class AllureStepHelperTest {
 
     //collectConfigurationProperties - START
     @Test
+    @DisplayName("Should collect valid configuration properties with key and value")
     void test_collectConfigurationProperties_withValidConfig() throws Exception {
+        // Given
         try (
                 MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
@@ -491,18 +555,22 @@ public class AllureStepHelperTest {
             when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
             mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
 
+            // When
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
             Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
-            System.out.println("Collected result: " + result);
-            assertNotNull(result);
-            assertTrue(result.containsKey("test.key"));
-            assertEquals("value123 (Source: testSource)", result.get("test.key").get(0));
+
+            // Then
+            assertNotNull(result, "Result should not be null");
+            assertTrue(result.containsKey("test.key"), "Expected result to contain 'test.key'");
+            assertEquals("value123 (Source: testSource)", result.get("test.key").get(0), "Unexpected value for 'test.key'");
         }
     }
 
     @Test
+    @DisplayName("Should skip properties with empty values")
     void test_collectConfigurationProperties_skipsEmptyValues() throws Exception {
+        // Given
         try (
                 MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
@@ -519,18 +587,22 @@ public class AllureStepHelperTest {
             EmptyValueConfigImpl emptyConfig = new EmptyValueConfigImpl();
             mockedConfigCache.when(() -> ConfigCache.getOrCreate(EmptyValueConfigImpl.class)).thenReturn(emptyConfig);
 
+            // When
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
-
             Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
 
-            assertNotNull(result);
-            assertTrue(result.isEmpty() || !result.containsKey("empty.key"));
+            // Then
+            assertNotNull(result, "Result should not be null");
+            assertTrue(result.isEmpty() || !result.containsKey("empty.key"),
+                    "Result should not contain 'empty.key' or should be empty");
         }
     }
 
     @Test
+    @DisplayName("Should return empty result when reflection throws exception")
     void test_collectConfigurationProperties_handlesReflectionException() throws Exception {
+        // Given
         try (
                 MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
@@ -547,17 +619,21 @@ public class AllureStepHelperTest {
             ExceptionThrowingConfig dummy = new ExceptionThrowingConfig();
             mockedConfigCache.when(() -> ConfigCache.getOrCreate(ExceptionThrowingConfig.class)).thenReturn(dummy);
 
+            // When
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
             Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
 
-            assertNotNull(result);
-            assertTrue(result.isEmpty());
+            // Then
+            assertNotNull(result, "Result should not be null");
+            assertTrue(result.isEmpty(), "Expected result to be empty due to exception in config method");
         }
     }
 
     @Test
+    @DisplayName("Should skip methods without @Config.Key annotation")
     void test_collectConfigurationProperties_skipsMethodWithoutKeyAnnotation() throws Exception {
+        // Given
         try (
                 MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
@@ -574,17 +650,21 @@ public class AllureStepHelperTest {
             MissingKeyConfigImpl dummy = new MissingKeyConfigImpl();
             mockedConfigCache.when(() -> ConfigCache.getOrCreate(MissingKeyConfigImpl.class)).thenReturn(dummy);
 
+            // When
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
             Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
 
-            assertNotNull(result);
+            // Then
+            assertNotNull(result, "Result should not be null");
             assertTrue(result.isEmpty(), "Expected result to be empty because no method has @Config.Key");
         }
     }
 
     @Test
+    @DisplayName("Should skip properties with whitespace-only values")
     void test_collectConfigurationProperties_skipsWhitespaceOnlyValues() throws Exception {
+        // Given
         try (
                 MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
                 MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
@@ -601,11 +681,13 @@ public class AllureStepHelperTest {
             WhitespaceValueConfigImpl dummy = new WhitespaceValueConfigImpl();
             mockedConfigCache.when(() -> ConfigCache.getOrCreate(WhitespaceValueConfigImpl.class)).thenReturn(dummy);
 
+            // When
             Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
             method.setAccessible(true);
             Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
 
-            assertNotNull(result);
+            // Then
+            assertNotNull(result, "Result should not be null");
             assertTrue(result.isEmpty(), "Expected result to be empty because value is only whitespace");
         }
     }
@@ -613,37 +695,33 @@ public class AllureStepHelperTest {
 
     //writeEnvironmentProperties - START
     @Test
+    @DisplayName("Should write key-value pairs to the environment file")
     void testWriteEnvironmentProperties_writeKeyValues() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        // Arrange: Mock propertiesMap with sample data
+        // Given
         Map<String, List<String>> propertiesMap = Map.of(
                 "key1", List.of("value1", "value2"),
                 "key2", List.of("value3")
         );
 
-        // Mock the directory and file creation
         File allureResultsDir = mock(File.class);
         File environmentFile = mock(File.class);
 
-        // Mock behavior for allureResultsDir.exists() returning true (so mkdirs should NOT be called)
         lenient().when(allureResultsDir.exists()).thenReturn(true);
 
-        // Mock FileWriter behavior using mockConstruction
+        // When
         try (MockedConstruction<FileWriter> mockFileWriter = mockConstruction(FileWriter.class)) {
-            // Act: Call the method under test
             Method method = AllureStepHelper.class.getDeclaredMethod("writeEnvironmentProperties", Map.class);
             method.setAccessible(true);
             method.invoke(null, propertiesMap);
 
-            // Assert: Verify that mkdirs() was NOT called since the directory already exists
+            // Then
             verify(allureResultsDir, never()).mkdirs();
 
-            // Assert: Verify the write method was called for each entry with the expected value format
             mockFileWriter.constructed().forEach(mockWriter -> {
                 try {
                     verify(mockWriter).write("key1=value1; value2\n");
                     verify(mockWriter).write("key2=value3\n");
                 } catch (IOException e) {
-                    // Handle IOException
                 }
             });
         }
