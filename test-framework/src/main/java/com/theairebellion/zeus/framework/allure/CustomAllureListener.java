@@ -112,14 +112,8 @@ public class CustomAllureListener extends AllureJunit5 {
      * Stops the most recently started step.
      */
     public static void stopStep() {
-        if (!STEP_STACK.get().isEmpty()) {
-            String uuid = STEP_STACK.get().pop();
-            Allure.getLifecycle().stopStep(uuid);
-
-            if (STEP_STACK.get().isEmpty()) {
-                STEP_STACK.remove();
-            }
-        }
+        Allure.getLifecycle().stopStep();
+        STEP_NAME.remove();
     }
 
     /**
