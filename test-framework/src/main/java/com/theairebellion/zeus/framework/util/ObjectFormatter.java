@@ -285,12 +285,12 @@ public final class ObjectFormatter {
                         Object defaultValue = method.getDefaultValue();
                         Object actualValue = method.invoke(annotation);
                         return defaultValue == null || !defaultValue.equals(actualValue);
-                    } catch (Exception e) {
+                    } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
                         return false;
-                        // Reflection exceptions are caught for compliance with Method.invoke() API.
-                        // This fallback is not unit tested due to extremely low likelihood of failure in known annotation usage.
+                    } catch (Exception e) {
+                        throw new RuntimeException("Unexpected exception occurred while processing annotation", e);
                     }
-            });
+                });
     }
 
 
@@ -313,8 +313,10 @@ public final class ObjectFormatter {
                         }
                         if (value.equals(method.getDefaultValue())) return "";
                         return method.getName() + "=" + value;
-                    } catch (Exception e) {
+                    } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
                         return method.getName() + "=error";
+                    } catch (Exception e) {
+                        throw new RuntimeException("Unexpected exception occurred while formatting annotation arguments", e);
                     }
                 })
                 .filter(arg -> !arg.isEmpty())
