@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.util.table;
 
+import com.theairebellion.zeus.ui.components.table.exceptions.TableException;
 import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
@@ -9,7 +10,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for extracting data from UI table row objects using Java reflection.
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  * or {@code List<TableCell>}. Also includes helpers for checking type compatibility and normalizing string lists.
  * </p>
  */
+@SuppressWarnings("java:S3011")
 public final class TableReflectionUtil {
 
     private TableReflectionUtil() {
@@ -32,27 +33,27 @@ public final class TableReflectionUtil {
      */
     public static List<String> extractTextsFromRow(Object row) {
         return Arrays.stream(row.getClass().getDeclaredFields())
-                   .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
-                   .map(field -> {
-                       field.setAccessible(true);
-                       try {
-                           Object value = field.get(row);
-                           if (value instanceof TableCell cell) {
-                               return Collections.singletonList(cell.getText());
-                           } else if (value instanceof List<?> list) {
-                               return list.stream()
-                                          .filter(TableCell.class::isInstance)
-                                          .map(TableCell.class::cast)
-                                          .map(TableCell::getText)
-                                          .collect(Collectors.toList());
-                           }
-                       } catch (IllegalAccessException e) {
-                           throw new RuntimeException("Failed to access field value", e);
-                       }
-                       return Collections.<String>emptyList();
-                   })
-                   .flatMap(List::stream)
-                   .collect(Collectors.toList());
+                .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
+                .map(field -> {
+                    field.setAccessible(true);
+                    try {
+                        Object value = field.get(row);
+                        if (value instanceof TableCell cell) {
+                            return Collections.singletonList(cell.getText());
+                        } else if (value instanceof List<?> list) {
+                            return list.stream()
+                                    .filter(TableCell.class::isInstance)
+                                    .map(TableCell.class::cast)
+                                    .map(TableCell::getText)
+                                    .toList();
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new TableException("Failed to access field value", e);
+                    }
+                    return Collections.<String>emptyList();
+                })
+                .flatMap(List::stream)
+                .toList();
     }
 
 
@@ -64,27 +65,27 @@ public final class TableReflectionUtil {
      */
     public static List<SmartWebElement> extractElementsFromRow(Object row) {
         return Arrays.stream(row.getClass().getDeclaredFields())
-                   .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
-                   .map(field -> {
-                       field.setAccessible(true);
-                       try {
-                           Object value = field.get(row);
-                           if (value instanceof TableCell cell) {
-                               return Collections.singletonList(cell.getElement());
-                           } else if (value instanceof List<?> list) {
-                               return list.stream()
-                                          .filter(TableCell.class::isInstance)
-                                          .map(TableCell.class::cast)
-                                          .map(TableCell::getElement)
-                                          .collect(Collectors.toList());
-                           }
-                       } catch (IllegalAccessException e) {
-                           throw new RuntimeException("Failed to access field value", e);
-                       }
-                       return Collections.<SmartWebElement>emptyList();
-                   })
-                   .flatMap(List::stream)
-                   .collect(Collectors.toList());
+                .filter(field -> TableCell.class.isAssignableFrom(field.getType()) || isListOfTableCell(field))
+                .map(field -> {
+                    field.setAccessible(true);
+                    try {
+                        Object value = field.get(row);
+                        if (value instanceof TableCell cell) {
+                            return Collections.singletonList(cell.getElement());
+                        } else if (value instanceof List<?> list) {
+                            return list.stream()
+                                    .filter(TableCell.class::isInstance)
+                                    .map(TableCell.class::cast)
+                                    .map(TableCell::getElement)
+                                    .toList();
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new TableException("Failed to access field value", e);
+                    }
+                    return Collections.<SmartWebElement>emptyList();
+                })
+                .flatMap(List::stream)
+                .toList();
     }
 
 
@@ -115,8 +116,8 @@ public final class TableReflectionUtil {
      */
     public static List<String> lowerCaseAndTrim(List<String> list) {
         return list.stream()
-                   .map(s -> s.trim().toLowerCase())
-                   .toList();
+                .map(s -> s.trim().toLowerCase())
+                .toList();
     }
 
 }

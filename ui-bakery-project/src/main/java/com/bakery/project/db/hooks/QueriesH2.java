@@ -2,7 +2,7 @@ package com.bakery.project.db.hooks;
 
 import com.theairebellion.zeus.db.query.DbQuery;
 
-public enum QueriesH2 implements DbQuery {
+public enum QueriesH2 implements DbQuery<QueriesH2> {
     CREATE_TABLE_ORDERS(
             "CREATE TABLE orders ("
                     + "id INT PRIMARY KEY, "
@@ -46,7 +46,7 @@ public enum QueriesH2 implements DbQuery {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public QueriesH2 enumImpl() {
         return this;
     }
 }

@@ -57,17 +57,16 @@ public class RetryUtils {
      * @throws InterruptedException  If the thread is interrupted during the retry process.
      */
     public static <T> T retryUntil(
-            Duration maxWait,
-            Duration retryInterval,
-            Supplier<T> supplier,
-            Predicate<T> condition
+        Duration maxWait,
+        Duration retryInterval,
+        Supplier<T> supplier,
+        Predicate<T> condition
     ) {
-        Objects.requireNonNull(maxWait, "maxWait must not be null");
+        Objects.requireNonNull(maxWait,        "maxWait must not be null");
         Objects.requireNonNull(retryInterval, "retryInterval must not be null");
-        Objects.requireNonNull(supplier, "supplier must not be null");
-        Objects.requireNonNull(condition, "condition must not be null");
+        Objects.requireNonNull(supplier,      "supplier must not be null");
+        Objects.requireNonNull(condition,     "condition must not be null");
 
-        // Safety check to prevent negative durations
         if (maxWait.isNegative()) {
             throw new IllegalArgumentException("maxWait must not be negative");
         }
@@ -75,68 +74,52 @@ public class RetryUtils {
             throw new IllegalArgumentException("retryInterval must not be negative");
         }
 
-        long maxWaitNanos = maxWait.toNanos();
-        long intervalMillis = retryInterval.toMillis();
-        long startTime = System.nanoTime();
-        int attemptCount = 0;
+        long maxWaitNanos       = maxWait.toNanos();
+        long intervalMillis     = retryInterval.toMillis();
+        long startTime          = System.nanoTime();
+        long deadline           = startTime + maxWaitNanos;
+        int  attemptCount       = 0;
         Exception lastException = null;
 
-        // Continue retrying until we exceed the max wait time
-        while (true) {
-            // Check if we've exceeded the max wait time
-            long currentTime = System.nanoTime();
-            long elapsedNanos = currentTime - startTime;
-            if (elapsedNanos >= maxWaitNanos) {
-                break;
-            }
-
+        // Loop only while we still have time remaining
+        while (System.nanoTime() < deadline) {
             attemptCount++;
             try {
                 T result = supplier.get();
                 if (condition.test(result)) {
                     LogCommon.info("Condition satisfied on attempt #{}, returning result.", attemptCount);
                     return result;
-                } else {
-                    LogCommon.debug("Condition not satisfied on attempt #{}. Retrying...", attemptCount);
                 }
+                LogCommon.debug("Condition not satisfied on attempt #{}. Retrying...", attemptCount);
             } catch (Exception e) {
                 lastException = e;
                 LogCommon.warn("Exception on attempt #{}: {}", attemptCount, e.getMessage());
                 LogCommon.debug("Stack trace:", e);
             }
 
-            // Calculate remaining time more accurately
-            currentTime = System.nanoTime();
-            long remainingNanos = maxWaitNanos - (currentTime - startTime);
+            // Compute how long to sleep
+            long now            = System.nanoTime();
+            long remainingNanos = deadline - now;
+            long sleepMillis    = Math.min(intervalMillis, remainingNanos / 1_000_000);
 
-            // If we don't have enough time for another interval, break
-            if (remainingNanos <= 0) {
-                break;
-            }
-
-            // Sleep for the interval or the remaining time, whichever is shorter
-            long sleepTimeMillis = Math.min(intervalMillis, remainingNanos / 1_000_000);
-
-            // Ensure we sleep at least 1ms if there's any time remaining
-            sleepTimeMillis = Math.max(sleepTimeMillis, 1);
-
-            try {
-                Thread.sleep(sleepTimeMillis);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IllegalStateException("Retry was interrupted", e);
+            if (sleepMillis > 0) {
+                try {
+                    Thread.sleep(sleepMillis);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Retry was interrupted", ie);
+                }
             }
         }
 
-        // Include the last exception in the thrown exception if one was caught
-        IllegalStateException timeoutException = new IllegalStateException(String.format(
-                "Failed to satisfy condition within %s (after %d attempts).", maxWait, attemptCount));
-
+        // Single exit point for timeout
+        IllegalStateException timeout = new IllegalStateException(
+            String.format("Failed to satisfy condition within %s (after %d attempts).",
+                maxWait, attemptCount));
         if (lastException != null) {
-            timeoutException.addSuppressed(lastException);
+            timeout.addSuppressed(lastException);
         }
-
-        throw timeoutException;
+        throw timeout;
     }
 
 

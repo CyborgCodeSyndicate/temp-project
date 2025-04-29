@@ -4,7 +4,7 @@ import com.theairebellion.zeus.db.config.DbType;
 
 import java.sql.Driver;
 
-public enum MyDatabases implements DbType {
+public enum MyDatabases implements DbType<MyDatabases> {
     POSTGRESQL(new org.postgresql.Driver(), "jdbc:postgresql"),
     H2(new org.h2.Driver(), "jdbc:h2");
 
@@ -19,7 +19,7 @@ public enum MyDatabases implements DbType {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public MyDatabases enumImpl() {
         return this;
     }
 

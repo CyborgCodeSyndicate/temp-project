@@ -13,27 +13,20 @@
     <packaging>maven-plugin</packaging>
     <name>Test Allocator Maven Plugin</name>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+
 
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.9.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
-            <version>3.9.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.15.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -47,13 +40,10 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>7.11.0</version>
-            <scope>optional</scope>
         </dependency>
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.165</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -63,11 +53,10 @@
 
     <build>
         <plugins>
-            <!-- The maven-plugin-plugin is needed to generate plugin descriptors -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.15.1</version>
+                <version>${maven-plugin.version}</version>
                 <configuration>
                     <goalPrefix>test-splitter</goalPrefix>
                 </configuration>

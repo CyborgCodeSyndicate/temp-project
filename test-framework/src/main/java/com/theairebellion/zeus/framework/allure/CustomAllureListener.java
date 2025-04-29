@@ -5,6 +5,8 @@ import io.qameta.allure.junit5.AllureJunit5;
 import io.qameta.allure.model.Status;
 import io.qameta.allure.model.StepResult;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.UUID;
 
 /**
@@ -110,8 +112,14 @@ public class CustomAllureListener extends AllureJunit5 {
      * Stops the most recently started step.
      */
     public static void stopStep() {
-        Allure.getLifecycle().stopStep();
-        STEP_NAME.remove();
+        if (!STEP_STACK.get().isEmpty()) {
+            String uuid = STEP_STACK.get().pop();
+            Allure.getLifecycle().stopStep(uuid);
+
+            if (STEP_STACK.get().isEmpty()) {
+                STEP_STACK.remove();
+            }
+        }
     }
 
     /**

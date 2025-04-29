@@ -54,15 +54,6 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
 
     @Test
-    void testConstructorExists() {
-        // This verifies the private constructor exists for the utility class
-        ExceptionHandlingWebElementFunctions instance = new ExceptionHandlingWebElementFunctions() {
-        };
-        assertNotNull(instance);
-    }
-
-
-    @Test
     void testHandleStaleElement() {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
             // Create test elements
@@ -610,7 +601,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
      * Special testable version of ExceptionHandlingWebElementFunctions
      * that allows us to control WebDriverWait behavior
      */
-    class TestableExceptionHandlingFunctions extends ExceptionHandlingWebElementFunctions {
+    static class TestableExceptionHandlingFunctions {
 
         // Override the WebDriverWait creation to return our controllable mock
         static WebDriverWait createTestableWait(WebDriver driver, boolean shouldThrowTimeout,

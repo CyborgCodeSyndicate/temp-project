@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.function.Consumer;
 
-public enum TestDataCleaner implements DataRipper {
+public enum TestDataCleaner implements DataRipper<TestDataCleaner> {
     ALL_CREATED_STUDENTS(DataCleanUpFunctions::cleanAllStudents);
 
     public static final class Data {
@@ -31,7 +31,7 @@ public enum TestDataCleaner implements DataRipper {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public TestDataCleaner enumImpl() {
         return this;
     }
 }

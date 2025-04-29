@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import static com.example.project.ui.elements.TableTypes.SIMPLE;
 import static com.theairebellion.zeus.ui.service.tables.DefaultTableTypes.DEFAULT;
 
-public enum Tables implements TableElement {
+public enum Tables implements TableElement<Tables> {
 
     CAMPAIGNS(TableEntry.class),
     FILTERED_TRANSACTIONS(FilteredTransactionEntry.class),
@@ -78,7 +78,7 @@ public enum Tables implements TableElement {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public Tables enumImpl() {
         return this;
     }
 

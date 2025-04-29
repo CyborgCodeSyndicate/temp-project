@@ -10,7 +10,7 @@ import java.util.function.BiConsumer;
 
 import static com.bakery.project.preconditions.BakeryQuestPreconditionFunctions.*;
 
-public enum BakeryQuestPreconditions implements PreQuestJourney {
+public enum BakeryQuestPreconditions implements PreQuestJourney<BakeryQuestPreconditions> {
 
     SELLER_PRECONDITION(
             (quest, objects) -> validSellerSetup(quest, (Seller) objects[0])),
@@ -55,7 +55,7 @@ public enum BakeryQuestPreconditions implements PreQuestJourney {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public BakeryQuestPreconditions enumImpl() {
         return this;
     }
 

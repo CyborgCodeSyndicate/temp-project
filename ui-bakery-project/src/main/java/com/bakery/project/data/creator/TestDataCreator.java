@@ -3,7 +3,7 @@ package com.bakery.project.data.creator;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 
-public enum TestDataCreator implements DataForge {
+public enum TestDataCreator implements DataForge<TestDataCreator> {
 
     VALID_SELLER(DataCreationFunctions::createValidSeller),
     VALID_ORDER(DataCreationFunctions::createValidOrder),
@@ -37,7 +37,7 @@ public enum TestDataCreator implements DataForge {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public TestDataCreator enumImpl() {
         return this;
     }
 }

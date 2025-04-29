@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
@@ -49,8 +51,8 @@ public class Epilogue implements AfterTestExecutionCallback {
         }
         setUpTestMetadata(context);
         SuperQuest superQuest = getSuperQuest(context);
-        Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
-        String htmlContent = new ObjectFormatter().generateHtmlContent(arguments);
+        Map<Enum<?>, List<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
+        String htmlContent = ObjectFormatter.generateHtmlContent(arguments);
         List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML, List.class);
         if (htmlList == null) {
             htmlList = new ArrayList<>();

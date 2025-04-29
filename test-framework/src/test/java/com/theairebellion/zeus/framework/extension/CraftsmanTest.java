@@ -57,7 +57,7 @@ class CraftsmanTest {
     @Mock private Quest quest;
     @Mock private SuperQuest superQuest;
     @Mock private Craft craft;
-    @Mock private DataForge dataForge;
+    @Mock private DataForge<?> dataForge;
     @Mock private Late<Object> late;
     @Mock private FrameworkConfig frameworkConfig;
     @Mock private Storage storage;

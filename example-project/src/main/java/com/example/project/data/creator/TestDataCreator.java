@@ -3,7 +3,7 @@ package com.example.project.data.creator;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 
-public enum TestDataCreator implements DataForge {
+public enum TestDataCreator implements DataForge<TestDataCreator> {
     VALID_STUDENT(DataCreationFunctions::createValidStudent),
     DOG_PET(DataCreationFunctions::createDog),
     USERNAME_JOHN(DataCreationFunctions::usernameJohn),
@@ -37,7 +37,7 @@ public enum TestDataCreator implements DataForge {
 
 
     @Override
-    public Enum<?> enumImpl() {
+    public TestDataCreator enumImpl() {
         return this;
     }
 }

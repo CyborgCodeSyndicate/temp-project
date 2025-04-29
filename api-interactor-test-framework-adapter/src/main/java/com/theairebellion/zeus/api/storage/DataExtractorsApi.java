@@ -15,6 +15,9 @@ import io.restassured.response.Response;
  */
 public class DataExtractorsApi {
 
+    private DataExtractorsApi() {
+    }
+
     /**
      * Creates a {@link DataExtractor} to extract a value from a response body using a JSON path.
      *

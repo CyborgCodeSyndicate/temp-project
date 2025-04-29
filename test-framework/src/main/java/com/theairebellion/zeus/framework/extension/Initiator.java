@@ -95,7 +95,7 @@ public class Initiator implements InvocationInterceptor {
     private List<Journey> getSortedJourneys(Method method) {
         return Arrays.stream(method.getAnnotationsByType(Journey.class))
                 .sorted(Comparator.comparing(Journey::order))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -108,7 +108,7 @@ public class Initiator implements InvocationInterceptor {
         String journey = preQuest.value();
         JourneyData[] journeyData = preQuest.journeyData();
 
-        PreQuestJourney preQuestJourney = ReflectionUtil.findEnumImplementationsOfInterface(
+        PreQuestJourney<?> preQuestJourney = ReflectionUtil.findEnumImplementationsOfInterface(
                 PreQuestJourney.class, journey, getFrameworkConfig().projectPackage());
 
         Object[] processedData = Arrays.stream(journeyData)
@@ -119,7 +119,7 @@ public class Initiator implements InvocationInterceptor {
         CustomAllureListener.startStep(stepName);
         String attachmentName = journey + "-Data";
 
-        String formattedData = new ObjectFormatter().formatProcessedData(journeyData, processedData);
+        String formattedData = ObjectFormatter.formatProcessedData(journeyData, processedData);
         Allure.addAttachment(attachmentName, formattedData);
 
         preQuestJourney.journey().accept(superQuest, processedData);
@@ -136,7 +136,7 @@ public class Initiator implements InvocationInterceptor {
      * @return The resolved test data object.
      */
     private Object processJourneyData(JourneyData journeyData, SuperQuest quest) {
-        DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
+        DataForge<?> dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
                 DataForge.class, journeyData.value(), getFrameworkConfig().projectPackage());
 
         Object argument;

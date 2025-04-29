@@ -15,6 +15,7 @@ import javax.swing.text.html.HTML;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class ValidationServiceFluent<T extends UIServiceFluent<?>> {
 
     private final T uiServiceFluent;

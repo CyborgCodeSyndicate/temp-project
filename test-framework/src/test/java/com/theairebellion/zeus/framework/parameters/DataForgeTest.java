@@ -22,7 +22,7 @@ class DataForgeTest {
         @DisplayName("Should create Late object with expected data")
         void testDataCreator() {
             // Given
-            DataForge dataForge = new MockDataForge(TEST_DATA, MockEnum.INSTANCE);
+            DataForge<?> dataForge = new MockDataForge<>(TEST_DATA, MockEnum.INSTANCE);
 
             // When
             Late<Object> late = dataForge.dataCreator();
@@ -41,7 +41,7 @@ class DataForgeTest {
         @DisplayName("Should return the enum value provided in constructor")
         void testEnumImpl() {
             // Given
-            DataForge dataForge = new MockDataForge("data", MockEnum.INSTANCE);
+            DataForge<?> dataForge = new MockDataForge<>("data", MockEnum.INSTANCE);
 
             // When
             Enum<?> enumValue = dataForge.enumImpl();
