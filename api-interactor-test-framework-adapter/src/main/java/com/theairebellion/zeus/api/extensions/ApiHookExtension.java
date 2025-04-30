@@ -5,6 +5,7 @@ import com.theairebellion.zeus.api.allure.RestResponseValidatorAllureImpl;
 import com.theairebellion.zeus.api.annotations.ApiHook;
 import com.theairebellion.zeus.api.hooks.ApiHookFlow;
 import com.theairebellion.zeus.api.service.RestService;
+import com.theairebellion.zeus.framework.exceptions.HookExecutionException;
 import com.theairebellion.zeus.framework.hooks.HookExecution;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -104,11 +105,11 @@ public class ApiHookExtension implements BeforeAllCallback, AfterAllCallback {
      */
     private void executeHook(ApiHook apiHook, Map<Object, Object> storageHooks) {
         try {
-            ApiHookFlow hookFlow = ReflectionUtil.findEnumImplementationsOfInterface(
-                    ApiHookFlow.class, apiHook.type(), getApiConfig().projectPackage());
+            ApiHookFlow<?> hookFlow = ReflectionUtil.findEnumImplementationsOfInterface(
+                ApiHookFlow.class, apiHook.type(), getApiConfig().projectPackage());
             hookFlow.flow().accept(restService(), storageHooks, apiHook.arguments());
         } catch (Exception e) {
-            throw new RuntimeException("Error executing ApiHook: " + apiHook.type(), e);
+            throw new HookExecutionException("Error executing ApiHook: " + apiHook.type(), e);
         }
     }
 

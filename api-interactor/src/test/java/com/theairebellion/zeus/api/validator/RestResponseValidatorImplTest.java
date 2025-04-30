@@ -210,12 +210,12 @@ class RestResponseValidatorImplTest {
         }
 
 
-        private enum AssertionTargetImpl implements AssertionTarget {
+        private enum AssertionTargetImpl implements AssertionTarget<AssertionTargetImpl>{
             INVALID;
 
 
             @Override
-            public Enum<?> target() {
+            public AssertionTargetImpl target() {
                 return this;
             }
         }

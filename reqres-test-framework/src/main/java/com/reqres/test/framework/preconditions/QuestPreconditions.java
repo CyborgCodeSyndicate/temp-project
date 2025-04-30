@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.function.BiConsumer;
 
-public enum QuestPreconditions implements PreQuestJourney {
+public enum QuestPreconditions implements PreQuestJourney<QuestPreconditions> {
 
     CREATE_NEW_USER_FLOW(QuestPreconditionFunctions::createNewUser);
 
@@ -23,7 +23,7 @@ public enum QuestPreconditions implements PreQuestJourney {
     }
 
     @Override
-    public Enum<?> enumImpl() {
+    public QuestPreconditions enumImpl() {
         return this;
     }
 

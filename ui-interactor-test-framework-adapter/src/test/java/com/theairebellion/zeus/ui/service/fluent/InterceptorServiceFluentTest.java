@@ -65,8 +65,8 @@ class InterceptorServiceFluentTest {
     void validateResponseHaveStatusWithMatchingStatusHardAssertion() {
         // Prepare test data
         List<ApiResponse> apiResponses = new ArrayList<>();
-        apiResponses.add(new ApiResponse("/api/test1", 200));
-        apiResponses.add(new ApiResponse("/api/test2", 201));
+        apiResponses.add(new ApiResponse("/api/test1", "GET", 200));
+        apiResponses.add(new ApiResponse("/api/test2", "GET", 201));
 
         // Setup mock behavior for storage get method
         when(mockStorage.get(eq(StorageKeysUi.RESPONSES), any(ParameterizedTypeReference.class)))
@@ -85,8 +85,8 @@ class InterceptorServiceFluentTest {
     void validateResponseHaveStatusWithNonMatchingStatusHardAssertion() {
         // Prepare test data
         List<ApiResponse> apiResponses = new ArrayList<>();
-        apiResponses.add(new ApiResponse("/api/test1", 404));
-        apiResponses.add(new ApiResponse("/api/test2", 500));
+        apiResponses.add(new ApiResponse("/api/test1", "GET",404));
+        apiResponses.add(new ApiResponse("/api/test2", "GET", 500));
 
         // Setup mock behavior for storage get method
         when(mockStorage.get(eq(StorageKeysUi.RESPONSES), any(ParameterizedTypeReference.class)))
@@ -107,7 +107,7 @@ class InterceptorServiceFluentTest {
     void validateResponseHaveStatusWithSoftAssertion() throws Exception {
         // Prepare test data
         List<ApiResponse> apiResponses = new ArrayList<>();
-        apiResponses.add(new ApiResponse("/other/test", 404));
+        apiResponses.add(new ApiResponse("/other/test", "GET",404));
 
         // Setup mock behavior for storage get method
         when(mockStorage.get(eq(StorageKeysUi.RESPONSES), any(ParameterizedTypeReference.class)))

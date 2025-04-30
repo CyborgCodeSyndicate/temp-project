@@ -126,7 +126,7 @@ class ItemListServiceImplTest extends BaseUnitUITest {
         void itemListComponentReturnsComponent() throws Exception {
             // Given
             Method itemListComponentMethod = ItemListServiceImpl.class.getDeclaredMethod(
-                    "ItemListComponent", ItemListComponentType.class);
+                    "itemListComponent", ItemListComponentType.class);
             itemListComponentMethod.setAccessible(true);
 
             // Insert component into cache

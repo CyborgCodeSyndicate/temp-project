@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BaseDbConnectorService {
 
     private static final Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
-    private static final Set<DbType> registeredTypes = Collections.synchronizedSet(new HashSet<>());
+    private static final Set<DbType<?>> registeredTypes = Collections.synchronizedSet(new HashSet<>());
 
     /**
      * Retrieves or creates a database connection based on the provided configuration.
@@ -37,7 +37,7 @@ public class BaseDbConnectorService {
      * @return A {@link Connection} instance for the specified database.
      */
     public Connection getConnection(DatabaseConfiguration dbConfig) {
-        DbType dbType = dbConfig.getDbType();
+        DbType<?> dbType = dbConfig.getDbType();
         registerDriverIfNecessary(dbType);
         String url = buildConnectionUrl(dbConfig);
         return connectionMap.computeIfAbsent(url, u -> createConnection(u, dbConfig));
@@ -48,7 +48,7 @@ public class BaseDbConnectorService {
      *
      * @param dbType The database type.
      */
-    private void registerDriverIfNecessary(DbType dbType) {
+    private void registerDriverIfNecessary(DbType<?> dbType) {
         if (!registeredTypes.contains(dbType)) {
             synchronized (registeredTypes) {
                 if (!registeredTypes.contains(dbType)) {

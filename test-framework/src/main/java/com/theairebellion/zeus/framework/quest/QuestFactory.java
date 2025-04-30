@@ -4,7 +4,6 @@ import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.framework.chain.FluentServiceDecorator;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.log.LogTest;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -22,16 +21,14 @@ import java.util.Collection;
  *
  * @author Cyborg Code Syndicate
  */
-@Getter
 @Component
 @Lazy
 @Scope("prototype")
-public class QuestFactory {
+public final class QuestFactory {
 
     /**
      * Factory responsible for creating and applying decorators to objects.
      */
-    @Autowired
     private DecoratorsFactory decoratorsFactory;
 
     /**
@@ -47,6 +44,11 @@ public class QuestFactory {
     @Autowired
     public QuestFactory(Collection<FluentService> fluentServices) {
         this.fluentServices = fluentServices;
+    }
+
+    @Autowired
+    public void setDecoratorsFactory(DecoratorsFactory decoratorsFactory) {
+        this.decoratorsFactory = decoratorsFactory;
     }
 
     /**

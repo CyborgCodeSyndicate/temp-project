@@ -75,6 +75,7 @@ public class FluentService implements FluentChain {
      *
      * @param assertionResults The list of assertion results to be validated.
      */
+    @SuppressWarnings("java:S5960")
     protected void validation(List<AssertionResult<Object>> assertionResults) {
         assertionResults.forEach(assertionResult -> {
             String message = assertionResult.toString();
@@ -102,7 +103,7 @@ public class FluentService implements FluentChain {
      * </p>
      */
     protected void postQuestSetupInitialization() {
-
+        //can override for specific services
     }
 
 }

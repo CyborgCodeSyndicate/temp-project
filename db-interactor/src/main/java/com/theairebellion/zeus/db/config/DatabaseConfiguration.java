@@ -19,7 +19,7 @@ public class DatabaseConfiguration {
     /**
      * The type of database (e.g., PostgreSQL, MySQL, h2).
      */
-    private DbType dbType;
+    private DbType<?> dbType;
 
     /**
      * The hostname or IP address of the database server.

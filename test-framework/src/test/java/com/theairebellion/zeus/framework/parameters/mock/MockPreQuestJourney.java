@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.function.BiConsumer;
 
-public class MockPreQuestJourney implements PreQuestJourney {
+public class MockPreQuestJourney implements PreQuestJourney<MockEnum> {
 
     private final BiConsumer<SuperQuest, Object[]> consumer;
 
@@ -19,7 +19,7 @@ public class MockPreQuestJourney implements PreQuestJourney {
     }
 
     @Override
-    public Enum<?> enumImpl() {
+    public MockEnum enumImpl() {
         return MockEnum.INSTANCE;
     }
 }

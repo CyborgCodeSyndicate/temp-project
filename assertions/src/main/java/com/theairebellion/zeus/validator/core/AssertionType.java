@@ -16,14 +16,14 @@ package com.theairebellion.zeus.validator.core;
  *
  * @author Cyborg Code Syndicate
  */
-public interface AssertionType {
+public interface AssertionType<T extends Enum<T>> {
 
     /**
      * Retrieves the unique identifier of the assertion type.
      *
      * @return The enum representing the assertion type.
      */
-    Enum<?> type();
+    T type();
 
     /**
      * Retrieves the supported data type for this assertion.

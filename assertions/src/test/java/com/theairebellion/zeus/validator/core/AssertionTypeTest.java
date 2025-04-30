@@ -11,7 +11,7 @@ class AssertionTypeTest {
     @DisplayName("AssertionType implementation should return the enum itself and supported type")
     void testAssertionTypeImplementation() {
         // Given
-        AssertionType type = new AssertionType() {
+        AssertionType<?> type = new AssertionType() {
             @Override
             public Enum<?> type() {
                 return TestEnum.TEST_TYPE;
@@ -57,7 +57,7 @@ class AssertionTypeTest {
         ANOTHER_TYPE
     }
 
-    private enum TypeEnum implements AssertionType {
+    private enum TypeEnum implements AssertionType<TypeEnum> {
         STRING_TYPE(String.class),
         NUMBER_TYPE(Number.class);
 
@@ -68,7 +68,7 @@ class AssertionTypeTest {
         }
 
         @Override
-        public Enum<?> type() {
+        public TypeEnum type() {
             return this;
         }
 

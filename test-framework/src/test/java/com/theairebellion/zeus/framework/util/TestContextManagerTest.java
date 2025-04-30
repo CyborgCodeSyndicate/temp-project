@@ -53,7 +53,7 @@ class TestContextManagerTest {
     private ApplicationContext applicationContext;
 
     @Mock
-    private DataForge dataForge;
+    private DataForge<?> dataForge;
 
     @Mock
     private Storage storage;

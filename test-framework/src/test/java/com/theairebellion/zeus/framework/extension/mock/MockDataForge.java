@@ -3,7 +3,7 @@ package com.theairebellion.zeus.framework.extension.mock;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 
-public class MockDataForge implements DataForge {
+public class MockDataForge implements DataForge<MockEnum> {
 
     private final Late<Object> late;
 
@@ -17,7 +17,7 @@ public class MockDataForge implements DataForge {
     }
 
     @Override
-    public Enum<?> enumImpl() {
+    public MockEnum enumImpl() {
         return MockEnum.VALUE;
     }
 }

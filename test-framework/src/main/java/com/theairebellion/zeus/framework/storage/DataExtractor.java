@@ -19,6 +19,7 @@ package com.theairebellion.zeus.framework.storage;
  * @author Cyborg Code Syndicate
  * </p>
  */
+@SuppressWarnings("java:S1452")
 public interface DataExtractor<T> {
 
     /**

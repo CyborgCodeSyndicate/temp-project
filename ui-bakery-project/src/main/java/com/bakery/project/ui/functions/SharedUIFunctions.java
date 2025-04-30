@@ -29,7 +29,11 @@ public class SharedUIFunctions {
     }
 
     public static void waitForPresence(SmartWebDriver smartWebDriver, By locator) {
-        smartWebDriver.getWait().until(visibilityOfElementLocatedCustom(locator));
+        try {
+            smartWebDriver.getWait().until(visibilityOfElementLocatedCustom(locator));
+        }catch (Exception ignore) {
+            //handle failure
+        }
     }
 
     public static void waitToBeClickable(SmartWebDriver smartWebDriver, By locator) {

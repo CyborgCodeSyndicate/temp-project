@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.openqa.selenium.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -99,6 +100,10 @@ public enum ExceptionLogging {
         this.exceptionLoggingMap = exceptionLoggingMap;
     }
 
+
+    public Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[], InvocationTargetException>> getExceptionLoggingMap() {
+        return Collections.unmodifiableMap(exceptionLoggingMap);
+    }
 }
 
 

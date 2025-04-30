@@ -10,13 +10,13 @@ package com.theairebellion.zeus.validator.core;
  *
  * @author Cyborg Code Syndicate
  */
-public interface AssertionTarget {
+public interface AssertionTarget<T extends Enum<T>> {
 
     /**
      * Retrieves the specific assertion target.
      *
      * @return The enum representing the assertion target.
      */
-    Enum<?> target();
+    T target();
 
 }

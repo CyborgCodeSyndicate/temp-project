@@ -72,7 +72,7 @@ public class RestService {
      * @param endpoint The API endpoint to call.
      * @return The response from the API.
      */
-    public Response request(Endpoint endpoint) {
+    public Response request(Endpoint<?> endpoint) {
         return executeRequest(endpoint, null);
     }
 
@@ -83,7 +83,7 @@ public class RestService {
      * @param body     The request body.
      * @return The response from the API.
      */
-    public Response request(Endpoint endpoint, Object body) {
+    public Response request(Endpoint<?> endpoint, Object body) {
         return executeRequest(endpoint, body);
     }
 
@@ -114,7 +114,7 @@ public class RestService {
      * @param <T>        The type of the assertion results.
      * @return A list of assertion results.
      */
-    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint endpoint, Assertion... assertions) {
+    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint<?> endpoint, Assertion... assertions) {
         return requestAndValidate(endpoint, null, assertions);
     }
 
@@ -127,9 +127,8 @@ public class RestService {
      * @param <T>        The type of the assertion results.
      * @return A list of assertion results.
      */
-    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint endpoint, Object body, Assertion... assertions) {
-        Response response = request(endpoint, body);
-        return validate(response, assertions);
+    public <T> List<AssertionResult<T>> requestAndValidate(Endpoint<?> endpoint, Object body, Assertion... assertions) {
+        return validate(request(endpoint, body), assertions);
     }
 
     /**
@@ -163,7 +162,7 @@ public class RestService {
      * @return The API response.
      * @throws RestServiceException if an error occurs during request execution.
      */
-    private Response executeRequest(Endpoint endpoint, Object body) {
+    private Response executeRequest(Endpoint<?> endpoint, Object body) {
         if (endpoint == null) {
             throw new RestServiceException("Endpoint cannot be null.");
         }

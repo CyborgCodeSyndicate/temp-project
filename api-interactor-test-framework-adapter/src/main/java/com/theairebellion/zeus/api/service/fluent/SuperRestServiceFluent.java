@@ -32,6 +32,7 @@ public class SuperRestServiceFluent extends RestServiceFluent {
      *
      * @return The {@code RestService} instance.
      */
+    @Override
     public RestService getRestService() {
         return original.getRestService();
     }

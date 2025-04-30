@@ -206,7 +206,7 @@ class ParametrizedQueryTest {
                 "Unprovided placeholder should remain unchanged");
     }
 
-    private DbQuery createQuery(String query) {
+    private DbQuery<?> createQuery(String query) {
         return new DbQuery() {
             @Override
             public String query() {
