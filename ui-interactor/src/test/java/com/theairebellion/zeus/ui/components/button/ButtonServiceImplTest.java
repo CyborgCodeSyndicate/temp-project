@@ -390,7 +390,8 @@ class ButtonServiceImplTest extends BaseUnitUITest {
          service.isVisible(mockButtonComponentType, container, "VisibleMe");
 
          // Then
-         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)), times(1));
+         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)),
+               times(1));
       }
 
       @Test
@@ -445,7 +446,8 @@ class ButtonServiceImplTest extends BaseUnitUITest {
 
          // Then
          verify(buttonMock).clickElementInCell(cellElement);
-         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)), times(1));
+         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)),
+               times(1));
       }
 
       @Test
@@ -482,7 +484,8 @@ class ButtonServiceImplTest extends BaseUnitUITest {
          createComponentMethod.invoke(service, mockButtonComponentType);
 
          // Then
-         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)), times(1));
+         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)),
+               times(1));
       }
 
       @Test
@@ -503,7 +506,8 @@ class ButtonServiceImplTest extends BaseUnitUITest {
          buttonComponentMethod.invoke(service, mockButtonComponentType);
 
          // Then
-         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)), times(1));
+         factoryMock.verify(() -> ComponentFactory.getButtonComponent(eq(mockButtonComponentType), eq(driver)),
+               times(1));
       }
    }
 

@@ -10,7 +10,7 @@ import lombok.Getter;
  * and the specific filter type to be applied.
  *
  * <p>It is used in conjunction with {@code CellLocator} to specify
- * filtering behaviors within a table structure.</p>
+ * filtering behaviors within a table structure.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

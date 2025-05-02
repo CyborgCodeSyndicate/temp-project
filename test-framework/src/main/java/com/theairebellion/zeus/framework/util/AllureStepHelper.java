@@ -7,10 +7,14 @@ import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import io.qameta.allure.Allure;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +30,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.HTML;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.START_TIME;
+import static com.theairebellion.zeus.framework.util.ObjectFormatter.escapeHtml;
+import static com.theairebellion.zeus.framework.util.ObjectFormatter.getClassAnnotations;
+import static com.theairebellion.zeus.framework.util.ObjectFormatter.getMethodAnnotations;
 import static com.theairebellion.zeus.framework.util.ResourceLoader.loadResourceFile;
 
 /**
@@ -46,7 +53,7 @@ import static com.theairebellion.zeus.framework.util.ResourceLoader.loadResource
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public class AllureStepHelper extends ObjectFormatter {
+public class AllureStepHelper {
 
    private static final String ALLURE_RESULTS_DIR = "allure-results";
    private static final String ENVIRONMENT_PROPERTIES_FILE = "environment.properties";
@@ -91,7 +98,8 @@ public class AllureStepHelper extends ObjectFormatter {
       String logFilePath = System.getProperty("logFileName", "logs/zeus.log");
       String testIdentifier = "[scenario=" + testName + "]";
 
-      try (BufferedReader reader = new BufferedReader(new FileReader(logFilePath))) {
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(logFilePath),
+            StandardCharsets.UTF_8))) {
          String filteredLogs = reader.lines()
                .filter(line -> line.contains(testIdentifier))
                .collect(Collectors.joining(System.lineSeparator()));
@@ -261,12 +269,11 @@ public class AllureStepHelper extends ObjectFormatter {
     */
    private static void writeEnvironmentProperties(Map<String, List<String>> propertiesMap) {
       File allureResultsDir = new File(ALLURE_RESULTS_DIR);
-      if (!allureResultsDir.exists()) {
-         allureResultsDir.mkdirs();
+      if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
+         throw new RuntimeException("Failed to create allure results directory: " + allureResultsDir.getAbsolutePath());
       }
-
       File environmentFile = new File(allureResultsDir, ENVIRONMENT_PROPERTIES_FILE);
-      try (FileWriter writer = new FileWriter(environmentFile)) {
+      try (Writer writer = new OutputStreamWriter(new FileOutputStream(environmentFile), StandardCharsets.UTF_8)) {
          for (Map.Entry<String, List<String>> entry : propertiesMap.entrySet()) {
             String key = entry.getKey();
             String combinedValues = String.join("; ", entry.getValue());
@@ -289,12 +296,12 @@ public class AllureStepHelper extends ObjectFormatter {
       String categoriesJson = loadResourceFile(CATEGORIES_JSON_PATH);
 
       File allureResultsDir = new File(ALLURE_RESULTS_DIR);
-      if (!allureResultsDir.exists()) {
-         allureResultsDir.mkdirs();
+      if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
+         throw new RuntimeException("Failed to create allure results directory: " + allureResultsDir.getAbsolutePath());
       }
 
       File categoriesFile = new File(allureResultsDir, CATEGORIES_JSON);
-      try (FileWriter writer = new FileWriter(categoriesFile)) {
+      try (Writer writer = new OutputStreamWriter(new FileOutputStream(categoriesFile), StandardCharsets.UTF_8)) {
          writer.write(categoriesJson);
       } catch (IOException e) {
          throw new RuntimeException("Failed to write categories.json file", e);

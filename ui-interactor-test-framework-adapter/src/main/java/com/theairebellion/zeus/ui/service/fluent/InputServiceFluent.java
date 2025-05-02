@@ -24,7 +24,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("java:S5960")
 public class InputServiceFluent<T extends UiServiceFluent<?>> implements Insertion {
 
    private final InputService inputService;

@@ -10,7 +10,7 @@ import com.theairebellion.zeus.validator.core.AssertionTarget;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public enum DbAssertionTarget implements AssertionTarget {
+public enum DbAssertionTarget implements AssertionTarget<DbAssertionTarget> {
 
    /**
     * Validates the query result content.
@@ -33,7 +33,7 @@ public enum DbAssertionTarget implements AssertionTarget {
     * @return The enum representing the assertion target.
     */
    @Override
-   public Enum<?> target() {
+   public DbAssertionTarget target() {
       return this;
    }
 }

@@ -9,7 +9,7 @@ import org.apache.maven.project.MavenProject;
  * Configuration class for TestNG test splitting in a Maven project.
  *
  * <p>Extends {@link TestSplitterConfiguration} to include specific settings
- * for selecting TestNG suites.</p>
+ * for selecting TestNG suites.
  *
  * <p>This configuration allows the user to specify:
  * <ul>

@@ -3,7 +3,7 @@ package com.example.project.db;
 import com.theairebellion.zeus.db.config.DatabaseConfiguration;
 import com.theairebellion.zeus.db.query.DbQuery;
 
-public enum Queries implements DbQuery {
+public enum Queries implements DbQuery<Queries> {
 
    QUERY_SELLER("SELECT * FROM sellers WHERE id = {id}"),
    QUERY_SELLER_EMAIL("SELECT email FROM orders WHERE id = {id}"),
@@ -33,7 +33,7 @@ public enum Queries implements DbQuery {
 
 
    @Override
-   public Enum<?> enumImpl() {
+   public Queries enumImpl() {
       return this;
    }
 

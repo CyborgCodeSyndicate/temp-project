@@ -15,11 +15,11 @@ import java.util.Map;
  * logic. It ensures compatibility between expected and actual values before evaluation.
  *
  * <p>Assertions are applied based on registered validation functions, and the results
- * are returned as {@link AssertionResult} objects.</p>
+ * are returned as {@link AssertionResult} objects.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public class AssertionUtil {
+public final class AssertionUtil {
 
    private AssertionUtil() {
    }
@@ -67,13 +67,13 @@ public class AssertionUtil {
          );
       }
 
-      AssertionType type = assertion.getType();
+      AssertionType<?> type = assertion.getType();
       validateTypeCompatibility(type, actualValue);
 
       var validator = AssertionRegistry.getValidator(type);
-      boolean passed = validator.apply(actualValue, assertion.getExpected());
+      boolean passed = validator.test(actualValue, assertion.getExpected());
 
-      return new AssertionResult(
+      return new AssertionResult<>(
             passed,
             type.type().name(),
             assertion.getExpected(),
@@ -107,7 +107,7 @@ public class AssertionUtil {
     * @param actualValue The actual value to be validated.
     * @throws IllegalArgumentException if the actual value type does not match the expected type.
     */
-   private static void validateTypeCompatibility(AssertionType type, Object actualValue) {
+   private static void validateTypeCompatibility(AssertionType<?> type, Object actualValue) {
       Class<?> supportedType = type.getSupportedType();
       Class<?> actualValueClass = actualValue.getClass();
 

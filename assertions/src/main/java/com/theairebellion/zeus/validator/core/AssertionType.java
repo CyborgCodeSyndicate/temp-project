@@ -7,7 +7,7 @@ package com.theairebellion.zeus.validator.core;
  * that determine how validation is performed across different domains,
  * such as API responses, database queries, and UI components.
  *
- * <p>Each assertion type specifies:</p>
+ * <p>Each assertion type specifies:
  * <ul>
  *     <li>A unique identifier for the assertion type.</li>
  *     <li>The expected data type that the assertion operates on.</li>
@@ -15,14 +15,14 @@ package com.theairebellion.zeus.validator.core;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public interface AssertionType {
+public interface AssertionType<T extends Enum<T>> {
 
    /**
     * Retrieves the unique identifier of the assertion type.
     *
     * @return The enum representing the assertion type.
     */
-   Enum<?> type();
+   T type();
 
    /**
     * Retrieves the supported data type for this assertion.

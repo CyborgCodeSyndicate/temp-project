@@ -7,14 +7,12 @@ import io.qameta.allure.internal.shadowed.jackson.databind.SerializationFeature;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public class ObjectFormatter {
+public final class ObjectFormatter {
 
    /**
     * Cache for storing declared fields of classes.
@@ -44,36 +42,10 @@ public class ObjectFormatter {
     */
    private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
 
-   /**
-    * Cache for storing the getUrl method for classes.
-    */
-   private final Map<Class<?>, Method> urlMethodCache = new HashMap<>();
 
-   /**
-    * Cache for storing the getStatus method for classes.
-    */
-   private final Map<Class<?>, Method> statusMethodCache = new HashMap<>();
-
-   /**
-    * Cache for storing the getBody method for classes.
-    */
-   private final Map<Class<?>, Method> bodyMethodCache = new HashMap<>();
-
-   /**
-    * Cache for storing the getMethod method for classes.
-    */
-   private final Map<Class<?>, Method> methodMethodCache = new HashMap<>();
-
-   /**
-    * Cache for validating if a class is a valid response class.
-    */
-   private final Map<Class<?>, Boolean> validClassCache = new HashMap<>();
-
-   /**
-    * Default constructor.
-    */
-   public ObjectFormatter() {
+   private ObjectFormatter() {
    }
+
 
    /**
     * Creates and configures an ObjectMapper with specific serialization settings.
@@ -87,6 +59,7 @@ public class ObjectFormatter {
       return mapper;
    }
 
+
    /**
     * Formats the fields of the provided object into a string representation.
     * Uses a set to detect circular references.
@@ -97,6 +70,7 @@ public class ObjectFormatter {
    public static String formatObjectFields(Object obj) {
       return formatObjectFields(obj, Collections.newSetFromMap(new IdentityHashMap<>()));
    }
+
 
    /**
     * Recursively formats the fields of the provided object, tracking visited objects to avoid circular references.
@@ -129,6 +103,7 @@ public class ObjectFormatter {
       return result.toString();
    }
 
+
    /**
     * Formats a single argument value, handling primitive types, collections, arrays, or objects.
     *
@@ -152,6 +127,7 @@ public class ObjectFormatter {
       return formatObjectFields(argument, visited);
    }
 
+
    /**
     * Formats a collection of objects into a comma-separated string representation.
     *
@@ -164,6 +140,7 @@ public class ObjectFormatter {
             .map(element -> formatArgumentValue(element, visited))
             .collect(Collectors.joining(", "));
    }
+
 
    /**
     * Formats an array of objects into a comma-separated string representation.
@@ -179,16 +156,18 @@ public class ObjectFormatter {
             .collect(Collectors.joining(", ", "[", "]"));
    }
 
+
    /**
     * Generates HTML content by loading an HTML template and replacing placeholders with formatted argument rows.
     *
     * @param arguments a map of Enum keys to LinkedList of objects representing arguments
     * @return a string containing the generated HTML content
     */
-   public String generateHtmlContent(Map<Enum<?>, LinkedList<Object>> arguments) {
+   public static String generateHtmlContent(Map<Enum<?>, List<Object>> arguments) {
       String htmlTemplate = ResourceLoader.loadResourceFile("allure/html/test-data.html");
       return htmlTemplate.replace("{{argumentRows}}", buildRowsFromMap("", arguments));
    }
+
 
    /**
     * Builds HTML table rows from a map of arguments.
@@ -197,7 +176,7 @@ public class ObjectFormatter {
     * @param map   the map containing argument data
     * @return a string containing HTML table rows
     */
-   private String buildRowsFromMap(String label, Map<Enum<?>, LinkedList<Object>> map) {
+   private static String buildRowsFromMap(String label, Map<Enum<?>, List<Object>> map) {
       if ("PreArguments".equals(label)) {
          return "";
       }
@@ -208,13 +187,14 @@ public class ObjectFormatter {
             .collect(Collectors.joining());
    }
 
+
    /**
     * Formats a linked list of objects by concatenating their formatted field representations.
     *
     * @param objects the linked list of objects to format
     * @return a string representation of the formatted objects
     */
-   private String formatObject(LinkedList<Object> objects) {
+   private static String formatObject(List<Object> objects) {
       return objects == null || objects.isEmpty() ? "" :
             objects.stream()
                   .filter(Objects::nonNull)
@@ -223,13 +203,14 @@ public class ObjectFormatter {
                   .collect(Collectors.joining(", "));
    }
 
+
    /**
     * Escapes HTML special characters in the provided input string.
     *
     * @param input the string to escape
     * @return the escaped string suitable for HTML display
     */
-   static String escapeHtml(String input) {
+   public static String escapeHtml(String input) {
       return input == null ? "N/A" : input.replace("&", "&amp;")
             .replace("<", "&lt;")
             .replace(">", "&gt;")
@@ -237,6 +218,7 @@ public class ObjectFormatter {
             .replace("'", "&#39;")
             .replace("%", "%%");
    }
+
 
    /**
     * Retrieves and formats annotations present on the test class associated with the provided extension context.
@@ -247,11 +229,13 @@ public class ObjectFormatter {
    public static String getClassAnnotations(ExtensionContext context) {
       String annotations = Arrays.stream(context.getRequiredTestClass().getAnnotations())
             .map(annotation -> "@" + annotation.annotationType().getSimpleName()
-                  + (annotationHasArguments(annotation) ? formatAnnotationArguments(annotation) : ""))
+                  + (annotationHasArguments(annotation)
+                  ? formatAnnotationArguments(annotation) : ""))
             .collect(Collectors.joining("\n"));
 
       return annotations.isEmpty() ? "No class annotations" : annotations;
    }
+
 
    /**
     * Retrieves and formats annotations present on the test method associated with the provided extension context.
@@ -264,6 +248,7 @@ public class ObjectFormatter {
             .map(ObjectFormatter::formatAnnotation)
             .collect(Collectors.joining("\n"));
    }
+
 
    /**
     * Formats an annotation into a string including its simple name and any arguments.
@@ -281,6 +266,7 @@ public class ObjectFormatter {
       return "@" + annotationName + (args.isEmpty() ? "" : "(" + args + ")");
    }
 
+
    /**
     * Retrieves the value of an annotation's method as a string, handling arrays appropriately.
     *
@@ -291,12 +277,13 @@ public class ObjectFormatter {
    private static String getAnnotationArgument(Annotation annotation, Method method) {
       try {
          Object value = method.invoke(annotation);
-         return value.getClass().isArray() ? method.getName() + "=" + arrayToString(value) : method.getName()
-               + "=" + value;
-      } catch (Exception e) {
+         return value.getClass().isArray() ? method.getName() + "=" + arrayToString(value) :
+               method.getName() + "=" + value;
+      } catch (IllegalAccessException | InvocationTargetException e) {
          return method.getName() + "=error";
       }
    }
+
 
    /**
     * Converts an array to a string representation.
@@ -320,6 +307,7 @@ public class ObjectFormatter {
       return array.toString();
    }
 
+
    /**
     * Determines whether the provided annotation has any arguments.
     *
@@ -330,6 +318,7 @@ public class ObjectFormatter {
       return Arrays.stream(annotation.annotationType().getDeclaredMethods())
             .anyMatch(method -> method.getParameterCount() > 0);
    }
+
 
    /**
     * Formats the arguments of an annotation into a comma-separated string enclosed in parentheses.
@@ -349,6 +338,7 @@ public class ObjectFormatter {
             })
             .collect(Collectors.joining(", ", "(", ")"));
    }
+
 
    /**
     * Formats a string of annotations into HTML rows with proper indentation.
@@ -383,6 +373,7 @@ public class ObjectFormatter {
       return formattedAnnotations.toString();
    }
 
+
    /**
     * Cleans the annotation string by removing package names and unnecessary formatting.
     *
@@ -404,6 +395,7 @@ public class ObjectFormatter {
             .replaceAll("requestUrlSubStrings\\s*=\\s*\\[([^]]+)]", "requestUrlSubStrings = [$1]");
    }
 
+
    /**
     * Applies indentation to the provided text based on the base indent level, formatting braces and commas
     * appropriately.
@@ -422,6 +414,7 @@ public class ObjectFormatter {
             .replaceAll("\n\\s*\n", "\n");
    }
 
+
    /**
     * Generates a string containing spaces for indentation.
     *
@@ -431,6 +424,7 @@ public class ObjectFormatter {
    private static String getIndent(int level) {
       return "    ".repeat(level);
    }
+
 
    /**
     * Counts the number of occurrences of a target substring within a given string.
@@ -442,6 +436,7 @@ public class ObjectFormatter {
    private static int countOccurrences(String str, String target) {
       return str.length() - str.replace(target, "").length();
    }
+
 
    /**
     * Formats a long text into multiple lines with a maximum of 80 characters per line, escaping HTML characters.
@@ -473,6 +468,7 @@ public class ObjectFormatter {
       return formattedText.toString();
    }
 
+
    /**
     * Retrieves the test method's argument types from the provided extension context.
     *
@@ -488,188 +484,6 @@ public class ObjectFormatter {
             .orElse("No arguments available.");
    }
 
-   /**
-    * Formats a list of responses into an HTML string, summarizing request counts and formatting individual responses.
-    *
-    * @param responses a list of response objects, which may include lists of responses
-    * @return a string containing the generated HTML with formatted responses
-    */
-   public String formatResponses(List<Object> responses) {
-      List<Object> flatResponses = new ArrayList<>();
-      int totalRequests = 0;
-      int successCount = 0;
-      int warningCount = 0;
-      int errorCount = 0;
-
-      for (Object response : responses) {
-         if (response instanceof List<?> responseList) {
-            totalRequests += responseList.size();
-
-            for (Object item : responseList) {
-               flatResponses.add(item);
-               int status = getResponseStatus(item);
-               if (status >= 400) {
-                  errorCount++;
-               } else if (status >= 300) {
-                  warningCount++;
-               } else if (status > 0) {
-                  successCount++;
-               }
-            }
-         } else {
-            totalRequests++;
-            flatResponses.add(response);
-            int status = getResponseStatus(response);
-            if (status >= 400) {
-               errorCount++;
-            } else if (status >= 300) {
-               warningCount++;
-            } else if (status > 0) {
-               successCount++;
-            }
-         }
-      }
-
-      String templateHtml = ResourceLoader.loadResourceFile("allure/html/intercepted-responses.html");
-      StringBuilder htmlBuilder = new StringBuilder(
-            templateHtml.replace("{{total}}", String.valueOf(totalRequests))
-                  .replace("{{success}}", String.valueOf(successCount))
-                  .replace("{{warning}}", String.valueOf(warningCount))
-                  .replace("{{error}}", String.valueOf(errorCount)));
-
-      for (int i = 0; i < flatResponses.size(); i++) {
-         appendResponseAccordion(htmlBuilder, flatResponses.get(i), i);
-      }
-
-      return htmlBuilder.toString();
-   }
-
-   /**
-    * Retrieves the HTTP status code from a response object using reflection.
-    *
-    * @param response the response object from which to extract the status code
-    * @return the HTTP status code if available; otherwise 0
-    */
-   private int getResponseStatus(Object response) {
-      try {
-         Class<?> clazz = response.getClass();
-         if (!isValidResponseClass(clazz)) {
-            return 0;
-         }
-
-         Method statusMethod = getMethodFor(clazz, "getStatus", statusMethodCache);
-         return ((Number) statusMethod.invoke(response)).intValue();
-      } catch (Exception e) {
-         return 0;
-      }
-   }
-
-   /**
-    * Appends an accordion HTML block for a given response to the provided StringBuilder.
-    *
-    * @param html     the StringBuilder to append the HTML content to
-    * @param response the response object to format
-    * @param index    the index used to uniquely identify the accordion elements
-    */
-   private void appendResponseAccordion(StringBuilder html, Object response, int index) {
-      try {
-         Class<?> clazz = response.getClass();
-         if (!isValidResponseClass(clazz)) {
-            return;
-         }
-
-         Method urlMethod = getMethodFor(clazz, "getUrl", urlMethodCache);
-         Method statusMethod = getMethodFor(clazz, "getStatus", statusMethodCache);
-         Method bodyMethod = getMethodFor(clazz, "getBody", bodyMethodCache);
-
-         String method = "GET";
-         try {
-            Method methodMethod = getMethodFor(clazz, "getMethod", methodMethodCache);
-            if (methodMethod != null) {
-               method = (String) methodMethod.invoke(response);
-            }
-         } catch (Exception ignored) {
-         }
-
-         String url = (String) urlMethod.invoke(response);
-         int status = ((Number) statusMethod.invoke(response)).intValue();
-         String body = (String) bodyMethod.invoke(response);
-
-         String statusClass = (status >= 400) ? "status-error" :
-               (status >= 300) ? "status-warning" :
-                     "status-success";
-
-         String endpoint = extractEndpoint(url);
-
-         html.append("<div class='accordion'>")
-               .append("<div class='accordion-header' id='header-").append(index)
-               .append("' onclick='toggleAccordion(").append(index).append(")'>")
-               .append("<div class='method'>").append(method).append("</div>")
-               .append("<div class='url'>").append(endpoint).append("</div>")
-               .append("<div class='status ").append(statusClass).append("'>")
-               .append(status).append("</div>")
-               .append("<span class='chevron'>&#9660;</span>")
-               .append("</div>")
-               .append("<div id='content-").append(index).append("' class='accordion-content'>")
-               .append("<pre>").append(escapeHtml(body != null ? body : "")).append("</pre>")
-               .append("</div>")
-               .append("</div>");
-      } catch (Exception ignored) {
-      }
-   }
-
-   /**
-    * Extracts the endpoint path from a URL string.
-    *
-    * @param url the full URL string
-    * @return the endpoint path if available, or the original URL if extraction fails
-    */
-   private String extractEndpoint(String url) {
-      try {
-         java.net.URL urlObj = new java.net.URL(url);
-         String endpoint = urlObj.getPath();
-         return endpoint.isEmpty() ? "/" : endpoint;
-      } catch (Exception e) {
-         return url;
-      }
-   }
-
-   /**
-    * Checks if the provided class contains the necessary methods to be considered a valid response class.
-    *
-    * @param clazz the class to check for required response methods
-    * @return true if the class is valid, false otherwise
-    */
-   private boolean isValidResponseClass(Class<?> clazz) {
-      return validClassCache.computeIfAbsent(clazz, c -> {
-         try {
-            c.getMethod("getUrl");
-            c.getMethod("getStatus");
-            c.getMethod("getBody");
-            return true;
-         } catch (NoSuchMethodException e) {
-            return false;
-         }
-      });
-   }
-
-   /**
-    * Retrieves a method with the specified name from the given class, using a cache to improve performance.
-    *
-    * @param clazz      the class from which to retrieve the method
-    * @param methodName the name of the method to retrieve
-    * @param cache      a cache mapping classes to their methods
-    * @return the Method object if found; otherwise, null
-    */
-   private Method getMethodFor(Class<?> clazz, String methodName, Map<Class<?>, Method> cache) {
-      return cache.computeIfAbsent(clazz, c -> {
-         try {
-            return c.getMethod(methodName);
-         } catch (NoSuchMethodException e) {
-            return null;
-         }
-      });
-   }
 
    /**
     * Formats processed journey data along with the corresponding original data into a readable string.
@@ -678,7 +492,7 @@ public class ObjectFormatter {
     * @param processedData an array of processed data objects corresponding to the original data
     * @return a formatted string representing the processed journey data
     */
-   public String formatProcessedData(JourneyData[] originalData, Object[] processedData) {
+   public static String formatProcessedData(JourneyData[] originalData, Object[] processedData) {
       if (processedData == null || processedData.length == 0) {
          return "No data available";
       }
@@ -691,7 +505,7 @@ public class ObjectFormatter {
          Object data = processedData[i];
          String journeyDataValue = extractJourneyDataValue(originalData[i]);
 
-         sb.append(String.format("Journey: %s\n", journeyDataValue));
+         sb.append(String.format("Journey: %s%n", journeyDataValue));
 
          if (data == null) {
             sb.append("  Data: null\n");
@@ -707,6 +521,7 @@ public class ObjectFormatter {
       return sb.toString();
    }
 
+
    /**
     * Extracts the value from a JourneyData annotation.
     *
@@ -716,6 +531,7 @@ public class ObjectFormatter {
    private static String extractJourneyDataValue(JourneyData journeyData) {
       return journeyData.value();
    }
+
 
    /**
     * Formats an object as JSON using the configured ObjectMapper and appends it to the provided StringBuilder.

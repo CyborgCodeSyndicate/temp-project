@@ -12,10 +12,10 @@ import java.lang.annotation.Target;
  * filtering logic beyond the standard component-based approach.
  *
  * <p>Applied to fields in a row model, it enables dynamic filtering using a
- * function that executes at runtime.</p>
+ * function that executes at runtime.
  *
  * <p>The provided {@code cellFilterFunction} class must implement {@code CellFilterFunction}
- * to define the filtering logic.</p>
+ * to define the filtering logic.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

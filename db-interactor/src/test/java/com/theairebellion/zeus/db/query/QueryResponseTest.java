@@ -11,12 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,15 +49,11 @@ class QueryResponseTest {
    }
 
    @Test
-   @DisplayName("Should accept null rows without throwing exception")
+   @DisplayName("Should throw exception when null for rows")
    void testConstructorWithNull() {
       // When - Then
-      assertDoesNotThrow(() -> new QueryResponse(null),
-            "Constructor should accept null without throwing exception");
-
-      // Verify behavior with null
-      QueryResponse response = new QueryResponse(null);
-      assertNull(response.getRows(), "Rows should be null when constructor is passed null");
+      assertThrows(IllegalArgumentException.class, () -> new QueryResponse(null),
+            "Constructor should throw exception when reciving null for rows");
    }
 
    @Test
@@ -80,29 +74,6 @@ class QueryResponseTest {
       // Then - change should be reflected since no defensive copy is made
       assertEquals(0, response.getRows().size(),
             "Changes to external list should be reflected in response");
-   }
-
-   @Test
-   @DisplayName("Should allow modification of returned rows list")
-   void testReturnedListModification() {
-      // Given
-      List<Map<String, Object>> originalRows = new ArrayList<>();
-      Map<String, Object> row = new HashMap<>();
-      row.put(KEY1, VALUE1);
-      originalRows.add(row);
-
-      QueryResponse response = new QueryResponse(originalRows);
-
-      // When - Then
-      assertDoesNotThrow(() -> response.getRows().clear(),
-            "Should allow modification of returned list");
-
-      // Verify modification worked
-      assertAll(
-            "Modifications to returned list should affect both returned and original lists",
-            () -> assertEquals(0, response.getRows().size(), "Returned list should be modified"),
-            () -> assertEquals(0, originalRows.size(), "Original list should also be affected")
-      );
    }
 
    @Test
@@ -176,27 +147,4 @@ class QueryResponseTest {
       );
    }
 
-   @Test
-   @DisplayName("Should support setter for rows")
-   void testSetRows() {
-      // Given
-      List<Map<String, Object>> initialRows = new ArrayList<>();
-      List<Map<String, Object>> newRows = new ArrayList<>();
-      Map<String, Object> newRow = new HashMap<>();
-      newRow.put(KEY1, VALUE1);
-      newRows.add(newRow);
-
-      QueryResponse response = new QueryResponse(initialRows);
-
-      // When
-      response.setRows(newRows);
-
-      // Then
-      assertAll(
-            "Setter should update rows reference",
-            () -> assertSame(newRows, response.getRows(), "Setter should update the rows reference"),
-            () -> assertEquals(1, response.getRows().size(), "Size should reflect new rows"),
-            () -> assertEquals(VALUE1, response.getRows().get(0).get(KEY1), "Content should reflect new rows")
-      );
-   }
 }

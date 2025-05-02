@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public interface PreQuestJourney {
+public interface PreQuestJourney<T extends Enum<T>> {
 
    /**
     * Defines the precondition execution logic.
@@ -36,6 +36,6 @@ public interface PreQuestJourney {
     *
     * @return An {@code Enum} representing the current precondition implementation.
     */
-   Enum<?> enumImpl();
+   T enumImpl();
 
 }

@@ -39,7 +39,6 @@ public @interface JourneyData {
     * <br>
     * If set to {@code false}, the object is created just before the test execution,
     * ensuring it is available during the test.
-    * </p>
     *
     * @return {@code true} if the test data should be created lazily and requires
     *     explicit resolution before use, otherwise {@code false}.

@@ -4,7 +4,7 @@ import com.theairebellion.zeus.validator.core.AssertionType;
 import com.theairebellion.zeus.validator.core.AssertionTypes;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,16 +32,16 @@ class AssertionRegistryTest {
 
          assertAll(
                () -> assertNotNull(isValidator, "IS validator should exist"),
-               () -> assertTrue(isValidator.apply("abc", "abc"), "IS validator should work correctly"),
-               () -> assertFalse(isValidator.apply("abc", "xyz"), "IS validator should reject unequal values"),
+               () -> assertTrue(isValidator.test("abc", "abc"), "IS validator should work correctly"),
+               () -> assertFalse(isValidator.test("abc", "xyz"), "IS validator should reject unequal values"),
 
                () -> assertNotNull(notValidator, "NOT validator should exist"),
-               () -> assertTrue(notValidator.apply("abc", "xyz"), "NOT validator should work correctly"),
-               () -> assertFalse(notValidator.apply("abc", "abc"), "NOT validator should reject equal values"),
+               () -> assertTrue(notValidator.test("abc", "xyz"), "NOT validator should work correctly"),
+               () -> assertFalse(notValidator.test("abc", "abc"), "NOT validator should reject equal values"),
 
                () -> assertNotNull(containsValidator, "CONTAINS validator should exist"),
-               () -> assertTrue(containsValidator.apply("hello world", "world"), "CONTAINS validator should work correctly"),
-               () -> assertFalse(containsValidator.apply("hello", "world"), "CONTAINS validator should reject non-containing values")
+               () -> assertTrue(containsValidator.test("hello world", "world"), "CONTAINS validator should work correctly"),
+               () -> assertFalse(containsValidator.test("hello", "world"), "CONTAINS validator should reject non-containing values")
          );
       }
 
@@ -98,7 +98,7 @@ class AssertionRegistryTest {
                return Object.class;
             }
          };
-         BiFunction<Object, Object, Boolean> customFunc = (a, e) -> "custom".equals(a);
+         BiPredicate<Object, Object> customFunc = (a, e) -> "custom".equals(a);
 
          // When
          AssertionRegistry.registerCustomAssertion(customType, customFunc);
@@ -106,8 +106,8 @@ class AssertionRegistryTest {
 
          // Then
          assertSame(customFunc, retrieved, "Retrieved validator should be the same as registered");
-         assertTrue(retrieved.apply("custom", null), "Custom validator should work as expected");
-         assertFalse(retrieved.apply("not-custom", null), "Custom validator should reject non-matching values");
+         assertTrue(retrieved.test("custom", null), "Custom validator should work as expected");
+         assertFalse(retrieved.test("not-custom", null), "Custom validator should reject non-matching values");
       }
 
       @Test
@@ -125,7 +125,7 @@ class AssertionRegistryTest {
                return Object.class;
             }
          };
-         BiFunction<Object, Object, Boolean> customFunc = (a, e) -> true;
+         BiPredicate<Object, Object> customFunc = (a, e) -> true;
 
          // Then
          assertAll(
@@ -142,15 +142,15 @@ class AssertionRegistryTest {
       @DisplayName("Registry should allow overriding built-in validators")
       void testOverrideBuiltInValidator() {
          // Given
-         BiFunction<Object, Object, Boolean> customIsValidator = (a, e) -> "override".equals(a);
+         BiPredicate<Object, Object> customIsValidator = (a, e) -> "override".equals(a);
 
          // When
          AssertionRegistry.registerCustomAssertion(AssertionTypes.IS, customIsValidator);
          var validator = AssertionRegistry.getValidator(AssertionTypes.IS);
 
          // Then
-         assertTrue(validator.apply("override", null), "Overridden validator should work as expected");
-         assertFalse(validator.apply("abc", "abc"), "Original behavior should be replaced");
+         assertTrue(validator.test("override", null), "Overridden validator should work as expected");
+         assertFalse(validator.test("abc", "abc"), "Original behavior should be replaced");
 
          // Reset for other tests
          AssertionRegistry.registerCustomAssertion(AssertionTypes.IS, (a, e) -> a != null && a.equals(e));
@@ -167,11 +167,11 @@ class AssertionRegistryTest {
          var isNullValidator = AssertionRegistry.getValidator(AssertionTypes.IS_NULL);
 
          assertAll(
-               () -> assertTrue(notNullValidator.apply("not-null", true), "NOT_NULL with non-null value and true expectation"),
-               () -> assertFalse(notNullValidator.apply(null, true), "NOT_NULL with null value and true expectation"),
+               () -> assertTrue(notNullValidator.test("not-null", true), "NOT_NULL with non-null value and true expectation"),
+               () -> assertFalse(notNullValidator.test(null, true), "NOT_NULL with null value and true expectation"),
 
-               () -> assertTrue(isNullValidator.apply(null, true), "IS_NULL with null value and true expectation"),
-               () -> assertFalse(isNullValidator.apply("not-null", true), "IS_NULL with non-null value and true expectation")
+               () -> assertTrue(isNullValidator.test(null, true), "IS_NULL with null value and true expectation"),
+               () -> assertFalse(isNullValidator.test("not-null", true), "IS_NULL with non-null value and true expectation")
          );
       }
 
@@ -184,24 +184,24 @@ class AssertionRegistryTest {
          var containsAnyValidator = AssertionRegistry.getValidator(AssertionTypes.CONTAINS_ANY);
 
          assertAll(
-               () -> assertTrue(emptyValidator.apply(Collections.emptyList(), true),
+               () -> assertTrue(emptyValidator.test(Collections.emptyList(), true),
                      "EMPTY with empty collection and true expectation"),
-               () -> assertFalse(emptyValidator.apply(Arrays.asList(1, 2), true),
+               () -> assertFalse(emptyValidator.test(Arrays.asList(1, 2), true),
                      "EMPTY with non-empty collection and true expectation"),
 
-               () -> assertTrue(notEmptyValidator.apply(Arrays.asList(1, 2), true),
+               () -> assertTrue(notEmptyValidator.test(Arrays.asList(1, 2), true),
                      "NOT_EMPTY with non-empty collection and true expectation"),
-               () -> assertFalse(notEmptyValidator.apply(Collections.emptyList(), true),
+               () -> assertFalse(notEmptyValidator.test(Collections.emptyList(), true),
                      "NOT_EMPTY with empty collection and true expectation"),
 
-               () -> assertTrue(containsAllValidator.apply(Arrays.asList(1, 2, 3), Arrays.asList(1, 2)),
+               () -> assertTrue(containsAllValidator.test(Arrays.asList(1, 2, 3), Arrays.asList(1, 2)),
                      "CONTAINS_ALL with superset and subset"),
-               () -> assertFalse(containsAllValidator.apply(Arrays.asList(1, 2), Arrays.asList(1, 2, 3)),
+               () -> assertFalse(containsAllValidator.test(Arrays.asList(1, 2), Arrays.asList(1, 2, 3)),
                      "CONTAINS_ALL with subset and superset"),
 
-               () -> assertTrue(containsAnyValidator.apply(Arrays.asList(1, 2, 3), Arrays.asList(3, 4, 5)),
+               () -> assertTrue(containsAnyValidator.test(Arrays.asList(1, 2, 3), Arrays.asList(3, 4, 5)),
                      "CONTAINS_ANY with overlapping sets"),
-               () -> assertFalse(containsAnyValidator.apply(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6)),
+               () -> assertFalse(containsAnyValidator.test(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6)),
                      "CONTAINS_ANY with disjoint sets")
          );
       }
@@ -215,24 +215,24 @@ class AssertionRegistryTest {
          var matchesRegexValidator = AssertionRegistry.getValidator(AssertionTypes.MATCHES_REGEX);
 
          assertAll(
-               () -> assertTrue(startsWithValidator.apply("hello world", "hello"),
+               () -> assertTrue(startsWithValidator.test("hello world", "hello"),
                      "STARTS_WITH with matching prefix"),
-               () -> assertFalse(startsWithValidator.apply("hello world", "world"),
+               () -> assertFalse(startsWithValidator.test("hello world", "world"),
                      "STARTS_WITH with non-matching prefix"),
 
-               () -> assertTrue(endsWithValidator.apply("hello world", "world"),
+               () -> assertTrue(endsWithValidator.test("hello world", "world"),
                      "ENDS_WITH with matching suffix"),
-               () -> assertFalse(endsWithValidator.apply("hello world", "hello"),
+               () -> assertFalse(endsWithValidator.test("hello world", "hello"),
                      "ENDS_WITH with non-matching suffix"),
 
-               () -> assertTrue(equalsIgnoreCaseValidator.apply("Hello", "hello"),
+               () -> assertTrue(equalsIgnoreCaseValidator.test("Hello", "hello"),
                      "EQUALS_IGNORE_CASE with case difference"),
-               () -> assertFalse(equalsIgnoreCaseValidator.apply("hello", "world"),
+               () -> assertFalse(equalsIgnoreCaseValidator.test("hello", "world"),
                      "EQUALS_IGNORE_CASE with different strings"),
 
-               () -> assertTrue(matchesRegexValidator.apply("abc123", "\\w+\\d+"),
+               () -> assertTrue(matchesRegexValidator.test("abc123", "\\w+\\d+"),
                      "MATCHES_REGEX with matching pattern"),
-               () -> assertFalse(matchesRegexValidator.apply("abc", "\\d+"),
+               () -> assertFalse(matchesRegexValidator.test("abc", "\\d+"),
                      "MATCHES_REGEX with non-matching pattern")
          );
       }
@@ -245,19 +245,19 @@ class AssertionRegistryTest {
          var betweenValidator = AssertionRegistry.getValidator(AssertionTypes.BETWEEN);
 
          assertAll(
-               () -> assertTrue(greaterThanValidator.apply(5, 3),
+               () -> assertTrue(greaterThanValidator.test(5, 3),
                      "GREATER_THAN with larger actual"),
-               () -> assertFalse(greaterThanValidator.apply(3, 5),
+               () -> assertFalse(greaterThanValidator.test(3, 5),
                      "GREATER_THAN with smaller actual"),
 
-               () -> assertTrue(lessThanValidator.apply(3, 5),
+               () -> assertTrue(lessThanValidator.test(3, 5),
                      "LESS_THAN with smaller actual"),
-               () -> assertFalse(lessThanValidator.apply(5, 3),
+               () -> assertFalse(lessThanValidator.test(5, 3),
                      "LESS_THAN with larger actual"),
 
-               () -> assertTrue(betweenValidator.apply(5, Arrays.asList(1, 10)),
+               () -> assertTrue(betweenValidator.test(5, Arrays.asList(1, 10)),
                      "BETWEEN with value in range"),
-               () -> assertFalse(betweenValidator.apply(15, Arrays.asList(1, 10)),
+               () -> assertFalse(betweenValidator.test(15, Arrays.asList(1, 10)),
                      "BETWEEN with value outside range")
          );
       }

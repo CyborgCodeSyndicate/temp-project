@@ -93,7 +93,8 @@ class WebElementActionTest extends BaseUnitUITest {
       // When
       @SuppressWarnings("unchecked")
       List<SmartWebElement> result =
-            (List<SmartWebElement>) WebElementAction.FIND_ELEMENTS.performActionWebElement(mockDriver, mockElement, selector);
+            (List<SmartWebElement>) WebElementAction.FIND_ELEMENTS.performActionWebElement(mockDriver, mockElement,
+                  selector);
 
       // Then
       assertEquals(2, result.size());

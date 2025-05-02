@@ -1,10 +1,10 @@
 package com.bakery.project.data.creator;
 
+import com.bakery.project.data.extractions.CustomDataExtractor;
 import com.bakery.project.model.bakery.Order;
 import com.bakery.project.model.bakery.Seller;
 import com.theairebellion.zeus.framework.quest.QuestHolder;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
-import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
 import java.util.List;
 import org.openqa.selenium.NotFoundException;
 
@@ -33,7 +33,7 @@ public class DataCreationFunctions {
 
    public static Order createValidLateOrder() {
       SuperQuest superQuest = QuestHolder.get();
-      List<String> productList = superQuest.getStorage().get(DataExtractorsUi
+      List<String> productList = superQuest.getStorage().get(CustomDataExtractor
                   .responseBodyExtraction("?v-r=uidl",
                         "$..orderCard[?(@.fullName=='John Terry')].items[*].product.name", "for(;;);"),
             List.class);

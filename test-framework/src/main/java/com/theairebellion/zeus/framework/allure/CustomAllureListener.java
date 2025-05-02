@@ -159,6 +159,10 @@ public class CustomAllureListener extends AllureJunit5 {
       if (!STEP_STACK.get().isEmpty()) {
          String uuid = STEP_STACK.get().pop();
          Allure.getLifecycle().stopStep(uuid);
+
+         if (STEP_STACK.get().isEmpty()) {
+            STEP_STACK.remove();
+         }
       }
    }
 

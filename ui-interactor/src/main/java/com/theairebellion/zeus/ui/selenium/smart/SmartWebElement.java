@@ -6,6 +6,7 @@ import com.theairebellion.zeus.ui.selenium.decorators.WebElementDecorator;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElement;
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -32,10 +33,12 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  * exception handling, and support for Shadow DOM elements.
  *
  * <p>It integrates with Selenium while providing additional functionality such as smart waiting,
- * exception management, and Shadow DOM compatibility.</p>
+ * exception management, and Shadow DOM compatibility.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
+@SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", justification = "Constructor validates inputs properly "
+      + "and throwing exceptions is acceptable.")
 public class SmartWebElement extends WebElementDecorator {
 
    @Getter
@@ -51,6 +54,9 @@ public class SmartWebElement extends WebElementDecorator {
     */
    public SmartWebElement(WebElement original, WebDriver driver) {
       super(original);
+      if (driver == null) {
+         throw new IllegalArgumentException("driver must not be null");
+      }
       this.driver = driver;
       this.wait = new WebDriverWait(driver, Duration.ofSeconds(getUiConfig().waitDuration()));
    }
@@ -261,7 +267,8 @@ public class SmartWebElement extends WebElementDecorator {
    private <T> void waitWithoutFailure(Function<WebDriver, T> expectedConditions) {
       try {
          wait.until(expectedConditions);
-      } catch (Exception ignored) {
+      } catch (Exception ignore) {
+         //ignore wait failure
       }
    }
 
@@ -290,13 +297,14 @@ public class SmartWebElement extends WebElementDecorator {
       WebDriverWait customWait = new WebDriverWait(driver, Duration.ofSeconds(2));
       try {
          customWait.until(attributeValueChanged(attributeName, initialAttributeValue));
-      } catch (Exception ignored) {
+      } catch (Exception ignore) {
+         //ignore wait failure
       }
    }
 
 
    private ExpectedCondition<Boolean> attributeValueChanged(final String attributeName, final String initialValue) {
-      return driver -> {
+      return webDriver -> {
          String currentValue = getAttribute(attributeName);
          return !initialValue.equals(currentValue);
       };

@@ -66,7 +66,7 @@ public interface Modal {
     * Closes or dismisses the modal.
     *
     * <p>Typically performs an action such as clicking a close button or ESC key simulation,
-    * depending on the specific modal implementation.</p>
+    * depending on the specific modal implementation.
     */
    void close();
 

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 @DisplayName("LogApi Tests")
 class LogApiTest {
 
-   private static final String INSTANCE_FIELD = "INSTANCE";
+   private static final String INSTANCE_FIELD = "instance";
 
    @Test
    @DisplayName("All log methods should execute without exceptions")
@@ -41,7 +41,7 @@ class LogApiTest {
       getInstanceMethod.setAccessible(true);
 
       // Reset the INSTANCE field first
-      Field instanceField = LogApi.class.getDeclaredField("INSTANCE");
+      Field instanceField = LogApi.class.getDeclaredField("instance");
       instanceField.setAccessible(true);
 
       // Store the original instance
@@ -73,7 +73,7 @@ class LogApiTest {
       // We need reflection to access the private constructor
 
       // Reset the INSTANCE field first to force a new instance creation
-      Field instanceField = LogApi.class.getDeclaredField("INSTANCE");
+      Field instanceField = LogApi.class.getDeclaredField("instance");
       instanceField.setAccessible(true);
 
       // Store the original instance

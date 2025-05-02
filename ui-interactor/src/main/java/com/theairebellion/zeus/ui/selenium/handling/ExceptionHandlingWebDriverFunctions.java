@@ -18,6 +18,9 @@ import org.openqa.selenium.WebElement;
  */
 public class ExceptionHandlingWebDriverFunctions {
 
+   private ExceptionHandlingWebDriverFunctions() {
+   }
+
    /**
     * Handles {@link NoSuchElementException} by attempting to locate the element within iFrames.
     *
@@ -38,7 +41,7 @@ public class ExceptionHandlingWebDriverFunctions {
          throw new IllegalArgumentException("FIND_ELEMENT action requires a By locator.");
       }
 
-      WebElement foundElement = FrameHelper.findElementInIframes(driver, (By) args[0]);
+      WebElement foundElement = FrameHelper.searchElementInIframes(driver, (By) args[0]);
       if (foundElement != null) {
          return webElementAction.performActionWebDriver(driver, foundElement);
       }

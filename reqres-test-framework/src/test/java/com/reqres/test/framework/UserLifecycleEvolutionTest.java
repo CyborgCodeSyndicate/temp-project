@@ -86,8 +86,9 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
                assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
                assertTrue(createdUserResponse
-                     .getCreatedAt()
-                     .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                           .getCreatedAt()
+                           .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)),
+                     "CreatedAt date is incorrect!");
             })
             .requestAndValidate(
                   DELETE_USER
@@ -127,8 +128,9 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
                assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
                assertTrue(createdUserResponse
-                     .getCreatedAt()
-                     .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                           .getCreatedAt()
+                           .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)),
+                     "CreatedAt date is incorrect!");
             })
             .requestAndValidate(
                   DELETE_USER.withPathParam("id", 2),
@@ -152,8 +154,9 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
                assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
                assertTrue(createdUserResponse
-                     .getCreatedAt()
-                     .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                           .getCreatedAt()
+                           .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)),
+                     "CreatedAt date is incorrect!");
             })
             .requestAndValidate(
                   DELETE_USER.withPathParam("id", 2),
@@ -178,8 +181,9 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
                assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
                assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
                assertTrue(createdUserResponse
-                     .getCreatedAt()
-                     .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                           .getCreatedAt()
+                           .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)),
+                     "CreatedAt date is incorrect!");
             });
    }
 

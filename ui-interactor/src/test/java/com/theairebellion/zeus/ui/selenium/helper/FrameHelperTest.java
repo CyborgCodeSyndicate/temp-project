@@ -77,7 +77,7 @@ class FrameHelperTest extends BaseUnitUITest {
 
          staticMock.when(UiConfigHolder::getUiConfig).thenReturn(mockConfig);
          // Act
-         SmartWebElement result = FrameHelper.findElementInIframes(driver, locator);
+         SmartWebElement result = FrameHelper.findElementInIframes(driver, element);
 
          // Assert
          assertNotNull(result);
@@ -114,7 +114,7 @@ class FrameHelperTest extends BaseUnitUITest {
             SmartWebElement.class)) {
 
          // Act
-         SmartWebElement result = FrameHelper.findElementInIframes(driver, locator);
+         SmartWebElement result = FrameHelper.findElementInIframes(driver, element);
 
          // Assert
          assertNotNull(result);
@@ -153,7 +153,7 @@ class FrameHelperTest extends BaseUnitUITest {
                  SmartWebElement.class)) {
 
          // Act
-         SmartWebElement result = FrameHelper.findElementInIframes(driver, locator);
+         SmartWebElement result = FrameHelper.findElementInIframes(driver, frameElement);
 
          // Assert
          assertNull(result);
@@ -311,7 +311,7 @@ class FrameHelperTest extends BaseUnitUITest {
                  SmartWebElement.class)) {
 
          // Act
-         SmartWebElement result = FrameHelper.findElementInIframes(driver, locator);
+         SmartWebElement result = FrameHelper.findElementInIframes(driver, frameElement);
 
          // Assert
          assertNull(result);

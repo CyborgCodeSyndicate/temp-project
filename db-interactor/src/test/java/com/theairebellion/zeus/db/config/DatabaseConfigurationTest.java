@@ -166,7 +166,8 @@ class DatabaseConfigurationTest {
             // Same host
             Arguments.of(
                   DatabaseConfiguration.builder().dbType(mockDbType1).host(HOST).port(PORT).database(DATABASE).dbUser(USER).dbPassword(PASSWORD).build(),
-                  DatabaseConfiguration.builder().dbType(mockDbType1).host(HOST).port(PORT + 1).database(DATABASE).dbUser(USER).dbPassword(PASSWORD).build(),
+                  DatabaseConfiguration.builder().dbType(mockDbType1).host(HOST).port(
+                        PORT + 1).database(DATABASE).dbUser(USER).dbPassword(PASSWORD).build(),
                   "host", true
             )
       );

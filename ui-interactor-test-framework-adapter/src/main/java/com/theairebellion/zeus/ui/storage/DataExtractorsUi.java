@@ -1,7 +1,6 @@
 package com.theairebellion.zeus.ui.storage;
 
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import com.theairebellion.zeus.framework.storage.DataExtractorImpl;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
@@ -9,8 +8,6 @@ import com.theairebellion.zeus.ui.util.table.TableReflectionUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Utility class providing data extraction mechanisms for UI-related data storage and retrieval.
@@ -22,11 +19,13 @@ import java.util.regex.Pattern;
  *   <li>Retrieve specific table rows based on search criteria or index.</li>
  *   <li>Process and filter data for validation and assertions.</li>
  * </ul>
- * </p>
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
 public class DataExtractorsUi {
+
+   private DataExtractorsUi() {
+   }
 
    /**
     * Creates a {@link DataExtractor} to retrieve a value from a stored API response body using a JSONPath expression.
@@ -74,40 +73,12 @@ public class DataExtractorsUi {
       );
    }
 
-   //todo: javaDocs
-   public static <T> DataExtractor<T> responseBodyExtraction(String responsePrefix, String jsonPath,
-                                                             String jsonPrefix) {
-      return new DataExtractorImpl<>(
-            StorageKeysUi.UI,
-            StorageKeysUi.RESPONSES,
-            raw -> {
-               List<ApiResponse> responses = (List<ApiResponse>) raw;
-               List<ApiResponse> filteredResponses = responses.stream()
-                     .filter(
-                           response -> response.getUrl().contains(responsePrefix))
-                     .toList();
-
-               for (ApiResponse filteredResponse : filteredResponses) {
-                  String jsonBody = removeJsonPrefix(filteredResponse.getBody(), jsonPrefix);
-                  try {
-                     Object result = JsonPath.read(jsonBody, jsonPath);
-                     if (result instanceof List<?> list && list.isEmpty()) {
-                        continue;
-                     }
-                     return (T) result;
-                  } catch (PathNotFoundException ignored) {
-                  }
-               }
-               return null;
-            }
-      );
-   }
 
    /**
     * Creates a {@link DataExtractor} to retrieve a specific table row from storage based on search criteria.
     *
     * <p>This method searches stored table data for a row containing all specified indicator values.
-    * It compares row values case-insensitively after trimming whitespace.</p>
+    * It compares row values case-insensitively after trimming whitespace.
     *
     * @param key        The key used to retrieve the stored table data.
     * @param indicators The values used to search for a matching row.
@@ -160,15 +131,6 @@ public class DataExtractorsUi {
                return rows.get(index);
             }
       );
-   }
-
-   private static String removeJsonPrefix(String body, String jsonPrefix) {
-      Pattern dynamicPrefixPattern = Pattern.compile("^" + Pattern.quote(jsonPrefix));
-      Matcher matcher = dynamicPrefixPattern.matcher(body);
-      if (matcher.find()) {
-         return matcher.replaceFirst("");
-      }
-      return body;
    }
 
 }

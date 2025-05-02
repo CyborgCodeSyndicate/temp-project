@@ -27,5 +27,5 @@ public @interface InterceptRequests {
     *
     * @return An array of substrings representing parts of request URLs to intercept.
     */
-   String[] requestUrlSubStrings();
+   String[] requestUrlSubStrings() default {};
 }

@@ -17,6 +17,24 @@ import org.openqa.selenium.By;
  */
 public class LinkServiceImpl extends AbstractComponentService<LinkComponentType, Link> implements LinkService {
 
+   private static final String CLICK_WITH_TEXT = "Clicking link %s with text %s";
+   private static final String CLICK = "Clicking link %s";
+   private static final String CLICK_USING_LOCATOR = "Clicking link %s using locator %s";
+
+   private static final String DOUBLE_CLICK_WITH_TEXT = "Double-clicking link %s with text %s";
+   private static final String DOUBLE_CLICK = "Double-clicking link %s";
+   private static final String DOUBLE_CLICK_USING_LOCATOR = "Double-clicking link %s using locator %s";
+
+   private static final String CHECK_ENABLED_WITH_TEXT = "Checking if link %s is enabled with text %s";
+   private static final String CHECK_ENABLED = "Checking if link %s is enabled";
+   private static final String CHECK_ENABLED_USING_LOCATOR = "Checking if link %s is enabled using locator %s";
+
+   private static final String CHECK_VISIBLE_WITH_TEXT = "Checking if link %s is visible with text %s";
+   private static final String CHECK_VISIBLE = "Checking if link %s is visible";
+   private static final String CHECK_VISIBLE_USING_LOCATOR = "Checking if link %s is visible using locator %s";
+
+   private static final String INSERT_VALUES_IN_CELL = "Inserting values %s in cell for link %s";
+
    /**
     * Constructor initializing the LinkServiceImpl with a {@link SmartWebDriver} instance.
     *
@@ -47,7 +65,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
    @Override
    public <T extends ButtonComponentType> void click(final T componentType, SmartWebElement container,
                                                      String buttonText) {
-      LogUi.step("Clicking link " + componentType + " with text " + buttonText);
+      LogUi.step(String.format(CLICK_WITH_TEXT, componentType, buttonText));
       linkComponent((LinkComponentType) componentType).click(container, buttonText);
    }
 
@@ -59,7 +77,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> void click(final T componentType, final SmartWebElement container) {
-      LogUi.step("Clicking link " + componentType);
+      LogUi.step(String.format(CLICK, componentType));
       linkComponent((LinkComponentType) componentType).click(container);
    }
 
@@ -71,7 +89,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> void click(final T componentType, final String buttonText) {
-      LogUi.step("Clicking link " + componentType + " with text " + buttonText);
+      LogUi.step(String.format(CLICK_WITH_TEXT, componentType, buttonText));
       linkComponent((LinkComponentType) componentType).click(buttonText);
    }
 
@@ -83,7 +101,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> void click(final T componentType, final By buttonLocator) {
-      LogUi.step("Clicking link " + componentType + " using locator " + buttonLocator);
+      LogUi.step(String.format(CLICK_USING_LOCATOR, componentType, buttonLocator));
       linkComponent((LinkComponentType) componentType).click(buttonLocator);
    }
 
@@ -97,7 +115,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
    @Override
    public void doubleClick(final LinkComponentType componentType, final SmartWebElement container,
                            final String buttonText) {
-      LogUi.step("Double-clicking link " + componentType + " with text " + buttonText);
+      LogUi.step(String.format(DOUBLE_CLICK_WITH_TEXT, componentType, buttonText));
       linkComponent(componentType).doubleClick(container, buttonText);
    }
 
@@ -109,7 +127,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public void doubleClick(final LinkComponentType componentType, final SmartWebElement container) {
-      LogUi.step("Double-clicking link " + componentType);
+      LogUi.step(String.format(DOUBLE_CLICK, componentType));
       linkComponent(componentType).doubleClick(container);
    }
 
@@ -121,7 +139,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public void doubleClick(final LinkComponentType componentType, final String buttonText) {
-      LogUi.step("Double-clicking link " + componentType + " with text " + buttonText);
+      LogUi.step(String.format(DOUBLE_CLICK_WITH_TEXT, componentType, buttonText));
       linkComponent(componentType).doubleClick(buttonText);
    }
 
@@ -133,7 +151,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public void doubleClick(final LinkComponentType componentType, final By buttonLocator) {
-      LogUi.step("Double-clicking link " + componentType + " using locator " + buttonLocator);
+      LogUi.step(String.format(DOUBLE_CLICK_USING_LOCATOR, componentType, buttonLocator));
       linkComponent(componentType).doubleClick(buttonLocator);
    }
 
@@ -145,7 +163,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
    @Override
    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container,
                                                             final String buttonText) {
-      LogUi.step("Checking if link " + componentType + " is enabled with text " + buttonText);
+      LogUi.step(String.format(CHECK_ENABLED_WITH_TEXT, componentType, buttonText));
       return linkComponent((LinkComponentType) componentType).isEnabled(container, buttonText);
    }
 
@@ -158,7 +176,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container) {
-      LogUi.step("Checking if link " + componentType + " is enabled");
+      LogUi.step(String.format(CHECK_ENABLED, componentType));
       return linkComponent((LinkComponentType) componentType).isEnabled(container);
    }
 
@@ -171,7 +189,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final String buttonText) {
-      LogUi.step("Checking if link " + componentType + " is enabled with text " + buttonText);
+      LogUi.step(String.format(CHECK_ENABLED_WITH_TEXT, componentType, buttonText));
       return linkComponent((LinkComponentType) componentType).isEnabled(buttonText);
    }
 
@@ -184,7 +202,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final By buttonLocator) {
-      LogUi.step("Checking if link " + componentType + " is enabled using locator " + buttonLocator);
+      LogUi.step(String.format(CHECK_ENABLED_USING_LOCATOR, componentType, buttonLocator));
       return linkComponent((LinkComponentType) componentType).isEnabled(buttonLocator);
    }
 
@@ -199,7 +217,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
    @Override
    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container,
                                                             final String buttonText) {
-      LogUi.step("Checking if link " + componentType + " is visible with text " + buttonText);
+      LogUi.step(String.format(CHECK_VISIBLE_WITH_TEXT, componentType, buttonText));
       return linkComponent((LinkComponentType) componentType).isVisible(container, buttonText);
    }
 
@@ -212,7 +230,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container) {
-      LogUi.step("Checking if link " + componentType + " is visible");
+      LogUi.step(String.format(CHECK_VISIBLE, componentType));
       return linkComponent((LinkComponentType) componentType).isVisible(container);
    }
 
@@ -225,7 +243,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final String buttonText) {
-      LogUi.step("Checking if link " + componentType + " is visible with text " + buttonText);
+      LogUi.step(String.format(CHECK_VISIBLE_WITH_TEXT, componentType, buttonText));
       return linkComponent((LinkComponentType) componentType).isVisible(buttonText);
    }
 
@@ -238,7 +256,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
     */
    @Override
    public <T extends ButtonComponentType> boolean isVisible(final T componentType, final By buttonLocator) {
-      LogUi.step("Checking if link " + componentType + " is visible using locator " + buttonLocator);
+      LogUi.step(String.format(CHECK_VISIBLE_USING_LOCATOR, componentType, buttonLocator));
       return linkComponent((LinkComponentType) componentType).isVisible(buttonLocator);
    }
 
@@ -252,7 +270,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
    @Override
    public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
                               final String... values) {
-      LogUi.step("Inserting values " + String.join(", ", values) + " in cell for link " + componentType);
+      LogUi.step(String.format(INSERT_VALUES_IN_CELL, String.join(", ", values), componentType));
       linkComponent((LinkComponentType) componentType).clickElementInCell(cellElement);
    }
 

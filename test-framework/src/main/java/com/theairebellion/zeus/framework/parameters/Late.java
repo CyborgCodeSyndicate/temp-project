@@ -10,7 +10,7 @@ package com.theairebellion.zeus.framework.parameters;
  * but rather at a specific point during execution.
  *
  * <p>The generic type {@code T} represents the type of object that will be
- * lazily instantiated.</p>
+ * lazily instantiated.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

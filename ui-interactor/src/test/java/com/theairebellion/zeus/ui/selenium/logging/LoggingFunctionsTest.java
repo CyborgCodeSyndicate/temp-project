@@ -86,7 +86,8 @@ class LoggingFunctionsTest {
             locatorParserMock.when(() -> LocatorParser.extractLocator(args)).thenReturn(by);
 
             // Act
-            LoggingFunctions.logFindElementFromRootNoSuchElementException(driver, WebElementAction.FIND_ELEMENT, args, exception);
+            LoggingFunctions.logFindElementFromRootNoSuchElementException(driver, WebElementAction.FIND_ELEMENT, args,
+                  exception);
 
             // Assert - use less specific verification
             logUIMock.verify(() -> LogUi.extended(
@@ -115,7 +116,8 @@ class LoggingFunctionsTest {
             locatorParserMock.when(() -> LocatorParser.extractLocator(args)).thenReturn(null);
 
             // Act
-            LoggingFunctions.logFindElementFromRootNoSuchElementException(driver, WebElementAction.FIND_ELEMENT, args, exception);
+            LoggingFunctions.logFindElementFromRootNoSuchElementException(driver, WebElementAction.FIND_ELEMENT, args,
+                  exception);
 
             // Assert - use less specific verification
             logUIMock.verify(() -> LogUi.extended(
@@ -150,7 +152,8 @@ class LoggingFunctionsTest {
             locatorParserMock.when(() -> LocatorParser.extractLocator(args)).thenReturn(by);
 
             // Act
-            LoggingFunctions.logNoSuchElementException(nonElementTarget, WebElementAction.FIND_ELEMENT, args, exception);
+            LoggingFunctions.logNoSuchElementException(nonElementTarget, WebElementAction.FIND_ELEMENT, args,
+                  exception);
 
             // Assert - use less specific verification
             logUIMock.verify(() -> LogUi.extended(
@@ -322,7 +325,8 @@ class LoggingFunctionsTest {
             LoggingFunctions.logElementNotInteractableException(nonElementTarget, WebElementAction.CLICK, args, e);
 
             // Assert
-            logUIMock.verify(() -> LogUi.extended(eq("Exception: [{}] thrown on target: [{}({})] from method: [{}] called with argument types: [{}]"),
+            logUIMock.verify(() -> LogUi.extended(
+                  eq("Exception: [{}] thrown on target: [{}({})] from method: [{}] called with argument types: [{}]"),
                   eq("ElementNotInteractableException"),
                   eq("String"),
                   eq("Not an element"),
@@ -353,7 +357,8 @@ class LoggingFunctionsTest {
 
             // Assert
             logUIMock.verify(() -> LogUi.extended(eq("Additional Info for the problem: {}"),
-                  contains("Element [div] with text [Test Element] is not interactable when attempting to perform click()")));
+                  contains(
+                        "Element [div] with text [Test Element] is not interactable when attempting to perform click()")));
          }
       }
    }
@@ -479,7 +484,8 @@ class LoggingFunctionsTest {
 
             // Assert
             logUIMock.verify(() -> LogUi.extended(eq("Additional Info for the problem: {}"),
-                  contains("Timeout while waiting for element to meet condition: [click]. Locator: [By.id: testId]. No specific timeout set.")));
+                  contains(
+                        "Timeout while waiting for element to meet condition: [click]. Locator: [By.id: testId]. No specific timeout set.")));
          }
       }
 
@@ -502,7 +508,8 @@ class LoggingFunctionsTest {
 
             // Assert
             logUIMock.verify(() -> LogUi.extended(eq("Additional Info for the problem: {}"),
-                  contains("Timeout while waiting for element to meet condition: [click]. Locator: [By.id: testId]. Waited for 5000 milliseconds.")));
+                  contains(
+                        "Timeout while waiting for element to meet condition: [click]. Locator: [By.id: testId]. Waited for 5000 milliseconds.")));
          }
       }
 

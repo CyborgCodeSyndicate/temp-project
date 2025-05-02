@@ -18,7 +18,7 @@ import lombok.Setter;
  */
 @Getter
 @Builder
-public class Assertion {
+public final class Assertion {
 
    /**
     * The subject of the assertion, specifying what is being validated.

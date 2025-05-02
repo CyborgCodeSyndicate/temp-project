@@ -36,7 +36,7 @@ public class CellLocator {
    /**
     * The locator used to find the table cell.
     */
-   private By cellLocator;
+   private By locator;
 
    /**
     * The locator used to extract the text content of the table cell.

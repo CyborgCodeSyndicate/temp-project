@@ -6,7 +6,6 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -141,7 +140,7 @@ public final class SmartFinder {
    public static List<SmartWebElement> findElementsNoWrap(WebDriver driver, By by) {
       return driver.findElements(by).stream()
             .map(elem -> new SmartWebElement(elem, driver))
-            .collect(Collectors.toList()); // or .toList() if using Java 16+
+            .toList();
    }
 
    /**
@@ -154,7 +153,7 @@ public final class SmartFinder {
    public static List<SmartWebElement> findElementsNoWrap(SmartWebElement smartElem, By by) {
       return smartElem.getOriginal().findElements(by).stream()
             .map(e -> new SmartWebElement(e, smartElem.getDriver()))
-            .collect(Collectors.toList());
+            .toList();
    }
 
    /**
@@ -291,7 +290,7 @@ public final class SmartFinder {
    private static List<SmartWebElement> toSmartWebElements(List<WebElement> elements, WebDriver driver) {
       return elements.stream()
             .map(e -> new SmartWebElement(e, driver))
-            .collect(Collectors.toList());
+            .toList();
    }
 
 }

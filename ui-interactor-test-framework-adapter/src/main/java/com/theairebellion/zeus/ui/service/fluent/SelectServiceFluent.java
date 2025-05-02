@@ -26,8 +26,10 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("java:S5960")
 public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insertion {
+
+   private static final String VALIDATING_AVAILABLE_OPTIONS = "Validating Available Options";
 
    private final SelectService selectService;
    private final T uiServiceFluent;
@@ -146,12 +148,12 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
       if (soft) {
          return (T) uiServiceFluent.validate(
                softAssertions -> softAssertions.assertThat(availableOptions)
-                     .as("Validating Available Options").containsAll(Arrays.asList(expectedValues))
+                     .as(VALIDATING_AVAILABLE_OPTIONS).containsAll(Arrays.asList(expectedValues))
          );
       } else {
          return (T) uiServiceFluent.validate(
                () -> Assertions.assertThat(availableOptions)
-                     .as("Validating Available Options").containsAll(Arrays.asList(expectedValues))
+                     .as(VALIDATING_AVAILABLE_OPTIONS).containsAll(Arrays.asList(expectedValues))
          );
       }
    }
@@ -190,12 +192,12 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
       if (soft) {
          return (T) uiServiceFluent.validate(
                softAssertions -> softAssertions.assertThat(availableOptions.size())
-                     .as("Validating Available Options").isEqualTo(expectedValuesCount)
+                     .as(VALIDATING_AVAILABLE_OPTIONS).isEqualTo(expectedValuesCount)
          );
       } else {
          return (T) uiServiceFluent.validate(
                () -> Assertions.assertThat(availableOptions.size())
-                     .as("Validating Available Options").isEqualTo(expectedValuesCount)
+                     .as(VALIDATING_AVAILABLE_OPTIONS).isEqualTo(expectedValuesCount)
          );
       }
    }

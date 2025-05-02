@@ -22,7 +22,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *            This type parameter ensures that method chaining correctly returns the calling instance type.
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("java:S5960")
 public class ButtonServiceFluent<T extends UiServiceFluent<?>> {
 
    private final ButtonService buttonService;

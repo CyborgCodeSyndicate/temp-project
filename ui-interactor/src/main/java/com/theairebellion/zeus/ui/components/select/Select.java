@@ -16,7 +16,7 @@ import org.openqa.selenium.By;
  *
  * <p>Usage ranges from simple dropdown selects to more complex multi-select scenarios.
  * The {@code selectOptions()} methods allow specifying multiple values or applying a
- * {@link Strategy} for custom selection logic.</p>
+ * {@link Strategy} for custom selection logic.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

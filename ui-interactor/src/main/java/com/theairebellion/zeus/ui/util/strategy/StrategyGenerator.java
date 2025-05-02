@@ -17,6 +17,9 @@ import java.util.Random;
  */
 public class StrategyGenerator {
 
+   private static final Random RANDOM = new Random(); // shared instance
+
+
    private StrategyGenerator() {
    }
 
@@ -29,7 +32,7 @@ public class StrategyGenerator {
     */
    public static SmartWebElement getRandomElementFromElements(List<SmartWebElement> elements) {
       validateInput(elements);
-      return elements.get(new Random().nextInt(elements.size()));
+      return elements.get(RANDOM.nextInt(elements.size()));
    }
 
    /**

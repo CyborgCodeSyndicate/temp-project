@@ -15,7 +15,7 @@ import org.openqa.selenium.By;
  * {@link Tab} instances.
  *
  * <p>This class references {@link TabComponentType} to determine the specific tab component,
- * ensuring consistent handling of tab-based elements across different UI designs.</p>
+ * ensuring consistent handling of tab-based elements across different UI designs.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

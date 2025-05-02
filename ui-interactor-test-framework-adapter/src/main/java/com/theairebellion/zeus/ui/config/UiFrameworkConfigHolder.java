@@ -12,6 +12,9 @@ import org.aeonbits.owner.ConfigCache;
  */
 public class UiFrameworkConfigHolder {
 
+   private UiFrameworkConfigHolder() {
+   }
+
    /**
     * Cached instance of the UI framework configuration.
     */

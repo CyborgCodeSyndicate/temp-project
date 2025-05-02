@@ -47,14 +47,17 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
                   CREATE_USER,
                   userSenior,
                   Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
-                  Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
-                  Assertion.builder().target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build()
+                  Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true)
+                        .build(),
+                  Assertion.builder().target(BODY).key("job").type(IS).expected("Senior Leader").soft(true)
+                        .build()
             );
    }
 
    @Test
    @Regression
-   public void testCreateTwoUsersImproved(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
+   public void testCreateTwoUsersImproved(Quest quest, @Craft(model = USER_LEADER) User userLeader,
+         @Craft(model = USER_SENIOR) Late<User> userSenior) {
       quest.enters(OLYMPYS)
             .requestAndValidate(
                   CREATE_USER,
@@ -66,14 +69,17 @@ public class CreateTwoUsersEvolutionTest extends BaseTestSequential {
                   CREATE_USER,
                   userSenior.join(),
                   Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build(),
-                  Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true).build(),
-                  Assertion.builder().target(BODY).key("job").type(IS).expected("Senior Leader").soft(true).build()
+                  Assertion.builder().target(BODY).key("name").type(IS).expected("Mr. Morpheus").soft(true)
+                        .build(),
+                  Assertion.builder().target(BODY).key("job").type(IS).expected("Senior Leader").soft(true)
+                        .build()
             );
    }
 
    @Test
    @Regression
-   public void testCreateTwoUsersImprovedWithCustomService(Quest quest, @Craft(model = USER_LEADER) User userLeader, @Craft(model = USER_SENIOR) Late<User> userSenior) {
+   public void testCreateTwoUsersImprovedWithCustomService(Quest quest, @Craft(model = USER_LEADER) User userLeader,
+         @Craft(model = USER_SENIOR) Late<User> userSenior) {
       quest.enters(GONDOR)
             .createLeaderUserAndValidateResponse(userLeader)
             .createSeniorUserAndValidateResponse(userSenior.join());

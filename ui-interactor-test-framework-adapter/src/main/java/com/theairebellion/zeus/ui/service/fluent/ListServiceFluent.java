@@ -24,9 +24,10 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("java:S5960")
 public class ListServiceFluent<T extends UiServiceFluent<?>> implements Insertion {
 
+   private static final String VALIDATING_SELECTED_ITEMS = "Validating Selected Items";
    private final ItemListService itemListService;
    private final T uiServiceFluent;
    private final Storage storage;
@@ -651,10 +652,10 @@ public class ListServiceFluent<T extends UiServiceFluent<?>> implements Insertio
          return (T) uiServiceFluent.validate(
                softAssertions -> {
                   if (shouldBeSelected) {
-                     softAssertions.assertThat(selectedItems).as("Validating Selected Items")
+                     softAssertions.assertThat(selectedItems).as(VALIDATING_SELECTED_ITEMS)
                            .containsAll(Arrays.asList(expectedValues));
                   } else {
-                     softAssertions.assertThat(selectedItems).as("Validating Selected Items")
+                     softAssertions.assertThat(selectedItems).as(VALIDATING_SELECTED_ITEMS)
                            .doesNotContainAnyElementsOf(Arrays.asList(expectedValues));
                   }
                }
@@ -663,10 +664,10 @@ public class ListServiceFluent<T extends UiServiceFluent<?>> implements Insertio
          return (T) uiServiceFluent.validate(
                () -> {
                   if (shouldBeSelected) {
-                     Assertions.assertThat(selectedItems).as("Validating Selected Items")
+                     Assertions.assertThat(selectedItems).as(VALIDATING_SELECTED_ITEMS)
                            .containsAll(Arrays.asList(expectedValues));
                   } else {
-                     Assertions.assertThat(selectedItems).as("Validating Selected Items")
+                     Assertions.assertThat(selectedItems).as(VALIDATING_SELECTED_ITEMS)
                            .doesNotContainAnyElementsOf(Arrays.asList(expectedValues));
                   }
                }

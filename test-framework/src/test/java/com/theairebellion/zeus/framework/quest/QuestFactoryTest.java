@@ -5,7 +5,6 @@ import com.theairebellion.zeus.framework.chain.FluentServiceDecorator;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.mock.MockFluentService;
-import com.theairebellion.zeus.framework.quest.mock.MockFluentServiceDecorator;
 import java.lang.reflect.Field;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -53,7 +52,7 @@ class QuestFactoryTest {
       factoryField.set(questFactory, decoratorsFactory);
 
       when(decoratorsFactory.decorate(mockFluentService, FluentServiceDecorator.class))
-            .thenAnswer(invocation -> new MockFluentServiceDecorator(mockFluentService));
+            .thenAnswer(invocation -> new FluentServiceDecorator(mockFluentService));
 
       when(decoratorsFactory.decorate(any(), eq(SuperQuest.class)))
             .thenAnswer(invocation -> new SuperQuest(invocation.getArgument(0)));

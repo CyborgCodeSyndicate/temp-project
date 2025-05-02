@@ -53,7 +53,7 @@ public class BakeryQuestPreconditionFunctions {
                         .target(QUERY_RESULT).key(DbResponsesJsonPaths.PASSWORD.getJsonPath(0))
                         .type(EQUALS_IGNORE_CASE).expected(seller.getPassword()).soft(true)
                         .build()
-         );
+            );
    }
 
    public static void validSellerSetup(SuperQuest quest, Late<Seller> seller) {

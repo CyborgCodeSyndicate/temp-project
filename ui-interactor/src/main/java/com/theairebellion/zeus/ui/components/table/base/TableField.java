@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
  * to set a value for a specific table column.
  *
  * <p>Primarily used for reading, writing, and updating table data within
- * the {@code Table} and {@code TableService} implementations.</p>
+ * the {@code Table} and {@code TableService} implementations.
  *
  * <p>The row model type is represented by {@code T}, which defines the structure of a table row.
  * The type {@code P} represents the field type being set within the table row model.

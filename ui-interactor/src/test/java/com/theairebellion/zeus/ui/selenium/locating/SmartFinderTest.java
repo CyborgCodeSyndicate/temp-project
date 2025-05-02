@@ -170,7 +170,8 @@ class SmartFinderTest extends BaseUnitUITest {
 
          try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
             shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(true);
-            shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by)).thenReturn(shadowElement);
+            shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by))
+                  .thenReturn(shadowElement);
 
             // Act
             SmartWebElement result = SmartFinder.findElementWithShadowRootDriver(smartDriver, by, waitConsumer);
@@ -192,7 +193,8 @@ class SmartFinderTest extends BaseUnitUITest {
 
          try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
             shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(true);
-            shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by, waitTime)).thenReturn(shadowElement);
+            shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by, waitTime))
+                  .thenReturn(shadowElement);
 
             // Act
             SmartWebElement result =
@@ -258,7 +260,8 @@ class SmartFinderTest extends BaseUnitUITest {
 
          try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
             shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartElement)).thenReturn(true);
-            shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartElement, by)).thenReturn(shadowElement);
+            shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartElement, by))
+                  .thenReturn(shadowElement);
 
             // Act
             SmartWebElement result = SmartFinder.findElementWithShadowRootElement(smartElement, by, waitConsumer);
@@ -426,7 +429,8 @@ class SmartFinderTest extends BaseUnitUITest {
 
          try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
             shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(true);
-            shadowDomUtils.when(() -> ShadowDomUtils.findElementsInShadowRoots(smartDriver, by)).thenReturn(shadowElements);
+            shadowDomUtils.when(() -> ShadowDomUtils.findElementsInShadowRoots(smartDriver, by))
+                  .thenReturn(shadowElements);
 
             // Act
             List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootDriver(smartDriver, by, waitConsumer);
@@ -520,7 +524,8 @@ class SmartFinderTest extends BaseUnitUITest {
 
          try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
             shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartElement)).thenReturn(true);
-            shadowDomUtils.when(() -> ShadowDomUtils.findElementsInShadowRoots(smartElement, by)).thenReturn(shadowElements);
+            shadowDomUtils.when(() -> ShadowDomUtils.findElementsInShadowRoots(smartElement, by))
+                  .thenReturn(shadowElements);
 
             // Act
             List<SmartWebElement> results =
@@ -567,6 +572,8 @@ class SmartFinderTest extends BaseUnitUITest {
          // Arrange
          ArgumentCaptor<Function<WebDriver, ?>> captor = ArgumentCaptor.forClass(Function.class);
          Consumer<Function<WebDriver, ?>> mockConsumer = mock(Consumer.class);
+         lenient().when(driver.findElement(by)).thenReturn(webElement);
+
 
          // Act
          SmartFinder.findElementNormally(driver, by, mockConsumer);

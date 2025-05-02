@@ -327,10 +327,11 @@ class SelectServiceTest extends BaseUnitUITest {
       @DisplayName("getDefaultType returns null when exception occurs")
       void getDefaultTypeWithException() throws Exception {
          // Given - ReflectionUtil throws exception when called
-         reflectionUtilMock.when(() -> com.theairebellion.zeus.util.reflections.ReflectionUtil.findEnumImplementationsOfInterface(
-                     eq(SelectComponentType.class),
-                     anyString(),
-                     anyString()))
+         reflectionUtilMock.when(
+                     () -> com.theairebellion.zeus.util.reflections.ReflectionUtil.findEnumImplementationsOfInterface(
+                           eq(SelectComponentType.class),
+                           anyString(),
+                           anyString()))
                .thenThrow(new RuntimeException("Test exception"));
 
          // When - access private method via reflection

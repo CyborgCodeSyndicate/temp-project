@@ -109,42 +109,48 @@ public class WebDriverEventListener implements WebDriverListener {
     */
    private static boolean matchesLogCriteria(final ExceptionLogging log, final Object target, final Method method,
                                              final Object[] args, final Throwable cause) {
-      if (!log.getTargetClass().isAssignableFrom(target.getClass())) {
-         return false;
-      }
+      return isTargetValid(log, target)
+            && isMethodValid(log, method)
+            && isCauseValid(log, cause)
+            && areArgumentsCompatible(method, args);
+   }
 
-      if (!log.getAction().getMethodName().equals(method.getName())) {
-         return false;
-      }
+   private static boolean isTargetValid(ExceptionLogging log, Object target) {
+      return log.getTargetClass().isAssignableFrom(target.getClass());
+   }
 
-      if (!log.getExceptionLoggingMap().containsKey(cause.getClass())) {
-         return false;
-      }
+   private static boolean isMethodValid(ExceptionLogging log, Method method) {
+      return log.getAction().getMethodName().equals(method.getName());
+   }
 
+   private static boolean isCauseValid(ExceptionLogging log, Throwable cause) {
+      return log.getExceptionLoggingMap().containsKey(cause.getClass());
+   }
+
+   private static boolean areArgumentsCompatible(Method method, Object[] args) {
       Class<?>[] paramTypes = method.getParameterTypes();
-      Class<?>[] argTypes =
-            Arrays.stream(args).map(arg -> arg == null ? null : arg.getClass()).toArray(Class<?>[]::new);
+      Class<?>[] argTypes = Arrays.stream(args)
+            .map(arg -> arg == null ? null : arg.getClass())
+            .toArray(Class<?>[]::new);
 
       if (paramTypes.length != argTypes.length) {
          return false;
       }
 
       for (int i = 0; i < paramTypes.length; i++) {
-         Class<?> paramType = paramTypes[i];
-         Class<?> argType = argTypes[i];
-
-         if (argType == null) {
-            if (paramType.isPrimitive()) {
-               return false;
-            }
-         } else {
-            if (!paramType.isAssignableFrom(argType)) {
-               return false;
-            }
+         if (!isArgumentAssignable(paramTypes[i], argTypes[i])) {
+            return false;
          }
       }
 
       return true;
+   }
+
+   private static boolean isArgumentAssignable(Class<?> paramType, Class<?> argType) {
+      if (argType == null) {
+         return !paramType.isPrimitive();
+      }
+      return paramType.isAssignableFrom(argType);
    }
 
 }

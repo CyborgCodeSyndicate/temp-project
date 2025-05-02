@@ -361,8 +361,8 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
       private final List<SmartWebElement> rows;
 
       TestTableImpl(SmartWebDriver driver, TableServiceRegistry registry,
-                    TableLocators locators, SmartWebElement container,
-                    List<SmartWebElement> rows) {
+            TableLocators locators, SmartWebElement container,
+            List<SmartWebElement> rows) {
          super(driver, registry);
          this.locators = locators;
          this.container = container;
@@ -686,7 +686,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
          CellInsertionComponent component = mock(CellInsertionComponent.class);
          when(cellLocator.getCellInsertionComponent()).thenReturn(component);
          when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-         when(cellLocator.getCellLocator()).thenReturn(By.id("cell"));
+         when(cellLocator.getLocator()).thenReturn(By.id("cell"));
          when(component.getType()).thenReturn((Class) ComponentType.class);
          when(component.getComponentType()).thenReturn("TEST");
 
@@ -737,7 +737,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
          // Setup for custom function with abstract class
          when(cellLocator.getCellInsertionComponent()).thenReturn(null);
          when(cellLocator.getCustomCellInsertion()).thenReturn((Class) TrulyProblematicFunction.class);
-         when(cellLocator.getCellLocator()).thenReturn(By.id("cell"));
+         when(cellLocator.getLocator()).thenReturn(By.id("cell"));
 
          // Direct exception handling approach
          try {
@@ -1110,7 +1110,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
          SmartWebElement cellElement = mock(SmartWebElement.class);
          SmartWebElement textElement = mock(SmartWebElement.class);
 
-         when(cellLocator.getCellLocator()).thenReturn(locator);
+         when(cellLocator.getLocator()).thenReturn(locator);
          when(cellLocator.getCellTextLocator()).thenReturn(textLocator);
          when(cellLocator.getFieldName()).thenReturn("dummyField");
          when(cellLocator.isCollection()).thenReturn(false);
@@ -1149,7 +1149,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
          cellElements.add(cell1);
          cellElements.add(cell2);
 
-         when(listLocator.getCellLocator()).thenReturn(listLocatorBy);
+         when(listLocator.getLocator()).thenReturn(listLocatorBy);
          when(listLocator.getCellTextLocator()).thenReturn(textLocator);
          when(listLocator.getFieldName()).thenReturn("cells");
          when(listLocator.isCollection()).thenReturn(true);
@@ -1184,7 +1184,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
          By textLocator = By.className("text");
          SmartWebElement textElement = mock(SmartWebElement.class);
 
-         when(directTextLocator.getCellLocator()).thenReturn(null);
+         when(directTextLocator.getLocator()).thenReturn(null);
          when(directTextLocator.getCellTextLocator()).thenReturn(textLocator);
          when(directTextLocator.getFieldName()).thenReturn("dummyField");
          when(directTextLocator.isCollection()).thenReturn(false);
@@ -1486,7 +1486,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
       CellInsertionComponent component = mock(CellInsertionComponent.class);
       when(cellLocator.getCellInsertionComponent()).thenReturn(component);
       when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-      when(cellLocator.getCellLocator()).thenReturn(By.id("cell"));
+      when(cellLocator.getLocator()).thenReturn(By.id("cell"));
 
       // Empty cells list
       when(rowElement.findSmartElements(any(By.class))).thenReturn(Collections.emptyList());
@@ -1523,7 +1523,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
       CellInsertionComponent component = mock(CellInsertionComponent.class);
       when(cellLocator.getCellInsertionComponent()).thenReturn(component);
       when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-      when(cellLocator.getCellLocator()).thenReturn(By.id("cell"));
+      when(cellLocator.getLocator()).thenReturn(By.id("cell"));
 
       // Create a table without registry
       TestTableImpl noRegistryTable = new TestTableImpl(driver, null, locators, container, rows);
@@ -1560,7 +1560,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
       CellInsertionComponent component = mock(CellInsertionComponent.class);
       when(cellLocator.getCellInsertionComponent()).thenReturn(component);
       when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-      when(cellLocator.getCellLocator()).thenReturn(By.id("cell"));
+      when(cellLocator.getLocator()).thenReturn(By.id("cell"));
       when(component.getType()).thenReturn((Class) ComponentType.class);
       when(component.getComponentType()).thenReturn("TEST");
 
@@ -1945,7 +1945,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
       SmartWebElement textElement = mock(SmartWebElement.class);
 
       // Configure mocks
-      when(cellLocator.getCellLocator()).thenReturn(By.className("cell"));
+      when(cellLocator.getLocator()).thenReturn(By.className("cell"));
       when(cellLocator.getCellTextLocator()).thenReturn(By.className("text"));
       when(cellLocator.getFieldName()).thenReturn("dummyField");
       when(cellLocator.isCollection()).thenReturn(false);
@@ -1982,7 +1982,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
       List<SmartWebElement> cellsList = Arrays.asList(cell1, cell2);
 
       // Configure mocks
-      when(cellLocator.getCellLocator()).thenReturn(By.className("cells"));
+      when(cellLocator.getLocator()).thenReturn(By.className("cells"));
       when(cellLocator.getCellTextLocator()).thenReturn(By.className("text"));
       when(cellLocator.getFieldName()).thenReturn("cells");
       when(cellLocator.isCollection()).thenReturn(true);
@@ -2114,7 +2114,7 @@ class TableImplConsolidatedTest extends BaseUnitUITest {
       assertNotNull(basicResult);
       assertEquals("dummyField", basicResult.getFieldName());
       assertEquals("dummySection", basicResult.getTableSection());
-      assertNotNull(basicResult.getCellLocator());
+      assertNotNull(basicResult.getLocator());
       assertNotNull(basicResult.getCellTextLocator());
       assertNotNull(basicResult.getHeaderCellLocator());
       assertNotNull(basicResult.getCellInsertionComponent()); // This should have a CellInsertion component

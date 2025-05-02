@@ -289,7 +289,8 @@ class AlertServiceImplTest {
             service.getValue(mockAlertComponentType, nullContainer);
 
             // Verify delegation happened even with null container
-            factoryMock.verify(() -> ComponentFactory.getAlertComponent(eq(mockAlertComponentType), eq(driver)), times(1));
+            factoryMock.verify(() -> ComponentFactory.getAlertComponent(eq(mockAlertComponentType), eq(driver)),
+                  times(1));
          } catch (Exception e) {
             // Don't fail if component implementation throws NPE - that's not the service's responsibility
          }

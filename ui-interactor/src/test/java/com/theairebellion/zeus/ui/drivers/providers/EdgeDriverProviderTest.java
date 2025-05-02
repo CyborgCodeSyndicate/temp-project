@@ -111,7 +111,8 @@ class EdgeDriverProviderTest {
       provider.applyHeadlessArguments(optionsMock);
 
       // Then the expected arguments should be added
-      verify(optionsMock).addArguments("--headless", "window-size=1920x1080", "--allow-insecure-localhost", "--disable-dev-shm-usage");
+      verify(optionsMock).addArguments("--headless", "window-size=1920x1080", "--allow-insecure-localhost",
+            "--disable-dev-shm-usage");
    }
 
    @Test

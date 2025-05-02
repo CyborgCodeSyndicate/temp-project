@@ -14,10 +14,10 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  *
  * <p>Classes implementing this interface will typically rely on Selenium-based operations for
  * interacting with UI elements, ensuring consistent modal handling regardless of application
- * structure.</p>
+ * structure.
  *
  * <p>This interface is suitable for a wide range of modal types and styles, from simple alerts
- * to more complex dialogs with multiple buttons and sections.</p>
+ * to more complex dialogs with multiple buttons and sections.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

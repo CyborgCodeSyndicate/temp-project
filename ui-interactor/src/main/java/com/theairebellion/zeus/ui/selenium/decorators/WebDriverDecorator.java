@@ -28,7 +28,7 @@ public abstract class WebDriverDecorator implements WebDriver {
     *
     * @param original The WebDriver instance to be decorated.
     */
-   public WebDriverDecorator(WebDriver original) {
+   protected WebDriverDecorator(WebDriver original) {
       this.original = original;
    }
 }

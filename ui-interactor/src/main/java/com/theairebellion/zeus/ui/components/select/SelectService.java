@@ -18,11 +18,11 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  *
  * <p>Classes implementing this interface typically leverage Selenium-based approaches
  * for identifying containers (via {@link SmartWebElement}) or using direct locators
- * (via {@link By}), ensuring robust and flexible automation across various UI designs.</p>
+ * (via {@link By}), ensuring robust and flexible automation across various UI designs.
  *
  * <p>This interface also extends the {@link Insertion}
  * contract, thereby supporting scenarios where select components are part of
- * automated data entry flows.</p>
+ * automated data entry flows.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

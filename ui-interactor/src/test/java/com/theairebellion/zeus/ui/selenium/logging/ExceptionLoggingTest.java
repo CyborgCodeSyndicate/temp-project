@@ -187,7 +187,7 @@ class ExceptionLoggingTest {
     * Helper method to verify that a FourConsumer is a method reference to the expected method
     */
    private void verifyMethodReference(FourConsumer<Object, WebElementAction, Object[], InvocationTargetException> consumer,
-                                      String expectedMethodName) {
+         String expectedMethodName) {
       try {
          // Use reflection to get the method name from the lambda
          Method[] methods = LoggingFunctions.class.getDeclaredMethods();

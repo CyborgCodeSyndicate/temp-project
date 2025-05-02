@@ -11,7 +11,7 @@ import static com.bakery.project.preconditions.BakeryQuestPreconditionFunctions.
 import static com.bakery.project.preconditions.BakeryQuestPreconditionFunctions.validOrderSetup;
 import static com.bakery.project.preconditions.BakeryQuestPreconditionFunctions.validSellerSetup;
 
-public enum BakeryQuestPreconditions implements PreQuestJourney {
+public enum BakeryQuestPreconditions implements PreQuestJourney<BakeryQuestPreconditions> {
 
    SELLER_PRECONDITION((quest, objects) -> validSellerSetup(quest, (Seller) objects[0])),
    SELLER_PRECONDITION_LATE((quest, objects) -> validSellerSetup(quest, (Late<Seller>) objects[0])),
@@ -50,7 +50,7 @@ public enum BakeryQuestPreconditions implements PreQuestJourney {
 
 
    @Override
-   public Enum<?> enumImpl() {
+   public BakeryQuestPreconditions enumImpl() {
       return this;
    }
 

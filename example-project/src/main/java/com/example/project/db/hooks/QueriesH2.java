@@ -2,7 +2,7 @@ package com.example.project.db.hooks;
 
 import com.theairebellion.zeus.db.query.DbQuery;
 
-public enum QueriesH2 implements DbQuery {
+public enum QueriesH2 implements DbQuery<QueriesH2> {
    QUERY_H2("fdsfsd"),
    CREATE_TABLE_ORDERS(
          "CREATE TABLE orders ("
@@ -22,14 +22,14 @@ public enum QueriesH2 implements DbQuery {
                + ")"
    ),
    INSERT_ORDERS(
-         "INSERT INTO orders (id, customerName, customerDetails, phoneNumber, location, product) VALUES "
-               + "(1, 'John Terry', 'Address', '+1-555-7777', 'Bakery', 'Strawberry Bun'), "
-               + "(2, 'Petar Terry', 'Address', '+1-222-7778', 'Store', 'Strawberry Bun')"
+         "INSERT INTO orders (id, customerName, customerDetails, phoneNumber, location, product) VALUES " +
+               "(1, 'John Terry', 'Address', '+1-555-7777', 'Bakery', 'Strawberry Bun'), " +
+               "(2, 'Petar Terry', 'Address', '+1-222-7778', 'Store', 'Strawberry Bun')"
    ),
    INSERT_SELLERS(
-         "INSERT INTO sellers (id, email, password) VALUES "
-               + "(1, 'barista@vaadin.com', 'barista'), "
-               + "(2, 'admin@vaadin.com', 'admin')"
+         "INSERT INTO sellers (id, email, password) VALUES " +
+               "(1, 'barista@vaadin.com', 'barista'), " +
+               "(2, 'admin@vaadin.com', 'admin')"
    );
 
    private final String query;
@@ -47,7 +47,7 @@ public enum QueriesH2 implements DbQuery {
 
 
    @Override
-   public Enum<?> enumImpl() {
+   public QueriesH2 enumImpl() {
       return this;
    }
 }

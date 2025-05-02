@@ -49,7 +49,7 @@ public class FluentService implements FluentChain {
     * @return The current {@code FluentService} instance for method chaining.
     */
    protected <T> FluentService retryUntil(RetryCondition<T> retryCondition, Duration maxWait,
-                                          Duration retryInterval, Object service) {
+         Duration retryInterval, Object service) {
       RetryUtils.retryUntil(maxWait, retryInterval, () -> retryCondition.function().apply(service),
             retryCondition.condition());
       return this;
@@ -72,6 +72,7 @@ public class FluentService implements FluentChain {
     *
     * @param assertionResults The list of assertion results to be validated.
     */
+   @SuppressWarnings("java:S5960")
    protected void validation(List<AssertionResult<Object>> assertionResults) {
       assertionResults.forEach(assertionResult -> {
          String message = assertionResult.toString();
@@ -98,7 +99,7 @@ public class FluentService implements FluentChain {
     * <p>This method can be overridden by subclasses to provide custom setup logic.
     */
    protected void postQuestSetupInitialization() {
-
+      //can override for specific services
    }
 
 }

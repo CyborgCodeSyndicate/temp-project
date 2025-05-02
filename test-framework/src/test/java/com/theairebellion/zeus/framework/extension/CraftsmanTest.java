@@ -70,7 +70,7 @@ class CraftsmanTest {
    @Mock
    private Craft craft;
    @Mock
-   private DataForge dataForge;
+   private DataForge<?> dataForge;
    @Mock
    private Late<Object> late;
    @Mock
@@ -103,7 +103,8 @@ class CraftsmanTest {
       when(globalStore.get(StoreKeys.QUEST)).thenReturn(quest);
 
       when(extensionContext.getUniqueId()).thenReturn("test-unique-id");
-      ExtensionContext.Namespace customNamespace = ExtensionContext.Namespace.create(TestContextManager.class, "test-unique-id");
+      ExtensionContext.Namespace customNamespace =
+            ExtensionContext.Namespace.create(TestContextManager.class, "test-unique-id");
       when(extensionContext.getStore(customNamespace)).thenReturn(parametersStore);
       when(extensionContext.getStore(any(ExtensionContext.Namespace.class))).thenReturn(parametersStore);
 
@@ -192,9 +193,13 @@ class CraftsmanTest {
               MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
               MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
-            testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext)).thenReturn(superQuest);
-            testContextManagerMock.when(() -> TestContextManager.initializeParameterTracking(extensionContext)).thenCallRealMethod();
-            testContextManagerMock.when(() -> TestContextManager.storeArgument(superQuest, dataForge, late, extensionContext)).thenCallRealMethod();
+            testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext))
+                  .thenReturn(superQuest);
+            testContextManagerMock.when(() -> TestContextManager.initializeParameterTracking(extensionContext))
+                  .thenCallRealMethod();
+            testContextManagerMock.when(
+                        () -> TestContextManager.storeArgument(superQuest, dataForge, late, extensionContext))
+                  .thenCallRealMethod();
 
             frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
             reflectionUtilMock.when(() ->
@@ -219,7 +224,8 @@ class CraftsmanTest {
               MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
               MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
-            testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext)).thenReturn(superQuest);
+            testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext))
+                  .thenReturn(superQuest);
             frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
             reflectionUtilMock.when(() ->
                   ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE))
@@ -244,7 +250,8 @@ class CraftsmanTest {
               MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
               MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
-            testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext)).thenReturn(superQuest);
+            testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext))
+                  .thenReturn(superQuest);
             frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
             reflectionUtilMock.when(() ->
                   ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE))
@@ -259,7 +266,8 @@ class CraftsmanTest {
 
             testContextManagerMock.verify(() -> TestContextManager.initializeParameterTracking(extensionContext));
             testContextManagerMock.verify(() -> TestContextManager.getSuperQuest(extensionContext));
-            testContextManagerMock.verify(() -> TestContextManager.storeArgument(superQuest, dataForge, joinedObject, extensionContext));
+            testContextManagerMock.verify(
+                  () -> TestContextManager.storeArgument(superQuest, dataForge, joinedObject, extensionContext));
 
             frameworkConfigHolderMock.verify(FrameworkConfigHolder::getFrameworkConfig);
             reflectionUtilMock.verify(() -> ReflectionUtil.findEnumImplementationsOfInterface(

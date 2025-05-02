@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DBAnnotationTest {
+class DbAnnotationTest {
 
    @DB
    private static class DummyClass {

@@ -11,7 +11,7 @@ import org.openqa.selenium.By;
  *
  * <p>Classes implementing this interface typically utilize Selenium-based approaches to
  * locate and interact with tab elements, whether identified by text, a container element,
- * or direct locators.</p>
+ * or direct locators.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

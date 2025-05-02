@@ -19,7 +19,6 @@ import com.theairebellion.zeus.ui.service.tables.TableServiceFluent;
 
 public class UiServiceCustom extends UiServiceFluent<UiServiceCustom> {
 
-
    public UiServiceCustom(SmartWebDriver driver, SuperQuest quest) {
       super(driver);
       this.quest = quest;

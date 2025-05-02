@@ -3,10 +3,10 @@ package com.theairebellion.zeus.ui.components.table.sort;
 /**
  * Defines sorting strategies that can be applied to table columns.
  *
- * <p>This enum provides different sorting options for organizing table data.</p>
+ * <p>This enum provides different sorting options for organizing table data.
  *
  * <p>This enum is primarily used in the {@code TableService} and {@code TableServiceImpl} classes
- * to control the sorting behavior of table columns.</p>
+ * to control the sorting behavior of table columns.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

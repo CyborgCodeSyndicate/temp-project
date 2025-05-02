@@ -143,7 +143,8 @@ class RetryConditionApiTest {
          when(response.jsonPath()).thenReturn(jsonPath);
          when(jsonPath.get(JSON_PATH)).thenReturn(EXPECTED_VALUE);
 
-         RetryCondition<Object> condition = RetryConditionApi.responseFieldEqualsTo(endpoint, JSON_PATH, EXPECTED_VALUE);
+         RetryCondition<Object> condition =
+               RetryConditionApi.responseFieldEqualsTo(endpoint, JSON_PATH, EXPECTED_VALUE);
 
          // Act
          Object result = condition.function().apply(restService);
@@ -163,7 +164,8 @@ class RetryConditionApiTest {
          when(response.jsonPath()).thenReturn(jsonPath);
          when(jsonPath.get(JSON_PATH)).thenReturn("differentValue");
 
-         RetryCondition<Object> condition = RetryConditionApi.responseFieldEqualsTo(endpoint, JSON_PATH, EXPECTED_VALUE);
+         RetryCondition<Object> condition =
+               RetryConditionApi.responseFieldEqualsTo(endpoint, JSON_PATH, EXPECTED_VALUE);
 
          // Act
          Object result = condition.function().apply(restService);

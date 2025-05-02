@@ -14,6 +14,10 @@ public class DbConfigHolder {
 
    private static DbConfig config;
 
+
+   private DbConfigHolder() {
+   }
+
    /**
     * Retrieves the database configuration.
     *

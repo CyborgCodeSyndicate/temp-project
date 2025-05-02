@@ -19,7 +19,7 @@ import org.openqa.selenium.WebDriver;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -89,14 +89,14 @@ class ExceptionHandlingWebDriverTest {
                ExceptionHandlingWebDriver.FIND_ELEMENT.getExceptionHandlingMap();
 
          assertEquals(methodName, ExceptionHandlingWebDriver.FIND_ELEMENT.getMethodName());
-         assertSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENT.getExceptionHandlingMap());
+         assertNotSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENT.getExceptionHandlingMap());
 
          // Test for FIND_ELEMENTS enum
          methodName = "findElements";
          exceptionMap = ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap();
 
          assertEquals(methodName, ExceptionHandlingWebDriver.FIND_ELEMENTS.getMethodName());
-         assertSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap());
+         assertNotSame(exceptionMap, ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap());
       }
    }
 

@@ -64,8 +64,8 @@ public class TestContextManager extends AllureStepHelper {
     * @param argument         the argument object to be stored
     * @param extensionContext the JUnit extension context
     */
-   public static void storeArgument(SuperQuest superQuest, DataForge dataForge, Object argument,
-                                    ExtensionContext extensionContext) {
+   public static void storeArgument(SuperQuest superQuest, DataForge<?> dataForge,
+         Object argument, ExtensionContext extensionContext) {
       superQuest.getStorage().sub(ARGUMENTS).put(dataForge.enumImpl(), argument);
 
       ExtensionContext.Store store = extensionContext.getStore(ExtensionContext.Namespace.GLOBAL);

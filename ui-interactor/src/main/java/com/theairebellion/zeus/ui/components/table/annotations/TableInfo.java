@@ -11,7 +11,7 @@ import org.openqa.selenium.support.FindBy;
  * This annotation is applied to a row model class to specify how the table is
  * identified and structured.
  *
- * <p>It provides three key locators:</p>
+ * <p>It provides three key locators:
  * <ul>
  *   <li>{@code tableContainerLocator} - Identifies the table container element.</li>
  *   <li>{@code rowsLocator} - Identifies the rows inside the table.</li>
@@ -19,7 +19,7 @@ import org.openqa.selenium.support.FindBy;
  * </ul>
  *
  * <p>The table framework uses this annotation at runtime to extract table structure
- * and dynamically read or manipulate table data.</p>
+ * and dynamically read or manipulate table data.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

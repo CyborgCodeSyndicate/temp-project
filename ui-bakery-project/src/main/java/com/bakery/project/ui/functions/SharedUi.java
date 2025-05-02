@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import org.openqa.selenium.By;
 
 public enum SharedUi implements ContextConsumer {
+
    WAIT_FOR_TIMEOUT((driver, by) -> SharedUiFunctions.waitForTimeout(driver)),
    WAIT_FOR_LOADING((driver, by) -> SharedUiFunctions.waitForLoading(driver)),
    WAIT_FOR_PRESENCE(SharedUiFunctions::waitForPresence),

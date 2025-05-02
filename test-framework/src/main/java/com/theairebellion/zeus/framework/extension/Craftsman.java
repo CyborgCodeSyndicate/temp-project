@@ -78,7 +78,7 @@ public class Craftsman implements ParameterResolver {
                      "Missing @Craft annotation on parameter: " + parameterContext.getParameter().getName()));
          SuperQuest superQuest = getSuperQuest(extensionContext);
 
-         DataForge dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
+         DataForge<?> dataForge = ReflectionUtil.findEnumImplementationsOfInterface(
                DataForge.class, craft.model(), getFrameworkConfig().projectPackage());
          Object argument = isLate ? dataForge.dataCreator() : dataForge.dataCreator().join();
 

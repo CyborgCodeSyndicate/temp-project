@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
-public class MockPreQuestJourney implements PreQuestJourney {
+public class MockPreQuestJourney<T extends Enum<T>> implements PreQuestJourney<T> {
 
    public final AtomicBoolean invoked = new AtomicBoolean(false);
 
@@ -15,7 +15,7 @@ public class MockPreQuestJourney implements PreQuestJourney {
    }
 
    @Override
-   public Enum<?> enumImpl() {
+   public T enumImpl() {
       return null;
    }
 }

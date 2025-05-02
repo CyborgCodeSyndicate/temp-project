@@ -35,14 +35,6 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
    @Mock
    private WebDriver mockDriver;
 
-   @Test
-   @DisplayName("Constructor should be accessible for utility class")
-   void testConstructorExists() {
-      // This is a way to test a private constructor exists
-      ExceptionHandlingWebDriverFunctions instance = new ExceptionHandlingWebDriverFunctions() {
-      };
-      assertNotNull(instance);
-   }
 
    @Nested
    @DisplayName("Tests for handleNoSuchElement with invalid arguments")
@@ -57,7 +49,8 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
             // Test with empty args array
             Object[] emptyArgs = new Object[0];
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, emptyArgs);
+               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
+                     emptyArgs);
             });
 
             // Verify error was logged
@@ -78,7 +71,8 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
             // Test with null arg
             Object[] nullArgs = new Object[] {null};
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, nullArgs);
+               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
+                     nullArgs);
             });
 
             // Verify error was logged
@@ -99,7 +93,8 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
             // Test with non-By argument
             Object[] invalidArgs = new Object[] {"not a By object"};
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, invalidArgs);
+               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
+                     invalidArgs);
             });
 
             // Verify error was logged
@@ -129,15 +124,16 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
             SmartWebElement smartElement = mock(SmartWebElement.class);
 
             // Setup FrameHelper mock - directly use the static method syntax
-            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)))
+            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
                   .thenReturn(smartElement);
 
             // Execute method
             Object result =
-                  ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, args);
+                  ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
+                        args);
 
             // Verify method was called
-            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)));
+            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)));
 
             // Just verify we got a non-null result
             assertNotNull(result);
@@ -158,7 +154,7 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
             Object[] args = new Object[] {byLocator};
 
             // Set up the frameHelper to return null (element not found)
-            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)))
+            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
                   .thenReturn(null);
 
             // Execute method and expect exception
@@ -167,7 +163,7 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
             });
 
             // Verify methods were called
-            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)));
+            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)));
             mockedLogUI.verify(() -> LogUi.error(anyString()));
 
          }
@@ -189,20 +185,21 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
             when(smartElement.getOriginal()).thenReturn(webElement);
 
             // Setup FrameHelper mock
-            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)))
+            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
                   .thenReturn(smartElement);
 
             // We need to use a try-catch here since we're not fully mocking the WebElementAction enum
             try {
                // Execute the method
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENTS, args);
+               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENTS,
+                     args);
             } catch (Exception e) {
                // We expect an exception because we're not fully mocking the enum implementation
                // But we still verify the FrameHelper was called correctly
             }
 
             // Verify FrameHelper method was called
-            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)));
+            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)));
          }
       }
    }

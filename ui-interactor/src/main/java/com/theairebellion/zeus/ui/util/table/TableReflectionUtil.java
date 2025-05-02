@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.util.table;
 
+import com.theairebellion.zeus.ui.components.table.exceptions.TableException;
 import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import java.lang.reflect.Field;
@@ -8,7 +9,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for extracting data from UI table row objects using Java reflection.
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
+@SuppressWarnings("java:S3011")
 public final class TableReflectionUtil {
 
    private TableReflectionUtil() {
@@ -25,8 +26,8 @@ public final class TableReflectionUtil {
 
 
    /**
-    * Extracts all textual content from fields of type {@link TableCell} or {@code List<TableCell>} within a given
-    * row object.
+    * Extracts all textual content from fields of type {@link TableCell} or {@code List<TableCell>} within a
+    * given row object.
     *
     * @param row The row object containing {@link TableCell} fields.
     * @return A list of strings representing the text content of the table cells in the row.
@@ -45,15 +46,15 @@ public final class TableReflectionUtil {
                            .filter(TableCell.class::isInstance)
                            .map(TableCell.class::cast)
                            .map(TableCell::getText)
-                           .collect(Collectors.toList());
+                           .toList();
                   }
                } catch (IllegalAccessException e) {
-                  throw new RuntimeException("Failed to access field value", e);
+                  throw new TableException("Failed to access field value", e);
                }
                return Collections.<String>emptyList();
             })
             .flatMap(List::stream)
-            .collect(Collectors.toList());
+            .toList();
    }
 
 
@@ -78,15 +79,15 @@ public final class TableReflectionUtil {
                            .filter(TableCell.class::isInstance)
                            .map(TableCell.class::cast)
                            .map(TableCell::getElement)
-                           .collect(Collectors.toList());
+                           .toList();
                   }
                } catch (IllegalAccessException e) {
-                  throw new RuntimeException("Failed to access field value", e);
+                  throw new TableException("Failed to access field value", e);
                }
                return Collections.<SmartWebElement>emptyList();
             })
             .flatMap(List::stream)
-            .collect(Collectors.toList());
+            .toList();
    }
 
 

@@ -13,13 +13,13 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  * integrate seamlessly with broader test automation pipelines.
  *
  * <p>Classes implementing this interface typically rely on Selenium-based operations for
- * synchronization, ensuring loaders are properly shown or removed within expected timeframes.</p>
+ * synchronization, ensuring loaders are properly shown or removed within expected timeframes.
  *
  * <p>All methods are designed to support both container-based and locator-based identification
- * of loader elements, offering a flexible approach to handle various UI designs.</p>
+ * of loader elements, offering a flexible approach to handle various UI designs.
  *
  * <p>Methods in this interface throw runtime exceptions if loaders do not appear or disappear
- * within the specified time, allowing test flows to handle unexpected loading behavior.</p>
+ * within the specified time, allowing test flows to handle unexpected loading behavior.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

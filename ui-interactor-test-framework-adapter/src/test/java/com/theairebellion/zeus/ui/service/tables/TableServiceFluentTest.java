@@ -44,14 +44,14 @@ class TableServiceFluentTest extends BaseUnitUITest {
       }
    }
 
-   private static class TestTableElement implements TableElement {
+   private static class TestTableElement implements TableElement<DefaultTableTypes> {
       @Override
       public <T> Class<T> rowsRepresentationClass() {
          return (Class<T>) TestRowClass.class;
       }
 
       @Override
-      public Enum<?> enumImpl() {
+      public DefaultTableTypes enumImpl() {
          return DefaultTableTypes.DEFAULT;
       }
 

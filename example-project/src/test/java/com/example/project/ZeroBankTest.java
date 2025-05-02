@@ -17,6 +17,7 @@ import com.example.project.ui.elements.zerobank.SelectFields;
 import com.theairebellion.zeus.framework.annotation.Regression;
 import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
+import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.annotations.UI;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.validator.core.Assertion;
@@ -139,6 +140,7 @@ public class ZeroBankTest extends BaseTest {
    @Test
    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
    @Regression
+   @InterceptRequests
    public void paragraphTextValueTestHardAssertions(Quest quest) {
       quest
             .enters(World.EARTH)

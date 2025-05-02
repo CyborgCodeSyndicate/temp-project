@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.ui.selenium.decorators;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import org.openqa.selenium.WebElement;
@@ -15,6 +16,8 @@ import org.openqa.selenium.WebElement;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
+@SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", justification = "Constructor validates inputs properly "
+      + "and throwing exceptions is acceptable.")
 @Getter
 public abstract class WebElementDecorator implements WebElement {
 
@@ -29,7 +32,10 @@ public abstract class WebElementDecorator implements WebElement {
     *
     * @param original The original WebElement to be wrapped.
     */
-   public WebElementDecorator(WebElement original) {
+   protected WebElementDecorator(WebElement original) {
+      if (original == null) {
+         throw new IllegalArgumentException("original WebElement must not be null");
+      }
       this.original = original;
    }
 

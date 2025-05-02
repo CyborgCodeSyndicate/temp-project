@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * based on specific {@link ComponentType} implementations. It ensures that the correct
  * service is used for handling UI interactions related to data insertion.
  *
- * <p>Uses a {@link ConcurrentHashMap} to support thread-safe access and modifications.</p>
+ * <p>Uses a {@link ConcurrentHashMap} to support thread-safe access and modifications.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

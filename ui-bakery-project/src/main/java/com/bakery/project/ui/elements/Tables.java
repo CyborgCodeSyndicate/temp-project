@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 import static com.bakery.project.ui.elements.TableTypes.SIMPLE;
 
-public enum Tables implements TableElement {
+public enum Tables implements TableElement<Tables> {
 
    CAMPAIGNS(TableEntry.class),
    ORDERS(TableEntry.class, SIMPLE);
@@ -35,14 +35,14 @@ public enum Tables implements TableElement {
 
 
    <T> Tables(final Class<T> rowRepresentationClass, TableComponentType tableType,
-              Consumer<SmartWebDriver> before) {
+         Consumer<SmartWebDriver> before) {
       this(rowRepresentationClass, tableType, before, smartWebDriver -> {
       });
    }
 
 
    <T> Tables(final Class<T> rowRepresentationClass, TableComponentType tableType,
-              Consumer<SmartWebDriver> before, Consumer<SmartWebDriver> after) {
+         Consumer<SmartWebDriver> before, Consumer<SmartWebDriver> after) {
       this.rowRepresentationClass = rowRepresentationClass;
       this.tableType = tableType;
       this.before = before;
@@ -67,7 +67,7 @@ public enum Tables implements TableElement {
 
 
    @Override
-   public Enum<?> enumImpl() {
+   public Tables enumImpl() {
       return this;
    }
 

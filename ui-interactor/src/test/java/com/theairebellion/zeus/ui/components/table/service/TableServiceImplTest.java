@@ -283,7 +283,8 @@ class TableServiceImplTest extends BaseUnitUITest {
             TableImpl mockTableImpl = mock(TableImpl.class);
 
             // Set up the mock to return our mockTableImpl when getTableComponent is called
-            componentFactoryMock.when(() -> ComponentFactory.getTableComponent(any(TableComponentType.class), any(SmartWebDriver.class)))
+            componentFactoryMock.when(
+                        () -> ComponentFactory.getTableComponent(any(TableComponentType.class), any(SmartWebDriver.class)))
                   .thenReturn(mockTableImpl);
 
             // Call createComponent

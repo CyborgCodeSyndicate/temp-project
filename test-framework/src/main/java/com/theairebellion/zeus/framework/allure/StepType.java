@@ -8,7 +8,7 @@ import lombok.Getter;
  * <p>This enumeration provides predefined step categories for tracking and organizing Allure steps.
  * It ensures consistency in test execution logging and enhances readability in reports.
  *
- * <p>Each step type has an associated display name used for reporting.</p>
+ * <p>Each step type has an associated display name used for reporting.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

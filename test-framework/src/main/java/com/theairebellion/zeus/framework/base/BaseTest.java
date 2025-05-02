@@ -31,6 +31,8 @@ import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemPro
 @Tag("exclude-from-verify")
 public class BaseTest {
 
+   private static final String RETRIEVAL_LOG_TEMPLATE = "Fetching data from storage by key: '{}' and type: '{}'";
+
    static {
       synchronized (BaseTest.class) {
          addSystemProperties();
@@ -49,7 +51,7 @@ public class BaseTest {
     */
    protected <T> T retrieve(Enum<?> key, Class<T> clazz) {
       SuperQuest quest = QuestHolder.get();
-      LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, key.name(), clazz.getName());
       return quest.getStorage().get(key, clazz);
    }
 
@@ -64,7 +66,7 @@ public class BaseTest {
     */
    protected <T> T retrieve(Enum<?> subKey, Enum<?> key, Class<T> clazz) {
       SuperQuest quest = QuestHolder.get();
-      LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", key.name(), clazz.getName());
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, key.name(), clazz.getName());
       return quest.getStorage().sub(subKey).get(key, clazz);
    }
 
@@ -78,7 +80,7 @@ public class BaseTest {
     */
    protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
       SuperQuest quest = QuestHolder.get();
-      LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, extractor.getKey().name(),
             clazz.getName());
       return quest.getStorage().get(extractor, clazz);
    }
@@ -94,7 +96,7 @@ public class BaseTest {
     */
    protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
       SuperQuest quest = QuestHolder.get();
-      LogTest.extended("Fetching data from storage by key: '{}' and type: '{}'", extractor.getKey().name(),
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, extractor.getKey().name(),
             clazz.getName());
       return quest.getStorage().get(extractor, clazz, index);
    }
@@ -102,7 +104,7 @@ public class BaseTest {
    //todo: JavaDocs
    protected <T> T hookData(Object value, Class<T> clazz) {
       SuperQuest quest = QuestHolder.get();
-      LogTest.extended("Fetching data from before hooks storage by key: '{}' and type: '{}'", value,
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, value,
             clazz.getName());
       return quest.getStorage().getHookData(value, clazz);
    }
@@ -113,6 +115,10 @@ public class BaseTest {
     * @author Cyborg Code Syndicate 💍👨💻
     */
    public static final class DefaultStorage {
+
+
+      private DefaultStorage() {
+      }
 
       /**
        * Retrieves stored test data by key within a sub-storage context.

@@ -9,7 +9,7 @@ import org.apache.maven.project.MavenProject;
  * Configuration class for JUnit test splitting in a Maven project.
  *
  * <p>Extends {@link TestSplitterConfiguration} to include specific settings
- * for filtering tests based on JUnit tags.</p>
+ * for filtering tests based on JUnit tags.
  *
  * <p>This configuration allows the user to specify:
  * <ul>

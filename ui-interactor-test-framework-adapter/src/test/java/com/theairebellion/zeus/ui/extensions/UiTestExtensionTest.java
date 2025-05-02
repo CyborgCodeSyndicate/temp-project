@@ -12,7 +12,6 @@ import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
 import com.theairebellion.zeus.ui.authentication.LoginCredentials;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
-import com.theairebellion.zeus.ui.config.UiFrameworkConfig;
 import com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUiServiceFluent;
@@ -106,7 +105,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
       addResponseMethod.setAccessible(true);
 
       // Prepare test data
-      ApiResponse apiResponse = new ApiResponse("http://test.url", 200);
+      ApiResponse apiResponse = new ApiResponse("http://test.url", "GET", 200);
       apiResponse.setBody("Test response body");
 
       // Create a mock storage
@@ -386,7 +385,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
             when(appContext.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
 
             // Mock the framework config
-            var frameworkConfig = mock(UiFrameworkConfig.class);
+            var frameworkConfig = mock(com.theairebellion.zeus.ui.config.UiFrameworkConfig.class);
             configMock.when(UiFrameworkConfigHolder::getUiFrameworkConfig)
                   .thenReturn(frameworkConfig);
             when(frameworkConfig.makeScreenshotOnPassedTest()).thenReturn(true);

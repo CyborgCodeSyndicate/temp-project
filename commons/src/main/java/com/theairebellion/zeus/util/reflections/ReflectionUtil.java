@@ -27,6 +27,10 @@ import org.reflections.Reflections;
  */
 public class ReflectionUtil {
 
+   private ReflectionUtil() {
+   }
+
+
    /**
     * Finds all enum classes that implement a given interface within a specified package.
     *
@@ -37,7 +41,7 @@ public class ReflectionUtil {
     * @throws ReflectionException If no matching enum classes are found or if the search fails.
     */
    @SuppressWarnings("unchecked")
-   public static <T> List<Class<? extends Enum<?>>> findEnumClassImplementationsOfInterface(
+   public static <T> List<Class<? extends Enum>> findEnumClassImplementationsOfInterface(
          Class<T> interfaceClass, String packagePrefix) {
 
       validateInputs(interfaceClass, packagePrefix);
@@ -45,7 +49,7 @@ public class ReflectionUtil {
       Reflections reflections = new Reflections(packagePrefix);
       Set<Class<? extends T>> result = reflections.getSubTypesOf(interfaceClass);
 
-      List<Class<? extends Enum<?>>> listOfEnumClasses = new ArrayList<>();
+      List<Class<? extends Enum>> listOfEnumClasses = new ArrayList<>();
       for (Class<? extends T> cls : result) {
          if (cls.isEnum()) {
             @SuppressWarnings("unchecked")
@@ -76,10 +80,10 @@ public class ReflectionUtil {
    public static <T> T findEnumImplementationsOfInterface(
          Class<T> interfaceClass, String enumName, String packagePrefix) {
 
-      List<Class<? extends Enum<?>>> enumClassImplementationsOfInterface =
+      List<Class<? extends Enum>> enumClassImplementationsOfInterface =
             findEnumClassImplementationsOfInterface(interfaceClass, packagePrefix);
 
-      List<? extends Enum<?>> enumValuesList = enumClassImplementationsOfInterface.stream()
+      List<? extends Enum> enumValuesList = enumClassImplementationsOfInterface.stream()
             .flatMap(enumClass -> Arrays.stream(enumClass.getEnumConstants()))
             .filter(anEnum -> anEnum.name().equals(enumName)).toList();
 
@@ -121,6 +125,7 @@ public class ReflectionUtil {
     * @throws ReflectionException If no matching fields are found, if a field contains an incompatible value,
     *                             or if a field cannot be accessed due to security restrictions.
     */
+   @SuppressWarnings("java:S3011")
    public static <K> List<K> getFieldValues(Object instance, Class<K> fieldType) {
       validateInputs(instance, fieldType);
 
@@ -184,7 +189,7 @@ public class ReflectionUtil {
          if (obj == null) {
             throw new IllegalArgumentException("Input parameter cannot be null.");
          }
-         if (obj instanceof String && ((String) obj).trim().isEmpty()) {
+         if (obj instanceof String str && str.trim().isEmpty()) {
             throw new IllegalArgumentException("String input parameter cannot be empty.");
          }
       }

@@ -108,7 +108,7 @@ public final class TestMethodFilter {
     * Determines if the given class is part of a sequential test execution framework.
     *
     * <p>Classes that extend `BaseTestSequential` or similar frameworks should be executed
-    * sequentially instead of in parallel.</p>
+    * sequentially instead of in parallel.
     *
     * @param clazz The class to check.
     * @return {@code true} if the class requires sequential execution; {@code false} otherwise.

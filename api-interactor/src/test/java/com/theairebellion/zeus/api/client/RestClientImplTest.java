@@ -306,10 +306,10 @@ class RestClientImplTest {
       @ParameterizedTest(name = "Should log response correctly when logFullBody = {0}")
       @DisplayName("Logs full or shortened response body based on ApiConfig")
       @CsvSource({
-         "true,  { \"message\": \"OK\" },  { \"message\": \"OK\" }, false",
-         "false, ABCDEFGHIJKLMNOPQRSTUVWXYZ, ABCDEFGHIJ..., false",
-         "true, '', '', true",
-         "false, '', '', true"
+            "true,  { \"message\": \"OK\" },  { \"message\": \"OK\" }, false",
+            "false, ABCDEFGHIJKLMNOPQRSTUVWXYZ, ABCDEFGHIJ..., false",
+            "true, '', '', true",
+            "false, '', '', true"
       })
       void shouldLogResponseBodyBasedOnConfig(boolean logFullBody, String fullBody, String expectedBody,
                                               boolean nullBody) {

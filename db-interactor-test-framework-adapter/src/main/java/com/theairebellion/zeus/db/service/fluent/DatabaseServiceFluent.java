@@ -46,7 +46,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
     * @param query The database query to execute.
     * @return The current {@code DatabaseServiceFluent} instance for method chaining.
     */
-   public <T> DatabaseServiceFluent query(final DbQuery query) {
+   public DatabaseServiceFluent query(final DbQuery<?> query) {
       final QueryResponse queryResponse = databaseService.query(query);
       quest.getStorage().sub(DB).put(query.enumImpl(), queryResponse);
       return this;
@@ -60,7 +60,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
     * @param resultType The expected type of the extracted value.
     * @return The current {@code DatabaseServiceFluent} instance for method chaining.
     */
-   public <T> DatabaseServiceFluent query(final DbQuery query, final String jsonPath, final Class<T> resultType) {
+   public <T> DatabaseServiceFluent query(final DbQuery<?> query, final String jsonPath, final Class<T> resultType) {
       final T queryResult = databaseService.query(query, jsonPath, resultType);
       quest.getStorage().sub(DB).put(query.enumImpl(), queryResult);
       return this;
@@ -73,7 +73,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
     * @param assertions The assertions to apply.
     * @return The current {@code DatabaseServiceFluent} instance for method chaining.
     */
-   public DatabaseServiceFluent queryAndValidate(final DbQuery query, final Assertion... assertions) {
+   public DatabaseServiceFluent queryAndValidate(final DbQuery<?> query, final Assertion... assertions) {
       final QueryResponse queryResponse = databaseService.query(query);
       quest.getStorage().sub(DB).put(query.enumImpl(), queryResponse);
       return validate(queryResponse, assertions);
@@ -133,7 +133,7 @@ public class DatabaseServiceFluent extends FluentService implements ClassLevelHo
     *
     * @return The {@code DatabaseService} instance.
     */
-   private DatabaseService getDatabaseService() {
+   protected DatabaseService getDatabaseService() {
       return databaseService;
    }
 

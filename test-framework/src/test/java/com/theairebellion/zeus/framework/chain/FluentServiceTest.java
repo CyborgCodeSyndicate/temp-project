@@ -180,7 +180,8 @@ class FluentServiceTest {
          try (MockedStatic<LogTest> logTestMock = mockStatic(LogTest.class);
               MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
             // Given
-            AssertionResult<Object> softAssertion = new AssertionResult<>(true, "Test Description", "expected", "actual", true);
+            AssertionResult<Object> softAssertion =
+                  new AssertionResult<>(true, "Test Description", "expected", "actual", true);
 
             // Create a fresh mock for this test to avoid interference
             BooleanAssert testBooleanAssert = mock(BooleanAssert.class);
@@ -208,7 +209,8 @@ class FluentServiceTest {
          try (MockedStatic<LogTest> logTestMock = mockStatic(LogTest.class);
               MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
             // Given
-            AssertionResult<Object> softAssertion = new AssertionResult<>(false, "Test Description", "expected", "actual", true);
+            AssertionResult<Object> softAssertion =
+                  new AssertionResult<>(false, "Test Description", "expected", "actual", true);
 
             // Create a fresh mock for this test to avoid interference
             BooleanAssert testBooleanAssert = mock(BooleanAssert.class);
@@ -239,7 +241,8 @@ class FluentServiceTest {
                     mockStatic(org.assertj.core.api.Assertions.class)) {
 
             // Given
-            AssertionResult<Object> hardAssertion = new AssertionResult<>(true, "Test Description", "expected", "actual", false);
+            AssertionResult<Object> hardAssertion =
+                  new AssertionResult<>(true, "Test Description", "expected", "actual", false);
 
             // Mock the assertThat static method with a properly chained mock
             BooleanAssert localBooleanAssert = mock(BooleanAssert.class);
@@ -269,7 +272,8 @@ class FluentServiceTest {
                     mockStatic(org.assertj.core.api.Assertions.class)) {
 
             // Given
-            AssertionResult<Object> hardAssertion = new AssertionResult<>(false, "Test Description", "expected", "actual", false);
+            AssertionResult<Object> hardAssertion =
+                  new AssertionResult<>(false, "Test Description", "expected", "actual", false);
 
             // Mock the assertThat static method with a properly chained mock
             BooleanAssert localBooleanAssert = mock(BooleanAssert.class);
@@ -299,8 +303,10 @@ class FluentServiceTest {
                     mockStatic(org.assertj.core.api.Assertions.class)) {
 
             // Given
-            AssertionResult<Object> softAssertion = new AssertionResult<>(true, "Soft Test", "expected", "actual", true);
-            AssertionResult<Object> hardAssertion = new AssertionResult<>(true, "Hard Test", "expected", "actual", false);
+            AssertionResult<Object> softAssertion =
+                  new AssertionResult<>(true, "Soft Test", "expected", "actual", true);
+            AssertionResult<Object> hardAssertion =
+                  new AssertionResult<>(true, "Hard Test", "expected", "actual", false);
 
             when(superQuest.getSoftAssertions()).thenReturn(customSoftAssertions);
 

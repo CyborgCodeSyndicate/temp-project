@@ -24,7 +24,7 @@ class DbTypeTest {
    @DisplayName("Should return protocol from DbType implementation")
    void testDbTypeProtocol() {
       // Given
-      DbType mockDbType = createMockDbType();
+      DbType<?> mockDbType = createMockDbType();
 
       // When
       String protocol = mockDbType.protocol();
@@ -38,7 +38,7 @@ class DbTypeTest {
    void testDbTypeDriver() {
       // Given
       Driver mockDriver = mock(Driver.class);
-      DbType mockDbType = createMockDbType(mockDriver);
+      DbType<?> mockDbType = createMockDbType(mockDriver);
 
       // When
       Driver driver = mockDbType.driver();
@@ -54,7 +54,7 @@ class DbTypeTest {
       enum TestEnum {POSTGRES, MYSQL, ORACLE}
       TestEnum enumValue = TestEnum.POSTGRES;
 
-      DbType mockDbType = new DbType() {
+      DbType<?> mockDbType = new DbType() {
          @Override
          public Driver driver() {
             return null;
@@ -85,7 +85,7 @@ class DbTypeTest {
       Driver mockDriver = mock(Driver.class);
       when(mockDriver.acceptsURL(MOCK_DB_URL)).thenReturn(true);
 
-      DbType mockDbType = createMockDbType(mockDriver);
+      DbType<?> mockDbType = createMockDbType(mockDriver);
 
       // When
       Driver driver = mockDbType.driver();
@@ -100,7 +100,7 @@ class DbTypeTest {
    @DisplayName("Protocol should be used for building database URLs")
    void testProtocolForUrlBuilding() {
       // Given
-      DbType mockDbType = createMockDbType();
+      DbType<?> mockDbType = createMockDbType();
       String host = "localhost";
       int port = 5432;
       String database = "testdb";
@@ -113,11 +113,11 @@ class DbTypeTest {
       assertEquals(MOCK_DB_URL, url, "URL should be correctly formatted with protocol");
    }
 
-   private DbType createMockDbType() {
+   private DbType<?> createMockDbType() {
       return createMockDbType(null);
    }
 
-   private DbType createMockDbType(Driver driver) {
+   private DbType<?> createMockDbType(Driver driver) {
       return new DbType() {
          @Override
          public Driver driver() {

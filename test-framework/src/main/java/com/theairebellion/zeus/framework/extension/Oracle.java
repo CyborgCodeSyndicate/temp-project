@@ -2,6 +2,7 @@ package com.theairebellion.zeus.framework.extension;
 
 import com.theairebellion.zeus.framework.annotation.TestStaticData;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.exceptions.StaticTestDataInitializationException;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.QuestFactory;
@@ -11,6 +12,7 @@ import com.theairebellion.zeus.framework.storage.StorageKeysTest;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -113,11 +115,11 @@ public class Oracle implements ParameterResolver {
 
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException
                      | NoSuchMethodException e) {
-               throw new RuntimeException(e);
+               throw new StaticTestDataInitializationException(e);
             }
          }
       }
-      return null;
+      return new HashMap<>();
    }
 
    //todo: javaDocs

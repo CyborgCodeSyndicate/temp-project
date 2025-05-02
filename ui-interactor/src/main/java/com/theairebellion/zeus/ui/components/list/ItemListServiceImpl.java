@@ -23,6 +23,63 @@ import org.openqa.selenium.By;
 public class ItemListServiceImpl extends AbstractComponentService<ItemListComponentType, ItemList>
       implements ItemListService {
 
+   private static final String SELECT_ITEMS_WITH_TEXT = "Selecting items %s from list %s";
+   private static final String SELECT_ITEMS_WITH_TEXT_BY_LOCATOR = "Selecting items %s from list %s using locator %s";
+   private static final String SELECT_ITEMS_USING_STRATEGY = "Selecting items from list %s using strategy %s";
+   private static final String SELECT_ITEMS_LOCATOR_AND_STRATEGY =
+         "Selecting items from list %s using locator %s and strategy %s";
+   private static final String SELECT_ITEMS_NO_TEXT_BY_LOCATOR = "Selecting items from list %s using locator %s";
+
+   private static final String DESELECT_ITEMS_WITH_TEXT = "De-selecting items %s from list %s";
+   private static final String DESELECT_ITEMS_WITH_TEXT_BY_LOCATOR =
+         "De-selecting items %s from list %s using locator %s";
+   private static final String DESELECT_ITEMS_USING_STRATEGY = "De-selecting items from list %s using strategy %s";
+   private static final String DESELECT_ITEMS_LOCATOR_AND_STRATEGY =
+         "De-selecting items from list %s using locator %s and strategy %s";
+   private static final String DESELECT_ITEMS_NO_TEXT_BY_LOCATOR = "De-selecting items from list %s using locator %s";
+
+   private static final String CHECK_ITEMS_SELECTED_IN_LIST = "Checking if items %s are selected in list %s";
+   private static final String CHECK_ITEMS_SELECTED_IN_LIST_BY_LOCATOR =
+         "Checking if items %s are selected in list %s using locator %s";
+   private static final String CHECK_ITEMS_NO_TEXT_SELECTED_BY_LOCATOR =
+         "Checking if items are selected in list %s using locator %s";
+   private static final String CHECK_ITEM_SELECTED_IN_LIST = "Checking if item %s is selected in list %s";
+   private static final String CHECK_ITEM_SELECTED_IN_LIST_BY_LOCATOR =
+         "Checking if item %s is selected in list %s using locator %s";
+   private static final String CHECK_ITEM_NO_TEXT_SELECTED_BY_LOCATOR =
+         "Checking if item is selected in list %s using locator %s";
+
+   private static final String CHECK_ITEMS_ENABLED_IN_LIST = "Checking if items %s are enabled in list %s";
+   private static final String CHECK_ITEMS_ENABLED_IN_LIST_BY_LOCATOR =
+         "Checking if items %s are enabled in list %s using locator %s";
+   private static final String CHECK_ITEMS_NO_TEXT_ENABLED_BY_LOCATOR =
+         "Checking if items are enabled in list %s using locator %s";
+   private static final String CHECK_ITEM_ENABLED_IN_LIST = "Checking if item %s is enabled in list %s";
+   private static final String CHECK_ITEM_ENABLED_IN_LIST_BY_LOCATOR =
+         "Checking if item %s is enabled in list %s using locator %s";
+   private static final String CHECK_ITEM_NO_TEXT_ENABLED_BY_LOCATOR =
+         "Checking if item is enabled in list %s using locator %s";
+
+   private static final String CHECK_ITEMS_VISIBLE_IN_LIST = "Checking if items %s are visible in list %s";
+   private static final String CHECK_ITEMS_VISIBLE_IN_LIST_BY_LOCATOR =
+         "Checking if items %s are visible in list %s using locator %s";
+   private static final String CHECK_ITEMS_NO_TEXT_VISIBLE_BY_LOCATOR =
+         "Checking if items are visible in list %s using locator %s";
+   private static final String CHECK_ITEM_VISIBLE_IN_LIST = "Checking if item %s is visible in list %s";
+   private static final String CHECK_ITEM_VISIBLE_IN_LIST_BY_LOCATOR =
+         "Checking if item %s is visible in list %s using locator %s";
+   private static final String CHECK_ITEM_NO_TEXT_VISIBLE_BY_LOCATOR =
+         "Checking if item is visible in list %s using locator %s";
+
+   private static final String GET_SELECTED_ITEMS_CONTAINER = "Getting selected items from list %s using container";
+   private static final String GET_SELECTED_ITEMS_LOCATOR = "Getting selected items from list %s using locator %s";
+   private static final String GET_ALL_ITEMS_CONTAINER = "Getting all items from list %s using container";
+   private static final String GET_ALL_ITEMS_LOCATOR = "Getting all items from list %s using locator %s";
+
+   private static final String INSERT_VALUES_INTO_COMPONENT_LOCATOR =
+         "Inserting values %s into component %s using locator %s";
+
+
    /**
     * Constructs a new {@code ItemListServiceImpl} with the provided {@link SmartWebDriver}.
     *
@@ -54,7 +111,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public void select(final ItemListComponentType componentType, final SmartWebElement container,
                       final String... itemText) {
-      LogUi.step("Selecting items " + String.join(", ", itemText) + " from list " + componentType);
+      LogUi.step(String.format(SELECT_ITEMS_WITH_TEXT, String.join(", ", itemText), componentType));
       itemListComponent(componentType).select(container, itemText);
    }
 
@@ -67,8 +124,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public void select(final ItemListComponentType componentType, final By containerLocator, final String... itemText) {
-      LogUi.step("Selecting items " + String.join(", ", itemText) + " from list " + componentType
-            + " using locator " + containerLocator);
+      LogUi.step(String.format(SELECT_ITEMS_WITH_TEXT_BY_LOCATOR, String.join(", ", itemText), componentType,
+            containerLocator));
       itemListComponent(componentType).select(containerLocator, itemText);
    }
 
@@ -83,7 +140,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public String select(final ItemListComponentType componentType, final SmartWebElement container,
                         final Strategy strategy) {
-      LogUi.step("Selecting items from list " + componentType + " using strategy " + strategy);
+      LogUi.step(String.format(SELECT_ITEMS_USING_STRATEGY, componentType, strategy));
       return itemListComponent(componentType).select(container, strategy);
    }
 
@@ -98,8 +155,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public String select(final ItemListComponentType componentType, final By containerLocator,
                         final Strategy strategy) {
-      LogUi.step("Selecting items from list " + componentType + " using locator " + containerLocator
-            + " and strategy " + strategy);
+      LogUi.step(String.format(SELECT_ITEMS_LOCATOR_AND_STRATEGY, componentType, containerLocator, strategy));
       return itemListComponent(componentType).select(containerLocator, strategy);
    }
 
@@ -111,7 +167,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public void select(final ItemListComponentType componentType, final String... itemText) {
-      LogUi.step("Selecting items " + String.join(", ", itemText) + " from list " + componentType);
+      LogUi.step(String.format(SELECT_ITEMS_WITH_TEXT, String.join(", ", itemText), componentType));
       itemListComponent(componentType).select(itemText);
    }
 
@@ -123,7 +179,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public void select(final ItemListComponentType componentType, final By... itemListLocator) {
-      LogUi.step("Selecting items from list " + componentType + " using locator " + Arrays.toString(itemListLocator));
+      LogUi.step(String.format(SELECT_ITEMS_NO_TEXT_BY_LOCATOR, componentType, Arrays.toString(itemListLocator)));
       itemListComponent(componentType).select(itemListLocator);
    }
 
@@ -137,7 +193,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public void deSelect(final ItemListComponentType componentType, final SmartWebElement container,
                         final String... itemText) {
-      LogUi.step("De-selecting items " + String.join(", ", itemText) + " from list " + componentType);
+      LogUi.step(String.format(DESELECT_ITEMS_WITH_TEXT, String.join(", ", itemText), componentType));
       itemListComponent(componentType).deSelect(container, itemText);
    }
 
@@ -151,8 +207,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public void deSelect(final ItemListComponentType componentType, final By containerLocator,
                         final String... itemText) {
-      LogUi.step("De-selecting items " + String.join(", ", itemText) + " from list " + componentType
-            + " using locator " + containerLocator);
+      LogUi.step(String.format(DESELECT_ITEMS_WITH_TEXT_BY_LOCATOR, String.join(", ", itemText), componentType,
+            containerLocator));
       itemListComponent(componentType).deSelect(containerLocator, itemText);
    }
 
@@ -167,7 +223,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public String deSelect(final ItemListComponentType componentType, final SmartWebElement container,
                           final Strategy strategy) {
-      LogUi.step("De-selecting items from list " + componentType + " using strategy " + strategy);
+      LogUi.step(String.format(DESELECT_ITEMS_USING_STRATEGY, componentType, strategy));
       return itemListComponent(componentType).deSelect(container, strategy);
    }
 
@@ -182,8 +238,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public String deSelect(final ItemListComponentType componentType, final By containerLocator,
                           final Strategy strategy) {
-      LogUi.step("De-selecting items from list " + componentType + " using locator " + containerLocator
-            + " and strategy " + strategy);
+      LogUi.step(String.format(DESELECT_ITEMS_LOCATOR_AND_STRATEGY, componentType, containerLocator, strategy));
       return itemListComponent(componentType).deSelect(containerLocator, strategy);
    }
 
@@ -195,7 +250,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public void deSelect(final ItemListComponentType componentType, final String... itemText) {
-      LogUi.step("De-selecting items " + String.join(", ", itemText) + " from list " + componentType);
+      LogUi.step(String.format(DESELECT_ITEMS_WITH_TEXT, String.join(", ", itemText), componentType));
       itemListComponent(componentType).deSelect(itemText);
    }
 
@@ -207,8 +262,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public void deSelect(final ItemListComponentType componentType, final By... itemListLocator) {
-      LogUi.step("De-selecting items from list " + componentType + " using locator "
-            + Arrays.toString(itemListLocator));
+      LogUi.step(String.format(DESELECT_ITEMS_NO_TEXT_BY_LOCATOR, componentType, Arrays.toString(itemListLocator)));
       itemListComponent(componentType).deSelect(itemListLocator);
    }
 
@@ -223,7 +277,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public boolean areSelected(final ItemListComponentType componentType, final SmartWebElement container,
                               final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are selected in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEMS_SELECTED_IN_LIST, String.join(", ", itemText), componentType));
       return itemListComponent(componentType).areSelected(container, itemText);
    }
 
@@ -238,8 +292,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public boolean areSelected(final ItemListComponentType componentType, final By containerLocator,
                               final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are selected in list "
-            + componentType + " using locator " + containerLocator);
+      LogUi.step(String.format(CHECK_ITEMS_SELECTED_IN_LIST_BY_LOCATOR, String.join(", ", itemText), componentType,
+            containerLocator));
       return itemListComponent(componentType).areSelected(containerLocator, itemText);
    }
 
@@ -252,7 +306,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean areSelected(final ItemListComponentType componentType, final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are selected in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEMS_SELECTED_IN_LIST, String.join(", ", itemText), componentType));
       return itemListComponent(componentType).areSelected(itemText);
    }
 
@@ -265,8 +319,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean areSelected(final ItemListComponentType componentType, final By... itemListLocator) {
-      LogUi.step("Checking if items are selected in list " + componentType + " using locator "
-            + Arrays.toString(itemListLocator));
+      LogUi.step(String.format(CHECK_ITEMS_NO_TEXT_SELECTED_BY_LOCATOR, componentType,
+            Arrays.toString(itemListLocator)));
       return itemListComponent(componentType).areSelected(itemListLocator);
    }
 
@@ -280,7 +334,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isSelected(ItemListComponentType componentType, SmartWebElement container, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is selected in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEM_SELECTED_IN_LIST, itemText, componentType));
       return areSelected(componentType, container, itemText);
    }
 
@@ -294,8 +348,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isSelected(ItemListComponentType componentType, By containerLocator, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is selected in list " + componentType + " using locator "
-            + containerLocator);
+      LogUi.step(String.format(CHECK_ITEM_SELECTED_IN_LIST_BY_LOCATOR, itemText, componentType, containerLocator));
       return areSelected(componentType, containerLocator, itemText);
    }
 
@@ -308,7 +361,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isSelected(ItemListComponentType componentType, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is selected in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEM_SELECTED_IN_LIST, itemText, componentType));
       return areSelected(componentType, itemText);
    }
 
@@ -321,7 +374,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isSelected(ItemListComponentType componentType, By itemListLocator) {
-      LogUi.step("Checking if item is selected in list " + componentType + " using locator " + itemListLocator);
+      LogUi.step(String.format(CHECK_ITEM_NO_TEXT_SELECTED_BY_LOCATOR, componentType, itemListLocator));
       return areSelected(componentType, Collections.singletonList(itemListLocator).toArray(new By[0]));
    }
 
@@ -336,7 +389,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public boolean areEnabled(final ItemListComponentType componentType, final SmartWebElement container,
                              final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are enabled in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEMS_ENABLED_IN_LIST, String.join(", ", itemText), componentType));
       return itemListComponent(componentType).areEnabled(container, itemText);
    }
 
@@ -351,8 +404,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public boolean areEnabled(final ItemListComponentType componentType, final By containerLocator,
                              final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are enabled in list "
-            + componentType + " using locator " + containerLocator);
+      LogUi.step(String.format(CHECK_ITEMS_ENABLED_IN_LIST_BY_LOCATOR, String.join(", ", itemText), componentType,
+            containerLocator));
       return itemListComponent(componentType).areEnabled(containerLocator, itemText);
    }
 
@@ -365,8 +418,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean areEnabled(final ItemListComponentType componentType, final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are enabled in list "
-            + componentType);
+      LogUi.step(String.format(CHECK_ITEMS_ENABLED_IN_LIST, String.join(", ", itemText), componentType));
       return itemListComponent(componentType).areEnabled(itemText);
    }
 
@@ -379,8 +431,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean areEnabled(final ItemListComponentType componentType, final By... itemLocator) {
-      LogUi.step("Checking if items are enabled in list " + componentType + " using locator "
-            + Arrays.toString(itemLocator));
+      LogUi.step(String.format(CHECK_ITEMS_NO_TEXT_ENABLED_BY_LOCATOR, componentType, Arrays.toString(itemLocator)));
       return itemListComponent(componentType).areEnabled(itemLocator);
    }
 
@@ -394,7 +445,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isEnabled(ItemListComponentType componentType, SmartWebElement container, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is enabled in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEM_ENABLED_IN_LIST, itemText, componentType));
       return areEnabled(componentType, container, itemText);
    }
 
@@ -408,8 +459,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isEnabled(ItemListComponentType componentType, By containerLocator, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is enabled in list " + componentType + " using locator "
-            + containerLocator);
+      LogUi.step(String.format(CHECK_ITEM_ENABLED_IN_LIST_BY_LOCATOR, itemText, componentType, containerLocator));
       return areEnabled(componentType, containerLocator, itemText);
    }
 
@@ -422,7 +472,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isEnabled(ItemListComponentType componentType, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is enabled in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEM_ENABLED_IN_LIST, itemText, componentType));
       return areEnabled(componentType, itemText);
    }
 
@@ -435,7 +485,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isEnabled(ItemListComponentType componentType, By itemLocator) {
-      LogUi.step("Checking if item is enabled in list " + componentType + " using locator " + itemLocator);
+      LogUi.step(String.format(CHECK_ITEM_NO_TEXT_ENABLED_BY_LOCATOR, componentType, itemLocator));
       return areEnabled(componentType, Collections.singletonList(itemLocator).toArray(new By[0]));
    }
 
@@ -450,8 +500,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public boolean areVisible(final ItemListComponentType componentType, final SmartWebElement container,
                              final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are visible in list "
-            + componentType);
+      LogUi.step(String.format(CHECK_ITEMS_VISIBLE_IN_LIST, String.join(", ", itemText), componentType));
       return itemListComponent(componentType).areVisible(container, itemText);
    }
 
@@ -466,8 +515,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
    @Override
    public boolean areVisible(final ItemListComponentType componentType, final By containerLocator,
                              final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are visible in list "
-            + componentType + " using locator " + containerLocator);
+      LogUi.step(String.format(CHECK_ITEMS_VISIBLE_IN_LIST_BY_LOCATOR, String.join(", ", itemText), componentType,
+            containerLocator));
       return itemListComponent(componentType).areVisible(containerLocator, itemText);
    }
 
@@ -480,8 +529,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean areVisible(final ItemListComponentType componentType, final String... itemText) {
-      LogUi.step("Checking if items " + String.join(", ", itemText) + " are visible in list "
-            + componentType);
+      LogUi.step(String.format(CHECK_ITEMS_VISIBLE_IN_LIST, String.join(", ", itemText), componentType));
       return itemListComponent(componentType).areVisible(itemText);
    }
 
@@ -494,8 +542,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean areVisible(final ItemListComponentType componentType, final By... itemLocator) {
-      LogUi.step("Checking if items are visible in list " + componentType + " using locator "
-            + Arrays.toString(itemLocator));
+      LogUi.step(String.format(CHECK_ITEMS_NO_TEXT_VISIBLE_BY_LOCATOR, componentType, Arrays.toString(itemLocator)));
       return itemListComponent(componentType).areVisible(itemLocator);
    }
 
@@ -509,7 +556,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isVisible(ItemListComponentType componentType, SmartWebElement container, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is visible in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEM_VISIBLE_IN_LIST, itemText, componentType));
       return areVisible(componentType, container, itemText);
    }
 
@@ -523,8 +570,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isVisible(ItemListComponentType componentType, By containerLocator, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is visible in list " + componentType + " using locator "
-            + containerLocator);
+      LogUi.step(String.format(CHECK_ITEM_VISIBLE_IN_LIST_BY_LOCATOR, itemText, componentType, containerLocator));
       return areVisible(componentType, containerLocator, itemText);
    }
 
@@ -537,7 +583,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isVisible(ItemListComponentType componentType, String itemText) {
-      LogUi.step("Checking if item " + itemText + " is visible in list " + componentType);
+      LogUi.step(String.format(CHECK_ITEM_VISIBLE_IN_LIST, itemText, componentType));
       return areVisible(componentType, itemText);
    }
 
@@ -550,7 +596,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public boolean isVisible(ItemListComponentType componentType, By itemLocator) {
-      LogUi.step("Checking if item is visible in list " + componentType + " using locator " + itemLocator);
+      LogUi.step(String.format(CHECK_ITEM_NO_TEXT_VISIBLE_BY_LOCATOR, componentType, itemLocator));
       return areVisible(componentType, Collections.singletonList(itemLocator).toArray(new By[0]));
    }
 
@@ -563,7 +609,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public List<String> getSelected(final ItemListComponentType componentType, final SmartWebElement container) {
-      LogUi.step("Getting selected items from list " + componentType + " using container");
+      LogUi.step(String.format(GET_SELECTED_ITEMS_CONTAINER, componentType));
       return itemListComponent(componentType).getSelected(container);
    }
 
@@ -576,7 +622,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public List<String> getSelected(final ItemListComponentType componentType, final By containerLocator) {
-      LogUi.step("Getting selected items from list " + componentType + " using locator " + containerLocator);
+      LogUi.step(String.format(GET_SELECTED_ITEMS_LOCATOR, componentType, containerLocator));
       return itemListComponent(componentType).getSelected(containerLocator);
    }
 
@@ -589,7 +635,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public List<String> getAll(final ItemListComponentType componentType, final SmartWebElement container) {
-      LogUi.step("Getting all items from list " + componentType + " using container");
+      LogUi.step(String.format(GET_ALL_ITEMS_CONTAINER, componentType));
       return itemListComponent(componentType).getAll(container);
    }
 
@@ -602,7 +648,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     */
    @Override
    public List<String> getAll(final ItemListComponentType componentType, final By containerLocator) {
-      LogUi.step("Getting all items from list " + componentType + " using locator " + containerLocator);
+      LogUi.step(String.format(GET_ALL_ITEMS_LOCATOR, componentType, containerLocator));
       return itemListComponent(componentType).getAll(containerLocator);
    }
 
@@ -619,8 +665,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
       String[] stringValues = Arrays.stream(values)
             .map(String::valueOf)
             .toArray(String[]::new);
-      LogUi.step("Inserting values " + Arrays.toString(stringValues) + " into component " + componentType
-            + " using locator " + locator);
+      LogUi.step(String.format(INSERT_VALUES_INTO_COMPONENT_LOCATOR, Arrays.toString(stringValues), componentType,
+            locator));
       select((ItemListComponentType) componentType, locator, stringValues);
    }
 

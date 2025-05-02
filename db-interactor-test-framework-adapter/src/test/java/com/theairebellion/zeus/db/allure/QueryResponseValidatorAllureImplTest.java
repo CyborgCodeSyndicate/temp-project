@@ -35,7 +35,8 @@ class QueryResponseValidatorAllureImplTest {
    private static final String EXPECTED_STEP_MESSAGE_TEMPLATE = "Validating query response with %d assertion(s)";
    private static final String ATTACHMENT_NAME = "Data to be validated";
 
-   private QueryResponseValidatorAllureImpl validator = new QueryResponseValidatorAllureImpl(mock(JsonPathExtractor.class));
+   private QueryResponseValidatorAllureImpl validator =
+         new QueryResponseValidatorAllureImpl(mock(JsonPathExtractor.class));
 
    @Test
    @DisplayName("printAssertionTarget should add data to Allure report")
@@ -50,7 +51,8 @@ class QueryResponseValidatorAllureImplTest {
 
       try (MockedStatic<Allure> allureMock = mockStatic(Allure.class)) {
          ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-         ArgumentCaptor<Allure.ThrowableRunnableVoid> runnableCaptor = ArgumentCaptor.forClass(Allure.ThrowableRunnableVoid.class);
+         ArgumentCaptor<Allure.ThrowableRunnableVoid> runnableCaptor =
+               ArgumentCaptor.forClass(Allure.ThrowableRunnableVoid.class);
 
          // Act
          method.invoke(validator, data);

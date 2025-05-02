@@ -12,7 +12,7 @@ import com.theairebellion.zeus.logging.LogCore;
  */
 public final class LogDb extends LogCore {
 
-   private static LogDb INSTANCE;
+   private static LogDb instance;
 
    private LogDb() {
       super("Zeus.DB", "DB");
@@ -105,7 +105,7 @@ public final class LogDb extends LogCore {
     * @param <T>      A subclass of {@link LogCore}.
     */
    public static <T extends LogCore> void extend(final T instance) {
-      LogDb.INSTANCE = (LogDb) instance;
+      LogDb.instance = (LogDb) instance;
    }
 
    /**
@@ -114,10 +114,10 @@ public final class LogDb extends LogCore {
     * @return The singleton instance of {@code LogDb}.
     */
    private static LogDb getInstance() {
-      if (INSTANCE == null) {
-         INSTANCE = new LogDb();
+      if (instance == null) {
+         instance = new LogDb();
       }
-      return INSTANCE;
+      return instance;
    }
 
 }

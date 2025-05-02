@@ -56,9 +56,9 @@ public interface FluentChain {
       try {
          assertion.run();
          LogTest.validation("Hard validation completed successfully.");
-      } catch (Throwable t) {
-         LogTest.validation("Hard validation failed: " + t.getMessage());
-         throw t;
+      } catch (AssertionError | Exception e) {
+         LogTest.validation("Hard validation failed: " + e.getMessage());
+         throw e;
       }
       return this;
    }

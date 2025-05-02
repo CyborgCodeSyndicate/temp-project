@@ -5,7 +5,7 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
-public enum Endpoints implements Endpoint {
+public enum Endpoints implements Endpoint<Endpoints> {
 
    GET_ALL_USERS(Method.GET, "/users?{page}"),
    GET_USER(Method.GET, "/users/{id}"),
@@ -32,7 +32,7 @@ public enum Endpoints implements Endpoint {
    }
 
    @Override
-   public Enum<?> enumImpl() {
+   public Endpoints enumImpl() {
       return this;
    }
 

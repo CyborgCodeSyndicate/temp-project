@@ -24,7 +24,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,15 +50,6 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
    @Mock
    private WebElement mockWebElement;
-
-
-   @Test
-   void testConstructorExists() {
-      // This verifies the private constructor exists for the utility class
-      ExceptionHandlingWebElementFunctions instance = new ExceptionHandlingWebElementFunctions() {
-      };
-      assertNotNull(instance);
-   }
 
 
    @Test
@@ -161,7 +151,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          Object[] args = new Object[] {byLocator};
 
          // Setup mocks
-         mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
+         mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)))
                .thenReturn(foundElement);
 
          // Create a real WebElementAction - don't try to mock it since it's an enum
@@ -176,7 +166,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          }
 
          // Verify method was called
-         mockedHelper.verify(() -> FrameHelper.findElementInIframes(eq(mockDriver), eq(mockWebElement)));
+         mockedHelper.verify(() -> FrameHelper.findElementInIframes(eq(mockDriver), any(By.class)));
       }
    }
 
@@ -197,7 +187,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          Object[] args = new Object[] {byLocator};
 
          // Setup mocks
-         mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
+         mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)))
                .thenReturn(null);
 
          // Execute method and expect exception
@@ -207,7 +197,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          });
 
          // Verify methods were called
-         mockedHelper.verify(() -> FrameHelper.findElementInIframes(eq(mockDriver), eq(mockWebElement)));
+         mockedHelper.verify(() -> FrameHelper.findElementInIframes(eq(mockDriver), any(By.class)));
          mockedLogUI.verify(() -> LogUi.error(any()));
       }
    }
@@ -609,11 +599,11 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     * Special testable version of ExceptionHandlingWebElementFunctions
     * that allows us to control WebDriverWait behavior
     */
-   class TestableExceptionHandlingFunctions extends ExceptionHandlingWebElementFunctions {
+   static class TestableExceptionHandlingFunctions {
 
       // Override the WebDriverWait creation to return our controllable mock
       static WebDriverWait createTestableWait(WebDriver driver, boolean shouldThrowTimeout,
-                                              boolean shouldThrowException) {
+            boolean shouldThrowException) {
          WebDriverWait mockWait = mock(WebDriverWait.class);
 
          if (shouldThrowTimeout) {

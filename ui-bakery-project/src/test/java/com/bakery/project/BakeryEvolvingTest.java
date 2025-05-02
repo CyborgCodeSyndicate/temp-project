@@ -138,8 +138,8 @@ public class BakeryEvolvingTest extends BaseTest {
    @Test
    @Description("Craft usage")
    public void createOrderCraft(Quest quest,
-                                @Craft(model = VALID_SELLER) Seller seller,
-                                @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_SELLER) Seller seller,
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(EARTH)
             .browser().navigate(getUiConfig().baseUrl())
@@ -168,8 +168,8 @@ public class BakeryEvolvingTest extends BaseTest {
    @Test
    @Description("Insertion and Craft usage")
    public void createOrderInsertion(Quest quest,
-                                    @Craft(model = VALID_SELLER) Seller seller,
-                                    @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_SELLER) Seller seller,
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(EARTH)
             .browser().navigate(getUiConfig().baseUrl())
@@ -193,8 +193,8 @@ public class BakeryEvolvingTest extends BaseTest {
    @Test
    @Description("Service and Craft usage")
    public void createOrderService(Quest quest,
-                                  @Craft(model = VALID_SELLER) Seller seller,
-                                  @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_SELLER) Seller seller,
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(FORGE)
             .loginUser(seller)
@@ -208,7 +208,7 @@ public class BakeryEvolvingTest extends BaseTest {
    @Description("Authentication, Craft and Service usage")
    @AuthenticateViaUiAs(credentials = AdminUi.class, type = BakeryUiLogging.class)
    public void createOrderAuth(Quest quest,
-                               @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(FORGE)
             .createOrder(order)
@@ -226,7 +226,7 @@ public class BakeryEvolvingTest extends BaseTest {
                journeyData = {@JourneyData(VALID_ORDER)}, order = 2)
    })
    public void createOrderPreQuest(Quest quest,
-                                   @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(FORGE)
             .validateOrder(order)

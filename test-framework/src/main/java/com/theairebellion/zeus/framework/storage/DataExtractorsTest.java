@@ -16,6 +16,9 @@ import java.util.Map;
  */
 public class DataExtractorsTest {
 
+   private DataExtractorsTest() {
+   }
+
    /**
     * Creates a {@link DataExtractor} for retrieving a specific value from the static test data map.
     *

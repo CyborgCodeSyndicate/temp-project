@@ -61,44 +61,21 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
       Map<String, T> data = new HashMap<>();
 
       for (Assertion assertion : assertions) {
+         DbAssertionTarget target = (DbAssertionTarget) assertion.getTarget();
          String key = assertion.getKey();
-         switch ((DbAssertionTarget) assertion.getTarget()) {
-            case NUMBER_ROWS -> data.put("numRows", (T) Integer.valueOf(queryResponse.getRows().size()));
 
-            case QUERY_RESULT -> {
-               if (key == null) {
-                  throw new InvalidAssertionException(
-                        "Assertion value must have a non-null key. Key must contain a valid JsonPath expression.");
-               }
-               Object value = jsonPathExtractor.extract(queryResponse.getRows(), key, Object.class);
-               if (value == null) {
-                  throw new IllegalArgumentException("JsonPath expression: '" + key + "' not found in query result.");
-               }
-               data.put(assertion.getKey(), (T) value);
-            }
-
-            case COLUMNS -> {
-               if (key == null) {
-                  throw new InvalidAssertionException(
-                        "Assertion value must have a non-null key. Key must contain a valid JsonPath expression.");
-               }
-               if (queryResponse.getRows().isEmpty()) {
-                  throw new IllegalArgumentException("Query result is empty; cannot validate columns.");
-               }
-               Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0).keySet(), key, Object.class);
-               if (value == null) {
-                  throw new IllegalArgumentException("Column: '" + key + "' not found in query result.");
-               }
-               data.put(key, (T) value);
-            }
-
-            default -> throw new InvalidAssertionException("Unhandled DB assertion target: " + assertion.getTarget());
+         switch (target) {
+            case NUMBER_ROWS -> handleNumberRows(queryResponse, data);
+            case QUERY_RESULT -> handleQueryResult(queryResponse, key, assertion, data);
+            case COLUMNS -> handleColumns(queryResponse, key, data);
+            default -> throw new InvalidAssertionException("Unhandled assertion target: " + target);
          }
       }
-      printAssertionTarget((Map<String, Object>) data);
 
+      printAssertionTarget((Map<String, Object>) data);
       return AssertionUtil.validate(data, List.of(assertions));
    }
+
 
    /**
     * Logs the extracted data used for validation.
@@ -107,6 +84,43 @@ public class QueryResponseValidatorImpl implements QueryResponseValidator {
     */
    protected void printAssertionTarget(Map<String, Object> data) {
       LogDb.extended("Validation target: [{}]", data.toString());
+   }
+
+   private <T> void handleNumberRows(QueryResponse queryResponse, Map<String, T> data) {
+      data.put("numRows", (T) Integer.valueOf(queryResponse.getRows().size()));
+   }
+
+   private <T> void handleQueryResult(QueryResponse queryResponse, String key,
+                                      Assertion assertion, Map<String, T> data) {
+      if (key == null) {
+         throw new InvalidAssertionException(
+               "Assertion value must have a non-null key. Key must contain a valid JsonPath expression.");
+      }
+
+      Object value = jsonPathExtractor.extract(queryResponse.getRows(), key, Object.class);
+      if (value == null) {
+         throw new IllegalArgumentException("JsonPath expression: '" + key + "' not found in query result.");
+      }
+
+      data.put(assertion.getKey(), (T) value);
+   }
+
+   private <T> void handleColumns(QueryResponse queryResponse, String key, Map<String, T> data) {
+      if (key == null) {
+         throw new InvalidAssertionException(
+               "Assertion value must have a non-null key. Key must contain a valid JsonPath expression.");
+      }
+
+      if (queryResponse.getRows().isEmpty()) {
+         throw new IllegalArgumentException("Query result is empty; cannot validate columns.");
+      }
+
+      Object value = jsonPathExtractor.extract(queryResponse.getRows().get(0).keySet(), key, Object.class);
+      if (value == null) {
+         throw new IllegalArgumentException("Column: '" + key + "' not found in query result.");
+      }
+
+      data.put(key, (T) value);
    }
 
 }

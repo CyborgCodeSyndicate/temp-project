@@ -17,9 +17,9 @@ import java.util.Map;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public class ParametrizedEndpoint implements Endpoint {
+public class ParametrizedEndpoint<T extends Enum<T>> implements Endpoint<T> {
 
-   private final Endpoint original;
+   private final Endpoint<T> original;
    private final Map<String, Object> pathParams;
    private final Map<String, Object> queryParams;
    private final Map<String, List<String>> additionalHeaders;
@@ -29,11 +29,11 @@ public class ParametrizedEndpoint implements Endpoint {
     *
     * @param original The original endpoint being wrapped.
     */
-   ParametrizedEndpoint(Endpoint original) {
+   ParametrizedEndpoint(Endpoint<T> original) {
       this(original, new HashMap<>(), new HashMap<>(), new HashMap<>());
    }
 
-   private ParametrizedEndpoint(Endpoint original, Map<String, Object> pathParams, Map<String, Object> queryParams,
+   private ParametrizedEndpoint(Endpoint<T> original, Map<String, Object> pathParams, Map<String, Object> queryParams,
                                 Map<String, List<String>> additionalHeaders) {
       this.original = original;
       this.pathParams = Collections.unmodifiableMap(new HashMap<>(pathParams));
@@ -67,7 +67,7 @@ public class ParametrizedEndpoint implements Endpoint {
     * @return The enum representing this endpoint.
     */
    @Override
-   public Enum<?> enumImpl() {
+   public T enumImpl() {
       return original.enumImpl();
    }
 
@@ -121,11 +121,11 @@ public class ParametrizedEndpoint implements Endpoint {
     * @return A new instance with the query parameter added.
     * @throws IllegalArgumentException if the key or value is invalid.
     */
-   public ParametrizedEndpoint withQueryParam(String key, Object value) {
+   public ParametrizedEndpoint<T> withQueryParam(String key, Object value) {
       validateParam(key, value);
       Map<String, Object> newQueryParams = new HashMap<>(this.queryParams);
       newQueryParams.put(key, value);
-      return new ParametrizedEndpoint(this.original, this.pathParams, newQueryParams, this.additionalHeaders);
+      return new ParametrizedEndpoint<>(this.original, this.pathParams, newQueryParams, this.additionalHeaders);
    }
 
    /**
@@ -136,11 +136,11 @@ public class ParametrizedEndpoint implements Endpoint {
     * @return A new instance with the path parameter added.
     * @throws IllegalArgumentException if the key or value is invalid.
     */
-   public ParametrizedEndpoint withPathParam(String key, Object value) {
+   public ParametrizedEndpoint<T> withPathParam(String key, Object value) {
       validateParam(key, value);
       Map<String, Object> newPathParams = new HashMap<>(this.pathParams);
       newPathParams.put(key, value);
-      return new ParametrizedEndpoint(this.original, newPathParams, this.queryParams, this.additionalHeaders);
+      return new ParametrizedEndpoint<>(this.original, newPathParams, this.queryParams, this.additionalHeaders);
    }
 
    /**
@@ -151,11 +151,11 @@ public class ParametrizedEndpoint implements Endpoint {
     * @return A new instance with the header added.
     * @throws IllegalArgumentException if the key or value is invalid.
     */
-   public ParametrizedEndpoint withHeader(String key, String value) {
+   public ParametrizedEndpoint<T> withHeader(String key, String value) {
       validateParam(key, value);
       Map<String, List<String>> newHeaders = new HashMap<>(this.additionalHeaders);
       newHeaders.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-      return new ParametrizedEndpoint(this.original, this.pathParams, this.queryParams, newHeaders);
+      return new ParametrizedEndpoint<>(this.original, this.pathParams, this.queryParams, newHeaders);
    }
 
    /**
@@ -166,11 +166,11 @@ public class ParametrizedEndpoint implements Endpoint {
     * @return A new instance with the header added.
     * @throws IllegalArgumentException if the key or values are invalid.
     */
-   public ParametrizedEndpoint withHeader(String key, List<String> values) {
+   public ParametrizedEndpoint<T> withHeader(String key, List<String> values) {
       validateParam(key, values);
       Map<String, List<String>> newHeaders = new HashMap<>(this.additionalHeaders);
       newHeaders.computeIfAbsent(key, k -> new ArrayList<>()).addAll(values);
-      return new ParametrizedEndpoint(this.original, this.pathParams, this.queryParams, newHeaders);
+      return new ParametrizedEndpoint<>(this.original, this.pathParams, this.queryParams, newHeaders);
    }
 
    /**

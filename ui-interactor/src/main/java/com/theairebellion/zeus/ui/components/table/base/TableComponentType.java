@@ -8,10 +8,10 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * various table component types within the framework.
  *
  * <p>Implementations of this interface define specific table behaviors,
- * such as filtering, sorting, and data insertion.</p>
+ * such as filtering, sorting, and data insertion.
  *
  * <p>Typically used in conjunction with {@code TableService} and
- * {@code TableElement} to manage different table types dynamically.</p>
+ * {@code TableElement} to manage different table types dynamically.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

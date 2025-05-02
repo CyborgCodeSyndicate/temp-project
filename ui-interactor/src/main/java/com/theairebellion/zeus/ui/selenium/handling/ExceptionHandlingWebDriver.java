@@ -2,6 +2,7 @@ package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.util.BiFunction;
+import java.util.Collections;
 import java.util.Map;
 import lombok.Getter;
 import org.openqa.selenium.NoSuchElementException;
@@ -15,7 +16,6 @@ import org.openqa.selenium.WebDriver;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@Getter
 public enum ExceptionHandlingWebDriver {
 
    /**
@@ -45,6 +45,7 @@ public enum ExceptionHandlingWebDriver {
    /**
     * The name of the WebDriver method associated with this exception handler.
     */
+   @Getter
    private final String methodName;
 
    /**
@@ -64,6 +65,10 @@ public enum ExceptionHandlingWebDriver {
                                     Object[], Object>> exceptionHandlingMap) {
       this.methodName = methodName;
       this.exceptionHandlingMap = exceptionHandlingMap;
+   }
+
+   public Map<Class<? extends Throwable>, BiFunction<WebDriver, Object[], Object>> getExceptionHandlingMap() {
+      return Collections.unmodifiableMap(exceptionHandlingMap);
    }
 
 }

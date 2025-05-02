@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.selenium.logging;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.util.FourConsumer;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.Map;
 import lombok.Getter;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -97,13 +98,18 @@ public enum ExceptionLogging {
     * @param exceptionLoggingMap A map of exception classes to their respective logging functions.
     */
    ExceptionLogging(final Class<?> targetClass, final WebElementAction action,
-                    Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[],
-                          InvocationTargetException>> exceptionLoggingMap) {
+         Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[],
+               InvocationTargetException>> exceptionLoggingMap) {
       this.targetClass = targetClass;
       this.action = action;
       this.exceptionLoggingMap = exceptionLoggingMap;
    }
 
+
+   public Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[],
+         InvocationTargetException>> getExceptionLoggingMap() {
+      return Collections.unmodifiableMap(exceptionLoggingMap);
+   }
 }
 
 

@@ -744,7 +744,8 @@ class CheckboxServiceImplTest extends BaseUnitUITest {
          service.areSelected(mockCheckboxComponentType, container, "C");
 
          // Then
-         factoryMock.verify(() -> ComponentFactory.getCheckBoxComponent(eq(mockCheckboxComponentType), eq(driver)), times(1));
+         factoryMock.verify(() -> ComponentFactory.getCheckBoxComponent(eq(mockCheckboxComponentType), eq(driver)),
+               times(1));
       }
 
       @Test
@@ -831,7 +832,8 @@ class CheckboxServiceImplTest extends BaseUnitUITest {
          createComponentMethod.invoke(service, mockCheckboxComponentType);
 
          // Then
-         factoryMock.verify(() -> ComponentFactory.getCheckBoxComponent(eq(mockCheckboxComponentType), eq(driver)), times(1));
+         factoryMock.verify(() -> ComponentFactory.getCheckBoxComponent(eq(mockCheckboxComponentType), eq(driver)),
+               times(1));
       }
 
       @Test
@@ -852,7 +854,8 @@ class CheckboxServiceImplTest extends BaseUnitUITest {
          checkboxComponentMethod.invoke(service, mockCheckboxComponentType);
 
          // Then
-         factoryMock.verify(() -> ComponentFactory.getCheckBoxComponent(eq(mockCheckboxComponentType), eq(driver)), times(1));
+         factoryMock.verify(() -> ComponentFactory.getCheckBoxComponent(eq(mockCheckboxComponentType), eq(driver)),
+               times(1));
       }
    }
 

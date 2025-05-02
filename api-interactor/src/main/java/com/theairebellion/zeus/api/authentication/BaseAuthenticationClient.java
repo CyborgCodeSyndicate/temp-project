@@ -4,7 +4,6 @@ import com.theairebellion.zeus.api.log.LogApi;
 import com.theairebellion.zeus.api.service.RestService;
 import io.restassured.http.Header;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.NonNull;
 
@@ -21,7 +20,7 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
    /**
     * Stores authentication headers mapped by their corresponding authentication keys.
     */
-   public static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new ConcurrentHashMap<>();
+   protected static final Map<AuthenticationKey, Header> userAuthenticationHeaderMap = new ConcurrentHashMap<>();
 
    /**
     * Authenticates a user and caches the authentication header if caching is enabled.
@@ -33,23 +32,23 @@ public abstract class BaseAuthenticationClient implements AuthenticationClient {
     * @return The generated {@code AuthenticationKey}.
     */
    @Override
-   public AuthenticationKey authenticate(final @NonNull RestService restService, @NonNull final String username,
-                                         final String password, boolean cache) {
-      var authenticationKey = new AuthenticationKey(username, password, this.getClass());
+   public AuthenticationKey authenticate(final @NonNull RestService restService,
+                                         @NonNull final String username,
+                                         final String password,
+                                         boolean cache) {
+      AuthenticationKey authenticationKey = new AuthenticationKey(username, password, this.getClass());
+
       if (!cache) {
-         userAuthenticationHeaderMap.put(authenticationKey, authenticateImpl(restService, username, password));
+         Header header = authenticateImpl(restService, username, password);
+         userAuthenticationHeaderMap.put(authenticationKey, header);
          LogApi.info("Successfully authenticated user: {}", username);
       } else {
-         synchronized (userAuthenticationHeaderMap) {
-            if (Objects.isNull(userAuthenticationHeaderMap.get(authenticationKey))) {
-               userAuthenticationHeaderMap.put(authenticationKey,
-                     authenticateImpl(restService, username, password));
-            } else {
-               return authenticationKey;
-            }
-         }
+         userAuthenticationHeaderMap.computeIfAbsent(authenticationKey, key -> {
+            Header header = authenticateImpl(restService, username, password);
+            LogApi.info("Successfully authenticated user: {}", username);
+            return header;
+         });
       }
-
       return authenticationKey;
    }
 

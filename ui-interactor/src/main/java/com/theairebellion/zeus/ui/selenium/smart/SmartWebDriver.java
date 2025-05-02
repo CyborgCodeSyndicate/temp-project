@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -30,7 +29,7 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  * adds exception management, and provides built-in support for Shadow DOM elements.
  *
  * <p>It integrates with Selenium functions while allowing configuration-based
- * handling of standard and shadow root elements.</p>
+ * handling of standard and shadow root elements.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -40,6 +39,10 @@ public class SmartWebDriver extends WebDriverDecorator {
    private final WebDriverWait wait;
    @Setter
    private boolean keepDriverForSession;
+
+
+   private static final String SECONDS = " seconds";
+
 
    /**
     * Constructs a {@code SmartWebDriver} wrapping the given {@link WebDriver}.
@@ -112,6 +115,7 @@ public class SmartWebDriver extends WebDriverDecorator {
                   WebDriverWait customWait = new WebDriverWait(getOriginal(), Duration.ofMillis(10));
                   customWait.until(condition);
                } catch (Exception ignored) {
+                  //ignore failure from wait
                }
             };
       if (getUiConfig().useShadowRoot()) {
@@ -136,19 +140,20 @@ public class SmartWebDriver extends WebDriverDecorator {
                   WebDriverWait customWait = new WebDriverWait(getOriginal(), Duration.ofMillis(10));
                   customWait.until(condition);
                } catch (Exception ignored) {
+                  //ignore failure from wait
                }
             };
       if (getUiConfig().useShadowRoot()) {
          List<SmartWebElement> elementsWithShadowRootDriver =
                SmartFinder.findElementsWithShadowRootDriver(this, by, waitFn);
          return elementsWithShadowRootDriver.stream()
-               .map(element -> (WebElement) element)
-               .collect(Collectors.toList());
+               .map(WebElement.class::cast)
+               .toList();
       } else {
          List<SmartWebElement> elementsNormally = SmartFinder.findElementsNormally(getOriginal(), by, waitFn);
          return elementsNormally.stream()
-               .map(element -> (WebElement) element)
-               .collect(Collectors.toList());
+               .map(WebElement.class::cast)
+               .toList();
       }
    }
 
@@ -171,6 +176,7 @@ public class SmartWebDriver extends WebDriverDecorator {
                   WebDriverWait customWait = new WebDriverWait(getOriginal(), Duration.ofMillis(waitInMillis));
                   customWait.until(condition);
                } catch (Exception ignored) {
+                  //ignore failure from wait
                }
             };
 
@@ -207,11 +213,11 @@ public class SmartWebDriver extends WebDriverDecorator {
     * @param seconds Maximum wait time in seconds.
     */
    public void waitUntilElementIsShown(SmartWebElement element, int seconds) {
-      WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+      WebDriverWait customWait = new WebDriverWait(this, Duration.ofSeconds(seconds));
       try {
-         wait.until(ExpectedConditions.visibilityOf(element));
+         customWait.until(ExpectedConditions.visibilityOf(element));
       } catch (Exception e) {
-         LogUi.error("Element wasn't displayed after: " + seconds + " seconds");
+         LogUi.error("Element wasn't displayed after: " + seconds + SECONDS);
       }
    }
 
@@ -222,11 +228,11 @@ public class SmartWebDriver extends WebDriverDecorator {
     * @param seconds Maximum wait time in seconds.
     */
    public void waitUntilElementIsShown(By by, int seconds) {
-      WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+      WebDriverWait customWait = new WebDriverWait(this, Duration.ofSeconds(seconds));
       try {
-         wait.until(ExpectedConditions.presenceOfElementLocated(by));
+         customWait.until(ExpectedConditions.presenceOfElementLocated(by));
       } catch (Exception e) {
-         LogUi.error("Element wasn't displayed after: " + seconds + " seconds");
+         LogUi.error("Element wasn't displayed after: " + seconds + SECONDS);
       }
    }
 
@@ -237,11 +243,11 @@ public class SmartWebDriver extends WebDriverDecorator {
     * @param seconds Maximum wait time in seconds.
     */
    public void waitUntilElementIsRemoved(SmartWebElement element, int seconds) {
-      WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+      WebDriverWait customWait = new WebDriverWait(this, Duration.ofSeconds(seconds));
       try {
-         wait.until(ExpectedConditions.invisibilityOf(element));
+         customWait.until(ExpectedConditions.invisibilityOf(element));
       } catch (Exception e) {
-         LogUi.error("Element wasn't removed after: " + seconds + " seconds");
+         LogUi.error("Element wasn't removed after: " + seconds + SECONDS);
       }
    }
 
@@ -252,11 +258,11 @@ public class SmartWebDriver extends WebDriverDecorator {
     * @param seconds Maximum wait time in seconds.
     */
    public void waitUntilElementIsRemoved(By by, int seconds) {
-      WebDriverWait wait = new WebDriverWait(this, Duration.ofSeconds(seconds));
+      WebDriverWait customWait = new WebDriverWait(this, Duration.ofSeconds(seconds));
       try {
-         wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
+         customWait.until(ExpectedConditions.invisibilityOfElementLocated(by));
       } catch (Exception e) {
-         LogUi.error("Element wasn't removed after: " + seconds + " seconds");
+         LogUi.error("Element wasn't removed after: " + seconds + SECONDS);
       }
    }
 
@@ -265,6 +271,7 @@ public class SmartWebDriver extends WebDriverDecorator {
       try {
          wait.until(condition);
       } catch (Exception ignored) {
+         //ignore failure from wait
       }
    }
 

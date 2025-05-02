@@ -14,7 +14,7 @@ import lombok.experimental.Delegate;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public class FluentServiceDecorator extends FluentService {
+public final class FluentServiceDecorator extends FluentService {
 
    /**
     * The wrapped instance of {@code FluentService}.

@@ -7,12 +7,10 @@ import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
-import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.validator.UiTableValidator;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -68,8 +66,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     */
    @Override
    public final <T> List<T> readTable(final TableComponentType tableComponentType, final Class<T> clazz) {
-      LogUi.step("Reading table for component type '" + tableComponentType + "' as class '"
-            + clazz.getSimpleName() + "'");
       return getOrCreateComponent(tableComponentType).readTable(clazz);
    }
 
@@ -86,8 +82,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    @SafeVarargs
    public final <T> List<T> readTable(final TableComponentType tableComponentType, final Class<T> clazz,
                                       final TableField<T>... fields) {
-      LogUi.step("Reading table for component type '" + tableComponentType + "' as class '"
-            + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
       return getOrCreateComponent(tableComponentType).readTable(clazz, fields);
    }
 
@@ -104,8 +98,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    @Override
    public final <T> List<T> readTable(final TableComponentType tableComponentType, final int start, final int end,
                                       final Class<T> clazz) {
-      LogUi.step("Reading table rows " + start + " to " + end + " for component type '" + tableComponentType
-            + "' as class '" + clazz.getSimpleName() + "'");
       return getOrCreateComponent(tableComponentType).readTable(start, end, clazz);
    }
 
@@ -124,15 +116,13 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    @SafeVarargs
    public final <T> List<T> readTable(final TableComponentType tableComponentType, final int start, final int end,
                                       final Class<T> clazz, final TableField<T>... fields) {
-      LogUi.step("Reading table rows " + start + " to " + end + " for component type '" + tableComponentType
-            + "' as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
       return getOrCreateComponent(tableComponentType).readTable(start, end, clazz, fields);
    }
 
    /**
     * Reads a single row from the table based on the given row index.
     *
-    * <p>The method retrieves the data of the specified row and maps it to the provided class type.</p>
+    * <p>The method retrieves the data of the specified row and maps it to the provided class type.
     *
     * @param tableComponentType The type of table component being used.
     * @param row                The index of the row to be read (1-based index).
@@ -142,15 +132,13 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     */
    @Override
    public final <T> T readRow(final TableComponentType tableComponentType, final int row, final Class<T> clazz) {
-      LogUi.step("Reading row " + row + " for component type '" + tableComponentType + "' as class '"
-            + clazz.getSimpleName() + "'");
       return getOrCreateComponent(tableComponentType).readRow(row, clazz);
    }
 
    /**
     * Reads a single row from the table based on specific search criteria.
     *
-    * <p>This method searches for a row matching the given criteria and maps it to the provided class type.</p>
+    * <p>This method searches for a row matching the given criteria and maps it to the provided class type.
     *
     * @param tableComponentType The type of table component being used.
     * @param searchCriteria     A list of string values used to locate the row.
@@ -161,8 +149,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    @Override
    public final <T> T readRow(final TableComponentType tableComponentType, final List<String> searchCriteria,
                               final Class<T> clazz) {
-      LogUi.step("Reading row matching criteria " + searchCriteria + " for component type '"
-            + tableComponentType + "' as class '" + clazz.getSimpleName() + "'");
       return getOrCreateComponent(tableComponentType).readRow(searchCriteria, clazz);
    }
 
@@ -179,8 +165,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    @SafeVarargs
    public final <T> T readRow(final TableComponentType tableComponentType, final int row, final Class<T> clazz,
                               final TableField<T>... fields) {
-      LogUi.step("Reading row " + row + " for component type '" + tableComponentType + "' as class '"
-            + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
       return getOrCreateComponent(tableComponentType).readRow(row, clazz, fields);
    }
 
@@ -199,8 +183,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    @SafeVarargs
    public final <T> T readRow(final TableComponentType tableComponentType, final List<String> searchCriteria,
                               final Class<T> clazz, final TableField<T>... fields) {
-      LogUi.step("Reading row matching criteria " + searchCriteria + " for component type '"
-            + tableComponentType + "' as class '" + clazz.getSimpleName() + "' with fields " + Arrays.toString(fields));
       return getOrCreateComponent(tableComponentType).readRow(searchCriteria, clazz, fields);
    }
 
@@ -209,16 +191,14 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of table component being used.
     * @param row                The index of the row where the value should be inserted (1-based index).
-    * @param classType             The class type representing the table row.
+    * @param clazz             The class type representing the table row.
     * @param data               The data to be inserted into the row.
     * @param <T>                The type of the row representation.
     */
    @Override
    public final <T> void insertCellValue(final TableComponentType tableComponentType, final int row,
-                                         final Class<T> classType, final T data) {
-      LogUi.step("Inserting cell value for row " + row + " for component type '" + tableComponentType
-            + "' with data as class '" + classType.getSimpleName() + "'");
-      getOrCreateComponent(tableComponentType).insertCellValue(row, classType, data);
+                                         final Class<T> clazz, final T data) {
+      getOrCreateComponent(tableComponentType).insertCellValue(row, clazz, data);
    }
 
    /**
@@ -226,7 +206,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of the table component.
     * @param row                The row index (1-based index).
-    * @param classType             The class type representing the row.
+    * @param clazz             The class type representing the row.
     * @param field              The field to update.
     * @param index              The cell index within the row (1-based index).
     * @param value              The value to insert.
@@ -234,11 +214,9 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     */
    @Override
    public final <T> void insertCellValue(final TableComponentType tableComponentType, final int row,
-                                         final Class<T> classType, final TableField<T> field, final int index,
+                                         final Class<T> clazz, final TableField<T> field, final int index,
                                          final String... value) {
-      LogUi.step("Inserting cell value for row " + row + " for component type '" + tableComponentType
-            + "', field '" + field + "', index " + index);
-      getOrCreateComponent(tableComponentType).insertCellValue(row, classType, field, index, value);
+      getOrCreateComponent(tableComponentType).insertCellValue(row, clazz, field, index, value);
    }
 
    /**
@@ -246,7 +224,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of table component being used.
     * @param searchCriteria     A list of string values used to locate the row.
-    * @param classType             The class type representing the table row.
+    * @param clazz             The class type representing the table row.
     * @param field              The field where the value should be inserted.
     * @param index              The index within the field where the value should be inserted (1-based index).
     * @param values             The values to be inserted into the specified cell.
@@ -254,11 +232,9 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     */
    @Override
    public final <T> void insertCellValue(final TableComponentType tableComponentType,
-                                         final List<String> searchCriteria, final Class<T> classType,
+                                         final List<String> searchCriteria, final Class<T> clazz,
                                          final TableField<T> field, final int index, final String... values) {
-      LogUi.step("Inserting cell value for row matching criteria " + searchCriteria + " for component type '"
-            + tableComponentType + "', field '" + field + "', index " + index);
-      getOrCreateComponent(tableComponentType).insertCellValue(searchCriteria, classType, field, index, values);
+      getOrCreateComponent(tableComponentType).insertCellValue(searchCriteria, clazz, field, index, values);
    }
 
    /**
@@ -266,16 +242,14 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of table component being used.
     * @param searchCriteria     A list of string values used to locate the row.
-    * @param classType             The class type representing the table row.
+    * @param clazz             The class type representing the table row.
     * @param data               The data object containing values to be inserted into the row.
     * @param <T>                The type of the row representation.
     */
    @Override
    public final <T> void insertCellValue(final TableComponentType tableComponentType,
-                                         final List<String> searchCriteria, final Class<T> classType, final T data) {
-      LogUi.step("Inserting cell value for row matching criteria " + searchCriteria + " for component type '"
-            + tableComponentType + "' with data as class '" + classType.getSimpleName() + "'");
-      getOrCreateComponent(tableComponentType).insertCellValue(searchCriteria, classType, data);
+                                         final List<String> searchCriteria, final Class<T> clazz, final T data) {
+      getOrCreateComponent(tableComponentType).insertCellValue(searchCriteria, clazz, data);
    }
 
    /**
@@ -292,9 +266,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    public final <T> void filterTable(final TableComponentType tableComponentType, final Class<T> tclass,
                                      final TableField<T> column, final FilterStrategy filterStrategy,
                                      final String... values) {
-      LogUi.step("Filtering table for component type '" + tableComponentType + "', class '"
-            + tclass.getSimpleName() + "', column '" + column + "', using strategy '" + filterStrategy
-            + "' with values " + Arrays.toString(values));
       getOrCreateComponent(tableComponentType).filterTable(tclass, column, filterStrategy, values);
    }
 
@@ -310,8 +281,6 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
    @Override
    public final <T> void sortTable(final TableComponentType tableComponentType, final Class<T> tclass,
                                    final TableField<T> column, final SortingStrategy sortingStrategy) {
-      LogUi.step("Sorting table for component type '" + tableComponentType + "', class '"
-            + tclass.getSimpleName() + "', column '" + column + "', using sorting strategy '" + sortingStrategy + "'");
       getOrCreateComponent(tableComponentType).sortTable(tclass, column, sortingStrategy);
    }
 

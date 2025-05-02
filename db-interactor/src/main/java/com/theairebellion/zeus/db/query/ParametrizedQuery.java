@@ -13,9 +13,9 @@ import java.util.Map;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public class ParametrizedQuery implements DbQuery {
+public class ParametrizedQuery<T extends Enum<T>> implements DbQuery<T> {
 
-   private final DbQuery original;
+   private final DbQuery<T> original;
    private final Map<String, Object> params = new HashMap<>();
 
    /**
@@ -23,7 +23,7 @@ public class ParametrizedQuery implements DbQuery {
     *
     * @param original The original {@link DbQuery} to parameterize.
     */
-   public ParametrizedQuery(DbQuery original) {
+   public ParametrizedQuery(DbQuery<T> original) {
       this.original = original;
    }
 
@@ -60,7 +60,7 @@ public class ParametrizedQuery implements DbQuery {
     * @return The enum representing the query.
     */
    @Override
-   public Enum<?> enumImpl() {
+   public T enumImpl() {
       return original.enumImpl();
    }
 
@@ -74,9 +74,10 @@ public class ParametrizedQuery implements DbQuery {
     * @return A new {@code ParametrizedQuery} instance with the added parameter.
     */
    @Override
-   public DbQuery withParam(String name, Object value) {
+   @SuppressWarnings("java:S1854")
+   public DbQuery<T> withParam(String name, Object value) {
       LogDb.debug("Adding parameter '{}' with value '{}' to the query.", name, value);
-      ParametrizedQuery copy = new ParametrizedQuery(this.original);
+      ParametrizedQuery<T> copy = new ParametrizedQuery<>(this.original);
       copy.params.putAll(this.params);
       copy.params.put(name, value);
       return copy;

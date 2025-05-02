@@ -17,7 +17,7 @@ import static com.theairebellion.zeus.api.config.ApiConfigHolder.getApiConfig;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public interface Endpoint {
+public interface Endpoint<T extends Enum<T>> {
 
    /**
     * Retrieves the HTTP method associated with this endpoint.
@@ -38,7 +38,7 @@ public interface Endpoint {
     *
     * @return The enum representing this endpoint.
     */
-   Enum<?> enumImpl();
+   T enumImpl();
 
    /**
     * Retrieves the base URL for this endpoint.

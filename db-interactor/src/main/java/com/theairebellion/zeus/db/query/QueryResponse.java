@@ -1,9 +1,11 @@
 package com.theairebellion.zeus.db.query;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Represents the response of a database query.
@@ -13,9 +15,10 @@ import lombok.Data;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@Data
-@AllArgsConstructor
-public class QueryResponse {
+@Getter
+@ToString
+@EqualsAndHashCode
+public final class QueryResponse {
 
    /**
     * The result rows of the executed query.
@@ -23,5 +26,14 @@ public class QueryResponse {
     * <p>Each row is represented as a {@code Map} where the key is the column name
     * and the value is the corresponding data.
     */
-   private List<Map<String, Object>> rows;
+   private final List<Map<String, Object>> rows;
+
+
+   public QueryResponse(final List<Map<String, Object>> rows) {
+      if (rows == null) {
+         throw new IllegalArgumentException("rows must not be null");
+      }
+      this.rows = Collections.unmodifiableList(rows);
+   }
+
 }

@@ -28,7 +28,7 @@ public abstract class LogCore {
     */
    private final Marker marker;
 
-   private static Boolean SILENT_MODE;
+   private static Boolean silentMode;
 
    /**
     * Custom log level for step-based logs.
@@ -49,7 +49,7 @@ public abstract class LogCore {
    /**
     * Flag indicating whether extended logging is enabled, controlled via system properties.
     */
-   private static Boolean EXTENDED_LOGGING;
+   private static Boolean extendedLogging;
 
 
    /**
@@ -179,11 +179,11 @@ public abstract class LogCore {
     *
     * @return {@code true} if extended logging is enabled, otherwise {@code false}.
     */
-   private boolean extendedLoggingEnabled() {
-      if (EXTENDED_LOGGING == null) {
-         EXTENDED_LOGGING = Boolean.parseBoolean(System.getProperty("extended.logging", "false"));
+   private static boolean extendedLoggingEnabled() {
+      if (extendedLogging == null) {
+         extendedLogging = Boolean.parseBoolean(System.getProperty("extended.logging", "false"));
       }
-      return EXTENDED_LOGGING;
+      return extendedLogging;
    }
 
 
@@ -198,10 +198,10 @@ public abstract class LogCore {
     * @return {@code true} if silent mode is enabled, otherwise {@code false}.
     */
    private static boolean isSilent() {
-      if (SILENT_MODE == null) {
-         SILENT_MODE = Boolean.parseBoolean(System.getProperty("silent.mode", "false"));
+      if (silentMode == null) {
+         silentMode = Boolean.parseBoolean(System.getProperty("silent.mode", "false"));
       }
-      return SILENT_MODE;
+      return silentMode;
    }
 
 

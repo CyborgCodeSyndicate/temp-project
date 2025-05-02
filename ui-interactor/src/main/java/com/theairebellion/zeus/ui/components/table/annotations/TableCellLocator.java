@@ -11,7 +11,7 @@ import org.openqa.selenium.support.FindBy;
  * This annotation is applied to fields in a row model class to specify how
  * table cells are located in the UI.
  *
- * <p>It provides three locators:</p>
+ * <p>It provides three locators:
  * <ul>
  *   <li>{@code cellLocator} - Identifies the cell in a row.</li>
  *   <li>{@code headerCellLocator} - Identifies the corresponding column header.</li>
@@ -19,7 +19,7 @@ import org.openqa.selenium.support.FindBy;
  * </ul>
  *
  * <p>The table framework processes this annotation at runtime to extract
- * and interact with table data dynamically.</p>
+ * and interact with table data dynamically.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

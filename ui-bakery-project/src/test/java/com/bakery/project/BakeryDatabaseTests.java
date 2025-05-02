@@ -59,7 +59,7 @@ public class BakeryDatabaseTests extends BaseTest {
                journeyData = {@JourneyData(VALID_ORDER)}, order = 2)
    })
    public void createOrderDatabaseValidation(Quest quest,
-                                             @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(FORGE)
             .validateOrder(order)
@@ -91,7 +91,7 @@ public class BakeryDatabaseTests extends BaseTest {
                journeyData = {@JourneyData(VALID_ORDER)}, order = 3)
    })
    public void createOrderPreQuestDatabase(Quest quest,
-                                           @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(FORGE)
             .validateOrder(order)

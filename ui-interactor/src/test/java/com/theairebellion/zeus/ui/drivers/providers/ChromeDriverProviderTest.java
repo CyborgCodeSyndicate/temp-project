@@ -112,7 +112,8 @@ class ChromeDriverProviderTest {
       provider.applyHeadlessArguments(optionsMock);
 
       // Then the expected arguments should be added
-      verify(optionsMock).addArguments("--headless", "window-size=1920x1080", "--allow-insecure-localhost", "--disable-dev-shm-usage");
+      verify(optionsMock).addArguments("--headless", "window-size=1920x1080", "--allow-insecure-localhost",
+            "--disable-dev-shm-usage");
    }
 
    @Test
@@ -133,7 +134,8 @@ class ChromeDriverProviderTest {
          verify(mockManager, never()).driverVersion(anyString());
 
          // And the correct log message should be shown
-         mockedLog.verify(() -> LogUi.info("Chrome driver is downloaded with a compatible version for the installed browser"));
+         mockedLog.verify(
+               () -> LogUi.info("Chrome driver is downloaded with a compatible version for the installed browser"));
       }
    }
 
@@ -155,7 +157,8 @@ class ChromeDriverProviderTest {
          verify(mockManager, never()).driverVersion(anyString());
 
          // And the correct log message should be shown
-         mockedLog.verify(() -> LogUi.info("Chrome driver is downloaded with a compatible version for the installed browser"));
+         mockedLog.verify(
+               () -> LogUi.info("Chrome driver is downloaded with a compatible version for the installed browser"));
       }
    }
 

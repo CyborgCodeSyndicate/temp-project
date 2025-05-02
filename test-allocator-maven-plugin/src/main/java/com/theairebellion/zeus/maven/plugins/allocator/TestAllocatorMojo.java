@@ -27,7 +27,7 @@ import org.apache.maven.project.MavenProject;
  * for parallel execution based on the selected test engine (JUnit or TestNG).
  *
  * <p>Supports filtering by tags (JUnit) and suite names (TestNG), and allows
- * configuring the number of methods per group and parallel execution settings.</p>
+ * configuring the number of methods per group and parallel execution settings.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

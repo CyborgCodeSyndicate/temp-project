@@ -123,7 +123,8 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
          );
 
          assertInstanceOf(IllegalArgumentException.class, exception.getCause());
-         assertTrue(exception.getCause().getMessage().contains("Xpath selectors are not supported inside shadow roots"));
+         assertTrue(
+               exception.getCause().getMessage().contains("Xpath selectors are not supported inside shadow roots"));
       }
 
       @Test
@@ -229,7 +230,8 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
          WebDriver jsDriver =
                mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
          when(smartElement.getDriver()).thenReturn(jsDriver);
-         when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement), any(Map.class))).thenReturn(foundElement);
+         when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement), any(Map.class))).thenReturn(
+               foundElement);
 
          try (MockedStatic<UiConfigHolder> configHolderMock = mockStatic(UiConfigHolder.class)) {
             // Set up mocks
@@ -371,7 +373,8 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
          WebDriver jsDriver =
                mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
          when(smartElement.getDriver()).thenReturn(jsDriver);
-         when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement), any(Map.class))).thenReturn(foundElements);
+         when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement), any(Map.class))).thenReturn(
+               foundElements);
 
          try (MockedStatic<UiConfigHolder> configHolderMock = mockStatic(UiConfigHolder.class)) {
             // Set up mocks
@@ -419,7 +422,8 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
          WebDriver jsDriver =
                mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
          when(smartElement.getDriver()).thenReturn(jsDriver);
-         when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement), any(Map.class))).thenReturn("not a list");
+         when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement), any(Map.class))).thenReturn(
+               "not a list");
 
          try (MockedStatic<UiConfigHolder> configHolderMock = mockStatic(UiConfigHolder.class)) {
             // Set up mocks
@@ -596,7 +600,8 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
 
          assertNotNull(findShadowElementsFromElementJs.get(null));
          assertInstanceOf(String.class, findShadowElementsFromElementJs.get(null));
-         assertTrue(((String) findShadowElementsFromElementJs.get(null)).contains("function findShadowElementsFromRoot"));
+         assertTrue(
+               ((String) findShadowElementsFromElementJs.get(null)).contains("function findShadowElementsFromRoot"));
       }
    }
 }

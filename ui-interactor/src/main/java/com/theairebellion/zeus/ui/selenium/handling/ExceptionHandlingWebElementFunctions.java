@@ -26,6 +26,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class ExceptionHandlingWebElementFunctions {
 
+   private ExceptionHandlingWebElementFunctions() {
+   }
+
    /**
     * Handles a stale element reference by attempting to re-locate the element.
     *

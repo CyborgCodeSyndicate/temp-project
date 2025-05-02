@@ -1,6 +1,7 @@
 package com.bakery.project;
 
 import com.bakery.project.data.creator.TestDataCreator;
+import com.bakery.project.data.extractions.CustomDataExtractor;
 import com.bakery.project.db.hooks.DbHookFlows;
 import com.bakery.project.model.bakery.Order;
 import com.bakery.project.model.bakery.Seller;
@@ -22,7 +23,6 @@ import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.annotations.UI;
-import com.theairebellion.zeus.ui.storage.DataExtractorsUi;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.qameta.allure.Description;
 import java.util.List;
@@ -67,8 +67,8 @@ public class BakeryFeaturesTest extends BaseTestSequential {
    @Test
    @Description("Insertion data usage")
    public void createOrderInsertion(Quest quest,
-                                    @Craft(model = VALID_SELLER) Seller seller,
-                                    @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_SELLER) Seller seller,
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(EARTH)
             .browser().navigate(getUiConfig().baseUrl())
@@ -88,7 +88,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
    @Test
    @Description("Storage usage")
    public void createOrderStorage(Quest quest,
-                                  @Craft(model = VALID_SELLER) Seller seller) {
+         @Craft(model = VALID_SELLER) Seller seller) {
       quest
             .enters(FORGE)
             .loginUser(seller)
@@ -115,7 +115,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                journeyData = {@JourneyData(VALID_ORDER)}, order = 2)
    })
    public void createOrderPreQuest(Quest quest,
-                                   @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(FORGE)
             .validateOrder(order)
@@ -127,7 +127,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
    @Description("Authentication usage")
    @AuthenticateViaUiAs(credentials = AdminUi.class, type = BakeryUiLogging.class)
    public void createOrderAuth(Quest quest,
-                               @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(FORGE)
             .createOrder(order)
@@ -140,7 +140,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
    @Description("Authentication usage")
    @AuthenticateViaUiAs(credentials = AdminUi.class, type = BakeryUiLogging.class)
    public void createOrderAuth2(Quest quest,
-                                @Craft(model = VALID_ORDER) Order order) {
+         @Craft(model = VALID_ORDER) Order order) {
       quest
             .enters(OLYMPYS)
             .requestAndValidate(
@@ -174,7 +174,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
    @Description("Interceptor raw usage")
    @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
    public void createOrderInterceptor(Quest quest,
-                                      @Craft(model = VALID_SELLER) Seller seller) {
+         @Craft(model = VALID_SELLER) Seller seller) {
       quest
             .enters(FORGE)
             .loginUser2(seller)
@@ -182,7 +182,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
             .then()
             .enters(EARTH)
             .validate(() -> assertEquals(List.of("$197.54"),
-                  retrieve(DataExtractorsUi
+                  retrieve(CustomDataExtractor
                               .responseBodyExtraction(BakeryInterceptRequests.INTERCEPT_REQUEST_AUTH.getEndpointSubString(),
                                     "$[0].changes[?(@.key=='totalPrice')].value", "for(;;);"),
                         List.class)))
@@ -196,9 +196,9 @@ public class BakeryFeaturesTest extends BaseTestSequential {
    @InterceptRequests(requestUrlSubStrings = {INTERCEPT_REQUEST_AUTH})
    @Ripper(targets = {DELETE_CREATED_ORDERS})
    public void createOrderInterceptorLateDataAndRipper(Quest quest,
-                                                       @Craft(model = VALID_SELLER) Seller seller,
-                                                       @Craft(model = VALID_ORDER) Order order,
-                                                       @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
+         @Craft(model = VALID_SELLER) Seller seller,
+         @Craft(model = VALID_ORDER) Order order,
+         @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
       quest
             .enters(FORGE)
             .loginUser2(seller)
@@ -220,7 +220,7 @@ public class BakeryFeaturesTest extends BaseTestSequential {
                journeyData = {@JourneyData(VALID_ORDER)})
    })
    public void createOrderInterceptorStorage(Quest quest,
-                                             @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
+         @Craft(model = VALID_LATE_ORDER) Late<Order> lateOrder) {
       quest
             .enters(FORGE)
             .validateOrder(retrieve(PRE_ARGUMENTS, TestDataCreator.VALID_ORDER, Order.class))

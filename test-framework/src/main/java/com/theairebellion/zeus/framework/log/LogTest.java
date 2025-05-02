@@ -19,7 +19,7 @@ import com.theairebellion.zeus.logging.LogCore;
  */
 public final class LogTest extends LogCore {
 
-   private static LogTest INSTANCE;
+   private static LogTest instance;
 
    /**
     * Private constructor to enforce singleton pattern.
@@ -115,10 +115,10 @@ public final class LogTest extends LogCore {
     * @return The singleton instance of {@code LogTest}.
     */
    private static LogTest getInstance() {
-      if (INSTANCE == null) {
-         INSTANCE = new LogTest();
+      if (instance == null) {
+         instance = new LogTest();
       }
-      return INSTANCE;
+      return instance;
    }
 
 }

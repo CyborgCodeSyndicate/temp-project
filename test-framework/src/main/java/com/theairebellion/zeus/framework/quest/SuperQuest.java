@@ -3,7 +3,6 @@ package com.theairebellion.zeus.framework.quest;
 import com.theairebellion.zeus.framework.assertion.CustomSoftAssertion;
 import com.theairebellion.zeus.framework.chain.FluentService;
 import com.theairebellion.zeus.framework.storage.Storage;
-import lombok.Getter;
 import lombok.experimental.Delegate;
 
 /**
@@ -19,14 +18,14 @@ import lombok.experimental.Delegate;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@Getter
-public class SuperQuest extends Quest {
+public final class SuperQuest extends Quest {
 
    /**
     * The underlying {@code Quest} instance that holds the original test execution context.
     */
    @Delegate
    private final Quest original;
+
 
    /**
     * Constructs a new {@code SuperQuest} by wrapping the provided {@code Quest}.
@@ -36,6 +35,7 @@ public class SuperQuest extends Quest {
    public SuperQuest(Quest quest) {
       this.original = quest;
    }
+
 
    /**
     * Retrieves an artifact from the underlying quest.
@@ -54,6 +54,7 @@ public class SuperQuest extends Quest {
       return original.artifact(worldType, artifactType);
    }
 
+
    /**
     * Registers a test service (world) into the underlying quest.
     *
@@ -67,6 +68,7 @@ public class SuperQuest extends Quest {
    public void registerWorld(Class<? extends FluentService> worldType, FluentService world) {
       original.registerWorld(worldType, world);
    }
+
 
    /**
     * Retrieves a registered test service from the underlying quest without modifying the context.
@@ -83,6 +85,7 @@ public class SuperQuest extends Quest {
       return super.cast(worldType);
    }
 
+
    /**
     * Removes a test service from the underlying quest.
     *
@@ -96,6 +99,7 @@ public class SuperQuest extends Quest {
       original.removeWorld(worldType);
    }
 
+
    /**
     * Provides access to the storage instance from the underlying quest.
     *
@@ -108,6 +112,7 @@ public class SuperQuest extends Quest {
       return original.getStorage();
    }
 
+
    /**
     * Provides access to the soft assertion handler from the underlying quest.
     *
@@ -118,6 +123,11 @@ public class SuperQuest extends Quest {
    @Override
    public CustomSoftAssertion getSoftAssertions() {
       return original.getSoftAssertions();
+   }
+
+
+   public Quest getOriginal() {
+      return original;
    }
 
 }

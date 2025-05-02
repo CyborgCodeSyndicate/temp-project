@@ -13,6 +13,7 @@ import org.openqa.selenium.By;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
+@SuppressWarnings("java:S5960")
 public class ValidationServiceFluent<T extends UiServiceFluent<?>> {
 
    private final T uiServiceFluent;

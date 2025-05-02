@@ -61,6 +61,7 @@ public class WebDriverFactory {
     * @throws IllegalArgumentException If no driver is registered for the specified type.
     * @throws RuntimeException         If WebDriver creation fails due to an unexpected error.
     */
+   @SuppressWarnings({"rawtypes", "unchecked"}) // Necessary for generic factory call
    public static WebDriver createDriver(String type, WebDriverConfig config) {
       DriverProvider<?> provider = Optional.ofNullable(DRIVER_PROVIDERS.get(type.trim().toUpperCase()))
             .orElseThrow(() -> new IllegalArgumentException("No driver registered for type: " + type));

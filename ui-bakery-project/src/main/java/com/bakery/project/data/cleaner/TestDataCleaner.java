@@ -4,7 +4,7 @@ import com.theairebellion.zeus.framework.parameters.DataRipper;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import java.util.function.Consumer;
 
-public enum TestDataCleaner implements DataRipper {
+public enum TestDataCleaner implements DataRipper<TestDataCleaner> {
    DELETE_CREATED_ORDERS(DataCleanUpFunctions::cleanAllOrders);
 
    public static final class Data {
@@ -30,7 +30,7 @@ public enum TestDataCleaner implements DataRipper {
 
 
    @Override
-   public Enum<?> enumImpl() {
+   public TestDataCleaner enumImpl() {
       return this;
    }
 }

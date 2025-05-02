@@ -67,13 +67,11 @@ public class CustomSoftAssertion extends SoftAssertions {
     */
    @Override
    public void collectAssertionError(final AssertionError error) {
-      postErrorHandlers.forEach((clazz, handler) -> {
-         getObjectFromType(clazz).ifPresent(object -> {
-            if (errorCheckers.getOrDefault(clazz, stackTrace -> true).test(error.getStackTrace())) {
-               handler.accept(error, object);
-            }
-         });
-      });
+      postErrorHandlers.forEach((clazz, handler) -> getObjectFromType(clazz).ifPresent(object -> {
+         if (errorCheckers.getOrDefault(clazz, stackTrace -> true).test(error.getStackTrace())) {
+            handler.accept(error, object);
+         }
+      }));
       super.collectAssertionError(error);
    }
 

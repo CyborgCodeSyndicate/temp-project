@@ -1,9 +1,9 @@
 package com.theairebellion.zeus.ui.parameters;
 
-public interface DataIntercept {
+public interface DataIntercept<T extends Enum<T>> {
 
    String getEndpointSubString();
 
-   Enum<?> enumImpl();
+   T enumImpl();
 
 }

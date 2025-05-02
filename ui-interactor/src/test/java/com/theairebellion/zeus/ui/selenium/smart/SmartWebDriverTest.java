@@ -194,7 +194,8 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
-              MockedStatic<ExceptionHandlingWebDriverFunctions> exceptionHandlingFunctionsMock = mockStatic(ExceptionHandlingWebDriverFunctions.class)) {
+              MockedStatic<ExceptionHandlingWebDriverFunctions> exceptionHandlingFunctionsMock = mockStatic(
+                    ExceptionHandlingWebDriverFunctions.class)) {
 
             // Setup config mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
@@ -350,7 +351,8 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
-              MockedStatic<ExceptionHandlingWebDriverFunctions> exceptionHandlingFunctionsMock = mockStatic(ExceptionHandlingWebDriverFunctions.class)) {
+              MockedStatic<ExceptionHandlingWebDriverFunctions> exceptionHandlingFunctionsMock = mockStatic(
+                    ExceptionHandlingWebDriverFunctions.class)) {
 
             // Setup config mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
@@ -865,8 +867,9 @@ class SmartWebDriverTest extends BaseUnitUITest {
          };
 
          // Create a spy to verify the lambda is called
-         SmartWebDriver spyDriver = spy(smartDriver);
          WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
+         SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+         SmartWebDriver spyDriver = spy(realDriver);
          when(spyDriver.getOriginal()).thenReturn(jsDriver);
 
          // Make sure shadow root is disabled
@@ -910,8 +913,9 @@ class SmartWebDriverTest extends BaseUnitUITest {
          };
 
          // Create a spy to verify the lambda is called
-         SmartWebDriver spyDriver = spy(smartDriver);
          WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
+         SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+         SmartWebDriver spyDriver = spy(realDriver);
          when(spyDriver.getOriginal()).thenReturn(jsDriver);
 
          // Make sure shadow root is disabled
@@ -956,8 +960,9 @@ class SmartWebDriverTest extends BaseUnitUITest {
          };
 
          // Create a spy to verify the lambda is called
-         SmartWebDriver spyDriver = spy(smartDriver);
          WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
+         SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+         SmartWebDriver spyDriver = spy(realDriver);
          when(spyDriver.getOriginal()).thenReturn(jsDriver);
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
@@ -1000,8 +1005,9 @@ class SmartWebDriverTest extends BaseUnitUITest {
          Function<WebDriver, Boolean> condition = driver -> true;
 
          // Create a spy to verify the lambda is called
-         SmartWebDriver spyDriver = spy(smartDriver);
          WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
+         SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+         SmartWebDriver spyDriver = spy(realDriver);
          when(spyDriver.getOriginal()).thenReturn(jsDriver);
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
@@ -1044,8 +1050,9 @@ class SmartWebDriverTest extends BaseUnitUITest {
          List<SmartWebElement> mockElements = Collections.singletonList(mockElement);
 
          // Create a spy to verify the lambda is called
-         SmartWebDriver spyDriver = spy(smartDriver);
          WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
+         SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+         SmartWebDriver spyDriver = spy(realDriver);
          when(spyDriver.getOriginal()).thenReturn(jsDriver);
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
@@ -1119,7 +1126,8 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
-              MockedStatic<ExceptionHandlingWebDriverFunctions> exceptionHandlingFunctionsMock = mockStatic(ExceptionHandlingWebDriverFunctions.class)) {
+              MockedStatic<ExceptionHandlingWebDriverFunctions> exceptionHandlingFunctionsMock = mockStatic(
+                    ExceptionHandlingWebDriverFunctions.class)) {
 
             // Setup config mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);

@@ -17,6 +17,9 @@ import java.util.Objects;
  */
 public class RetryConditionApi {
 
+   private RetryConditionApi() {
+   }
+
    /**
     * Creates a retry condition that checks if the response status matches the expected value.
     *
@@ -24,7 +27,7 @@ public class RetryConditionApi {
     * @param status   The expected status code.
     * @return A {@link RetryCondition} that retries until the expected status code is received.
     */
-   public static RetryCondition<Integer> statusEquals(Endpoint endpoint, int status) {
+   public static RetryCondition<Integer> statusEquals(Endpoint<?> endpoint, int status) {
       return new RetryConditionImpl<>(
             service -> {
                RestService restService = (RestService) service;
@@ -42,7 +45,7 @@ public class RetryConditionApi {
     * @param status   The expected status code.
     * @return A {@link RetryCondition} that retries until the expected status code is received.
     */
-   public static RetryCondition<Integer> statusEquals(Endpoint endpoint, Object body, int status) {
+   public static RetryCondition<Integer> statusEquals(Endpoint<?> endpoint, Object body, int status) {
       return new RetryConditionImpl<>(
             service -> {
                RestService restService = (RestService) service;
@@ -60,7 +63,7 @@ public class RetryConditionApi {
     * @param obj      The expected value.
     * @return A {@link RetryCondition} that retries until the field value matches the expected value.
     */
-   public static RetryCondition<Object> responseFieldEqualsTo(Endpoint endpoint, String jsonPath, Object obj) {
+   public static RetryCondition<Object> responseFieldEqualsTo(Endpoint<?> endpoint, String jsonPath, Object obj) {
       return new RetryConditionImpl<>(
             service -> {
                RestService restService = (RestService) service;
@@ -79,7 +82,7 @@ public class RetryConditionApi {
     * @param obj      The expected value.
     * @return A {@link RetryCondition} that retries until the field value matches the expected value.
     */
-   public static RetryCondition<Object> responseFieldEqualsTo(Endpoint endpoint, Object body, String jsonPath,
+   public static RetryCondition<Object> responseFieldEqualsTo(Endpoint<?> endpoint, Object body, String jsonPath,
                                                               Object obj) {
       return new RetryConditionImpl<>(
             service -> {
@@ -97,7 +100,7 @@ public class RetryConditionApi {
     * @param jsonPath The JSON path to extract the field.
     * @return A {@link RetryCondition} that retries until the field contains a non-null value.
     */
-   public static RetryCondition<Object> responseFieldNonNull(Endpoint endpoint, String jsonPath) {
+   public static RetryCondition<Object> responseFieldNonNull(Endpoint<?> endpoint, String jsonPath) {
       return new RetryConditionImpl<>(
             service -> {
                RestService restService = (RestService) service;
@@ -115,7 +118,7 @@ public class RetryConditionApi {
     * @param jsonPath The JSON path to extract the field.
     * @return A {@link RetryCondition} that retries until the field contains a non-null value.
     */
-   public static RetryCondition<Object> responseFieldNonNull(Endpoint endpoint, Object body, String jsonPath) {
+   public static RetryCondition<Object> responseFieldNonNull(Endpoint<?> endpoint, Object body, String jsonPath) {
       return new RetryConditionImpl<>(
             service -> {
                RestService restService = (RestService) service;

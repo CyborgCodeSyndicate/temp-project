@@ -29,9 +29,10 @@ public class CellLocatorTest extends BaseUnitUITest {
       CellFilterComponent filterComponent = new CellFilterComponent(MockComponentType.class, "dummyFilter");
       Class<? extends CellFilterFunction> customFilter = MockCellFilterFunction.class;
       CellLocator locator =
-            new CellLocator(fieldName, cellLocator, cellTextLocator, headerCellLocator, collection, tableSection, insertionComponent, customInsertion, filterComponent, customFilter);
+            new CellLocator(fieldName, cellLocator, cellTextLocator, headerCellLocator, collection, tableSection,
+                  insertionComponent, customInsertion, filterComponent, customFilter);
       assertEquals(fieldName, locator.getFieldName());
-      assertEquals(cellLocator, locator.getCellLocator());
+      assertEquals(cellLocator, locator.getLocator());
       assertEquals(cellTextLocator, locator.getCellTextLocator());
       assertEquals(headerCellLocator, locator.getHeaderCellLocator());
       assertEquals(collection, locator.isCollection());
@@ -46,7 +47,7 @@ public class CellLocatorTest extends BaseUnitUITest {
    void testNoArgsConstructorAndSetters() {
       CellLocator locator = new CellLocator();
       locator.setFieldName("field");
-      locator.setCellLocator(By.name("cell"));
+      locator.setLocator(By.name("cell"));
       locator.setCellTextLocator(By.xpath("//text"));
       locator.setHeaderCellLocator(By.cssSelector(".header"));
       locator.setCollection(false);
@@ -58,7 +59,7 @@ public class CellLocatorTest extends BaseUnitUITest {
       locator.setCellFilterComponent(filterComponent);
       locator.setCustomCellFilter(MockCellFilterFunction.class);
       assertEquals("field", locator.getFieldName());
-      assertEquals(By.name("cell"), locator.getCellLocator());
+      assertEquals(By.name("cell"), locator.getLocator());
       assertEquals(By.xpath("//text"), locator.getCellTextLocator());
       assertEquals(By.cssSelector(".header"), locator.getHeaderCellLocator());
       assertEquals(false, locator.isCollection());
@@ -80,9 +81,11 @@ public class CellLocatorTest extends BaseUnitUITest {
       CellInsertionComponent insertionComponent = new CellInsertionComponent(MockComponentType.class, "dummy", 1);
       CellFilterComponent filterComponent = new CellFilterComponent(MockComponentType.class, "dummyFilter");
       CellLocator locator1 =
-            new CellLocator(fieldName, cellLocator, cellTextLocator, headerCellLocator, collection, tableSection, insertionComponent, MockCellInsertionFunction.class, filterComponent, MockCellFilterFunction.class);
+            new CellLocator(fieldName, cellLocator, cellTextLocator, headerCellLocator, collection, tableSection,
+                  insertionComponent, MockCellInsertionFunction.class, filterComponent, MockCellFilterFunction.class);
       CellLocator locator2 =
-            new CellLocator(fieldName, cellLocator, cellTextLocator, headerCellLocator, collection, tableSection, insertionComponent, MockCellInsertionFunction.class, filterComponent, MockCellFilterFunction.class);
+            new CellLocator(fieldName, cellLocator, cellTextLocator, headerCellLocator, collection, tableSection,
+                  insertionComponent, MockCellInsertionFunction.class, filterComponent, MockCellFilterFunction.class);
       assertEquals(locator1, locator2);
       assertEquals(locator1.hashCode(), locator2.hashCode());
       locator2.setFieldName("different");

@@ -10,7 +10,7 @@ import com.theairebellion.zeus.validator.core.AssertionTarget;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public enum UiTablesAssertionTarget implements AssertionTarget {
+public enum UiTablesAssertionTarget implements AssertionTarget<UiTablesAssertionTarget> {
 
    /**
     * Targets individual row values for assertions.
@@ -38,7 +38,7 @@ public enum UiTablesAssertionTarget implements AssertionTarget {
     * @return The current enum instance.
     */
    @Override
-   public Enum<?> target() {
+   public UiTablesAssertionTarget target() {
       return this;
    }
 }

@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
  * This annotation is used within row model classes to automate cell interactions.
  *
  * <p>It works alongside table processing logic to determine how and where values
- * should be inserted using the specified {@link #type()} and {@link #componentType()}.</p>
+ * should be inserted using the specified {@link #type()} and {@link #componentType()}.
  *
- * <p>The {@code order} parameter controls execution priority when multiple insertions exist.</p>
+ * <p>The {@code order} parameter controls execution priority when multiple insertions exist.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

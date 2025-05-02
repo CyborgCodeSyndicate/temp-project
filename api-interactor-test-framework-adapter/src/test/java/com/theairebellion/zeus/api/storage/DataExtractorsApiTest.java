@@ -46,7 +46,8 @@ class DataExtractorsApiTest {
          when(response.body()).thenReturn(responseBody);
          when(responseBody.jsonPath()).thenReturn(jsonPath);
 
-         DataExtractor<String> extractor = DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
+         DataExtractor<String> extractor =
+               DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
 
          // Act
          String result = extractor.extract(response);
@@ -67,7 +68,8 @@ class DataExtractorsApiTest {
          when(response.body()).thenReturn(responseBody);
          when(responseBody.jsonPath()).thenReturn(jsonPath);
 
-         DataExtractor<String> extractor = DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
+         DataExtractor<String> extractor =
+               DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
 
          // Act
          String result = extractor.extract(response);
@@ -88,7 +90,8 @@ class DataExtractorsApiTest {
          when(response.body()).thenReturn(responseBody);
          when(responseBody.jsonPath()).thenReturn(jsonPath);
 
-         DataExtractor<Integer> extractor = DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
+         DataExtractor<Integer> extractor =
+               DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
 
          // Act
          Integer result = extractor.extract(response);
@@ -102,7 +105,8 @@ class DataExtractorsApiTest {
       void shouldThrowExceptionIfInputIsNotResponse() {
          // Arrange
          String jsonPathExpression = "some.path";
-         DataExtractor<String> extractor = DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
+         DataExtractor<String> extractor =
+               DataExtractorsApi.responseBodyExtraction(TestEnum.API_RESPONSE, jsonPathExpression);
          Object notAResponse = new Object();
 
          // Act & Assert

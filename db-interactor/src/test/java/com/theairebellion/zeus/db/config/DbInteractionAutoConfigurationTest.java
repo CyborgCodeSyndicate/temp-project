@@ -1,6 +1,5 @@
 package com.theairebellion.zeus.db.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theairebellion.zeus.db.json.JsonPathExtractor;
 import org.junit.jupiter.api.DisplayName;
@@ -9,14 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DbInteractionAutoConfigurationTest {
@@ -35,13 +31,13 @@ class DbInteractionAutoConfigurationTest {
    }
 
    @Test
-   @DisplayName("Should create JsonPathExtractor with provided ObjectMapper")
-   void testJsonPathExtractor() throws JsonProcessingException {
+   @DisplayName("Should create JsonPathExtractor with copied ObjectMapper")
+   void testJsonPathExtractor() {
       // Given
-      ObjectMapper mockMapper = mock(ObjectMapper.class);
+      ObjectMapper originalMapper = new ObjectMapper();
 
       // When
-      JsonPathExtractor jsonPathExtractor = configuration.jsonPathExtractor(mockMapper);
+      JsonPathExtractor jsonPathExtractor = configuration.jsonPathExtractor(originalMapper);
 
       // Then
       assertNotNull(jsonPathExtractor, "JsonPathExtractor should not be null");
@@ -49,18 +45,13 @@ class DbInteractionAutoConfigurationTest {
       try {
          java.lang.reflect.Field field = JsonPathExtractor.class.getDeclaredField("objectMapper");
          field.setAccessible(true);
-         Object extractorMapper = field.get(jsonPathExtractor);
+         Object copiedMapper = field.get(jsonPathExtractor);
 
-         assertSame(mockMapper, extractorMapper, "JsonPathExtractor should use the provided ObjectMapper");
+         assertNotNull(copiedMapper, "Copied ObjectMapper should not be null");
+         assertNotSame(originalMapper, copiedMapper, "ObjectMapper should be a different instance (copied)");
+         assertEquals(ObjectMapper.class, copiedMapper.getClass(), "Should be an instance of ObjectMapper");
       } catch (Exception e) {
-         verify(mockMapper, never()).readTree(anyString()); // Ensure no interactions yet
-
-         try {
-            // Try to trigger ObjectMapper usage
-            jsonPathExtractor.getClass().getMethod("getObjectMapper").invoke(jsonPathExtractor);
-         } catch (Exception ex) {
-            // Ignore if method doesn't exist
-         }
+         fail("Reflection failed: " + e.getMessage());
       }
    }
 

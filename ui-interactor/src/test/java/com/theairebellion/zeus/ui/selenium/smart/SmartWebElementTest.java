@@ -199,8 +199,10 @@ class SmartWebElementTest extends BaseUnitUITest {
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class);
-              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(ExceptionHandlingWebElementFunctions.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
+                    ExceptionHandlingWebElement.class);
+              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(
+                    ExceptionHandlingWebElementFunctions.class)) {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
@@ -343,8 +345,10 @@ class SmartWebElementTest extends BaseUnitUITest {
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class);
-              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(ExceptionHandlingWebElementFunctions.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
+                    ExceptionHandlingWebElement.class);
+              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(
+                    ExceptionHandlingWebElementFunctions.class)) {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
@@ -684,8 +688,10 @@ class SmartWebElementTest extends BaseUnitUITest {
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class);
-              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(ExceptionHandlingWebElementFunctions.class);
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
+                    ExceptionHandlingWebElement.class);
+              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(
+                    ExceptionHandlingWebElementFunctions.class);
               MockedConstruction<Actions> actionsMock = mockConstruction(Actions.class,
                     (mock, context) -> when(mock.doubleClick()).thenThrow(exception))) {
 
@@ -767,7 +773,8 @@ class SmartWebElementTest extends BaseUnitUITest {
          };
 
          try (MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
+                    ExceptionHandlingWebElement.class)) {
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
@@ -977,7 +984,8 @@ class SmartWebElementTest extends BaseUnitUITest {
          NoSuchElementException cause = new NoSuchElementException("Element not found");
          RuntimeException wrappedException = new RuntimeException("Wrapper exception", cause);
 
-         try (MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class)) {
+         try (MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
+               ExceptionHandlingWebElement.class)) {
             // Create mock enum for exception handling
             ExceptionHandlingWebElement mockEnum = mock(ExceptionHandlingWebElement.class);
             when(mockEnum.getMethodName()).thenReturn("testMethod");
@@ -1022,7 +1030,8 @@ class SmartWebElementTest extends BaseUnitUITest {
          IllegalArgumentException exception = new IllegalArgumentException("Unsupported element operation");
 
          try (MockedStatic<LogUi> logUIMock = mockStatic(LogUi.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
+                    ExceptionHandlingWebElement.class)) {
 
             // Create mock enum for exception handling with no matching handler
             ExceptionHandlingWebElement mockEnum = mock(ExceptionHandlingWebElement.class);

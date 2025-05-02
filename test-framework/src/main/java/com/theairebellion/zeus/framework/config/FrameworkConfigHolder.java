@@ -20,6 +20,9 @@ public class FrameworkConfigHolder {
     */
    private static FrameworkConfig config;
 
+   private FrameworkConfigHolder() {
+   }
+
    /**
     * Retrieves the singleton instance of {@code FrameworkConfig}.
     *

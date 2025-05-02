@@ -731,7 +731,8 @@ class InputServiceImplTest extends BaseUnitUITest {
          ComponentType nonInputType = mock(ComponentType.class);
 
          //Assert
-         assertThrows(IllegalArgumentException.class, () -> service.tableFilter(headerCell, nonInputType, filterStrategy, "val1"));
+         assertThrows(IllegalArgumentException.class,
+               () -> service.tableFilter(headerCell, nonInputType, filterStrategy, "val1"));
 
       }
 

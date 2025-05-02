@@ -150,29 +150,24 @@ public class TableAssertionFunctions {
     * @return {@code true} if there are no empty cells and matches the expected state; otherwise, {@code false}.
     */
    public static boolean validateNoEmptyCells(Object actual, Object expected) {
-      if (!(actual instanceof List<?>)) {
+      if (!(actual instanceof List<?> table)) {
          return false;
       }
-
-      List<?> table = (List<?>) actual;
 
       if (table.isEmpty()) {
          return false;
       }
 
-      boolean noEmptyCells = true;
-
       for (Object row : table) {
-         if (!(row instanceof List<?>)) {
-            noEmptyCells = false;
-            break;
+         if (!(row instanceof List<?> rowList)) {
+            return Boolean.FALSE.equals(expected);
          }
 
-         List<?> rowList = (List<?>) row;
-         if (rowList.isEmpty() || rowList.stream().anyMatch(cell ->
-               !(cell instanceof String) || ((String) cell).trim().isEmpty())) {
-            noEmptyCells = false;
-            break;
+         boolean hasEmpty = rowList.isEmpty()
+               || rowList.stream().anyMatch(cell -> !(cell instanceof String s) || s.trim().isEmpty());
+
+         if (hasEmpty) {
+            return Boolean.FALSE.equals(expected);
          }
       }
 
@@ -180,7 +175,7 @@ public class TableAssertionFunctions {
          return false;
       }
 
-      return noEmptyCells == (Boolean) expected;
+      return Boolean.TRUE.equals(expected);
    }
 
    /**
@@ -273,7 +268,7 @@ public class TableAssertionFunctions {
       List<?> row = (List<?>) actual;
 
       boolean rowNotEmpty = !row.isEmpty() && row.stream()
-            .anyMatch(cell -> cell instanceof String && !((String) cell).trim().isEmpty());
+            .anyMatch(cell -> cell instanceof String cs && !(cs).trim().isEmpty());
 
       if (!(expected instanceof Boolean)) {
          return false;
@@ -332,7 +327,7 @@ public class TableAssertionFunctions {
 
       boolean allCellsEnabled = table.stream().allMatch(row ->
             row instanceof List<?> && ((List<?>) row).stream().allMatch(cell ->
-                  cell instanceof SmartWebElement && ((SmartWebElement) cell).isEnabled()
+                  cell instanceof SmartWebElement cs && cs.isEnabled()
             )
       );
 
@@ -352,7 +347,7 @@ public class TableAssertionFunctions {
     * @param actual   The table data (expected to be a {@code List} of lists, where each inner list represents a row).
     * @param expected The expected state (a {@code Boolean}, where {@code true} means all cells should be clickable).
     * @return {@code true} if all cells in the table are clickable and match the expected state; otherwise,
-    *     {@code false}.
+    *       {@code false}.
     */
    public static boolean validateAllCellsClickable(Object actual, Object expected) {
       if (!(actual instanceof List<?>)) {
@@ -361,9 +356,9 @@ public class TableAssertionFunctions {
       List<?> table = (List<?>) actual;
       boolean allClickable = table.stream().allMatch(row ->
             row instanceof List<?> && ((List<?>) row).stream().allMatch(cell ->
-                  cell instanceof SmartWebElement
-                        && ((SmartWebElement) cell).isDisplayed()
-                        && ((SmartWebElement) cell).isEnabled()
+                  cell instanceof SmartWebElement cs
+                        && cs.isDisplayed()
+                        && cs.isEnabled()
             )
       );
       if (!(expected instanceof Boolean)) {

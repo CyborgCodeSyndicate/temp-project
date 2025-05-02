@@ -10,7 +10,7 @@ import com.theairebellion.zeus.validator.core.AssertionTarget;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public enum RestAssertionTarget implements AssertionTarget {
+public enum RestAssertionTarget implements AssertionTarget<RestAssertionTarget> {
 
    /**
     * Validates the HTTP status code of the response.
@@ -33,7 +33,7 @@ public enum RestAssertionTarget implements AssertionTarget {
     * @return The enum representing the assertion target.
     */
    @Override
-   public Enum<?> target() {
+   public RestAssertionTarget target() {
       return this;
    }
 }

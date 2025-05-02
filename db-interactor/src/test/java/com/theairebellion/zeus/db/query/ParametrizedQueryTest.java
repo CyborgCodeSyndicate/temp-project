@@ -20,7 +20,8 @@ class ParametrizedQueryTest {
 
    private static final String QUERY_SELECT_USERS = "SELECT * FROM users";
    private static final String QUERY_SELECT_USERS_WITH_ID = "SELECT * FROM users WHERE id = {id}";
-   private static final String QUERY_SELECT_USERS_WITH_ID_AND_NAME = "SELECT * FROM users WHERE id = {id} AND name = {name}";
+   private static final String QUERY_SELECT_USERS_WITH_ID_AND_NAME =
+         "SELECT * FROM users WHERE id = {id} AND name = {name}";
    private static final String QUERY_UPDATE_USERS = "UPDATE users SET name = {name}, age = {age} WHERE id = {id}";
    private static final String EXPECTED_QUERY_WITH_ID_AND_NAME = "SELECT * FROM users WHERE id = 1 AND name = John";
    private static final String EXPECTED_QUERY_WITH_NULL_ID = "SELECT * FROM users WHERE id = null AND name = John";
@@ -196,7 +197,7 @@ class ParametrizedQueryTest {
             "withParam() should create a new instance");
    }
 
-   private DbQuery createQuery(String query) {
+   private DbQuery<?> createQuery(String query) {
       return new DbQuery() {
          @Override
          public String query() {

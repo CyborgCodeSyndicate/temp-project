@@ -12,13 +12,13 @@ import lombok.NonNull;
  * allowing validations to continue even when failures occur.
  *
  * <p>The expected and actual values in the assertion are represented by the generic type {@code T},
- * which allows this class to handle various data types in validation checks.</p>
+ * which allows this class to handle various data types in validation checks.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
 @Getter
 @AllArgsConstructor
-public class AssertionResult<T> {
+public final class AssertionResult<T> {
 
    /**
     * Indicates whether the assertion passed ({@code true}) or failed ({@code false}).

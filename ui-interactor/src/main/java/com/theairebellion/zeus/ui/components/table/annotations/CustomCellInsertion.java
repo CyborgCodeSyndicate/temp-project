@@ -12,10 +12,10 @@ import java.lang.annotation.Target;
  * a dynamic insertion mechanism instead of relying on a predefined component type.
  *
  * <p>Applied to fields in a row model, it enables executing custom logic
- * when inserting values into table cells.</p>
+ * when inserting values into table cells.
  *
  * <p>The insertion function must implement {@code CellInsertionFunction}, defining
- * how data should be inserted into the cell.</p>
+ * how data should be inserted into the cell.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

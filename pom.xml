@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.theairebellion.zeus</groupId>
     <artifactId>automation-testing-libraries</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-
 
     <modules>
         <module>ui-interactor</module>
@@ -24,34 +25,82 @@
         <module>commons</module>
         <module>reqres-test-framework</module>
         <module>test-allocator-maven-plugin</module>
+        <module>library-parent-pom</module>
     </modules>
 
     <properties>
+        <!-- Java -->
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lombok.version>1.18.36</lombok.version>
+
+        <!-- Versions -->
+        <lombok.version>1.18.38</lombok.version>
         <log4j.version>2.24.3</log4j.version>
         <reflections.version>0.10.2</reflections.version>
         <owner.version>1.0.12</owner.version>
-        <spring.version>3.4.1</spring.version>
-        <restassured.version>5.5.0</restassured.version>
-        <jackson.version>2.18.2</jackson.version>
+        <spring.version>3.4.4</spring.version>
+        <restassured.version>5.5.1</restassured.version>
+        <jackson.version>2.18.3</jackson.version>
         <jsonpath.version>2.9.0</jsonpath.version>
-        <assertj.version>3.27.2</assertj.version>
+        <assertj.version>3.27.3</assertj.version>
         <junit.version>5.11.4</junit.version>
-        <mockito.core.version>5.2.0</mockito.core.version>
-        <mockito.junit.jupiter.version>5.2.0</mockito.junit.jupiter.version>
+        <mockito.version>5.17.0</mockito.version>
         <h2.database.version>2.3.232</h2.database.version>
         <jacoco.version>0.8.8</jacoco.version>
         <allure.version>2.29.1</allure.version>
-        <selenium.version>4.27.0</selenium.version>
-        <webdrivermanager.version>5.9.2</webdrivermanager.version>
+        <selenium.version>4.31.0</selenium.version>
+        <webdrivermanager.version>6.0.1</webdrivermanager.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <junit-platform-launcher.version>1.11.4</junit-platform-launcher.version>
-        <checkstyle.version>3.6.0</checkstyle.version>
-    </properties>
+        <junit-platform.version>1.12.2</junit-platform.version>
 
+        <manifold.version>2024.1.42</manifold.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <surefire.parallel.type>methods</surefire.parallel.type>
+        <surefire.parallel.threads>5</surefire.parallel.threads>
+
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <extra-enforcer-rules.version>1.9.0</extra-enforcer-rules.version>
+        <vulnerabilities.threshold>5.0</vulnerabilities.threshold>
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <checkstyle.version>10.21.3</checkstyle.version>
+        <maven-checkstyle-plugin.configLocation>roa_checks.xml</maven-checkstyle-plugin.configLocation>
+        <delombok-maven-plugin.skip>false</delombok-maven-plugin.skip>
+        <maven-spring-boot-plugin.version>3.4.0</maven-spring-boot-plugin.version>
+
+        <dependency-check-maven.version>12.1.1</dependency-check-maven.version>
+        <dependency-check-maven.skip>false</dependency-check-maven.skip>
+        <dependency-check-maven.skipTestScope>false</dependency-check-maven.skipTestScope>
+        <dependency-check-maven.report.skip>false</dependency-check-maven.report.skip>
+
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <project.reporting.outputDirectory>${project.build.directory}/site</project.reporting.outputDirectory>
+        <jacoco.minimum.coverage>0.75</jacoco.minimum.coverage>
+
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
+
+        <spotbugs-maven-plugin.version>4.8.6.6</spotbugs-maven-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+
+        <maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
+
+        <junit-bom.version>5.11.3</junit-bom.version>
+        <asm.version>9.8</asm.version>
+        <spotbugs-annotations.version>4.9.3</spotbugs-annotations.version>
+        <checker-qual.version>3.49.2</checker-qual.version>
+        <error_prone_annotations.version>2.38.0</error_prone_annotations.version>
+        <commons-compress.version>1.27.1</commons-compress.version>
+        <commons-io.version>2.19.0</commons-io.version>
+        <plexus-classworlds.version>2.9.0</plexus-classworlds.version>
+        <plexus-utils.version>4.0.2</plexus-utils.version>
+        <maven.version>3.9.9</maven.version>
+        <maven-plugin.version>3.15.1</maven-plugin.version>
+        <testng.version>7.11.0</testng.version>
+        <classgraph.version>4.8.179</classgraph.version>
+        <httpclient5.version>5.4.4</httpclient5.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -62,22 +111,26 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>${reflections.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.aeonbits.owner</groupId>
                 <artifactId>owner</artifactId>
                 <version>${owner.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -107,6 +160,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured-bom</artifactId>
@@ -114,6 +168,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
@@ -121,11 +176,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>com.jayway.jsonpath</groupId>
                 <artifactId>json-path</artifactId>
                 <version>${jsonpath.version}</version>
             </dependency>
+
+            <!-- AssertJ -->
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-bom</artifactId>
@@ -133,42 +191,47 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
                 <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>org.junit.vintage</groupId>
                         <artifactId>junit-vintage-engine</artifactId>
                     </exclusion>
                 </exclusions>
-                <scope>import</scope>
-                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.11.4</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${mockito.junit.jupiter.version}</version>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito.core.version}</version>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
+
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.database.version}</version>
+                <scope>test</scope>
             </dependency>
+
             <dependency>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-bom</artifactId>
@@ -176,6 +239,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-dependencies-bom</artifactId>
@@ -183,107 +247,483 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.github.bonigarcia</groupId>
                 <artifactId>webdrivermanager</artifactId>
                 <version>${webdrivermanager.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.junit.platform</groupId>
                 <artifactId>junit-platform-launcher</artifactId>
-                <version>${junit-platform-launcher.version}</version>
+                <version>${junit-platform.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-engine</artifactId>
+                <version>${junit-platform.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-commons</artifactId>
+                <version>${junit-platform.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-bom</artifactId>
+                <version>${asm.version}</version>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>${error_prone_annotations.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>${spotbugs-annotations.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>${checker-qual.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-classworlds</artifactId>
+                <version>${plexus-classworlds.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>${plexus-utils.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>${maven-plugin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+                <scope>optional</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+                <version>${classgraph.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>aggregate-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report-aggregate</goal>
-                        </goals>
-                        <configuration>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <parameters>true</parameters>
+                        <verbose>false</verbose>
+                        <compilerArgs>
+                            <arg>-Xlint:unchecked</arg>
+                            <arg>-Xlint:deprecation</arg>
+                        </compilerArgs>
+                        <failOnError>false</failOnError>
+                        <fork>true</fork>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <skipTests>false</skipTests>
+                        <testFailureIgnore>false</testFailureIgnore>
+                        <parallel>${surefire.parallel.type}</parallel>
+                        <threadCount>${surefire.parallel.threads}</threadCount>
+                        <useSystemClassLoader>false</useSystemClassLoader>
+                        <printSummary>true</printSummary>
+                        <excludedGroups>exclude-from-verify</excludedGroups>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>extra-enforcer-rules</artifactId>
+                            <version>${extra-enforcer-rules.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>enforce</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>[3.8,)</version>
+                                        <message>Minimal Maven version 3.8 is required.</message>
+                                    </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <version>${java.version}</version>
+                                        <message>Minimal Java version ${java.version} is required.</message>
+                                    </requireJavaVersion>
+                                    <banDuplicatePomDependencyVersions>
+                                        <message>Duplicate dependency versions found! Resolve conflicts.</message>
+                                    </banDuplicatePomDependencyVersions>
+                                    <dependencyConvergence>
+                                        <message>Dependency convergence issues detected! Resolve conflicting versions.</message>
+                                    </dependencyConvergence>
+                                    <requireReleaseDeps>
+                                        <message>SNAPSHOT dependencies are not allowed in libraries.</message>
+                                        <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                                        <excludes>
+                                            <exclude>${project.groupId}:*</exclude>
+                                        </excludes>
+                                        <searchTransitive>true</searchTransitive>
+                                    </requireReleaseDeps>
+                                    <banCircularDependencies>
+                                        <message>Circular dependencies detected! Check your dependencies.</message>
+                                    </banCircularDependencies>
+                                    <reactorModuleConvergence>
+                                        <message>Reactor modules are not consistent. Resolve the issue.</message>
+                                    </reactorModuleConvergence>
+                                </rules>
+                                <fail>true</fail>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <configuration>
+                        <skip>false</skip>
+                        <configLocation>${maven-checkstyle-plugin.configLocation}</configLocation>
+                        <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                        <violationSeverity>warning</violationSeverity>
+                        <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
+                        <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <linkXRef>false</linkXRef>
+                        <sourceDirectories>
+                            <sourceDirectory>src/main/java</sourceDirectory>
+                        </sourceDirectories>
+                        <testSourceDirectories>
+                            <testSourceDirectory>src/test/java</testSourceDirectory>
+                        </testSourceDirectories>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <skip>false</skip>
+                        <show>protected</show>
+                        <source>${java.version}</source>
+                        <defaultAuthor>The AI Rebellion</defaultAuthor>
+                        <linksource>true</linksource>
+                        <doclint>none</doclint>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <outputDirectory>${project.build.directory}/javadocs</outputDirectory>
+                        <failOnError>true</failOnError>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>generate-javadoc-jar</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <phase>package</phase>
+                        </execution>
+                        <execution>
+                            <id>aggregate</id>
+                            <goals>
+                                <goal>aggregate</goal>
+                            </goals>
+                            <phase>site</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${maven-spring-boot-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check-maven.version}</version>
+                    <configuration>
+                        <nvdApiKey>${nvd.api.key}</nvdApiKey>
+                        <name>OWASP Security Check</name>
+                        <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+                        <failBuildOnCVSS>5</failBuildOnCVSS>
+                        <skip>${dependency-check-maven.skip}</skip>
+                        <skipTestScope>${dependency-check-maven.skipTestScope}</skipTestScope>
+                        <failBuildOnCVSS>${vulnerabilities.threshold}</failBuildOnCVSS>
+                        <suppressionFiles>
+                            <suppressionFile>${project.basedir}/../dependency-check-suppressions.xml</suppressionFile>
+                        </suppressionFiles>
+                        <formats>
+                            <format>json</format>
+                            <format>html</format>
+                        </formats>
+                        <outputDirectory>${project.build.directory}/dependency-check-report</outputDirectory>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>security-check</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                                <goal>aggregate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                    <configuration>
+                        <append>true</append>
+                        <dumpOnExit>true</dumpOnExit>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>generate-report</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <configuration>
                                 <excludes>
                                     <exclude>**/exceptions/*</exclude>
                                 </excludes>
-                            <outputDirectory>${project.build.directory}/jacoco-aggregate</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <rules>
-                        <rule>
-                            <element>CLASS</element>
-                            <limits>
-                                <limit>
-                                    <counter>INSTRUCTION</counter>
-                                    <value>COVEREDRATIO</value>
-                                    <minimum>0.90</minimum>
-                                </limit>
-                            </limits>
-                        </rule>
-                    </rules>
-                </configuration>
-            </plugin>
+                                <outputDirectory>
+                                    ${project.reporting.outputDirectory}/jacoco/ut
+                                </outputDirectory>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>jacoco-check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <rule>
+                                        <element>BUNDLE</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>INSTRUCTION</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>${jacoco.minimum.coverage}</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>aggregate-report</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>report-aggregate</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/jacoco-aggregate</outputDirectory>
+                                <excludes>
+                                    <exclude>**/exceptions/*</exclude>
+                                </excludes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <useDefaultDelimiters>true</useDefaultDelimiters>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs-maven-plugin.version}</version>
+                    <configuration>
+                        <xmlOutput>true</xmlOutput>
+                        <htmlOutput>true</htmlOutput>
+                        <excludeFilterFile>${project.basedir}/../spotbugs-exclude.xml</excludeFilterFile>
+                        <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
+                        <failOnError>true</failOnError>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>spotbugs-check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${maven-release-plugin.version}</version>
+                    <configuration>
+                        <pushChanges>false</pushChanges>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
-                <configuration>
-<!--                    <testFailureIgnore>true</testFailureIgnore>-->
-                    <excludedGroups>exclude-from-verify</excludedGroups>
-                </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>10.21.3</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>checkstyle</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <configLocation>roa_checks.xml</configLocation>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <includeTestSourceDirectory>false</includeTestSourceDirectory>
-                    <violationSeverity>warning</violationSeverity>
-                </configuration>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
 
 </project>

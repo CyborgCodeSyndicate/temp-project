@@ -53,7 +53,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @TestService("UI")
 @Getter
-@SuppressWarnings("unchecked")
 public class UiServiceFluent<T extends UiServiceFluent<?>> extends FluentService {
 
    private InputServiceFluent<T> inputField;
@@ -78,7 +77,7 @@ public class UiServiceFluent<T extends UiServiceFluent<?>> extends FluentService
    private InsertionServiceFluent<T> insertionService;
 
    /**
-    * Constructs a new {@code UIServiceFluent} instance with the specified WebDriver.
+    * Constructs a new {@code UiServiceFluent} instance with the specified WebDriver.
     *
     * @param driver The {@link SmartWebDriver} instance used for UI interactions.
     */
@@ -91,8 +90,9 @@ public class UiServiceFluent<T extends UiServiceFluent<?>> extends FluentService
     * Executes a validation assertion.
     *
     * @param assertion The assertion to validate.
-    * @return The current instance of {@code UIServiceFluent} for method chaining.
+    * @return The current instance of {@code UiServiceFluent} for method chaining.
     */
+   @Override
    public T validate(Runnable assertion) {
       return (T) super.validate(assertion);
    }
@@ -101,8 +101,9 @@ public class UiServiceFluent<T extends UiServiceFluent<?>> extends FluentService
     * Executes a validation assertion using a soft assertion approach.
     *
     * @param assertion The assertion to validate with soft assertions.
-    * @return The current instance of {@code UIServiceFluent} for method chaining.
+    * @return The current instance of {@code UiServiceFluent} for method chaining.
     */
+   @Override
    public T validate(Consumer<SoftAssertions> assertion) {
       return (T) super.validate(assertion);
    }
@@ -112,6 +113,7 @@ public class UiServiceFluent<T extends UiServiceFluent<?>> extends FluentService
     * This method is automatically called after setup.
     */
    @Override
+   @SuppressWarnings("java:S3740")
    protected void postQuestSetupInitialization() {
       ButtonServiceImpl buttonService = new ButtonServiceImpl(driver);
       LinkServiceImpl linkService = new LinkServiceImpl(driver);
@@ -188,6 +190,7 @@ public class UiServiceFluent<T extends UiServiceFluent<?>> extends FluentService
     * @param assertionResults The list of assertion results.
     */
    @Override
+   @SuppressWarnings("java:S1185")
    protected void validation(List<AssertionResult<Object>> assertionResults) {
       super.validation(assertionResults);
    }

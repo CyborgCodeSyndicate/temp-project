@@ -28,6 +28,7 @@ import static com.theairebellion.zeus.api.storage.StorageKeysApi.API;
  * @author Cyborg Code Syndicate 💍👨💻
  */
 @TestService("API")
+@SuppressWarnings("java:S6832")
 public class RestServiceFluent extends FluentService implements ClassLevelHook {
 
    private final RestService restService;
@@ -48,7 +49,7 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
     * @param endpoint The API endpoint.
     * @return The current {@code RestServiceFluent} instance for method chaining.
     */
-   public RestServiceFluent request(final Endpoint endpoint) {
+   public RestServiceFluent request(final Endpoint<?> endpoint) {
       final Response response = restService.request(endpoint);
       quest.getStorage().sub(API).put(endpoint.enumImpl(), response);
       return this;
@@ -61,7 +62,7 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
     * @param body     The request body.
     * @return The current {@code RestServiceFluent} instance for method chaining.
     */
-   public RestServiceFluent request(final Endpoint endpoint, final Object body) {
+   public RestServiceFluent request(final Endpoint<?> endpoint, final Object body) {
       final Response response = restService.request(endpoint, body);
       quest.getStorage().sub(API).put(endpoint.enumImpl(), response);
       return this;
@@ -87,7 +88,7 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
     * @param assertions The assertions to validate.
     * @return The current {@code RestServiceFluent} instance for method chaining.
     */
-   public RestServiceFluent requestAndValidate(final Endpoint endpoint, final Assertion... assertions) {
+   public RestServiceFluent requestAndValidate(final Endpoint<?> endpoint, final Assertion... assertions) {
       final Response response = restService.request(endpoint);
       quest.getStorage().sub(API).put(endpoint.enumImpl(), response);
       return validateResponse(response, assertions);
@@ -102,7 +103,7 @@ public class RestServiceFluent extends FluentService implements ClassLevelHook {
     * @return The current {@code RestServiceFluent} instance for method chaining.
     */
    @Step("Request and validations for endpoint: {endpoint}")
-   public RestServiceFluent requestAndValidate(final Endpoint endpoint,
+   public RestServiceFluent requestAndValidate(final Endpoint<?> endpoint,
                                                final Object body,
                                                final Assertion... assertions) {
       final Response response = restService.request(endpoint, body);

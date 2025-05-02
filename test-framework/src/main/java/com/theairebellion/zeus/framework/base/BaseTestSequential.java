@@ -4,7 +4,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -25,9 +24,12 @@ public class BaseTestSequential extends BaseTest {
    /**
     * The test service container for managing test-related dependencies.
     */
-   @Autowired
-   @Lazy
    private Services services;
+
+   @Autowired
+   public void setServices(Services services) {
+      this.services = services;
+   }
 
    /**
     * Executes the setup logic before all test methods in the class.
@@ -43,6 +45,7 @@ public class BaseTestSequential extends BaseTest {
     * @param services The test service container.
     */
    protected void beforeAll(Services services) {
+      //empty method for beforeAll to override if needed
    }
 
    /**
@@ -59,6 +62,7 @@ public class BaseTestSequential extends BaseTest {
     * @param services The test service container.
     */
    protected void afterAll(Services services) {
+      //empty method for beforeAll to override if needed
    }
 
 }

@@ -11,11 +11,11 @@ import com.theairebellion.zeus.ui.util.TriConsumer;
  * on specific table cells using a provided {@link FilterStrategy}.
  *
  * <p>This interface extends {@code TriConsumer} to allow functional-style
- * execution of filtering operations.</p>
+ * execution of filtering operations.
  *
  * <p>Used in {@link TableImpl} and
  * {@link CellLocator} for dynamic
- * table filtering.</p>
+ * table filtering.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

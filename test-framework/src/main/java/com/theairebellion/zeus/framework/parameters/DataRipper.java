@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public interface DataRipper {
+public interface DataRipper<T extends Enum<T>> {
 
    /**
     * Provides the cleanup operation for test-generated data.
@@ -34,6 +34,6 @@ public interface DataRipper {
     *
     * @return An {@link Enum} instance representing the cleanup operation.
     */
-   Enum<?> enumImpl();
+   T enumImpl();
 
 }

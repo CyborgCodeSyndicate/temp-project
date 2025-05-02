@@ -1,14 +1,18 @@
 package com.theairebellion.zeus.ui.authentication;
 
+import com.theairebellion.zeus.ui.exceptions.AuthenticationUiException;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUiServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UiServiceFluent;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
@@ -39,8 +43,15 @@ public abstract class BaseLoginClient implements LoginClient {
     */
    private static final Map<LoginKey, SessionInfo> userLoginMap = new ConcurrentHashMap<>();
 
-   //todo: javaDocs
-   public static final List<SmartWebDriver> driverToKeep = new ArrayList<>();
+   /**
+    * Keeps track of the {@link SmartWebDriver} instances that are used for copying sessions
+    * to other drivers in order to enable login session caching and bypass repeated logins.
+    *
+    * <p>These drivers are preserved throughout the execution and are closed at the end of the run.
+    */
+   @Getter
+   @SuppressFBWarnings("MS_EXPOSE_REP")
+   private static final List<SmartWebDriver> driverToKeep = Collections.synchronizedList(new ArrayList<>());
 
    /**
     * JavaScript command to retrieve local storage data.
@@ -54,9 +65,13 @@ public abstract class BaseLoginClient implements LoginClient {
          "let data = %s; for (let key in data) { window.localStorage.setItem(key, data[key]); }";
 
    /**
-    * URL of the page after a successful login.
+    * Stores the URL obtained after a successful login for each session.
+    *
+    * <p>This allows the system to directly navigate to the appropriate URL when session caching is used.
+    * The map key is a {@link LoginKey} containing the username, password, and login type information.
     */
-   private static String urlAfterLogging;
+   private static final Map<LoginKey, String> urlAfterLoggingMap = new ConcurrentHashMap<>();
+
 
    /**
     * Logs in the user and optionally caches session data for reuse.
@@ -67,6 +82,7 @@ public abstract class BaseLoginClient implements LoginClient {
     * @param cache     Whether to cache the session for future reuse.
     */
    @Override
+   @SuppressFBWarnings("JLM_JSR166_UTILCONCURRENT_MONITORENTER")
    public void login(final SuperUiServiceFluent<?> uiService, final String username, final String password,
                      final boolean cache) {
       LoginKey loginKey = new LoginKey(username, password, this.getClass());
@@ -78,11 +94,12 @@ public abstract class BaseLoginClient implements LoginClient {
             if (userLoginMap.get(loginKey) == null) {
                performLoginAndCache(uiService, loginKey, username, password);
             } else {
-               restoreSession(uiService, userLoginMap.get(loginKey));
+               restoreSession(uiService, userLoginMap.get(loginKey), urlAfterLoggingMap.get(loginKey));
             }
          }
       }
    }
+
 
    /**
     * Retrieves cached authentication session info if available.
@@ -93,6 +110,7 @@ public abstract class BaseLoginClient implements LoginClient {
    public Optional<SessionInfo> getAuthentication(final LoginKey loginKey) {
       return Optional.ofNullable(userLoginMap.get(loginKey));
    }
+
 
    /**
     * Performs login and caches session cookies and local storage data.
@@ -113,11 +131,10 @@ public abstract class BaseLoginClient implements LoginClient {
          smartWebDriver.getWait()
                .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
       } catch (Exception e) {
-         //todo create custom exception
-         throw new RuntimeException("Logging in was not successful");
+         throw new AuthenticationUiException("Logging in was not successful", e);
       }
 
-      urlAfterLogging = smartWebDriver.getCurrentUrl();
+      urlAfterLoggingMap.put(loginKey, smartWebDriver.getCurrentUrl());
 
       WebDriver driver = smartWebDriver.getOriginal();
       Set<Cookie> cookies = driver.manage().getCookies();
@@ -126,13 +143,14 @@ public abstract class BaseLoginClient implements LoginClient {
       userLoginMap.put(loginKey, new SessionInfo(cookies, localStorage));
    }
 
+
    /**
     * Restores a previously cached session by injecting cookies and local storage data.
     *
     * @param uiService   The UI service used for browser interactions.
     * @param sessionInfo The stored session information.
     */
-   private void restoreSession(SuperUiServiceFluent<?> uiService, SessionInfo sessionInfo) {
+   private void restoreSession(SuperUiServiceFluent<?> uiService, SessionInfo sessionInfo, String urlAfterLogging) {
       SmartWebDriver smartWebDriver = uiService.getDriver();
       WebDriver driver = smartWebDriver.getOriginal();
 
@@ -147,8 +165,7 @@ public abstract class BaseLoginClient implements LoginClient {
 
          smartWebDriver.get(urlAfterLogging);
       } catch (Exception e) {
-         //todo create custom exception
-         throw new RuntimeException("Restoring session was not successful", e);
+         throw new AuthenticationUiException("Restoring session was not successful", e);
       }
 
 
@@ -156,10 +173,10 @@ public abstract class BaseLoginClient implements LoginClient {
          smartWebDriver.getWait()
                .until(ExpectedConditions.presenceOfElementLocated(successfulLoginElementLocator()));
       } catch (Exception e) {
-         //todo create custom exception
-         throw new RuntimeException("Logging in was not successful");
+         throw new AuthenticationUiException("Logging in was not successful", e);
       }
    }
+
 
    /**
     * Executes JavaScript in the browser.
@@ -175,6 +192,7 @@ public abstract class BaseLoginClient implements LoginClient {
          throw new IllegalStateException("Driver does not support JavaScript execution");
       }
    }
+
 
    /**
     * Performs the actual login operation.

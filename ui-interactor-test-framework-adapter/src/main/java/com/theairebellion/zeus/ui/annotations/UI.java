@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @FrameworkAdapter(basePackages = {"com.theairebellion.zeus.ui"})
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public @interface UI {
 
 }

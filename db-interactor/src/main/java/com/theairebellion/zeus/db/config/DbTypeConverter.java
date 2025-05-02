@@ -7,15 +7,16 @@ import org.aeonbits.owner.Converter;
 
 import static com.theairebellion.zeus.db.config.DbConfigHolder.getDbConfig;
 
-public class DbTypeConverter implements Converter<DbType> {
+public class DbTypeConverter implements Converter<DbType<?>> {
 
 
    @Override
-   public DbType convert(Method method, String input) {
-      DbConfig dbConfig = getDbConfig();
+   public DbType<?> convert(Method method, String input) {
 
-      List<Class<? extends Enum<?>>> enumClassImplementationsOfInterface =
-            ReflectionUtil.findEnumClassImplementationsOfInterface(DbType.class, dbConfig.projectPackage());
+      List<Class<? extends Enum>> enumClassImplementationsOfInterface =
+            ReflectionUtil.findEnumClassImplementationsOfInterface(
+                  DbType.class, getDbConfig().projectPackage()
+            );
 
       if (enumClassImplementationsOfInterface.size() > 1) {
          throw new IllegalStateException(

@@ -3,22 +3,25 @@ package com.theairebellion.zeus.ui.extensions;
 import com.theairebellion.zeus.framework.allure.CustomAllureListener;
 import com.theairebellion.zeus.framework.assertion.CustomSoftAssertion;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.exceptions.ServiceInitializationException;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
-import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
 import com.theairebellion.zeus.ui.authentication.LoginCredentials;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
+import com.theairebellion.zeus.ui.exceptions.AuthenticationUiException;
 import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.parameters.DataIntercept;
+import com.theairebellion.zeus.ui.selenium.exceptions.UiInteractionException;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUiServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UiServiceFluent;
+import com.theairebellion.zeus.ui.util.ResponseFormatter;
 import com.theairebellion.zeus.ui.validator.TableAssertionFunctions;
 import com.theairebellion.zeus.ui.validator.TableAssertionTypes;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -30,9 +33,10 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -46,6 +50,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v85.network.Network;
+import org.openqa.selenium.devtools.v85.network.model.RequestId;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -144,7 +149,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             .ifPresent(intercept -> {
                String[] urlsForIntercepting;
                try {
-                  List<Class<? extends Enum<?>>> enumClassImplementations =
+                  List<Class<? extends Enum>> enumClassImplementations =
                         ReflectionUtil.findEnumClassImplementationsOfInterface(
                               DataIntercept.class, getFrameworkConfig().projectPackage());
 
@@ -158,7 +163,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                      Class<? extends Enum> enumClass = enumClassImplementations.get(0);
 
                      List<String> resolvedEndpoints = Arrays.stream(intercept.requestUrlSubStrings())
-                           .map(target -> ((DataIntercept) Enum.valueOf(enumClass, target))
+                           .map(target -> ((DataIntercept<?>) Enum.valueOf(enumClass,
+                                 target))
                                  .getEndpointSubString())
                            .toList();
 
@@ -185,14 +191,26 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
    private static void postQuestCreationIntercept(final SuperQuest quest, final String[] urlsForIntercepting) {
       SmartWebDriver artifact = quest.artifact(UiServiceFluent.class, SmartWebDriver.class);
       WebDriver driver = unwrapDriver(artifact.getOriginal());
-      if (driver instanceof ChromeDriver) {
-         DevTools chromeDevTools = ((ChromeDriver) driver).getDevTools();
+      if (driver instanceof ChromeDriver chromeDriver) {
+         DevTools chromeDevTools = chromeDriver.getDevTools();
          chromeDevTools.createSession();
          chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+
+         Map<String, String> requestMethodMap = new ConcurrentHashMap<>();
+
+
+         chromeDevTools.addListener(Network.requestWillBeSent(), event -> {
+            String method = event.getRequest().getMethod();
+            RequestId requestId = event.getRequestId();
+            requestMethodMap.put(requestId.toJson(), method);
+         });
+
          chromeDevTools.addListener(Network.responseReceived(), entry -> {
+            RequestId requestId = entry.getRequestId();
             int statusCode = entry.getResponse().getStatus();
+            String method = requestMethodMap.get(requestId.toString());
             String url = entry.getResponse().getUrl();
-            ApiResponse response = new ApiResponse(url, statusCode);
+            ApiResponse response = new ApiResponse(url, method, statusCode);
 
             if (checkUrl(urlsForIntercepting, url)) {
                try {
@@ -233,7 +251,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                   addQuestConsumer(context, questConsumer);
                } catch (InstantiationException | IllegalAccessException | InvocationTargetException
                         | NoSuchMethodException e) {
-                  throw new RuntimeException("Failed to instantiate login credentials", e);
+                  throw new AuthenticationUiException("Failed to instantiate login credentials", e);
                }
             });
    }
@@ -266,7 +284,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
          responses = new ArrayList<>();
       }
       responses.add(apiResponse);
-      storage.sub(UI).put(RESPONSES, apiResponse);
+      storage.sub(UI).put(RESPONSES, responses);
 
       LogUi.extended("Response added to storage: URL={}, Status={}", apiResponse.getUrl(), apiResponse.getStatus());
    }
@@ -296,9 +314,10 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
          LogUi.warn("Test failed. Taking screenshot for: {}", context.getDisplayName());
          takeScreenshot(driver, context.getDisplayName());
       }
-      List<Object> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES, Object.class);
+      List<ApiResponse> responses = getSuperQuest(context).getStorage().sub(UI).getAllByClass(RESPONSES,
+            ApiResponse.class);
       if (!responses.isEmpty()) {
-         String formattedResponses = new ObjectFormatter().formatResponses(Collections.singletonList(responses));
+         String formattedResponses = ResponseFormatter.formatResponses(responses);
          Allure.addAttachment("Intercepted Requests", "text/html",
                new ByteArrayInputStream(formattedResponses.getBytes(StandardCharsets.UTF_8)), ".html");
       }
@@ -319,6 +338,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
     */
    @Override
    public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+      throwable.printStackTrace();
+
       ApplicationContext appCtx = SpringExtension.getApplicationContext(context);
       DecoratorsFactory decoratorsFactory = appCtx.getBean(DecoratorsFactory.class);
 
@@ -335,7 +356,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
    @Override
    public void launcherSessionClosed(LauncherSession session) {
-      BaseLoginClient.driverToKeep.forEach(smartWebDriver -> {
+      BaseLoginClient.getDriverToKeep().forEach(smartWebDriver -> {
          WebDriver driver = unwrapDriver(smartWebDriver);
          driver.close();
          driver.quit();
@@ -361,7 +382,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             quest.removeWorld(UiServiceFluent.class);
          } catch (InstantiationException | IllegalAccessException | InvocationTargetException
                   | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new ServiceInitializationException("Failed to register custom UI service", e);
          }
       }
 
@@ -373,7 +394,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                                               final Class<? extends BaseLoginClient> type, boolean cache) {
       quest.getStorage().sub(UI).put(USERNAME, username);
       quest.getStorage().sub(UI).put(PASSWORD, password);
-      UiServiceFluent uiServiceFluent = quest.enters(UiServiceFluent.class);
+      UiServiceFluent<?> uiServiceFluent = quest.enters(UiServiceFluent.class);
 
       try {
          BaseLoginClient baseLoginClient = type.getDeclaredConstructor().newInstance();
@@ -381,7 +402,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                password, cache);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException
                | NoSuchMethodException e) {
-         throw new RuntimeException("Failed to instantiate or execute login client", e);
+         throw new AuthenticationUiException("Failed to instantiate or execute login client", e);
       }
    }
 
@@ -417,12 +438,6 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
    }
 
 
-   private WebDriver getWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
-      SmartWebDriver artifact = getSmartWebDriver(decoratorsFactory, context);
-      return unwrapDriver(artifact.getOriginal());
-   }
-
-
    private static SmartWebDriver getSmartWebDriver(DecoratorsFactory decoratorsFactory, ExtensionContext context) {
       Quest quest = (Quest) context.getStore(ExtensionContext.Namespace.GLOBAL).get(StoreKeys.QUEST);
       SuperQuest superQuest = decoratorsFactory.decorate(quest, SuperQuest.class);
@@ -435,7 +450,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
          Method getOriginalMethod = maybeProxy.getClass().getMethod("getOriginal");
          return (WebDriver) getOriginalMethod.invoke(maybeProxy);
       } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-         throw new RuntimeException("Failed to unwrap WebDriver", e);
+         throw new UiInteractionException("Failed to unwrap WebDriver", e);
       }
    }
 

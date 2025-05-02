@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.selenium.handling;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.FourFunction;
+import java.util.Collections;
 import java.util.Map;
 import lombok.Getter;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -19,7 +20,6 @@ import org.openqa.selenium.WebDriver;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@Getter
 public enum ExceptionHandlingWebElement {
 
    /**
@@ -121,6 +121,7 @@ public enum ExceptionHandlingWebElement {
    /**
     * The name of the method being handled.
     */
+   @Getter
    private final String methodName;
 
    /**
@@ -142,4 +143,9 @@ public enum ExceptionHandlingWebElement {
       this.exceptionHandlingMap = exceptionHandlingMap;
    }
 
+
+   public Map<Class<? extends Throwable>, FourFunction<WebDriver, SmartWebElement, Object[], Exception,
+         Object>> getExceptionHandlingMap() {
+      return Collections.unmodifiableMap(exceptionHandlingMap);
+   }
 }

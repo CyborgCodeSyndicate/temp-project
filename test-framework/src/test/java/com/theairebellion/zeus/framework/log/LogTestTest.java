@@ -220,13 +220,13 @@ class LogTestTest {
 
    // Reflection-based methods to reset static state
    private void clearLogTestInstance() throws Exception {
-      Field instanceField = LogTest.class.getDeclaredField("INSTANCE");
+      Field instanceField = LogTest.class.getDeclaredField("instance");
       instanceField.setAccessible(true);
       instanceField.set(null, null);
    }
 
    private void clearExtendedLogging() throws Exception {
-      Field extendedField = LogCore.class.getDeclaredField("EXTENDED_LOGGING");
+      Field extendedField = LogCore.class.getDeclaredField("extendedLogging");
       extendedField.setAccessible(true);
       extendedField.set(null, null);
    }

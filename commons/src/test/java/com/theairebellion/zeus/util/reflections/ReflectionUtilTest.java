@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings("all")
 @DisplayName("ReflectionUtil Tests")
@@ -53,7 +52,7 @@ class ReflectionUtilTest {
       @DisplayName("Should return a single enum class implementing interface")
       void shouldReturnSingleEnumClassImplementingInterface() {
          // When
-         List<Class<? extends Enum<?>>> result =
+         List<Class<? extends Enum>> result =
                ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterface.class, MOCK_PACKAGE);
 
          // Then
@@ -66,7 +65,7 @@ class ReflectionUtilTest {
       @DisplayName("Should return multiple enum classes implementing interface")
       void shouldReturnMultipleEnumClassesImplementingInterface() {
          // When
-         List<Class<? extends Enum<?>>> result =
+         List<Class<? extends Enum>> result =
                ReflectionUtil.findEnumClassImplementationsOfInterface(MockInterfaceTwoImpl.class, MOCK_PACKAGE);
 
          // Then
@@ -541,39 +540,6 @@ class ReflectionUtilTest {
                "Expected the exception message to match the format");
          assertSame(illegalAccessEx, ex.getCause(),
                "Expected the original exception to be preserved as cause");
-      }
-
-
-      @Test
-      @DisplayName("Should handle IllegalAccessException in getFieldValue")
-      void shouldHandleIllegalAccessExceptionInGetFieldValue() throws Exception {
-         // Define test subclass
-         class TestReflectionUtil extends ReflectionUtil {
-
-            public static <K> K testGetFieldValue(Object instance, Class<K> fieldType)
-                  throws ReflectionException {
-               // Directly throw the exception we want to test
-               throw new ReflectionException(
-                     String.format("Cannot access field of type '%s' in class '%s'.",
-                           fieldType.getName(), instance.getClass().getName()),
-                     new IllegalAccessException("Test exception"));
-            }
-
-         }
-
-         // Execute the test
-         Object testInstance = new TestClass();
-
-         try {
-            TestReflectionUtil.testGetFieldValue(testInstance, String.class);
-            fail("Expected ReflectionException to be thrown");
-         } catch (ReflectionException ex) {
-            // Verify the exception
-            assertTrue(ex.getMessage().contains("Cannot access field of type"),
-                  "Should indicate an access issue");
-            assertTrue(ex.getCause() instanceof IllegalAccessException,
-                  "Should preserve the IllegalAccessException as the cause");
-         }
       }
 
    }

@@ -122,7 +122,8 @@ class TableServiceTest extends BaseUnitUITest {
          MockTableService spyService = spy(service);
          TableField<Object> field = mock(TableField.class);
          spyService.insertCellValue(List.of("c"), Object.class, field, "val");
-         verify(spyService, times(1)).insertCellValue(TableService.DEFAULT_TYPE, List.of("c"), Object.class, field, 1, "val");
+         verify(spyService, times(1)).insertCellValue(TableService.DEFAULT_TYPE, List.of("c"), Object.class, field, 1,
+               "val");
       }
 
       @Test
@@ -130,7 +131,8 @@ class TableServiceTest extends BaseUnitUITest {
          MockTableService spyService = spy(service);
          TableField<Object> field = mock(TableField.class);
          spyService.insertCellValue(List.of("x"), Object.class, field, 2, "val2");
-         verify(spyService, times(1)).insertCellValue(TableService.DEFAULT_TYPE, List.of("x"), Object.class, field, 2, "val2");
+         verify(spyService, times(1)).insertCellValue(TableService.DEFAULT_TYPE, List.of("x"), Object.class, field, 2,
+               "val2");
       }
 
       @Test
@@ -156,7 +158,8 @@ class TableServiceTest extends BaseUnitUITest {
          TableField<Object> field = mock(TableField.class);
          String[] values = {"val1", "val2"};
          spyService.insertCellValue(List.of("c"), Object.class, field, values);
-         verify(spyService, times(1)).insertCellValue(TableService.DEFAULT_TYPE, List.of("c"), Object.class, field, 1, values);
+         verify(spyService, times(1)).insertCellValue(TableService.DEFAULT_TYPE, List.of("c"), Object.class, field, 1,
+               values);
       }
    }
 
@@ -167,7 +170,8 @@ class TableServiceTest extends BaseUnitUITest {
          MockTableService spyService = spy(service);
          TableField<Object> field = mock(TableField.class);
          spyService.filterTable(Object.class, field, FilterStrategy.SELECT, "val");
-         verify(spyService, times(1)).filterTable(TableService.DEFAULT_TYPE, Object.class, field, FilterStrategy.SELECT, "val");
+         verify(spyService, times(1)).filterTable(TableService.DEFAULT_TYPE, Object.class, field, FilterStrategy.SELECT,
+               "val");
       }
 
       @Test

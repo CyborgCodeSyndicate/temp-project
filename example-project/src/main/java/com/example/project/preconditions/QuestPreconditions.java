@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
 import static com.example.project.preconditions.QuestPreconditionFunctions.login;
 import static com.example.project.preconditions.QuestPreconditionFunctions.validStudentsSetup;
 
-public enum QuestPreconditions implements PreQuestJourney {
+public enum QuestPreconditions implements PreQuestJourney<QuestPreconditions> {
 
    STUDENT_PRECONDITION((quest, objects) -> validStudentsSetup(quest, (Student) objects[0])),
    STUDENT_PRECONDITION_LATE((quest, objects) -> validStudentsSetup(quest, (Late<Student>) objects[0])),
@@ -44,7 +44,7 @@ public enum QuestPreconditions implements PreQuestJourney {
 
 
    @Override
-   public Enum<?> enumImpl() {
+   public QuestPreconditions enumImpl() {
       return this;
    }
 

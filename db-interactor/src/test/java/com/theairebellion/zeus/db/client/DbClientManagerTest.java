@@ -29,7 +29,8 @@ class DbClientManagerTest {
    private static final int DEFAULT_PORT = 3306;
    private static final String TEST_DATABASE = "testdb";
    private static final String SAME_CLIENT_ERROR = "Expected the same client instance for the same configuration";
-   private static final String DIFFERENT_CLIENT_ERROR = "Expected different client instances for different configurations";
+   private static final String DIFFERENT_CLIENT_ERROR =
+         "Expected different client instances for different configurations";
    private static final String CLIENT_NOT_NULL = "Expected a non-null client to be created";
    private static final String CLIENT_INSTANCE_TYPE = "Expected client to be an instance of RelationalDbClient";
    private static final String CONNECTOR_GETTER = "Connector should be accessible via getter";

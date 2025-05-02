@@ -3,9 +3,9 @@ package com.theairebellion.zeus.ui.components.toggle.mock;
 import com.theairebellion.zeus.ui.components.toggle.ToggleComponentType;
 import com.theairebellion.zeus.ui.components.toggle.ToggleService;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import org.openqa.selenium.By;
 import java.util.Collections;
 import java.util.List;
+import org.openqa.selenium.By;
 
 public class MockToggleService implements ToggleService {
 

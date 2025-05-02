@@ -652,7 +652,7 @@ class WebDriverEventListenerTest {
 
    // Helper method to modify ExceptionLogging enum maps for testing
    private void setExceptionLoggingMap(ExceptionLogging enumValue,
-                                       Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[], InvocationTargetException>> testMap)
+         Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[], InvocationTargetException>> testMap)
          throws Exception {
       Field exceptionLoggingMapField = ExceptionLogging.class.getDeclaredField("exceptionLoggingMap");
       exceptionLoggingMapField.setAccessible(true);

@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-public interface TableElement {
+public interface TableElement<K extends Enum<K>> {
 
    /**
     * Retrieves the table type for the implementing table.
@@ -44,7 +44,7 @@ public interface TableElement {
     *
     * @return An {@link Enum} instance associated with this table element.
     */
-   Enum<?> enumImpl();
+   K enumImpl();
 
    /**
     * Provides a before-action hook that is executed before interacting with the table.

@@ -15,9 +15,9 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  *
  * <p>Classes implementing this interface generally leverage Selenium-based strategies to
  * identify tabs either by container (using {@link SmartWebElement}) or locator (using {@link By}),
- * ensuring a flexible approach that accommodates multiple application layouts.</p>
+ * ensuring a flexible approach that accommodates multiple application layouts.
  *
- * <p>No usage examples are included here.</p>
+ * <p>No usage examples are included here.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

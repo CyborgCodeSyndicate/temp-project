@@ -22,7 +22,8 @@ public class H2DatabaseInitializer {
    public static final String FAILED_TO_EXECUTE_SCRIPT = "Failed to execute script: ";
 
    public static void initialize() throws SQLException {
-      InputStream schemaStream = H2DatabaseInitializer.class.getClassLoader().getResourceAsStream(DB_H2_FILES_SCHEMA_SQL);
+      InputStream schemaStream =
+            H2DatabaseInitializer.class.getClassLoader().getResourceAsStream(DB_H2_FILES_SCHEMA_SQL);
       LogDb.debug(schemaStream != null ? "schema.sql found" : "schema.sql NOT found");
 
       InputStream dataStream = H2DatabaseInitializer.class.getClassLoader().getResourceAsStream(DB_H2_FILES_DATA_SQL);

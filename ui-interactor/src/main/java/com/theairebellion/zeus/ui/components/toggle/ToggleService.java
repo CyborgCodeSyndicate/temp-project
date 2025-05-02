@@ -14,7 +14,7 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
  * methods across different UI designs.
  *
  * <p>Commonly relies on Selenium-based strategies to locate and manipulate toggles
- * identified by container elements ({@link SmartWebElement}), text, or {@link By} locators.</p>
+ * identified by container elements ({@link SmartWebElement}), text, or {@link By} locators.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

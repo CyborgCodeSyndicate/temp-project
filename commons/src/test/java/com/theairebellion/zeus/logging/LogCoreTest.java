@@ -46,8 +46,8 @@ class LogCoreTest {
    private static final String TEST_LOGGER = "TestLogger";
    private static final String TEST_MARKER = "TestMarker";
    private static final String EXTENDED_MESSAGE = "Extended message";
-   private static final String EXTENDED_LOGGING_FIELD = "EXTENDED_LOGGING";
-   private static final String SILENT_MODE = "SILENT_MODE";
+   private static final String EXTENDED_LOGGING_FIELD = "extendedLogging";
+   private static final String SILENT_MODE = "silentMode";
 
 
    private Logger mockLogger;
@@ -321,7 +321,7 @@ class LogCoreTest {
 
 
       private void resetExtendedLoggingCache() throws Exception {
-         Field field = LogCore.class.getDeclaredField("EXTENDED_LOGGING");
+         Field field = LogCore.class.getDeclaredField("extendedLogging");
          field.setAccessible(true);
          field.set(null, null);
       }

@@ -11,10 +11,10 @@ import org.openqa.selenium.By;
  * <p>Implementations typically use Selenium-based interactions with container elements
  * ({@link SmartWebElement}) or direct locators ({@link By}). Whether toggles are styled
  * like classic checkboxes or custom toggle switches, this interface provides a standard
- * contract for testing or simulating user interactions.</p>
+ * contract for testing or simulating user interactions.
  *
  * <p>This interface can handle toggles identified by text, container references, or direct
- * locators, making it flexible for a wide range of UI designs.</p>
+ * locators, making it flexible for a wide range of UI designs.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */

@@ -8,6 +8,6 @@ public class MockCellFilterFunction implements CellFilterFunction {
 
    @Override
    public void cellFilterFunction(SmartWebElement cellElement,
-                                  FilterStrategy filterStrategy, String... values) {
+         FilterStrategy filterStrategy, String... values) {
    }
 }

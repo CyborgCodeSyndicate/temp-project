@@ -23,7 +23,7 @@ public class SuperUiServiceFluent<T extends UiServiceFluent<?>> extends UiServic
    private final UiServiceFluent<T> original;
 
    /**
-    * Constructs an instance of {@code SuperUIServiceFluent} by wrapping an existing {@link UiServiceFluent}.
+    * Constructs an instance of {@code SuperUiServiceFluent} by wrapping an existing {@link UiServiceFluent}.
     *
     * @param uiServiceFluent The original {@link UiServiceFluent} instance to delegate functionality to.
     */
@@ -37,6 +37,7 @@ public class SuperUiServiceFluent<T extends UiServiceFluent<?>> extends UiServic
     *
     * @return The {@link SmartWebDriver} instance.
     */
+   @Override
    public SmartWebDriver getDriver() {
       return original.getDriver();
    }

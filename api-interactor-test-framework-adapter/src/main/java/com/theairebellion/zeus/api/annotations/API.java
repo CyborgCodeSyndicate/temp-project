@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * during test execution.
  *
  * <p>Applying this annotation to a test class automatically enables API-specific features
- * such as API request execution, response validation, and authentication handling.</p>
+ * such as API request execution, response validation, and authentication handling.
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target({ElementType.TYPE})
 @FrameworkAdapter(basePackages = {"com.theairebellion.zeus.api"})
 @ExtendWith({ApiTestExtension.class, ApiHookExtension.class})
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public @interface API {
 
 }

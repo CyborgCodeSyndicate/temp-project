@@ -16,6 +16,9 @@ import org.openqa.selenium.WebElement;
  */
 public class FrameHelper {
 
+   private FrameHelper() {
+   }
+
    /**
     * Searches for a WebElement inside iframes using a given locator.
     *
@@ -47,7 +50,7 @@ public class FrameHelper {
     * @param by     The locator of the target element.
     * @return A {@link SmartWebElement} if found, otherwise {@code null}.
     */
-   private static SmartWebElement searchElementInIframes(WebDriver driver, By by) {
+   public static SmartWebElement searchElementInIframes(WebDriver driver, By by) {
       List<WebElement> elements = driver.findElements(by);
       if (!elements.isEmpty()) {
          return new SmartWebElement(elements.get(0), driver);
@@ -102,6 +105,7 @@ public class FrameHelper {
       String tagName = originalElement.getTagName();
       String attributes = getUniqueAttributes(driver, originalElement);
 
+      @SuppressWarnings("java:S1075")
       String xpathExpression = "//" + tagName + attributes;
       List<WebElement> matchingElements = driver.findElements(By.xpath(xpathExpression));
 
