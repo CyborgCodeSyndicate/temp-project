@@ -31,6 +31,7 @@ import static com.theairebellion.zeus.api.log.LogApi.step;
 public class RestClientImpl implements RestClient {
 
     private static final long SLOW_REQUEST_THRESHOLD_MS = 2000;
+    private static final String LOG_TEMPLATE_RESPONSE_BODY = "Response body: {}.";
 
     /**
      * This configuration provides settings for API request execution, including logging behavior,
@@ -134,13 +135,13 @@ public class RestClientImpl implements RestClient {
         if (response.body() != null) {
             String bodyStr = response.body().asPrettyString();
             if (getApiConfig().logFullBody()) {
-                extended("Response body: {}.", bodyStr);
+                extended(LOG_TEMPLATE_RESPONSE_BODY, bodyStr);
             } else {
                 int limit = Math.min(bodyStr.length(), getApiConfig().shortenBody());
-                extended("Response body: {}.", bodyStr.substring(0, limit) + (bodyStr.length() > limit ? "..." : ""));
+                extended(LOG_TEMPLATE_RESPONSE_BODY, bodyStr.substring(0, limit) + (bodyStr.length() > limit ? "..." : ""));
             }
         } else {
-            extended("Response body: {}.", "");
+            extended(LOG_TEMPLATE_RESPONSE_BODY, "");
         }
 
         extended("Response headers: {}.", response.getHeaders() != null ? response.getHeaders().toString() : "");

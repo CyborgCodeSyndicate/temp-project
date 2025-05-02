@@ -103,8 +103,13 @@ class ApiHookExtensionTest {
                 // now stub the "beforeType" hook
                 ApiHookFlow hookFlow = mock(ApiHookFlow.class);
                 when(hookFlow.flow()).thenReturn(
-                        (restSvc, storage, args) -> storage.put(args[0], args[1])
+                        (restSvc, storage, args) -> {
+                            Map<Object, Object> map = (Map<Object, Object>) storage;
+                            Object[] arr = (Object[]) args;
+                            map.put(arr[0], arr[1]);
+                        }
                 );
+
                 reflMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
                         eq(ApiHookFlow.class),
                         eq("beforeType"),   // <- must match your valid dummy
@@ -153,7 +158,13 @@ class ApiHookExtensionTest {
                 when(cfg.projectPackage()).thenReturn("ignored.pkg");
 
                 ApiHookFlow hookFlow = mock(ApiHookFlow.class);
-                when(hookFlow.flow()).thenReturn((restSvc, storage, args) -> storage.put(args[0], args[1]));
+                when(hookFlow.flow()).thenReturn(
+                        (restSvc, storage, args) -> {
+                            Map<Object, Object> map = (Map<Object, Object>) storage;
+                            Object[] arr = (Object[]) args;
+                            map.put(arr[0], arr[1]);
+                        }
+                );
 
                 reflMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
                         eq(ApiHookFlow.class), eq("afterType"), anyString()

@@ -9,16 +9,14 @@ import java.util.List;
 import static com.theairebellion.zeus.db.config.DbConfigHolder.getDbConfig;
 
 /**
- * Converter implementation for {@link DbType} when loading properties via OWNER.
- * <p>
- * Reads the configured {@link DbConfig#getDbConfig() DbConfig},
- * uses reflection to locate the single enum in the project that implements {@link DbType},
- * and returns the corresponding enum constant for the given string input.
- * </p>
- * <p>
- * If more than one {@code enum} implementing {@link DbType} is found,
- * this converter will fail fast with an {@link IllegalStateException}.
- * </p>
+ * OWNER converter for {@link DbType}.  Uses the singleton {@link DbConfig}
+ * loaded by {@link DbConfigHolder#getDbConfig()} to discover via
+ * {@link ReflectionUtil} exactly one enum implementing {@link DbType}
+ * in your project package, then converts the raw property string into
+ * that enum constant.
+ *
+ * <p>If zero or more than one {@code enum} implementing {@link DbType}
+ * is found, this converter will fail fast with an {@link IllegalStateException}.</p>
  *
  * @author Cyborg Code Syndicate
  */

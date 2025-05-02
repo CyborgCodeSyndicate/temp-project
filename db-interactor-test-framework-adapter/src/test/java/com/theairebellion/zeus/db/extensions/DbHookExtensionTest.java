@@ -178,7 +178,11 @@ class DbHookExtensionTest {
             AtomicReference<Map> mapRef = new AtomicReference<>();
             AtomicReference<String[]> argsRef = new AtomicReference<>();
 
-            when(dummyFlow.flow()).thenReturn((svc, storageHooks, hookArgs) -> {
+            when(dummyFlow.flow()).thenReturn((svc, storageObj, argsObj) -> {
+                @SuppressWarnings("unchecked")
+                Map<Object, Object> storageHooks = (Map<Object, Object>) storageObj;
+                String[] hookArgs = (String[]) argsObj;
+
                 svcRef.set(svc);
                 mapRef.set(storageHooks);
                 argsRef.set(hookArgs);

@@ -1,172 +1,119 @@
 package com.theairebellion.zeus.db.log;
 
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@DisplayName("LogDb Tests")
 class LogDbTest {
 
-    private static final String MSG = "foo";
-    private static final String TPL = "format: {}";
-
-    private LogDb original;
+    private static final String MSG = "message";
+    private static final String TPL = "tpl: {}";
+    private static final Object PARAM = 123;
+    private LogDb originalInstance;
 
     @BeforeEach
     void setUp() throws Exception {
-        // Store the original instance
-        Field instanceField = LogDb.class.getDeclaredField("instance");
-        instanceField.setAccessible(true);
-        originalInstance = (LogDb) instanceField.get(null);
+        // stash the existing singleton
+        Field f = LogDb.class.getDeclaredField("instance");
+        f.setAccessible(true);
+        originalInstance = (LogDb) f.get(null);
     }
 
     @AfterEach
     void tearDown() throws Exception {
-        // Restore the original instance
-        Field instanceField = LogDb.class.getDeclaredField("instance");
-        instanceField.setAccessible(true);
-        instanceField.set(null, originalInstance);
+        // restore the original singleton
+        Field f = LogDb.class.getDeclaredField("instance");
+        f.setAccessible(true);
+        f.set(null, originalInstance);
     }
 
     @Test
-    @DisplayName("All logging methods should not throw exceptions")
-    void testAllLogMethodsDoNotThrow() {
-        // Testing all methods to ensure they don't throw
-        assertDoesNotThrow(() -> LogDb.info(TEST_MESSAGE));
-        assertDoesNotThrow(() -> LogDb.warn(TEST_MESSAGE));
-        assertDoesNotThrow(() -> LogDb.error(TEST_MESSAGE));
-        assertDoesNotThrow(() -> LogDb.debug(TEST_MESSAGE));
-        assertDoesNotThrow(() -> LogDb.trace(TEST_MESSAGE));
-        assertDoesNotThrow(() -> LogDb.step(TEST_MESSAGE));
-        assertDoesNotThrow(() -> LogDb.validation(TEST_MESSAGE));
-        assertDoesNotThrow(() -> LogDb.extended(TEST_MESSAGE));
+    @DisplayName("All static log methods should not throw")
+    void testBasicLogMethods() {
+        assertDoesNotThrow(() -> LogDb.info(MSG));
+        assertDoesNotThrow(() -> LogDb.warn(MSG));
+        assertDoesNotThrow(() -> LogDb.error(MSG));
+        assertDoesNotThrow(() -> LogDb.debug(MSG));
+        assertDoesNotThrow(() -> LogDb.trace(MSG));
+        assertDoesNotThrow(() -> LogDb.step(MSG));
+        assertDoesNotThrow(() -> LogDb.validation(MSG));
+        assertDoesNotThrow(() -> LogDb.extended(MSG));
     }
 
     @Test
-    @DisplayName("Logging methods should accept message templates with parameters")
-    void testLoggingWithParameters() {
-        // Testing with parameter formatting
-        assertDoesNotThrow(() -> LogDb.info(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
-        assertDoesNotThrow(() -> LogDb.warn(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
-        assertDoesNotThrow(() -> LogDb.error(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
-        assertDoesNotThrow(() -> LogDb.debug(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
-        assertDoesNotThrow(() -> LogDb.trace(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
-        assertDoesNotThrow(() -> LogDb.step(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
-        assertDoesNotThrow(() -> LogDb.validation(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
-        assertDoesNotThrow(() -> LogDb.extended(TEST_MESSAGE_WITH_PARAM, PARAM_VALUE));
+    @DisplayName("Format-style log methods should accept parameters")
+    void testLogWithParams() {
+        assertDoesNotThrow(() -> LogDb.info(TPL, PARAM));
+        assertDoesNotThrow(() -> LogDb.warn(TPL, PARAM));
+        assertDoesNotThrow(() -> LogDb.error(TPL, PARAM));
+        assertDoesNotThrow(() -> LogDb.debug(TPL, PARAM));
+        assertDoesNotThrow(() -> LogDb.trace(TPL, PARAM));
+        assertDoesNotThrow(() -> LogDb.step(TPL, PARAM));
+        assertDoesNotThrow(() -> LogDb.validation(TPL, PARAM));
+        assertDoesNotThrow(() -> LogDb.extended(TPL, PARAM));
     }
 
     @Test
-    @DisplayName("Should create instance on first call")
+    @DisplayName("Singleton should initialize on first use")
     void testSingletonInitialization() throws Exception {
-        // Given - reset the instance for this test
-        Field instanceField = LogDb.class.getDeclaredField("instance");
-        instanceField.setAccessible(true);
-        instanceField.set(null, null);
+        // reset
+        Field f = LogDb.class.getDeclaredField("instance");
+        f.setAccessible(true);
+        f.set(null, null);
 
-        // When
-        LogDb.info(TEST_MESSAGE); // This should initialize the instance
+        // trigger init
+        LogDb.info(MSG);
 
-        // Then
-        LogDb instance = (LogDb) instanceField.get(null);
-        assertNotNull(instance, "LogDb instance should be created");
+        Object inst = f.get(null);
+        assertNotNull(inst, "LogDb.instance should be created");
+        assertTrue(inst instanceof LogDb);
     }
 
     @Test
-    @DisplayName("Should reuse the same instance")
+    @DisplayName("Singleton reuse across calls")
     void testSingletonReuse() throws Exception {
-        // Given - reset the instance for this test
-        Field instanceField = LogDb.class.getDeclaredField("instance");
-        instanceField.setAccessible(true);
-        instanceField.set(null, null);
+        // reset
+        Field f = LogDb.class.getDeclaredField("instance");
+        f.setAccessible(true);
+        f.set(null, null);
 
-        // When
-        LogDb.info("First call"); // Initialize instance
-        LogDb firstInstance = (LogDb) instanceField.get(null);
+        LogDb.info("first");
+        Object first = f.get(null);
 
-        LogDb.info("Second call"); // Should reuse instance
-        LogDb secondInstance = (LogDb) instanceField.get(null);
+        LogDb.info("second");
+        Object second = f.get(null);
 
-        // Then
-        assertSame(firstInstance, secondInstance, "Same LogDb instance should be reused");
+        assertSame(first, second, "LogDb.instance should be reused");
     }
 
     @Test
-    @DisplayName("Static methods should delegate to instance methods")
-    void testStaticMethodsDelegateToInstanceMethods() {
-        // Since we can't directly test the protected methods due to the final class,
-        // we can use static mocking to verify the static method calls
-        try (MockedStatic<LogDb> mockedLogDb = mockStatic(LogDb.class)) {
-            // When
-            LogDb.info(TEST_MESSAGE);
+    @DisplayName("extend() should replace the singleton instance")
+    void testExtendSwapsInstance() throws Exception {
+        // ensure the default singleton is initialized
+        LogDb.info(MSG);
+        Field f = LogDb.class.getDeclaredField("instance");
+        f.setAccessible(true);
 
-            // templates
-            assertDoesNotThrow(() -> LogDb.info(TPL, "x"));
-            assertDoesNotThrow(() -> LogDb.error(TPL, new RuntimeException("e")));
-        }
+        // now create a fresh LogDb via its private constructor
+        Constructor<LogDb> ctor = LogDb.class.getDeclaredConstructor();
+        ctor.setAccessible(true);
+        LogDb custom = ctor.newInstance();
 
-        @Test
-        @DisplayName("null message/args are safe")
-        void testNulls() {
-            assertDoesNotThrow(() -> LogDb.info(null));
-            assertDoesNotThrow(() -> LogDb.info(TPL, (Object) null));
-        }
+        // replace it
+        LogDb.extend(custom);
 
-        @Test
-        @DisplayName("singleton initializes on first call")
-        void testSingletonInit() throws Exception {
-            // reset
-            Field inst = LogDb.class.getDeclaredField("INSTANCE");
-            inst.setAccessible(true);
-            inst.set(null, null);
+        // verify the field was swapped
+        LogDb current = (LogDb) f.get(null);
+        assertSame(custom, current);
 
-            LogDb.info(MSG);
-            assertNotNull(inst.get(null));
-        }
-
-        @Test
-        @DisplayName("singleton reused across calls")
-        void testSingletonReuse() throws Exception {
-            Field inst = LogDb.class.getDeclaredField("INSTANCE");
-            inst.setAccessible(true);
-            inst.set(null, null);
-
-            LogDb.info("a");
-            Object first = inst.get(null);
-
-            LogDb.info("b");
-            Object second = inst.get(null);
-
-            assertSame(first, second);
-        }
-    }
-
-    @Nested
-    @DisplayName("ExtendTests")
-    class ExtendTests {
-        @Test
-        @DisplayName("extend() swaps in your instance")
-        void testExtendReplacesInstance() throws Exception {
-            // ensure there's an original
-            LogDb.info("init");
-            Field inst = LogDb.class.getDeclaredField("INSTANCE");
-            inst.setAccessible(true);
-            LogDb before = (LogDb) inst.get(null);
-
-            // make a spy of it
-            LogDb spy = org.mockito.Mockito.spy(before);
-            LogDb.extend(spy);
-
-            // now the INSTANCE field is our spy
-            LogDb current = (LogDb) inst.get(null);
-            assertSame(spy, current);
-
-            // and static calls go to that spy (no exception)
-            assertDoesNotThrow(() -> LogDb.info("hello"));
-        }
+        // and that static calls still work (no exception)
+        assertDoesNotThrow(() -> LogDb.info(MSG));
     }
 }

@@ -24,5 +24,5 @@ public enum StorageKeysApi {
     /**
      * Key for storing the authenticated password.
      */
-    PASSWORD;
+    PASSWORD
 }

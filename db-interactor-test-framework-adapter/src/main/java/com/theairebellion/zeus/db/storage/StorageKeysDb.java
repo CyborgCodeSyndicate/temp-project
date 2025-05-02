@@ -14,6 +14,6 @@ public enum StorageKeysDb {
     /**
      * Key for database-related storage.
      */
-    DB;
+    DB
 
 }

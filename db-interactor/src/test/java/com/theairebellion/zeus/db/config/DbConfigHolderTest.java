@@ -1,17 +1,23 @@
 package com.theairebellion.zeus.db.config;
 
 import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class DbConfigHolderTest {
@@ -151,10 +157,15 @@ class DbConfigHolderTest {
     }
 
     @Test
-    @DisplayName("Cover the default constructor")
-    void testConstructorCoverage() {
-        // simply instantiate to exercise the implicit <init>
-        DbConfigHolder holder = new DbConfigHolder();
-        assertNotNull(holder, "Just ensure we called the constructor");
+    @DisplayName("Cover the private constructor via reflection")
+    void testConstructorCoverage() throws Exception {
+        // Grab the private no-arg constructor
+        Constructor<DbConfigHolder> ctor =
+                DbConfigHolder.class.getDeclaredConstructor();
+        ctor.setAccessible(true);
+
+        // Invoke it
+        Object holder = ctor.newInstance();
+        assertNotNull(holder, "Should have created an instance via reflection");
     }
 }
