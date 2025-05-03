@@ -5,6 +5,9 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
+import static com.reqres.test.framework.utils.Headers.API_KEY_HEADER;
+import static com.reqres.test.framework.utils.Headers.API_KEY_VALUE;
+
 public enum Endpoints implements Endpoint {
 
     GET_ALL_USERS(Method.GET, "/users?{page}"),
@@ -42,7 +45,7 @@ public enum Endpoints implements Endpoint {
     public RequestSpecification defaultConfiguration() {
         RequestSpecification spec = Endpoint.super.defaultConfiguration();
         spec.contentType(ContentType.JSON);
-        spec.header("x-api-key", "reqres-free-v1");
+        spec.header(API_KEY_HEADER, API_KEY_VALUE);
         return spec;
     }
 
