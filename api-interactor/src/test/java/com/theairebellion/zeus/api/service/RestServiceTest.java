@@ -28,6 +28,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -525,6 +526,34 @@ class RestServiceTest {
                     "Exception message should include endpoint URL");
             assertInstanceOf(RuntimeException.class, exception.getCause(),
                     "Cause should be the original exception");
+        }
+
+        @Test
+        @DisplayName("executeRequest() skips header when auth client exists but no auth key yet")
+        void executeRequestWithAuthClientButNoKey() throws Exception {
+            // Arrange
+            @SuppressWarnings({"rawtypes","unchecked"})
+            Endpoint endpoint = mock(Endpoint.class);
+            Object body = "testBody";
+            RequestSpecification specMock = mock(RequestSpecification.class);
+
+            when(endpoint.prepareRequestSpec(body)).thenReturn(specMock);
+            when(endpoint.method()).thenReturn(Method.POST);
+            when(restClient.execute(specMock, Method.POST)).thenReturn(responseMock);
+
+            // Inject only the auth-client (key stays null)
+            Field clientField = RestService.class.getDeclaredField("baseAuthenticationClient");
+            clientField.setAccessible(true);
+            clientField.set(restService, mock(BaseAuthenticationClient.class));
+
+            // Act
+            Response r = restService.request(endpoint, body);
+
+            // Assert
+            assertSame(responseMock, r);
+            // since authenticationKey==null, no header() call
+            verify(specMock, never()).header(any(Header.class));
+            verify(restClient).execute(specMock, Method.POST);
         }
     }
 }
