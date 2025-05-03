@@ -5,25 +5,33 @@ import com.theairebellion.zeus.framework.quest.SuperQuest;
 
 import java.util.function.BiConsumer;
 
-public enum QuestPreconditions implements PreQuestJourney<QuestPreconditions> {
+public enum QuestPreconditions implements PreQuestJourney {
 
-    CREATE_NEW_USER_FLOW(QuestPreconditionFunctions::createNewUser);
+    CREATE_NEW_USER(QuestPreconditionFunctions::createNewUser);
 
-    public static final String CREATE_NEW_USER = "CREATE_NEW_USER_FLOW";
+    public static final class Data {
+
+        public static final String CREATE_NEW_USER = "CREATE_NEW_USER";
+
+    }
+
 
     private final BiConsumer<SuperQuest, Object[]> function;
+
 
     QuestPreconditions(final BiConsumer<SuperQuest, Object[]> function) {
         this.function = function;
     }
+
 
     @Override
     public BiConsumer<SuperQuest, Object[]> journey() {
         return function;
     }
 
+
     @Override
-    public QuestPreconditions enumImpl() {
+    public Enum<?> enumImpl() {
         return this;
     }
 

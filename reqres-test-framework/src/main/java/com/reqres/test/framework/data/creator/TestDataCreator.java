@@ -3,7 +3,7 @@ package com.reqres.test.framework.data.creator;
 import com.theairebellion.zeus.framework.parameters.DataForge;
 import com.theairebellion.zeus.framework.parameters.Late;
 
-public enum TestDataCreator implements DataForge<TestDataCreator> {
+public enum TestDataCreator implements DataForge {
 
     USER_LEADER_FLOW(DataCreationFunctions::createLeaderUser),
     LOGIN_ADMIN_USER_FLOW(DataCreationFunctions::createAdminLoginUser),
@@ -29,7 +29,7 @@ public enum TestDataCreator implements DataForge<TestDataCreator> {
     }
 
     @Override
-    public TestDataCreator enumImpl() {
+    public Enum<?> enumImpl() {
         return this;
     }
 

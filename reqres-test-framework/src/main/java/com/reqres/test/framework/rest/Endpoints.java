@@ -5,13 +5,15 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
-public enum Endpoints implements Endpoint<Endpoints> {
+public enum Endpoints implements Endpoint {
 
     GET_ALL_USERS(Method.GET, "/users?{page}"),
     GET_USER(Method.GET, "/users/{id}"),
-    CREATE_USER(Method.POST, "/users"),
-    LOGIN_USER(Method.POST, "/login"),
-    DELETE_USER(Method.DELETE, "/users/{id}");
+    POST_CREATE_USER(Method.POST, "/users"),
+    POST_LOGIN_USER(Method.POST, "/login"),
+    DELETE_USER(Method.DELETE, "/users/{id}"),
+    GET_ALL_RESOURCES(Method.GET, "/unknown?{page}"),
+    GET_RESOURCE(Method.GET, "/unknown/{id}");
 
     private final Method method;
     private final String url;
@@ -32,7 +34,7 @@ public enum Endpoints implements Endpoint<Endpoints> {
     }
 
     @Override
-    public Endpoints enumImpl() {
+    public Enum<?> enumImpl() {
         return this;
     }
 
@@ -40,6 +42,7 @@ public enum Endpoints implements Endpoint<Endpoints> {
     public RequestSpecification defaultConfiguration() {
         RequestSpecification spec = Endpoint.super.defaultConfiguration();
         spec.contentType(ContentType.JSON);
+        spec.header("x-api-key", "reqres-free-v1");
         return spec;
     }
 

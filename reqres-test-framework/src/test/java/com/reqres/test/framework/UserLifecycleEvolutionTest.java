@@ -9,37 +9,41 @@ import com.reqres.test.framework.rest.dto.response.CreatedUserResponse;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
 import com.theairebellion.zeus.api.storage.StorageKeysApi;
-import com.theairebellion.zeus.framework.annotation.Journey;
-import com.theairebellion.zeus.framework.annotation.JourneyData;
-import com.theairebellion.zeus.framework.annotation.PreQuest;
-import com.theairebellion.zeus.framework.annotation.Regression;
-import com.theairebellion.zeus.framework.annotation.Ripper;
-import com.theairebellion.zeus.framework.base.BaseTestSequential;
+import com.theairebellion.zeus.framework.annotation.*;
+import com.theairebellion.zeus.framework.base.BaseTest;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.validator.core.Assertion;
 import io.restassured.response.Response;
 import org.aeonbits.owner.ConfigCache;
-import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 
 import static com.reqres.test.framework.base.World.GONDOR;
 import static com.reqres.test.framework.base.World.OLYMPYS;
 import static com.reqres.test.framework.data.cleaner.TestDataCleaner.DELETE_ADMIN_USER;
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_INTERMEDIATE;
 import static com.reqres.test.framework.data.creator.TestDataCreator.USER_LEADER;
-import static com.reqres.test.framework.preconditions.QuestPreconditions.CREATE_NEW_USER;
+import static com.reqres.test.framework.preconditions.QuestPreconditions.Data.CREATE_NEW_USER;
+import static com.reqres.test.framework.rest.ApiResponsesJsonPaths.TOKEN;
 import static com.reqres.test.framework.rest.Endpoints.*;
+import static com.reqres.test.framework.utils.AssertionMessages.*;
+import static com.reqres.test.framework.utils.Headers.AUTHORIZATION_HEADER_KEY;
+import static com.reqres.test.framework.utils.Headers.AUTHORIZATION_HEADER_VALUE;
+import static com.reqres.test.framework.utils.PathVariables.ID_PARAM;
+import static com.reqres.test.framework.utils.TestConstants.Roles.*;
+import static com.reqres.test.framework.utils.TestConstants.Users.ID_THREE;
 import static com.theairebellion.zeus.api.validator.RestAssertionTarget.STATUS;
 import static com.theairebellion.zeus.validator.core.AssertionTypes.IS;
+import static java.time.ZoneOffset.UTC;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @API
-public class UserLifecycleEvolutionTest extends BaseTestSequential {
+public class UserLifecycleEvolutionTest extends BaseTest {
 
     @Test
     @Regression
@@ -49,90 +53,71 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
         final String password = testData.password();
 
         quest.enters(OLYMPYS)
-                .request(
-                        LOGIN_USER,
-                        new LoginUser(username, password)
-                );
+                .request(POST_LOGIN_USER, new LoginUser(username, password));
 
-        String token = retrieve(StorageKeysApi.API, LOGIN_USER, Response.class)
-                .getBody()
-                .jsonPath()
-                .getString("token");
+        String token = retrieve(StorageKeysApi.API, POST_LOGIN_USER, Response.class)
+                .getBody().jsonPath().getString(TOKEN.getJsonPath());
 
-        User userLeader = User.builder()
-                .name("Morpheus")
-                .job("Leader")
-                .build();
-
-        User userIntermediate = User.builder()
-                .name("Mr. " + userLeader.getName())
-                .job("Intermediate " + userLeader.getJob())
-                .build();
+        User userLeader = User.builder().name(USER_LEADER_NAME).job(USER_LEADER_JOB).build();
+        User userIntermediate = User.builder().name(USER_INTERMEDIATE_NAME).job(USER_INTERMEDIATE_JOB).build();
 
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER.withHeader("Authorization", "Bearer " + token),
+                        POST_CREATE_USER.withHeader(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token),
                         userLeader,
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .requestAndValidate(
-                        CREATE_USER.withHeader("Authorization", "Bearer " + token),
+                        POST_CREATE_USER.withHeader(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token),
                         userIntermediate,
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
-                            .getBody()
-                            .as(CreatedUserResponse.class);
-                    assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
-                    assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
-                    assertTrue(createdUserResponse
-                            .getCreatedAt()
-                            .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
+                            .getBody().as(CreatedUserResponse.class);
+                    assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName(), NAME_INCORRECT);
+                    assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob(), JOB_INCORRECT);
+                    assertTrue(createdUserResponse.getCreatedAt()
+                            .contains(Instant.now().atZone(UTC).format(ISO_LOCAL_DATE)), CREATED_AT_INCORRECT);
                 })
                 .requestAndValidate(
-                        DELETE_USER
-                                .withPathParam("id", 2)
-                                .withHeader("Authorization", "Bearer " + token),
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
-                );
+                        DELETE_USER.withPathParam(ID_PARAM, ID_THREE).withHeader(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token),
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
+                )
+                .complete();
     }
 
     @Test
     @AuthenticateViaApiAs(credentials = AdminAuth.class, type = ReqResAuthentication.class)
     @Regression
     public void testUserLifecycleWithAuth(Quest quest) {
-        User userLeader = User.builder()
-                .name("Morpheus")
-                .job("Leader")
-                .build();
-
-        User userIntermediate = User.builder()
-                .name("Mr. " + userLeader.getName())
-                .job("Intermediate " + userLeader.getJob())
-                .build();
+        User userLeader = User.builder().name(USER_LEADER_NAME).job(USER_LEADER_JOB).build();
+        User userIntermediate = User.builder().name(USER_INTERMEDIATE_NAME).job(USER_INTERMEDIATE_JOB).build();
 
         quest.enters(OLYMPYS)
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userLeader,
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .requestAndValidate(
-                        CREATE_USER,
+                        POST_CREATE_USER,
                         userIntermediate,
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_CREATED).build())
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_CREATED).build()
+                )
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
-                            .getBody()
-                            .as(CreatedUserResponse.class);
-                    assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
-                    assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
-                    assertTrue(createdUserResponse
-                            .getCreatedAt()
-                            .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
+                            .getBody().as(CreatedUserResponse.class);
+                    assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName(), NAME_INCORRECT);
+                    assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob(), JOB_INCORRECT);
+                    assertTrue(createdUserResponse.getCreatedAt()
+                            .contains(Instant.now().atZone(UTC).format(ISO_LOCAL_DATE)), CREATED_AT_INCORRECT);
                 })
                 .requestAndValidate(
-                        DELETE_USER.withPathParam("id", 2),
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
-                );
+                        DELETE_USER.withPathParam(ID_PARAM, ID_THREE),
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
+                )
+                .complete();
     }
 
     @Test
@@ -145,19 +130,18 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     public void testUserLifecycleWithPreQuest(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
-                            .getBody()
-                            .as(CreatedUserResponse.class);
-                    assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
-                    assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
-                    assertTrue(createdUserResponse
-                            .getCreatedAt()
-                            .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
+                            .getBody().as(CreatedUserResponse.class);
+                    assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName(), NAME_INCORRECT);
+                    assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob(), JOB_INCORRECT);
+                    assertTrue(createdUserResponse.getCreatedAt()
+                            .contains(Instant.now().atZone(UTC).format(ISO_LOCAL_DATE)), CREATED_AT_INCORRECT);
                 })
                 .requestAndValidate(
-                        DELETE_USER.withPathParam("id", 2),
-                        Assertion.builder().target(STATUS).type(IS).expected(HttpStatus.SC_NO_CONTENT).build()
-                );
+                        DELETE_USER.withPathParam(ID_PARAM, ID_THREE),
+                        Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
+                )
+                .complete();
     }
 
     @Test
@@ -171,15 +155,14 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     public void testUserLifecycleWithRipper(Quest quest) {
         quest.enters(OLYMPYS)
                 .validate(() -> {
-                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, CREATE_USER, Response.class)
-                            .getBody()
-                            .as(CreatedUserResponse.class);
-                    assertEquals("Mr. Morpheus", createdUserResponse.getName(), "Name is incorrect!");
-                    assertEquals("Intermediate Leader", createdUserResponse.getJob(), "Job is incorrect!");
-                    assertTrue(createdUserResponse
-                            .getCreatedAt()
-                            .contains(Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE)), "CreatedAt date is incorrect!");
-                });
+                    CreatedUserResponse createdUserResponse = retrieve(StorageKeysApi.API, POST_CREATE_USER, Response.class)
+                            .getBody().as(CreatedUserResponse.class);
+                    assertEquals(USER_INTERMEDIATE_NAME, createdUserResponse.getName(), NAME_INCORRECT);
+                    assertEquals(USER_INTERMEDIATE_JOB, createdUserResponse.getJob(), JOB_INCORRECT);
+                    assertTrue(createdUserResponse.getCreatedAt()
+                            .contains(Instant.now().atZone(UTC).format(ISO_LOCAL_DATE)), CREATED_AT_INCORRECT);
+                })
+                .complete();
     }
 
     @Test
@@ -192,7 +175,8 @@ public class UserLifecycleEvolutionTest extends BaseTestSequential {
     @Regression
     public void testUserLifecycleWithCustomService(Quest quest) {
         quest.enters(GONDOR)
-                .validateCreatedUser();
+                .validateCreatedUser()
+                .complete();
     }
 
 }
