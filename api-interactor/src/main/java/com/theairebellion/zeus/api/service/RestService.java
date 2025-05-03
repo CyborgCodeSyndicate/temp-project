@@ -168,12 +168,14 @@ public class RestService {
         }
         try {
             RequestSpecification spec = endpoint.prepareRequestSpec(body);
-            if (baseAuthenticationClient != null) {
-                Header authenticationHeader = baseAuthenticationClient.getAuthentication(authenticationKey);
-                if (authenticationHeader != null) {
-                    spec.header(authenticationHeader);
+
+            if (baseAuthenticationClient != null && authenticationKey != null) {
+                Header header = baseAuthenticationClient.getAuthentication(authenticationKey);
+                if (header != null) {
+                    spec.header(header);
                 }
             }
+
             return restClient.execute(spec, endpoint.method());
         } catch (Exception e) {
             throw new RestServiceException("Error executing request for endpoint: " + endpoint.url(), e);
