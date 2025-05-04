@@ -15,7 +15,7 @@ import static com.theairebellion.zeus.db.config.DbConfigHolder.getDbConfig;
  *
  * @author Cyborg Code Syndicate
  */
-public interface DbQuery {
+public interface DbQuery<T extends Enum<T>> {
 
     /**
      * Retrieves the raw query string.
@@ -51,7 +51,7 @@ public interface DbQuery {
      *
      * @return The query's enum representation.
      */
-    Enum<?> enumImpl();
+    T enumImpl();
 
     /**
      * Applies a parameter to the query dynamically.
@@ -64,7 +64,7 @@ public interface DbQuery {
      * @param value The value to assign to the parameter.
      * @return A new {@code DbQuery} instance with the applied parameter.
      */
-    default DbQuery withParam(String name, Object value) {
-        return new ParametrizedQuery(this).withParam(name, value);
+    default DbQuery<T> withParam(String name, Object value) {
+        return new ParametrizedQuery<>(this).withParam(name, value);
     }
 }

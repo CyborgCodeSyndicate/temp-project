@@ -52,78 +52,47 @@ public final class SmartWebElementInspector {
         boolean comingFromWait = false;
 
         for (StackTraceElement element : t.getStackTrace()) {
-            if (FluentWait.class.getName().equals(element.getClassName())) {
+            String className = element.getClassName();
+            String methodName = element.getMethodName();
+
+            if (isFromWait(className)) {
                 comingFromWait = true;
             }
-            if (SMART_WEB_ELEMENT_CLASS.equals(element.getClassName())) {
-                String methodName = element.getMethodName();
-                if (ANNOTATED_METHODS.contains(methodName)) {
+
+            if (isSmartComponent(className)) {
+                if (isAnnotated(methodName)) {
                     foundAnnotatedMethod = true;
                 }
-                if ("handleException".equals(methodName)) {
-                    foundHandleException = true;
-                }
-            }
-            if (SMART_WEB_DRIVER_CLASS.equals(element.getClassName())) {
-                String methodName = element.getMethodName();
-                if (ANNOTATED_METHODS.contains(methodName)) {
-                    foundAnnotatedMethod = true;
-                }
-                if ("handleException".equals(methodName)) {
+                if (isHandleException(methodName)) {
                     foundHandleException = true;
                 }
             }
         }
+
         return new Result(foundAnnotatedMethod, foundHandleException, comingFromWait);
+    }
+
+    private static boolean isFromWait(String className) {
+        return FluentWait.class.getName().equals(className);
+    }
+
+    private static boolean isSmartComponent(String className) {
+        return SMART_WEB_ELEMENT_CLASS.equals(className) || SMART_WEB_DRIVER_CLASS.equals(className);
+    }
+
+    private static boolean isAnnotated(String methodName) {
+        return ANNOTATED_METHODS.contains(methodName);
+    }
+
+    private static boolean isHandleException(String methodName) {
+        return "handleException".equals(methodName);
     }
 
     /**
      * Represents the result of a stack trace inspection, indicating whether an exception
      * was caused by an annotated method, was handled, or originated from a wait operation.
      */
-    public static final class Result {
-        private final boolean foundAnnotatedMethod;
-        private final boolean foundHandleException;
-        private final boolean comingFromWait;
+    public record Result(boolean foundAnnotatedMethod, boolean foundHandleException, boolean comingFromWait) {
 
-        /**
-         * Constructs a result object containing exception origin flags.
-         *
-         * @param foundAnnotatedMethod {@code true} if the stack trace contains a method annotated with {@link HandleUIException}.
-         * @param foundHandleException {@code true} if the stack trace contains a call to `handleException`.
-         * @param comingFromWait       {@code true} if the stack trace indicates the exception occurred within a {@link FluentWait}.
-         */
-        public Result(boolean foundAnnotatedMethod, boolean foundHandleException, boolean comingFromWait) {
-            this.foundAnnotatedMethod = foundAnnotatedMethod;
-            this.foundHandleException = foundHandleException;
-            this.comingFromWait = comingFromWait;
-        }
-
-        /**
-         * Checks if the exception originated from a method annotated with {@link HandleUIException}.
-         *
-         * @return {@code true} if the method was annotated, otherwise {@code false}.
-         */
-        public boolean foundAnnotatedMethod() {
-            return foundAnnotatedMethod;
-        }
-
-        /**
-         * Checks if the exception was handled by the `handleException` method.
-         *
-         * @return {@code true} if the exception was handled, otherwise {@code false}.
-         */
-        public boolean foundHandleException() {
-            return foundHandleException;
-        }
-
-        /**
-         * Checks if the exception occurred during a Selenium {@link FluentWait} operation.
-         *
-         * @return {@code true} if the exception came from a wait operation, otherwise {@code false}.
-         */
-        public boolean comingFromWait() {
-            return comingFromWait;
-        }
     }
 }

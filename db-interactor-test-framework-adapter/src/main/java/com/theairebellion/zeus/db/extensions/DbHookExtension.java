@@ -8,6 +8,7 @@ import com.theairebellion.zeus.db.connector.BaseDbConnectorService;
 import com.theairebellion.zeus.db.hooks.DbHookFlow;
 import com.theairebellion.zeus.db.json.JsonPathExtractor;
 import com.theairebellion.zeus.db.service.DatabaseService;
+import com.theairebellion.zeus.framework.exceptions.HookExecutionException;
 import com.theairebellion.zeus.framework.hooks.HookExecution;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
@@ -60,11 +61,11 @@ public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
 
     private void executeHook(DbHook dbHook, Map<Object, Object> storageHooks) {
         try {
-            DbHookFlow hookFlow = ReflectionUtil.findEnumImplementationsOfInterface(
+            DbHookFlow<?> hookFlow = ReflectionUtil.findEnumImplementationsOfInterface(
                 DbHookFlow.class, dbHook.type(), getDbConfig().projectPackage());
             hookFlow.flow().accept(dbService(), storageHooks, dbHook.arguments());
         } catch (Exception e) {
-            throw new RuntimeException("Error executing DbHook: " + dbHook.type(), e);
+            throw new HookExecutionException("Error executing DbHook: " + dbHook.type(), e);
         }
     }
 

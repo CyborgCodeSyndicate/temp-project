@@ -19,7 +19,7 @@ import lombok.NonNull;
  */
 @Getter
 @AllArgsConstructor
-public class AssertionResult<T> {
+public final class AssertionResult<T> {
 
     /**
      * Indicates whether the assertion passed ({@code true}) or failed ({@code false}).

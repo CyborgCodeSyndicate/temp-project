@@ -90,7 +90,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
         addResponseMethod.setAccessible(true);
 
         // Prepare test data
-        ApiResponse apiResponse = new ApiResponse("http://test.url", 200);
+        ApiResponse apiResponse = new ApiResponse("http://test.url", "GET", 200);
         apiResponse.setBody("Test response body");
 
         // Create a mock storage

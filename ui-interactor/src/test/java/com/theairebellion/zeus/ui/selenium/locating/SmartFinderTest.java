@@ -556,6 +556,8 @@ class SmartFinderTest extends BaseUnitUITest {
             // Arrange
             ArgumentCaptor<Function<WebDriver, ?>> captor = ArgumentCaptor.forClass(Function.class);
             Consumer<Function<WebDriver, ?>> mockConsumer = mock(Consumer.class);
+            lenient().when(driver.findElement(by)).thenReturn(webElement);
+
 
             // Act
             SmartFinder.findElementNormally(driver, by, mockConsumer);

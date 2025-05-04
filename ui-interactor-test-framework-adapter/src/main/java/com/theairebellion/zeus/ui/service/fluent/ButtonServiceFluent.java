@@ -26,6 +26,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class ButtonServiceFluent<T extends UIServiceFluent<?>> {
 
     private final ButtonService buttonService;

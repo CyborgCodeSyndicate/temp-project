@@ -113,7 +113,7 @@ public final class SmartFinder {
     public static List<SmartWebElement> findElementsNoWrap(WebDriver driver, By by) {
         return driver.findElements(by).stream()
                 .map(elem -> new SmartWebElement(elem, driver))
-                .collect(Collectors.toList()); // or .toList() if using Java 16+
+                .toList();
     }
 
     /**
@@ -238,7 +238,7 @@ public final class SmartFinder {
     public static List<SmartWebElement> findElementsNoWrap(SmartWebElement smartElem, By by) {
         return smartElem.getOriginal().findElements(by).stream()
                 .map(e -> new SmartWebElement(e, smartElem.getDriver()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -293,7 +293,7 @@ public final class SmartFinder {
     private static List<SmartWebElement> toSmartWebElements(List<WebElement> elements, WebDriver driver) {
         return elements.stream()
                 .map(e -> new SmartWebElement(e, driver))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

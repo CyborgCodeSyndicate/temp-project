@@ -16,7 +16,7 @@ package com.theairebellion.zeus.framework.parameters;
  *
  * @author Cyborg Code Syndicate
  */
-public interface DataForge {
+public interface DataForge<T extends Enum<T>>  {
 
     /**
      * Provides a deferred test data creation mechanism.
@@ -39,6 +39,6 @@ public interface DataForge {
      *
      * @return An {@link Enum} instance representing the test data definition.
      */
-    Enum<?> enumImpl();
+    T enumImpl();
 
 }

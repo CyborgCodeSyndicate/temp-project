@@ -44,7 +44,6 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
     @SuppressWarnings("unchecked")
     public <T> List<AssertionResult<T>> validateResponse(final Response response, Assertion... assertions) {
         LogApi.info("Starting response validation with {} assertion(s).", assertions.length);
-
         Map<String, T> data = new HashMap<>();
 
         for (Assertion assertion : assertions) {
@@ -54,37 +53,9 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
             }
 
             switch (restTarget) {
-                case STATUS -> {
-                    final String ASSERTION_KEY_FOR_STATUS = "AssertionKeyForStatus";
-                    data.put(ASSERTION_KEY_FOR_STATUS, (T) Integer.valueOf(response.getStatusCode()));
-                    assertion.setKey(ASSERTION_KEY_FOR_STATUS);
-                }
-                case BODY -> {
-                    String key = assertion.getKey();
-                    if (key == null) {
-                        throw new InvalidAssertionException(
-                                "Assertion must have a non-null key. Key must contain a valid JsonPath expression.");
-                    }
-
-                    T value = response.jsonPath().get(key);
-                    if (value == null) {
-                        throw new IllegalArgumentException(
-                                "JsonPath expression: '" + key + "' not found in response body.");
-                    }
-                    data.put(key, value);
-                }
-                case HEADER -> {
-                    String key = assertion.getKey();
-                    if (key == null) {
-                        throw new InvalidAssertionException("Assertion must have a non-null key.");
-                    }
-
-                    String header = response.getHeader(key);
-                    if (header == null) {
-                        throw new IllegalArgumentException("Header '" + key + "' not found in response.");
-                    }
-                    data.put(key, (T) header);
-                }
+                case STATUS -> handleStatusAssertion(response, data, assertion);
+                case BODY -> handleBodyAssertion(response, data, assertion);
+                case HEADER -> handleHeaderAssertion(response, data, assertion);
                 default -> throw new InvalidAssertionException("Unhandled assertion target: " + assertion.getTarget());
             }
         }
@@ -100,5 +71,40 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
      */
     protected void printAssertionTarget(Map<String, Object> data) {
         LogApi.extended("Validation target: [{}]", data.toString());
+    }
+
+
+    private <T> void handleStatusAssertion(Response response, Map<String, T> data, Assertion assertion) {
+        final String key = "AssertionKeyForStatus";
+        data.put(key, (T) Integer.valueOf(response.getStatusCode()));
+        assertion.setKey(key);
+    }
+
+    private <T> void handleBodyAssertion(Response response, Map<String, T> data, Assertion assertion) {
+        String key = assertion.getKey();
+        if (key == null) {
+            throw new InvalidAssertionException("Assertion must have a non-null key. Key must contain a valid JsonPath expression.");
+        }
+
+        T value = response.jsonPath().get(key);
+        if (value == null) {
+            throw new IllegalArgumentException("JsonPath expression: '" + key + "' not found in response body.");
+        }
+
+        data.put(key, value);
+    }
+
+    private <T> void handleHeaderAssertion(Response response, Map<String, T> data, Assertion assertion) {
+        String key = assertion.getKey();
+        if (key == null) {
+            throw new InvalidAssertionException("Assertion must have a non-null key.");
+        }
+
+        String header = response.getHeader(key);
+        if (header == null) {
+            throw new IllegalArgumentException("Header '" + key + "' not found in response.");
+        }
+
+        data.put(key, (T) header);
     }
 }

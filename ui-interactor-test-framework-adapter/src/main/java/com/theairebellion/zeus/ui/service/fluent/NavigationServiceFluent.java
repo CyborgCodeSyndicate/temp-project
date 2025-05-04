@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.qameta.allure.Allure;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.JavascriptExecutor;
@@ -19,6 +20,7 @@ import java.util.Objects;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
 
     private final T uiServiceFluent;
@@ -259,6 +261,7 @@ public class NavigationServiceFluent<T extends UIServiceFluent<?>> {
      *
      * @return The fluent UI service instance.
      */
+    @SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST")
     public T openNewTab() {
         Allure.step("[UI - Navigation] Open a new browser tab using JavaScript and switch to it");
 

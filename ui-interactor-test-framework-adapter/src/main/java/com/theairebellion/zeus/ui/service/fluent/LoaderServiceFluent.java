@@ -20,6 +20,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate
  */
+@SuppressWarnings("java:S5960")
 public class LoaderServiceFluent<T extends UIServiceFluent<?>> {
 
     private final LoaderService loaderService;

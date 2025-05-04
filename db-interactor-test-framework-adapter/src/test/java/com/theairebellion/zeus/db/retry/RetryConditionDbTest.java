@@ -31,17 +31,6 @@ class RetryConditionDbTest {
     @Mock
     private QueryResponse queryResponse;
 
-    @Test
-    @DisplayName("Constructor should be callable")
-    void constructorShouldBeCallable() {
-        // When - instantiate the class using reflection to exercise the constructor
-        RetryConditionDb instance = new RetryConditionDb();
-
-        // Then - just verify the instance is not null
-        assertThat(instance)
-                .as("Should be able to create an instance of RetryConditionDb")
-                .isNotNull();
-    }
 
     @Nested
     @DisplayName("queryReturnsRows condition tests")

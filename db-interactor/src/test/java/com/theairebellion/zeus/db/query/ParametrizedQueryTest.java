@@ -194,7 +194,7 @@ class ParametrizedQueryTest {
                 "withParam() should create a new instance");
     }
 
-    private DbQuery createQuery(String query) {
+    private DbQuery<?> createQuery(String query) {
         return new DbQuery() {
             @Override
             public String query() {

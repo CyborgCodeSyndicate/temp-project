@@ -18,6 +18,9 @@ import java.util.List;
  */
 public class FrameHelper {
 
+    private FrameHelper() {
+    }
+
     /**
      * Searches for a WebElement inside iframes using a given locator.
      *
@@ -104,6 +107,7 @@ public class FrameHelper {
         String tagName = originalElement.getTagName();
         String attributes = getUniqueAttributes(driver, originalElement);
 
+        @SuppressWarnings("java:S1075")
         String xpathExpression = "//" + tagName + attributes;
         List<WebElement> matchingElements = driver.findElements(By.xpath(xpathExpression));
 

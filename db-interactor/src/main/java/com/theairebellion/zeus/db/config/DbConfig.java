@@ -24,7 +24,7 @@ public interface DbConfig extends PropertyConfig {
 
     @ConverterClass(DbTypeConverter.class)
     @Key("db.default.type")
-    DbType type();
+    DbType<?> type();
 
     /**
      * Retrieves the default database host.

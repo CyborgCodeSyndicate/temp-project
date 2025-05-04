@@ -5,7 +5,6 @@ import com.theairebellion.zeus.framework.chain.FluentServiceDecorator;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
 import com.theairebellion.zeus.framework.log.LogTest;
 import com.theairebellion.zeus.framework.quest.mock.MockFluentService;
-import com.theairebellion.zeus.framework.quest.mock.MockFluentServiceDecorator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class QuestFactoryTest {
@@ -51,7 +53,7 @@ class QuestFactoryTest {
         factoryField.set(questFactory, decoratorsFactory);
 
         when(decoratorsFactory.decorate(mockFluentService, FluentServiceDecorator.class))
-                .thenAnswer(invocation -> new MockFluentServiceDecorator(mockFluentService));
+                .thenAnswer(invocation -> new FluentServiceDecorator(mockFluentService));
 
         when(decoratorsFactory.decorate(any(), eq(SuperQuest.class)))
                 .thenAnswer(invocation -> new SuperQuest(invocation.getArgument(0)));

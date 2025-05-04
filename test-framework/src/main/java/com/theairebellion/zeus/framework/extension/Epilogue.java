@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,8 +48,8 @@ public class Epilogue implements AfterTestExecutionCallback {
     public void afterTestExecution(final ExtensionContext context) {
         setUpTestMetadata(context);
         SuperQuest superQuest = getSuperQuest(context);
-        Map<Enum<?>, LinkedList<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
-        String htmlContent = new ObjectFormatter().generateHtmlContent(arguments);
+        Map<Enum<?>, List<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
+        String htmlContent = ObjectFormatter.generateHtmlContent(arguments);
         List<String> htmlList = context.getStore(ExtensionContext.Namespace.GLOBAL).get(HTML, List.class);
         if (htmlList == null) {
             htmlList = new ArrayList<>();
