@@ -8,7 +8,8 @@ import org.openqa.selenium.By;
 
 public class MockButtonService implements ButtonService {
 
-    public ButtonComponentType lastComponentType;
+    public ButtonComponentType lastComponentTypeUsed;
+    public ButtonComponentType explicitComponentType;
     public SmartWebElement lastContainer;
     public String lastButtonText;
     public By lastLocator;
@@ -19,14 +20,22 @@ public class MockButtonService implements ButtonService {
     public boolean returnVisible;
 
     public MockButtonService() {
-        // Set DEFAULT_TYPE for testing
-        lastComponentType = MockButtonComponentType.DUMMY;
-        returnEnabled = true;
-        returnVisible = true;
+        reset();
     }
 
+    private void setLastType(ButtonComponentType type) {
+        this.explicitComponentType = type;
+        if (MockButtonComponentType.DUMMY_BUTTON.equals(type)) {
+            this.lastComponentTypeUsed = MockButtonComponentType.DUMMY_BUTTON;
+        } else {
+            this.lastComponentTypeUsed = null;
+        }
+    }
+
+
     public void reset() {
-        lastComponentType = MockButtonComponentType.DUMMY;
+        lastComponentTypeUsed = null;
+        explicitComponentType = MockButtonComponentType.DUMMY_BUTTON;
         lastContainer = null;
         lastButtonText = null;
         lastLocator = null;
@@ -38,32 +47,36 @@ public class MockButtonService implements ButtonService {
 
     @Override
     public final <T extends ButtonComponentType> void click(T componentType, SmartWebElement container, String buttonText) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastContainer = container;
         lastButtonText = buttonText;
     }
 
     @Override
     public final <T extends ButtonComponentType> void click(T componentType, SmartWebElement container) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastContainer = container;
+        lastButtonText = null;
     }
 
     @Override
     public final <T extends ButtonComponentType> void click(T componentType, String buttonText) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastButtonText = buttonText;
+        lastContainer = null;
     }
 
     @Override
     public final <T extends ButtonComponentType> void click(T componentType, By buttonLocator) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastLocator = buttonLocator;
+        lastContainer = null;
+        lastButtonText = null;
     }
 
     @Override
     public final <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement container, String buttonText) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastContainer = container;
         lastButtonText = buttonText;
         return returnEnabled;
@@ -71,28 +84,32 @@ public class MockButtonService implements ButtonService {
 
     @Override
     public final <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement container) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastContainer = container;
+        lastButtonText = null;
         return returnEnabled;
     }
 
     @Override
     public final <T extends ButtonComponentType> boolean isEnabled(T componentType, String buttonText) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastButtonText = buttonText;
+        lastContainer = null;
         return returnEnabled;
     }
 
     @Override
     public final <T extends ButtonComponentType> boolean isEnabled(T componentType, By buttonLocator) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastLocator = buttonLocator;
+        lastContainer = null;
+        lastButtonText = null;
         return returnEnabled;
     }
 
     @Override
     public final <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement container, String buttonText) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastContainer = container;
         lastButtonText = buttonText;
         return returnVisible;
@@ -100,29 +117,36 @@ public class MockButtonService implements ButtonService {
 
     @Override
     public final <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement container) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastContainer = container;
+        lastButtonText = null;
         return returnVisible;
     }
 
     @Override
     public final <T extends ButtonComponentType> boolean isVisible(T componentType, String buttonText) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastButtonText = buttonText;
+        lastContainer = null;
         return returnVisible;
     }
 
     @Override
     public final <T extends ButtonComponentType> boolean isVisible(T componentType, By buttonLocator) {
-        lastComponentType = componentType;
+        setLastType(componentType);
         lastLocator = buttonLocator;
+        lastContainer = null;
+        lastButtonText = null;
         return returnVisible;
     }
 
     @Override
     public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
         lastCellElement = cellElement;
-        lastComponentType = (ButtonComponentType) componentType;
+        // Attempt cast for testing purposes, real impl handles type safety
+        if (componentType instanceof ButtonComponentType) {
+            setLastType((ButtonComponentType) componentType);
+        }
         lastValues = values;
     }
 }

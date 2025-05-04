@@ -2,7 +2,7 @@ package com.theairebellion.zeus.ui.components.table.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import org.junit.jupiter.api.Test;
 
 public class FilterStrategyTest extends BaseUnitUITest {

@@ -1,23 +1,18 @@
 package com.theairebellion.zeus.ui.components.link;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
+import com.theairebellion.zeus.ui.components.button.mock.MockButtonComponentType;
 import com.theairebellion.zeus.ui.components.link.mock.MockLinkComponentType;
 import com.theairebellion.zeus.ui.components.link.mock.MockLinkService;
-import com.theairebellion.zeus.ui.config.UiConfig;
-import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.junit.jupiter.api.*;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 @DisplayName("LinkService Interface Default Methods")
 class LinkServiceTest extends BaseUnitUITest {
@@ -26,13 +21,18 @@ class LinkServiceTest extends BaseUnitUITest {
     private SmartWebElement container;
     private By locator;
 
+    private static final String LINK_TEXT = "ClickMeLink";
+    private static final MockLinkComponentType LINK_DEFAULT_TYPE = MockLinkComponentType.DUMMY_LINK;
+    private static final MockButtonComponentType BUTTON_DEFAULT_TYPE = MockButtonComponentType.DUMMY_BUTTON;
+
+
     @BeforeEach
     void setUp() {
+        // Given
         service = new MockLinkService();
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        container = new MockSmartWebElement(webElement, driver);
+        container = MockSmartWebElement.createMock();
         locator = By.id("testLink");
+        service.reset();
     }
 
     @Nested
@@ -43,147 +43,304 @@ class LinkServiceTest extends BaseUnitUITest {
         @DisplayName("doubleClick with container and text default delegates correctly")
         void doubleClickWithContainerAndTextDefault() {
             // Given
-            service.reset();
-            var linkText = "LinkTxt";
 
             // When
-            service.doubleClick(container, linkText);
+            service.doubleClick(container, LINK_TEXT);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
+            assertThat(service.lastLinkType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(LINK_DEFAULT_TYPE);
             assertThat(service.lastContainer).isEqualTo(container);
-            assertThat(service.lastButtonText).isEqualTo(linkText);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("doubleClick with container default delegates correctly")
         void doubleClickWithContainerDefault() {
             // Given
-            service.reset();
 
             // When
             service.doubleClick(container);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
+            assertThat(service.lastLinkType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(LINK_DEFAULT_TYPE);
             assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastButtonText).isNull();
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("doubleClick with text only default delegates correctly")
         void doubleClickWithTextOnlyDefault() {
             // Given
-            service.reset();
-            var linkText = "someLink";
 
             // When
-            service.doubleClick(linkText);
+            service.doubleClick(LINK_TEXT);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
-            assertThat(service.lastButtonText).isEqualTo(linkText);
+            assertThat(service.lastLinkType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("doubleClick with locator default delegates correctly")
         void doubleClickWithLocatorDefault() {
             // Given
-            service.reset();
 
             // When
             service.doubleClick(locator);
 
             // Then
-            assertThat(service.lastLinkType).isEqualTo(MockLinkComponentType.DUMMY_LINK);
+            assertThat(service.lastLinkType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(LINK_DEFAULT_TYPE);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(LINK_DEFAULT_TYPE);
             assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastButtonText).isNull();
         }
     }
 
     @Nested
-    @DisplayName("Default Type Resolution Tests")
-    class DefaultTypeResolutionTests {
-        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
-        private MockedStatic<ReflectionUtil> reflectionUtilMock;
-        private UiConfig uiConfigMock;
-
-        @BeforeEach
-        void setUp() {
-            uiConfigMock = mock(UiConfig.class);
-            uiConfigHolderMock = mockStatic(UiConfigHolder.class);
-            reflectionUtilMock = mockStatic(ReflectionUtil.class);
-
-            uiConfigHolderMock.when(UiConfigHolder::getUiConfig)
-                    .thenReturn(uiConfigMock);
-            when(uiConfigMock.linkDefaultType()).thenReturn("TEST_TYPE");
-            when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
-        }
-
-        @AfterEach
-        void tearDown() {
-            if (uiConfigHolderMock != null) {
-                uiConfigHolderMock.close();
-            }
-            if (reflectionUtilMock != null) {
-                reflectionUtilMock.close();
-            }
-        }
+    @DisplayName("Inherited Default Click Method Tests")
+    class InheritedClickDefaultTests {
 
         @Test
-        @DisplayName("getDefaultType returns component type when found")
-        void getDefaultTypeSuccess() throws Exception {
+        @DisplayName("click with container and text default delegates correctly")
+        void clickWithContainerAndTextDefault() {
             // Given
-            var mockType = MockLinkComponentType.DUMMY_LINK;
-            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            eq(LinkComponentType.class),
-                            eq("TEST_TYPE"),
-                            eq("com.test.package")))
-                    .thenReturn(mockType);
 
-            // When - access the private method using reflection
-            var getDefaultTypeMethod = LinkService.class.getDeclaredMethod("getDefaultType");
-            getDefaultTypeMethod.setAccessible(true);
-            var result = (LinkComponentType) getDefaultTypeMethod.invoke(null);
+            // When
+            service.click(container, LINK_TEXT);
 
             // Then
-            assertThat(result).isEqualTo(mockType);
+            // Assert against BUTTON's default type for inherited methods
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
         }
 
         @Test
-        @DisplayName("getDefaultType returns null when exception occurs")
-        void getDefaultTypeWithException() throws Exception {
-            // Given - ReflectionUtil throws exception when called
-            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            eq(LinkComponentType.class),
-                            anyString(),
-                            anyString()))
-                    .thenThrow(new RuntimeException("Test exception"));
+        @DisplayName("click with container default delegates correctly")
+        void clickWithContainerDefault() {
+            // Given
 
-            // When - access private method via reflection
-            var getDefaultTypeMethod = LinkService.class.getDeclaredMethod("getDefaultType");
-            getDefaultTypeMethod.setAccessible(true);
-            var result = (LinkComponentType) getDefaultTypeMethod.invoke(null);
+            // When
+            service.click(container);
 
-            // Then - verify null is returned when exception occurs
-            assertThat(result).isNull();
+            // Then
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastButtonText).isNull();
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("click with text default delegates correctly")
+        void clickWithTextDefault() {
+            // Given
+
+            // When
+            service.click(LINK_TEXT);
+
+            // Then
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("click with locator default delegates correctly")
+        void clickWithLocatorDefault() {
+            // Given
+
+            // When
+            service.click(locator);
+
+            // Then
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastButtonText).isNull();
+            assertThat(service.lastLinkType).isNull();
         }
     }
 
-    @Test
-    @DisplayName("reset method clears all fields properly")
-    void resetMethodClearsAllFields() {
-        // Given
-        service.lastLinkType = MockLinkComponentType.DUMMY_LINK;
-        service.lastContainer = container;
-        service.lastButtonText = "buttonText";
-        service.lastLocator = locator;
+    @Nested
+    @DisplayName("Inherited Default IsEnabled Method Tests")
+    class InheritedIsEnabledDefaultTests {
 
-        // When
-        service.reset();
+        @Test
+        @DisplayName("isEnabled with container and text default delegates correctly")
+        void isEnabledWithContainerAndTextDefault() {
+            // Given
+            service.returnEnabled = true;
 
-        // Then
-        assertThat(service.lastLinkType).isNull();
-        assertThat(service.lastContainer).isNull();
-        assertThat(service.lastButtonText).isNull();
-        assertThat(service.lastLocator).isNull();
+            // When
+            var result = service.isEnabled(container, LINK_TEXT);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("isEnabled with container default delegates correctly")
+        void isEnabledWithContainerDefault() {
+            // Given
+            service.returnEnabled = true;
+
+            // When
+            var result = service.isEnabled(container);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastButtonText).isNull();
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("isEnabled with text default delegates correctly")
+        void isEnabledWithTextDefault() {
+            // Given
+            service.returnEnabled = true;
+
+            // When
+            var result = service.isEnabled(LINK_TEXT);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("isEnabled with locator default delegates correctly")
+        void isEnabledWithLocatorDefault() {
+            // Given
+            service.returnEnabled = true;
+
+            // When
+            var result = service.isEnabled(locator);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastButtonText).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Inherited Default IsVisible Method Tests")
+    class InheritedIsVisibleDefaultTests {
+
+        @Test
+        @DisplayName("isVisible with container and text default delegates correctly")
+        void isVisibleWithContainerAndTextDefault() {
+            // Given
+            service.returnVisible = true;
+
+            // When
+            var result = service.isVisible(container, LINK_TEXT);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("isVisible with container default delegates correctly")
+        void isVisibleWithContainerDefault() {
+            // Given
+            service.returnVisible = true;
+
+            // When
+            var result = service.isVisible(container);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastButtonText).isNull();
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("isVisible with text default delegates correctly")
+        void isVisibleWithTextDefault() {
+            // Given
+            service.returnVisible = true;
+
+            // When
+            var result = service.isVisible(LINK_TEXT);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastButtonText).isEqualTo(LINK_TEXT);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastLocator).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
+
+        @Test
+        @DisplayName("isVisible with locator default delegates correctly")
+        void isVisibleWithLocatorDefault() {
+            // Given
+            service.returnVisible = true;
+
+            // When
+            var result = service.isVisible(locator);
+
+            // Then
+            assertThat(result).isTrue();
+            assertThat(service.lastComponentTypeUsed).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(BUTTON_DEFAULT_TYPE);
+            assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastButtonText).isNull();
+            assertThat(service.lastLinkType).isNull();
+        }
     }
 }

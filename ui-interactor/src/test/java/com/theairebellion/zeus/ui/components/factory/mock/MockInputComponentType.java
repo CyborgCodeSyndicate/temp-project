@@ -1,9 +1,11 @@
-package com.theairebellion.zeus.ui.components.input.mock;
+package com.theairebellion.zeus.ui.components.factory.mock;
 
 import com.theairebellion.zeus.ui.components.input.InputComponentType;
 
 public enum MockInputComponentType implements InputComponentType {
-    DUMMY_INPUT;
+    DUMMY,
+    FAIL,
+    NON_EXISTENT;
 
     @Override
     public Enum<?> getType() {

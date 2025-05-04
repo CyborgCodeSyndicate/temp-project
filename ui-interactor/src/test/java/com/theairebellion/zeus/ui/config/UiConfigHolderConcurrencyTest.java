@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.config;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import org.aeonbits.owner.ConfigCache;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

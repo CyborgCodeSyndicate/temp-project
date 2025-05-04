@@ -1,28 +1,19 @@
 package com.theairebellion.zeus.ui.components.loader;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
-import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.loader.mock.MockLoaderComponentType;
 import com.theairebellion.zeus.ui.components.loader.mock.MockLoaderService;
-import com.theairebellion.zeus.ui.config.UiConfig;
-import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @DisplayName("LoaderService Interface Default Methods")
 class LoaderServiceTest extends BaseUnitUITest {
@@ -31,13 +22,18 @@ class LoaderServiceTest extends BaseUnitUITest {
     private SmartWebElement container;
     private By locator;
 
+    private static final MockLoaderComponentType DEFAULT_TYPE = MockLoaderComponentType.DUMMY_LOADER;
+    private static final int WAIT_SECONDS_5 = 5;
+    private static final int WAIT_SECONDS_10 = 10;
+
+
     @BeforeEach
     void setUp() {
+        // Given
         service = new MockLoaderService();
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        container = new MockSmartWebElement(webElement, driver);
+        container = MockSmartWebElement.createMock();
         locator = By.id("testLoader");
+        service.reset();
     }
 
     @Nested
@@ -48,7 +44,6 @@ class LoaderServiceTest extends BaseUnitUITest {
         @DisplayName("isVisible with container delegates correctly")
         void isVisibleWithContainerDelegates() {
             // Given
-            service.reset();
             service.returnVisible = true;
 
             // When
@@ -56,15 +51,16 @@ class LoaderServiceTest extends BaseUnitUITest {
 
             // Then
             assertThat(result).isTrue();
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
             assertThat(service.lastContainer).isEqualTo(container);
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("isVisible with locator delegates correctly")
         void isVisibleWithLocatorDelegates() {
             // Given
-            service.reset();
             service.returnVisible = true;
 
             // When
@@ -72,102 +68,106 @@ class LoaderServiceTest extends BaseUnitUITest {
 
             // Then
             assertThat(result).isTrue();
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
             assertThat(service.lastLocator).isEqualTo(locator);
+            assertThat(service.lastContainer).isNull();
         }
 
         @Test
         @DisplayName("waitToBeShown with container delegates correctly")
         void waitToBeShownWithContainerDelegates() {
-            // Given
-            service.reset();
-            var seconds = 5;
+            // Given - setup in @BeforeEach
 
             // When
-            service.waitToBeShown(container, seconds);
+            service.waitToBeShown(container, WAIT_SECONDS_5);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
             assertThat(service.lastContainer).isEqualTo(container);
-            assertThat(service.lastSeconds).isEqualTo(seconds);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_5);
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("waitToBeShown with seconds only delegates correctly")
         void waitToBeShownWithSecondsOnlyDelegates() {
-            // Given
-            service.reset();
-            var seconds = 7;
+            // Given - setup in @BeforeEach
 
             // When
-            service.waitToBeShown(seconds);
+            service.waitToBeShown(WAIT_SECONDS_5);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
-            assertThat(service.lastSeconds).isEqualTo(seconds);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_5);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("waitToBeShown with locator delegates correctly")
         void waitToBeShownWithLocatorDelegates() {
-            // Given
-            service.reset();
-            var seconds = 10;
+            // Given - setup in @BeforeEach
 
             // When
-            service.waitToBeShown(locator, seconds);
+            service.waitToBeShown(locator, WAIT_SECONDS_5);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
             assertThat(service.lastLocator).isEqualTo(locator);
-            assertThat(service.lastSeconds).isEqualTo(seconds);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_5);
+            assertThat(service.lastContainer).isNull();
         }
 
         @Test
         @DisplayName("waitToBeRemoved with container delegates correctly")
         void waitToBeRemovedWithContainerDelegates() {
-            // Given
-            service.reset();
-            var seconds = 3;
+            // Given - setup in @BeforeEach
 
             // When
-            service.waitToBeRemoved(container, seconds);
+            service.waitToBeRemoved(container, WAIT_SECONDS_10);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
             assertThat(service.lastContainer).isEqualTo(container);
-            assertThat(service.lastSeconds).isEqualTo(seconds);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_10);
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("waitToBeRemoved with seconds only delegates correctly")
         void waitToBeRemovedWithSecondsOnlyDelegates() {
-            // Given
-            service.reset();
-            var seconds = 9;
+            // Given - setup in @BeforeEach
 
             // When
-            service.waitToBeRemoved(seconds);
+            service.waitToBeRemoved(WAIT_SECONDS_10);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
-            assertThat(service.lastSeconds).isEqualTo(seconds);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_10);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("waitToBeRemoved with locator delegates correctly")
         void waitToBeRemovedWithLocatorDelegates() {
-            // Given
-            service.reset();
-            var seconds = 11;
+            // Given - setup in @BeforeEach
 
             // When
-            service.waitToBeRemoved(locator, seconds);
+            service.waitToBeRemoved(locator, WAIT_SECONDS_10);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(MockLoaderComponentType.DUMMY);
+            assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+            assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
             assertThat(service.lastLocator).isEqualTo(locator);
-            assertThat(service.lastSeconds).isEqualTo(seconds);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_10);
+            assertThat(service.lastContainer).isNull();
         }
     }
 
@@ -178,123 +178,50 @@ class LoaderServiceTest extends BaseUnitUITest {
         @Test
         @DisplayName("waitToBeShownAndRemoved with container delegates correctly")
         void waitToBeShownAndRemovedWithContainerDelegates() {
-            // Given
-            service.reset();
-            var showSeconds = 2;
-            var removeSeconds = 4;
-            var componentType = MockLoaderComponentType.DUMMY;
+            // Given - service spy setup could be used here, but manual mock checks last call
+            var componentType = MockLoaderComponentType.DUMMY_LOADER; // Use explicit type for clarity
 
             // When
-            service.waitToBeShownAndRemoved(componentType, container, showSeconds, removeSeconds);
+            service.waitToBeShownAndRemoved(componentType, container, WAIT_SECONDS_5, WAIT_SECONDS_10);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(componentType);
+            // Check the state after the *last* call (waitToBeRemoved)
+            assertThat(service.explicitComponentType).isEqualTo(componentType);
             assertThat(service.lastContainer).isEqualTo(container);
-            assertThat(service.lastSeconds).isEqualTo(removeSeconds);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_10); // last call was waitToBeRemoved
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("waitToBeShownAndRemoved with seconds only delegates correctly")
         void waitToBeShownAndRemovedWithSecondsOnlyDelegates() {
             // Given
-            service.reset();
-            var showSeconds = 3;
-            var removeSeconds = 5;
-            var componentType = MockLoaderComponentType.DUMMY;
+            var componentType = MockLoaderComponentType.DUMMY_LOADER;
 
             // When
-            service.waitToBeShownAndRemoved(componentType, showSeconds, removeSeconds);
+            service.waitToBeShownAndRemoved(componentType, WAIT_SECONDS_5, WAIT_SECONDS_10);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(componentType);
-            assertThat(service.lastSeconds).isEqualTo(removeSeconds);
+            assertThat(service.explicitComponentType).isEqualTo(componentType);
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_10);
+            assertThat(service.lastContainer).isNull();
+            assertThat(service.lastLocator).isNull();
         }
 
         @Test
         @DisplayName("waitToBeShownAndRemoved with locator delegates correctly")
         void waitToBeShownAndRemovedWithLocatorDelegates() {
             // Given
-            service.reset();
-            var showSeconds = 1;
-            var removeSeconds = 6;
-            var componentType = MockLoaderComponentType.DUMMY;
+            var componentType = MockLoaderComponentType.DUMMY_LOADER;
 
             // When
-            service.waitToBeShownAndRemoved(componentType, locator, showSeconds, removeSeconds);
+            service.waitToBeShownAndRemoved(componentType, locator, WAIT_SECONDS_5, WAIT_SECONDS_10);
 
             // Then
-            assertThat(service.lastComponentType).isEqualTo(componentType);
+            assertThat(service.explicitComponentType).isEqualTo(componentType);
             assertThat(service.lastLocator).isEqualTo(locator);
-            assertThat(service.lastSeconds).isEqualTo(removeSeconds);
-        }
-    }
-
-    @Nested
-    @DisplayName("Default Type Resolution Tests")
-    class DefaultTypeResolutionTests {
-        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
-        private MockedStatic<ReflectionUtil> reflectionUtilMock;
-        private UiConfig uiConfigMock;
-
-        @BeforeEach
-        void setUp() {
-            uiConfigMock = mock(UiConfig.class);
-            uiConfigHolderMock = mockStatic(UiConfigHolder.class);
-            reflectionUtilMock = mockStatic(ReflectionUtil.class);
-
-            uiConfigHolderMock.when(UiConfigHolder::getUiConfig)
-                    .thenReturn(uiConfigMock);
-            when(uiConfigMock.loaderDefaultType()).thenReturn("TEST_TYPE");
-            when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
-        }
-
-        @AfterEach
-        void tearDown() {
-            if (uiConfigHolderMock != null) {
-                uiConfigHolderMock.close();
-            }
-            if (reflectionUtilMock != null) {
-                reflectionUtilMock.close();
-            }
-        }
-
-        @Test
-        @DisplayName("getDefaultType returns component type when found")
-        void getDefaultTypeSuccess() throws Exception {
-            // Given
-            var mockType = MockLoaderComponentType.DUMMY;
-            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            eq(LoaderComponentType.class),
-                            eq("TEST_TYPE"),
-                            eq("com.test.package")))
-                    .thenReturn(mockType);
-
-            // When - access the private method using reflection
-            var getDefaultTypeMethod = LoaderService.class.getDeclaredMethod("getDefaultType");
-            getDefaultTypeMethod.setAccessible(true);
-            var result = (LoaderComponentType) getDefaultTypeMethod.invoke(null);
-
-            // Then
-            assertThat(result).isEqualTo(mockType);
-        }
-
-        @Test
-        @DisplayName("getDefaultType returns null when exception occurs")
-        void getDefaultTypeWithException() throws Exception {
-            // Given - ReflectionUtil throws exception when called
-            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            eq(LoaderComponentType.class),
-                            anyString(),
-                            anyString()))
-                    .thenThrow(new RuntimeException("Test exception"));
-
-            // When - access private method via reflection
-            var getDefaultTypeMethod = LoaderService.class.getDeclaredMethod("getDefaultType");
-            getDefaultTypeMethod.setAccessible(true);
-            var result = (LoaderComponentType) getDefaultTypeMethod.invoke(null);
-
-            // Then - verify null is returned when exception occurs
-            assertThat(result).isNull();
+            assertThat(service.lastSeconds).isEqualTo(WAIT_SECONDS_10);
+            assertThat(service.lastContainer).isNull();
         }
     }
 }

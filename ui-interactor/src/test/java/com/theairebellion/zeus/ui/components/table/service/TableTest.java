@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.service;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

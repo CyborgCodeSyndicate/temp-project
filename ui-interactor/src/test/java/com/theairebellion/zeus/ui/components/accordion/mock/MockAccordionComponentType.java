@@ -4,7 +4,7 @@ import com.theairebellion.zeus.ui.components.accordion.AccordionComponentType;
 
 public enum MockAccordionComponentType implements AccordionComponentType {
 
-    DUMMY;
+    DUMMY_ACCORDION;
     @Override
     public Enum<?> getType() {
         return this;

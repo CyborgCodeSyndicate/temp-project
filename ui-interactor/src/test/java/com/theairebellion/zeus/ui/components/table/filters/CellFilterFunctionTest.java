@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.filters;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.table.filters.mock.TestCellFilterFunction;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;

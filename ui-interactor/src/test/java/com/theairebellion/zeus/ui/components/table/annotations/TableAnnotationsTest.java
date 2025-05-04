@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.annotations;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.annotations.mock.MockCellInsertionFunction;
 import com.theairebellion.zeus.ui.components.table.annotations.mock.MockComponentType;
 import com.theairebellion.zeus.ui.components.table.annotations.mock.MockCellFilterFunction;

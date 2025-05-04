@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.components.table.registry;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
 import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
 import com.theairebellion.zeus.ui.components.table.registry.mock.MockComponentType;
