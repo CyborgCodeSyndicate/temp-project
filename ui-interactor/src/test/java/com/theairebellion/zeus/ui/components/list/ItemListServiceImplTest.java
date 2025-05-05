@@ -42,7 +42,6 @@ class ItemListServiceImplTest extends BaseUnitUITest {
     private static final By ITEM_LOCATOR_1 = By.id("item1");
     private static final By ITEM_LOCATOR_2 = By.id("item2");
     private static final By[] SAMPLE_ITEM_LOCATORS = {ITEM_LOCATOR_1, ITEM_LOCATOR_2};
-    private static final String INSERTION_VALUE = "InsertedValue";
 
 
     @BeforeEach
@@ -723,7 +722,7 @@ class ItemListServiceImplTest extends BaseUnitUITest {
 
             // When / Then
             assertThatThrownBy(() -> service.insertion(nonListType, locator, SAMPLE_ITEMS))
-                    .isInstanceOf(ClassCastException.class);
+                    .isInstanceOf(IllegalArgumentException.class);
 
             // Verify factory and component mock were not interacted with
             factoryMock.verifyNoInteractions();

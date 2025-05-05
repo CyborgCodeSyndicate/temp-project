@@ -258,7 +258,10 @@ public class TabServiceImpl extends AbstractComponentService<TabComponentType, T
     @Override
     public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
                                final String... values) {
-        tabComponent((TabComponentType) componentType).clickElementInCell(cellElement);
+        if (!(componentType instanceof TabComponentType tabType)) {
+            throw new IllegalArgumentException("Component type needs to be from: TabComponentType.");
+        }
+        tabComponent(tabType).clickElementInCell(cellElement);
     }
 
     /**

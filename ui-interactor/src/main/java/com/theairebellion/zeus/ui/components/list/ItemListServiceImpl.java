@@ -663,12 +663,15 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
      */
     @Override
     public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+        if (!(componentType instanceof ItemListComponentType listType)) {
+            throw new IllegalArgumentException("Component type needs to be from: ItemListComponentType.");
+        }
         String[] stringValues = Arrays.stream(values)
                 .map(String::valueOf)
                 .toArray(String[]::new);
         LogUI.step(String.format(INSERT_VALUES_INTO_COMPONENT_LOCATOR, Arrays.toString(stringValues), componentType,
                 locator));
-        select((ItemListComponentType) componentType, locator, stringValues);
+        select(listType, locator, stringValues);
     }
 
     /**

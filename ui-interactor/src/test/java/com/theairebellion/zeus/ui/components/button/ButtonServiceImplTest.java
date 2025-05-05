@@ -284,7 +284,7 @@ class ButtonServiceImplTest extends BaseUnitUITest {
 
             // When / Then
             assertThatThrownBy(() -> service.tableInsertion(cellElement, nonButtonType, TABLE_VALUES))
-                    .isInstanceOf(IllegalArgumentException.class) // Or ClassCastException depending on impl detail
+                    .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("Component type needs to be from: ButtonComponentType");
 
             // Verify component wasn't created/retrieved for this invalid type

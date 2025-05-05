@@ -312,7 +312,7 @@ class SelectServiceImplTest extends BaseUnitUITest {
 
             // When / Then
             assertThatThrownBy(() -> service.insertion(nonSelectType, locator, SINGLE_OPTION))
-                    .isInstanceOf(ClassCastException.class); // Expect direct cast failure
+                    .isInstanceOf(IllegalArgumentException.class);
 
             factoryMock.verifyNoInteractions();
             verifyNoInteractions(selectMock);

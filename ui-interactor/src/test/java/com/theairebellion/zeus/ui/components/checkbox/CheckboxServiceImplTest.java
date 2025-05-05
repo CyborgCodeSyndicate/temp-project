@@ -466,9 +466,6 @@ class CheckboxServiceImplTest extends BaseUnitUITest {
             service.insertion(mockCheckboxComponentType, locator, INSERTION_VALUE);
 
             // Then
-            // Insertion calls select(type, locator, values), which delegates to component.select(locator, values)
-            // However, the CheckboxServiceImpl implementation calls select(type, text...)
-            // Let's verify based on the provided impl: insertion -> select(type, text...)
             verify(checkboxMock).select(INSERTION_VALUE);
             factoryMock.verify(() -> ComponentFactory.getCheckBoxComponent(eq(mockCheckboxComponentType), eq(driver)), times(1));
 

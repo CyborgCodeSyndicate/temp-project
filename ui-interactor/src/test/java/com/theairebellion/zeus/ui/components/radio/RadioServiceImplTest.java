@@ -377,7 +377,7 @@ class RadioServiceImplTest extends BaseUnitUITest {
 
             // When / Then
             assertThatThrownBy(() -> service.insertion(nonRadioType, locator, RADIO_OPTION_1))
-                    .isInstanceOf(ClassCastException.class); // Direct cast in implementation
+                    .isInstanceOf(IllegalArgumentException.class);
 
             factoryMock.verifyNoInteractions();
             verifyNoInteractions(radioMock);

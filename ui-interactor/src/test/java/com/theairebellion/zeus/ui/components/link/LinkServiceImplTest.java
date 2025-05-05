@@ -320,7 +320,7 @@ class LinkServiceImplTest extends BaseUnitUITest {
 
             // When / Then
             assertThatThrownBy(() -> service.tableInsertion(cellElement, nonLinkType, TABLE_VALUES))
-                    .isInstanceOf(ClassCastException.class);
+                    .isInstanceOf(IllegalArgumentException.class);
 
             factoryMock.verifyNoInteractions();
             verify(linkMock, never()).clickElementInCell(any());

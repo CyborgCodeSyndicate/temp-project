@@ -330,7 +330,7 @@ class TabServiceImplTest extends BaseUnitUITest {
 
             // When / Then
             assertThatThrownBy(() -> service.tableInsertion(cellElement, nonTabType, TABLE_VALUES))
-                    .isInstanceOf(ClassCastException.class); // Implementation likely uses direct cast
+                    .isInstanceOf(IllegalArgumentException.class);
 
             factoryMock.verifyNoInteractions();
             verifyNoInteractions(tabMock);
