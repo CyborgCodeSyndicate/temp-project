@@ -19,82 +19,82 @@ import static com.reqres.test.framework.utils.TestConstants.Pagination.PAGE_TWO;
 
 public class DataCreationFunctions {
 
-    public static User createLeaderUser() {
-        return User.builder()
-                .name("Morpheus")
-                .job("Leader")
-                .build();
-    }
+   public static User createLeaderUser() {
+      return User.builder()
+            .name("Morpheus")
+            .job("Leader")
+            .build();
+   }
 
-    public static LoginUser createAdminLoginUser() {
-        return LoginUser.builder()
-                .email("eve.holt@reqres.in")
-                .password("cityslicka")
-                .build();
-    }
+   public static LoginUser createAdminLoginUser() {
+      return LoginUser.builder()
+            .email("eve.holt@reqres.in")
+            .password("cityslicka")
+            .build();
+   }
 
-    public static User createJuniorUser() {
-        SuperQuest quest = QuestHolder.get();
-        DataResponse dataResponse;
+   public static User createJuniorUser() {
+      SuperQuest quest = QuestHolder.get();
+      DataResponse dataResponse;
 
-        try {
-            dataResponse = extractFirstUserFromGetAllUsers(quest);
-        } catch (Exception ex) {
-            quest.enters(OLYMPYS)
-                    .request(GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO));
-            dataResponse = extractFirstUserFromGetAllUsers(quest);
-        }
+      try {
+         dataResponse = extractFirstUserFromGetAllUsers(quest);
+      } catch (Exception ex) {
+         quest.enters(OLYMPYS)
+               .request(GET_ALL_USERS.withQueryParam(PAGE_PARAM, PAGE_TWO));
+         dataResponse = extractFirstUserFromGetAllUsers(quest);
+      }
 
-        return User.builder()
-                .name(dataResponse.getFirstName() + " suffix")
-                .job("Junior " + dataResponse.getLastName() + " worker")
-                .build();
-    }
+      return User.builder()
+            .name(dataResponse.getFirstName() + " suffix")
+            .job("Junior " + dataResponse.getLastName() + " worker")
+            .build();
+   }
 
-    public static User createSeniorUser() {
-        SuperQuest quest = QuestHolder.get();
+   public static User createSeniorUser() {
+      SuperQuest quest = QuestHolder.get();
 
-        User userLeader;
-        try {
-            userLeader = quest.getStorage()
-                    .sub(StorageKeysTest.ARGUMENTS)
-                    .get(USER_LEADER_FLOW, User.class);
-        } catch (Exception ex) {
-            userLeader = createLeaderUser();
-        }
+      User userLeader;
+      try {
+         userLeader = quest.getStorage()
+               .sub(StorageKeysTest.ARGUMENTS)
+               .get(USER_LEADER_FLOW, User.class);
+      } catch (Exception ex) {
+         userLeader = createLeaderUser();
+      }
 
-        return User.builder()
-                .name("Mr. " + userLeader.getName())
-                .job("Senior " + userLeader.getJob())
-                .build();
-    }
+      return User.builder()
+            .name("Mr. " + userLeader.getName())
+            .job("Senior " + userLeader.getJob())
+            .build();
+   }
 
-    public static User createIntermediateUser() {
-        SuperQuest quest = QuestHolder.get();
+   public static User createIntermediateUser() {
+      SuperQuest quest = QuestHolder.get();
 
-        User userLeader;
-        try {
-            userLeader = quest.getStorage()
-                    .sub(StorageKeysTest.PRE_ARGUMENTS)
-                    .get(USER_LEADER_FLOW, User.class);
-        } catch (Exception ex) {
-            userLeader = createLeaderUser();
-        }
+      User userLeader;
+      try {
+         userLeader = quest.getStorage()
+               .sub(StorageKeysTest.PRE_ARGUMENTS)
+               .get(USER_LEADER_FLOW, User.class);
+      } catch (Exception ex) {
+         userLeader = createLeaderUser();
+      }
 
-        return User.builder()
-                .name("Mr. " + userLeader.getName())
-                .job("Intermediate " + userLeader.getJob())
-                .build();
-    }
+      return User.builder()
+            .name("Mr. " + userLeader.getName())
+            .job("Intermediate " + userLeader.getJob())
+            .build();
+   }
 
-    private static DataResponse extractFirstUserFromGetAllUsers(SuperQuest quest) {
-        return quest.getStorage()
-                .sub(StorageKeysApi.API)
-                .get(GET_ALL_USERS, Response.class)
-                .getBody()
-                .as(GetUsersResponse.class)
-                .getData()
-                .get(0);
-    }
+   private static DataResponse extractFirstUserFromGetAllUsers(SuperQuest quest) {
+      return quest.getStorage()
+            .sub(StorageKeysApi.API)
+            .get(GET_ALL_USERS, Response.class)
+            .getBody()
+            .as(GetUsersResponse.class)
+            .getData()
+            .get(0);
+   }
 
 }

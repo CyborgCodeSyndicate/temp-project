@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface ApiHooks {
 
-    ApiHook[] value() default {};
+   ApiHook[] value() default {};
 
 }

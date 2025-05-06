@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface DbHooks {
 
-    DbHook[] value() default {};
+   DbHook[] value() default {};
 
 }

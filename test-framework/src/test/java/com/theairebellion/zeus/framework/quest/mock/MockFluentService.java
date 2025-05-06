@@ -6,5 +6,5 @@ import com.theairebellion.zeus.framework.chain.FluentService;
 @TestService("MockWorld")
 public class MockFluentService extends FluentService {
 
-    public String mockField = "mockValue";
+   public String mockField = "mockValue";
 }

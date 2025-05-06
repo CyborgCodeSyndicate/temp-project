@@ -6,8 +6,8 @@ import io.restassured.http.Header;
 
 public class TestAuthClient extends BaseAuthenticationClient {
 
-    @Override
-    protected Header authenticateImpl(RestService restService, String username, String password) {
-        return new Header("Authorization", "Bearer test-token-" + username);
-    }
+   @Override
+   protected Header authenticateImpl(RestService restService, String username, String password) {
+      return new Header("Authorization", "Bearer test-token-" + username);
+   }
 }

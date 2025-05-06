@@ -12,14 +12,14 @@ import static com.reqres.test.framework.utils.Headers.AUTHORIZATION_HEADER_VALUE
 
 public class ReqResAuthentication extends BaseAuthenticationClient {
 
-    @Override
-    protected Header authenticateImpl(final RestService restService, final String username, final String password) {
-        String token = restService
-                .request(POST_LOGIN_USER, new LoginUser(username, password))
-                .getBody()
-                .jsonPath()
-                .getString(TOKEN.getJsonPath());
-        return new Header(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token);
-    }
+   @Override
+   protected Header authenticateImpl(final RestService restService, final String username, final String password) {
+      String token = restService
+            .request(POST_LOGIN_USER, new LoginUser(username, password))
+            .getBody()
+            .jsonPath()
+            .getString(TOKEN.getJsonPath());
+      return new Header(AUTHORIZATION_HEADER_KEY, AUTHORIZATION_HEADER_VALUE + token);
+   }
 
 }

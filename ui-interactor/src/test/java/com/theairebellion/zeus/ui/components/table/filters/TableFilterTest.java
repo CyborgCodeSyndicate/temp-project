@@ -16,19 +16,19 @@ import static org.mockito.Mockito.mock;
 public class TableFilterTest extends BaseUnitUITest {
 
 
-    @Test
-    void testTableFilter() {
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        TestTableFilter filter = new TestTableFilter();
-        SmartWebElement element = new MockSmartWebElement(webElement, driver);
-        MockComponentType compType = MockComponentType.DUMMY;
-        FilterStrategy strategy = FilterStrategy.UNSELECT;
-        String[] values = {"a", "b"};
-        filter.tableFilter(element, compType, strategy, values);
-        assertSame(element, filter.capturedElement);
-        assertSame(compType, filter.capturedComponent);
-        assertSame(strategy, filter.capturedStrategy);
-        assertArrayEquals(values, filter.capturedValues);
-    }
+   @Test
+   void testTableFilter() {
+      WebElement webElement = mock(WebElement.class);
+      WebDriver driver = mock(WebDriver.class);
+      TestTableFilter filter = new TestTableFilter();
+      SmartWebElement element = new MockSmartWebElement(webElement, driver);
+      MockComponentType compType = MockComponentType.DUMMY;
+      FilterStrategy strategy = FilterStrategy.UNSELECT;
+      String[] values = {"a", "b"};
+      filter.tableFilter(element, compType, strategy, values);
+      assertSame(element, filter.capturedElement);
+      assertSame(compType, filter.capturedComponent);
+      assertSame(strategy, filter.capturedStrategy);
+      assertArrayEquals(values, filter.capturedValues);
+   }
 }

@@ -8,12 +8,12 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  *
  * <p>Implementation classes can represent various styles or configurations of radio inputs,
  * ensuring that UI automation remains consistent when handling different radio button setups
- * across an application.</p>
+ * across an application.
  *
  * <p>This interface helps categorize radio components by their specific characteristics,
- * allowing automation to handle them uniformly.</p>
+ * allowing automation to handle them uniformly.
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface RadioComponentType extends ComponentType {
 

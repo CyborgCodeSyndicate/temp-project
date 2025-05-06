@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 public class Mock {
 
-    private String value;
+   private String value;
 }

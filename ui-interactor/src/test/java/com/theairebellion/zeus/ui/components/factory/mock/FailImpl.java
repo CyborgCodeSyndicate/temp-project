@@ -5,15 +5,15 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 
 @ImplementationOfType("FAIL")
 public class FailImpl implements MockInterface {
-    private final SmartWebDriver smartWebDriver;
+   private final SmartWebDriver smartWebDriver;
 
-    public FailImpl(SmartWebDriver driver) {
-        smartWebDriver = driver;
-        throw new IllegalStateException("Failure!");
-    }
+   public FailImpl(SmartWebDriver driver) {
+      smartWebDriver = driver;
+      throw new IllegalStateException("Failure!");
+   }
 
-    @Override
-    public Enum<?> getType() {
-        return MockComponentType.FAIL;
-    }
+   @Override
+   public Enum<?> getType() {
+      return MockComponentType.FAIL;
+   }
 }

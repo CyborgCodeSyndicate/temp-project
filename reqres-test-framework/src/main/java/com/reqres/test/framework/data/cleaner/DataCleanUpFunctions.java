@@ -13,12 +13,12 @@ import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 
 public class DataCleanUpFunctions {
 
-    public static void deleteAdminUser(SuperQuest quest) {
-        quest.enters(OLYMPYS)
-                .requestAndValidate(
-                        DELETE_USER.withPathParam(ID_PARAM, ID_THREE),
-                        Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
-                );
-    }
+   public static void deleteAdminUser(SuperQuest quest) {
+      quest.enters(OLYMPYS)
+            .requestAndValidate(
+                  DELETE_USER.withPathParam(ID_PARAM, ID_THREE),
+                  Assertion.builder().target(STATUS).type(IS).expected(SC_NO_CONTENT).build()
+            );
+   }
 
 }
