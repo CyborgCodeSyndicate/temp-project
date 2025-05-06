@@ -6,6 +6,15 @@ import java.util.List;
 
 import static com.theairebellion.zeus.framework.util.ObjectFormatter.escapeHtml;
 
+/**
+ * Utility class for converting API responses into an HTML representation.
+ *
+ * <p>Provides methods to summarize a list of {@link ApiResponse} objects—counting total,
+ * successful, warning, and error responses—and to build detailed accordion-style
+ * HTML blocks for each response, with proper HTML escaping.
+ *
+ * @author Cyborg Code Syndicate 💍👨💻
+ */
 public final class ResponseFormatter {
 
    public static final String DIV_CLOSE = "</div>";

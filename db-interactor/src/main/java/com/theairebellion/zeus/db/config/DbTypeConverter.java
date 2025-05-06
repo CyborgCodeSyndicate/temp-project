@@ -17,7 +17,7 @@ import static com.theairebellion.zeus.db.config.DbConfigHolder.getDbConfig;
  * <p>If zero or more than one {@code enum} implementing {@link DbType}
  * is found, this converter will fail fast with an {@link IllegalStateException}.</p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public class DbTypeConverter implements Converter<DbType<?>> {
 

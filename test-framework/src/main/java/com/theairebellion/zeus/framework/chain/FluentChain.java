@@ -72,6 +72,13 @@ public interface FluentChain {
       then().complete();
    }
 
+   /**
+    * Wraps the given {@link Quest} in a {@link SuperQuest}, enabling access to
+    * extended functionality such as soft assertions.
+    *
+    * @param quest the base {@code Quest} instance to wrap
+    * @return a new {@code SuperQuest} that decorates the provided quest
+    */
    default SuperQuest createSuperQuest(Quest quest) {
       return new SuperQuest(quest);
    }

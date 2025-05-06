@@ -97,11 +97,33 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
       LogUi.info("Finished data insertion for [{}].", data.getClass().getSimpleName());
    }
 
-   //todo: javaDocs
+   /**
+    * Returns the annotation type that this insertion service handles.
+    *
+    * @return the {@code Class} object of the annotation this service processes
+    */
    protected abstract Class<A> getAnnotationClass();
 
+   /**
+    * Determines the processing order for fields annotated with this service’s annotation.
+    *
+    * <p>Fields with lower order values are processed before fields with higher values.</p>
+    *
+    * @param annotation the annotation instance found on the field
+    * @return an integer representing the priority (lower means earlier)
+    */
    protected abstract int getOrder(A annotation);
 
+   /**
+    * Determines the enum class that implements {@link ComponentType} for the given annotation.
+    *
+    * <p>This method is used to locate the specific enum type which defines the set of
+    * component types associated with the annotation. Implementations should inspect the
+    * annotation’s attributes to return the correct enum class.</p>
+    *
+    * @param annotation the annotation instance from which to derive the component-type enum
+    * @return the {@code Class} object of an enum that implements {@link ComponentType}
+    */
    protected abstract Class<? extends ComponentType> getComponentTypeEnumClass(A annotation);
 
    /**
@@ -112,7 +134,14 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
     */
    protected abstract By buildLocator(A annotation);
 
-   //todo: javaDocs
+   /**
+    * Maps an annotation to its corresponding {@link ComponentType} enum value.
+    *
+    * <p>This tells the service which UI component type to use for insertion.</p>
+    *
+    * @param annotation the annotation instance to inspect
+    * @return the enum constant (implementing {@code ComponentType}) for this annotation
+    */
    protected abstract ComponentType getType(A annotation);
 
    /**
@@ -153,7 +182,17 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
             .toList();
    }
 
-   //todo: javaDocs
+   /**
+    * Resolves the specific interface that implements {@link ComponentType} from a given enum class.
+    *
+    * <p>If the provided {@code componentTypeClass} directly implements {@code ComponentType},
+    * it is returned immediately. Otherwise, this method inspects its interfaces and returns
+    * the first one that in turn extends {@code ComponentType}.</p>
+    *
+    * @param componentTypeClass the enum class (or interface) to inspect for a ComponentType implementation
+    * @return the interface class which extends {@code ComponentType}
+    * @throws IllegalStateException if no interface extending {@code ComponentType} is found
+    */
    protected static Class<? extends ComponentType> extractComponentTypeClass(
          final Class<? extends ComponentType> componentTypeClass) {
       if (Arrays.asList(componentTypeClass.getInterfaces()).contains(ComponentType.class)) {

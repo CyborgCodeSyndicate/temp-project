@@ -28,7 +28,12 @@ public final class QueryResponse {
     */
    private final List<Map<String, Object>> rows;
 
-
+   /**
+    * Constructs a new {@code QueryResponse} wrapping the provided list of rows.
+    *
+    * @param rows the list of result rows (each a map of column names to values); must not be {@code null}
+    * @throws IllegalArgumentException if {@code rows} is {@code null}
+    */
    public QueryResponse(final List<Map<String, Object>> rows) {
       if (rows == null) {
          throw new IllegalArgumentException("rows must not be null");

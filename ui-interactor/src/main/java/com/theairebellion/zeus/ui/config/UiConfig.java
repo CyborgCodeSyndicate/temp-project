@@ -186,7 +186,14 @@ public interface UiConfig extends PropertyConfig {
    @Key("accordion.default.type")
    String accordionDefaultType();
 
-   //todo: JavaDocs
+   /**
+    * Retrieves the base URL for the UI application.
+    *
+    * <p>This URL is used as the root for all page navigation and resource loading
+    * within the UI automation framework.
+    *
+    * @return The configured base URL
+    */
    @Key("ui.base.url")
    String baseUrl();
 

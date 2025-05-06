@@ -101,7 +101,17 @@ public class BaseTest {
       return quest.getStorage().get(extractor, clazz, index);
    }
 
-   //todo: JavaDocs
+   /**
+    * Retrieves data that was stored by a test hook (e.g., DbHook or ApiHook).
+    *
+    * <p>This method looks up hook-scoped data using the provided key object and
+    * returns it as an instance of the specified class.</p>
+    *
+    * @param value the key object under which hook data was stored
+    * @param clazz the expected type of the retrieved data
+    * @param <T>   the type parameter of the returned data
+    * @return the hook-stored data, cast to {@code T}
+    */
    protected <T> T hookData(Object value, Class<T> clazz) {
       SuperQuest quest = QuestHolder.get();
       LogTest.extended(RETRIEVAL_LOG_TEMPLATE, value,

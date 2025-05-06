@@ -22,18 +22,17 @@ import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemPro
 
 /**
  * A JUnit 5 extension that processes {@link ApiHook} annotations on a test class
- * <p>
- * During {@code beforeAll()} it executes any {@code @ApiHook(..., when=HookExecution.BEFORE, ...)} hooks,
+ *
+ * <p>During {@code beforeAll()} it executes any {@code @ApiHook(..., when=HookExecution.BEFORE, ...)} hooks,
  * and during {@code afterAll()} it executes any {@code @ApiHook(..., when=HookExecution.AFTER, ...)} hooks.
  * All hook outputs are collected into a map and stored under the key {@link StoreKeys#HOOKS_PARAMS}
  * in the JUnit extension context’s GLOBAL namespace.
- * </p>
- * <p>
- * Hooks are looked up reflectively by type via {@link ReflectionUtil#findEnumImplementationsOfInterface},
- * then applied via their {@link ApiHookFlow#flow()} consumer.
- * </p>
  *
- * @author Cyborg Code Syndicate
+ *
+ * <p>Hooks are looked up reflectively by type via {@link ReflectionUtil#findEnumImplementationsOfInterface},
+ * then applied via their {@link ApiHookFlow#flow()} consumer.
+ *
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public class ApiHookExtension implements BeforeAllCallback, AfterAllCallback {
 
@@ -47,12 +46,11 @@ public class ApiHookExtension implements BeforeAllCallback, AfterAllCallback {
 
    /**
     * Called once before all tests in the class.
-    * <p>
-    * Gathers all {@link ApiHook} annotations on the test class with
+    *
+    * <p>Gathers all {@link ApiHook} annotations on the test class with
     * {@link HookExecution#BEFORE}, orders them by {@linkplain ApiHook#order() order},
     * and invokes {@link #executeHook} on each. Finally, stores the resulting
     * parameters map under {@link StoreKeys#HOOKS_PARAMS}.
-    * </p>
     *
     * @param context the current JUnit extension context
     * @throws Exception if any reflection or hook‐flow error occurs; wrapped in {@link RuntimeException}
@@ -70,12 +68,11 @@ public class ApiHookExtension implements BeforeAllCallback, AfterAllCallback {
 
    /**
     * Called once after all tests in the class.
-    * <p>
-    * Gathers all {@link ApiHook} annotations on the test class with
+    *
+    * <p>Gathers all {@link ApiHook} annotations on the test class with
     * {@link HookExecution#AFTER}, orders them by {@linkplain ApiHook#order() order},
     * and invokes {@link #executeHook} on each. Finally, stores the resulting
     * parameters map under {@link StoreKeys#HOOKS_PARAMS}.
-    * </p>
     *
     * @param context the current JUnit extension context
     * @throws Exception if any reflection or hook‐flow error occurs; wrapped in {@link RuntimeException}
@@ -94,10 +91,9 @@ public class ApiHookExtension implements BeforeAllCallback, AfterAllCallback {
    /**
     * Executes a single {@link ApiHook} by looking up its {@link ApiHookFlow},
     * then invoking its {@code flow()} consumer with the shared storage map.
-    * <p>
-    * Any exceptions during lookup or execution are caught and rethrown as
+    *
+    * <p>Any exceptions during lookup or execution are caught and rethrown as
     * {@link RuntimeException} with a standardized message.
-    * </p>
     *
     * @param apiHook      the hook annotation instance
     * @param storageHooks the map into which the hook may write parameters
@@ -114,7 +110,6 @@ public class ApiHookExtension implements BeforeAllCallback, AfterAllCallback {
 
    /**
     * Lazily instantiates (and then caches) the {@link RestService} used by hooks.
-    *
     * On first call, creates a new {@link RestService} with Allure‐enabled
     * implementations; on subsequent calls, returns the same instance.
     *

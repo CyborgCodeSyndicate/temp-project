@@ -248,10 +248,10 @@ public interface TableService {
     * <p>This method inserts values into the fields of a specified row in the table using the default table
     * component type.
     *
-    * @param row    The 1-based index of the row where values should be inserted.
+    * @param row       The 1-based index of the row where values should be inserted.
     * @param classType The class type representing the table row.
-    * @param data   The object containing the values to insert.
-    * @param <T>    The type of the row representation.
+    * @param data      The object containing the values to insert.
+    * @param <T>       The type of the row representation.
     */
    default <T> void insertCellValue(int row, Class<T> classType, T data) {
       insertCellValue(DEFAULT_TYPE, row, classType, data);
@@ -265,7 +265,7 @@ public interface TableService {
     *
     * @param tableComponentType The type of the table component.
     * @param row                The 1-based index of the row where values should be inserted.
-    * @param classType             The class type representing the table row.
+    * @param classType          The class type representing the table row.
     * @param data               The object containing the values to insert.
     * @param <T>                The type of the row representation.
     */
@@ -276,11 +276,11 @@ public interface TableService {
     *
     * <p>This method inserts values into a particular field of a specified row.
     *
-    * @param row    The 1-based index of the row where the values should be inserted.
+    * @param row       The 1-based index of the row where the values should be inserted.
     * @param classType The class type representing the table row.
-    * @param field  The field in which values should be inserted.
-    * @param values The values to insert into the field.
-    * @param <T>    The type of the row representation.
+    * @param field     The field in which values should be inserted.
+    * @param values    The values to insert into the field.
+    * @param <T>       The type of the row representation.
     */
    default <T> void insertCellValue(int row, Class<T> classType, TableField<T> field, String... values) {
       insertCellValue(DEFAULT_TYPE, row, classType, field, 1, values);
@@ -293,7 +293,7 @@ public interface TableService {
     *
     * @param tableComponentType The type of the table component.
     * @param row                The 1-based index of the row where the values should be inserted.
-    * @param classType             The class type representing the table row.
+    * @param classType          The class type representing the table row.
     * @param field              The field in which values should be inserted.
     * @param values             The values to insert into the field.
     * @param <T>                The type of the row representation.
@@ -308,12 +308,12 @@ public interface TableService {
     *
     * <p>This method inserts values into a specified field of a row at a particular index position.
     *
-    * @param row    The 1-based index of the row where the values should be inserted.
+    * @param row       The 1-based index of the row where the values should be inserted.
     * @param classType The class type representing the table row.
-    * @param field  The field in which values should be inserted.
-    * @param index  The 1-based index of the cell within the field.
-    * @param value  The values to insert into the field at the given index.
-    * @param <T>    The type of the row representation.
+    * @param field     The field in which values should be inserted.
+    * @param index     The 1-based index of the cell within the field.
+    * @param value     The values to insert into the field at the given index.
+    * @param <T>       The type of the row representation.
     */
    default <T> void insertCellValue(int row, Class<T> classType, TableField<T> field, int index, String... value) {
       insertCellValue(DEFAULT_TYPE, row, classType, field, index, value);
@@ -327,7 +327,7 @@ public interface TableService {
     *
     * @param tableComponentType The type of the table component.
     * @param row                The 1-based index of the row where the values should be inserted.
-    * @param classType             The class type representing the table row.
+    * @param classType          The class type representing the table row.
     * @param field              The field in which values should be inserted.
     * @param index              The 1-based index of the cell within the field.
     * @param value              The values to insert into the field at the given index.
@@ -340,7 +340,7 @@ public interface TableService {
     * Inserts a value into a specific cell in the table based on search criteria.
     *
     * @param searchCriteria The criteria used to locate the row.
-    * @param classType         The class type representing the table row.
+    * @param classType      The class type representing the table row.
     * @param field          The field representing the cell.
     * @param values         The values to be inserted into the cell.
     * @param <T>            The type of the row representation.
@@ -358,7 +358,7 @@ public interface TableService {
     *
     * @param tableComponentType The type of the table component.
     * @param searchCriteria     A list of string values used to identify the row.
-    * @param classType             The class type representing the table row.
+    * @param classType          The class type representing the table row.
     * @param field              The field in which values should be inserted.
     * @param values             The values to insert into the field.
     * @param <T>                The type of the row representation.
@@ -377,7 +377,7 @@ public interface TableService {
     * using the default table component type at a specified cell index.
     *
     * @param searchCriteria A list of string values used to identify the row.
-    * @param classType         The class type representing the table row.
+    * @param classType      The class type representing the table row.
     * @param field          The field in which values should be inserted.
     * @param index          The 1-based index of the cell within the field.
     * @param values         The values to insert into the field at the given index.
@@ -397,7 +397,7 @@ public interface TableService {
     *
     * @param tableComponentType The type of the table component.
     * @param searchCriteria     A list of string values used to identify the row.
-    * @param classType             The class type representing the table row.
+    * @param classType          The class type representing the table row.
     * @param field              The field in which values should be inserted.
     * @param index              The 1-based index of the cell within the field.
     * @param values             The values to insert into the field at the given index.
@@ -414,7 +414,7 @@ public interface TableService {
     * using the default table component type.
     *
     * @param searchCriteria A list of string values used to identify the row.
-    * @param classType         The class type representing the table row.
+    * @param classType      The class type representing the table row.
     * @param data           The object containing the values to insert.
     * @param <T>            The type of the row representation.
     */
@@ -430,7 +430,7 @@ public interface TableService {
     *
     * @param tableComponentType The type of the table component.
     * @param searchCriteria     A list of string values used to identify the row.
-    * @param classType             The class type representing the table row.
+    * @param classType          The class type representing the table row.
     * @param data               The object containing the values to insert.
     * @param <T>                The type of the row representation.
     */
@@ -451,6 +451,20 @@ public interface TableService {
       filterTable(DEFAULT_TYPE, tclass, column, filterStrategy, values);
    }
 
+   /**
+    * Filters the table based on a specified field and filter strategy.
+    *
+    * <p>This method applies the provided {@link FilterStrategy} to the given {@link TableField}
+    * for a table component of the specified type, including only rows that match one or more
+    * of the supplied values.
+    *
+    * @param tableComponentType The type of the table component to filter.
+    * @param tclass             The class type representing the table rows.
+    * @param column             The field (column) on which to apply the filter.
+    * @param filterStrategy     The filtering strategy to use (e.g., SELECT_ONLY, UNSELECT_ALL).
+    * @param values             The values to filter by.
+    * @param <T>                The type of the row representation.
+    */
    <T> void filterTable(TableComponentType tableComponentType, Class<T> tclass, TableField<T> column,
                         FilterStrategy filterStrategy, String... values);
 

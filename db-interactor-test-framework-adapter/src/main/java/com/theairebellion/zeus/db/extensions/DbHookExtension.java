@@ -25,12 +25,12 @@ import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemPro
 
 /**
  * JUnit 5 extension that processes {@link DbHook} annotations on the test class.
- * <p>
- * Executes database-related hooks before and after all tests, ordered by the
+ *
+ * <p>Executes database-related hooks before and after all tests, ordered by the
  * {@code order} attribute on the {@code @DbHook} annotation, and stores the hook
  * parameters in the global ExtensionContext store under {@link StoreKeys#HOOKS_PARAMS}.
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
 
@@ -100,8 +100,8 @@ public class DbHookExtension implements BeforeAllCallback, AfterAllCallback {
 
    /**
     * Lazily initializes and returns the singleton {@link DatabaseService}.
-    * <p>
-    * Configures JSON path extraction, a database connector manager, and an Allure result validator.
+    *
+    * <p>Configures JSON path extraction, a database connector manager, and an Allure result validator.
     *
     * @return the shared {@code DatabaseService} instance
     */

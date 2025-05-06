@@ -244,7 +244,17 @@ public class Storage {
       });
    }
 
-   //todo: javaDocs
+   /**
+    * Retrieves a value stored by a hook (e.g., DbHook or ApiHook) from the global storage map.
+    *
+    * <p>Looks up the HOOKS map under {@link StorageKeysTest#HOOKS} and returns the entry
+    * associated with the given key object, cast to the specified type.</p>
+    *
+    * @param value the hook key under which data was stored
+    * @param clazz the expected class of the stored value
+    * @param <T>   the type of the returned object
+    * @return the hook-stored value cast to {@code T}, or {@code null} if not present
+    */
    public <T> T getHookData(Object value, Class<T> clazz) {
       Map<Object, Object> values = get(StorageKeysTest.HOOKS, Map.class);
       if (values == null || values.get(value) == null) {
@@ -253,6 +263,15 @@ public class Storage {
       return clazz.cast(values.get(value));
    }
 
+   /**
+    * Returns a deep copy of all raw storage entries.
+    *
+    * <p>This method creates and returns a new map where each enum key is
+    * mapped to a fresh list containing the same elements as the internal storage.
+    * Modifications to the returned map or its lists will not affect the original storage.</p>
+    *
+    * @return a snapshot of the entire storage contents
+    */
    public Map<Enum<?>, List<Object>> getData() {
       Map<Enum<?>, List<Object>> copy = new HashMap<>();
       for (Map.Entry<Enum<?>, LinkedList<Object>> entry : data.entrySet()) {

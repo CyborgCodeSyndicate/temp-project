@@ -53,10 +53,9 @@ public class RestClientImpl implements RestClient {
 
    /**
     * Executes an API request with the specified request specification and HTTP method.
-    * <p>
-    * This method logs the request details, sends the request, logs the response,
+    *
+    * <p>This method logs the request details, sends the request, logs the response,
     * and returns the response.
-    * </p>
     *
     * @param spec   The {@code RequestSpecification} containing request details.
     * @param method The HTTP method to use for the request.

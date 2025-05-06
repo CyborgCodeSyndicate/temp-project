@@ -53,6 +53,7 @@ public class RestResponseValidatorImpl implements RestResponseValidator {
             case STATUS -> handleStatusAssertion(response, data, assertion);
             case BODY -> handleBodyAssertion(response, data, assertion);
             case HEADER -> handleHeaderAssertion(response, data, assertion);
+            default -> throw new InvalidAssertionException("Unhandled assertion target: " + target);
          }
       }
 
