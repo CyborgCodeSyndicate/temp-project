@@ -44,6 +44,11 @@ import static com.theairebellion.zeus.framework.util.ResourceLoader.loadResource
  */
 public class AllureStepHelper {
 
+    public static final String CONTENT_TYPE = "text/plain";
+
+    private AllureStepHelper() {
+    }
+
     private static final String ALLURE_RESULTS_DIR = "allure-results";
     private static final String ENVIRONMENT_PROPERTIES_FILE = "environment.properties";
     private static final String CATEGORIES_JSON_PATH = "allure/json/categories.json";
@@ -82,7 +87,7 @@ public class AllureStepHelper {
      */
     public static void attachFilteredLogsToAllure(String testName) {
         if (testName == null || testName.isEmpty()) {
-            Allure.addAttachment("Filtered Logs", "text/plain", "Test name is not available.", ".log");
+            Allure.addAttachment("Filtered Logs", CONTENT_TYPE, "Test name is not available.", ".log");
             return;
         }
 
@@ -98,9 +103,9 @@ public class AllureStepHelper {
                     ? "No logs found for test: " + testName
                     : filteredLogs;
 
-            Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain", attachmentContent, ".log");
+            Allure.addAttachment("Filtered Logs for Test: " + testName, CONTENT_TYPE, attachmentContent, ".log");
         } catch (IOException e) {
-            Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain",
+            Allure.addAttachment("Filtered Logs for Test: " + testName, CONTENT_TYPE,
                     "Failed to read logs. Error: " + e.getMessage(), ".log");
         }
     }
@@ -265,18 +270,20 @@ public class AllureStepHelper {
      */
     private static void writeEnvironmentProperties(Map<String, List<String>> propertiesMap) {
         File allureResultsDir = new File(ALLURE_RESULTS_DIR);
+
         if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
-            throw new RuntimeException("Failed to create allure results directory: " + allureResultsDir.getAbsolutePath());
+            throw new UncheckedIOException(new IOException("Failed to create allure results directory: " +
+                    allureResultsDir.getAbsolutePath()));
         }
+
         File environmentFile = new File(allureResultsDir, ENVIRONMENT_PROPERTIES_FILE);
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(environmentFile), StandardCharsets.UTF_8)) {
             for (Map.Entry<String, List<String>> entry : propertiesMap.entrySet()) {
-                String key = entry.getKey();
-                String combinedValues = String.join("; ", entry.getValue());
-                writer.write(key + "=" + combinedValues + "\n");
+                String combinedValues = String.join(", ", entry.getValue());
+                writer.write(entry.getKey() + "=" + combinedValues + "\n");
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to write environment.properties file", e);
+            throw new UncheckedIOException("Failed to write environment.properties file", e);
         }
     }
 
@@ -291,17 +298,18 @@ public class AllureStepHelper {
      */
     private static void writeCategoriesJson() {
         String categoriesJson = loadResourceFile(CATEGORIES_JSON_PATH);
-
         File allureResultsDir = new File(ALLURE_RESULTS_DIR);
+
         if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
-            throw new RuntimeException("Failed to create allure results directory: " + allureResultsDir.getAbsolutePath());
+            throw new UncheckedIOException(new IOException("Failed to create allure results directory: " +
+                    allureResultsDir.getAbsolutePath()));
         }
 
         File categoriesFile = new File(allureResultsDir, CATEGORIES_JSON);
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(categoriesFile), StandardCharsets.UTF_8)) {
             writer.write(categoriesJson);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to write categories.json file", e);
+            throw new UncheckedIOException("Failed to write categories.json file", e);
         }
     }
 

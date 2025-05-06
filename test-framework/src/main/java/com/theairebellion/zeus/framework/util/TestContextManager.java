@@ -28,7 +28,10 @@ import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
  *
  * @author Cyborg Code Syndicate
  */
-public class TestContextManager extends AllureStepHelper {
+public class TestContextManager {
+
+    private TestContextManager() {
+    }
 
     /**
      * Key used for tracking the total number of parameters in a test method.

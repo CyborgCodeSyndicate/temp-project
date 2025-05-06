@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 
 public class CustomDataExtractor {
 
+    private CustomDataExtractor() {
+    }
+
     public static <T> DataExtractor<T> responseBodyExtraction(String responsePrefix, String jsonPath, String jsonPrefix) {
         return new DataExtractorImpl<>(
                 StorageKeysUi.UI,
@@ -33,6 +36,7 @@ public class CustomDataExtractor {
                             }
                             return (T) result;
                         } catch (PathNotFoundException ignored) {
+                            //cant extract body
                         }
                     }
                     return null;

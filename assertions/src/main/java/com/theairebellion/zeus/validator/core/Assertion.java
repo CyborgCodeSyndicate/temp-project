@@ -19,6 +19,7 @@ import lombok.Setter;
  */
 @Getter
 @Builder
+@SuppressWarnings("java:S3740")
 public final class Assertion {
 
     /**
@@ -37,7 +38,7 @@ public final class Assertion {
      * Indicates the logical operation for this validation.
      */
     @NonNull
-    private final AssertionType type;
+    private final AssertionType<?> type;
 
     /**
      * The reference value expected by this assertion.
