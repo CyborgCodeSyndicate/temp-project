@@ -1,31 +1,16 @@
 package com.example.project.ui.elements;
 
-import com.example.project.model.AllTransactionEntry;
-import com.example.project.model.CreditAccounts;
-import com.example.project.model.DetailedReport;
-import com.example.project.model.FilteredTransactionEntry;
-import com.example.project.model.OutFlow;
 import com.example.project.model.TableEntry;
-import com.example.project.ui.functions.SharedUiFunctions;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.tables.TableElement;
 import java.util.function.Consumer;
-import org.openqa.selenium.By;
 
 import static com.example.project.ui.elements.TableTypes.SIMPLE;
-import static com.theairebellion.zeus.ui.service.tables.DefaultTableTypes.DEFAULT;
 
 public enum Tables implements TableElement<Tables> {
 
    CAMPAIGNS(TableEntry.class),
-   FILTERED_TRANSACTIONS(FilteredTransactionEntry.class),
-   ALL_TRANSACTIONS(AllTransactionEntry.class),
-   CREDIT_ACCOUNTS(CreditAccounts.class),
-   OUTFLOW(OutFlow.class, DEFAULT,
-         driver -> SharedUiFunctions.waitForPresence(driver, By.id("report-1016"))),
-   DETAILED_REPORT(DetailedReport.class, DEFAULT,
-         driver -> SharedUiFunctions.waitForPresence(driver, By.id("detailedreport-1041"))),
    ORDERS(TableEntry.class, SIMPLE);
 
 
