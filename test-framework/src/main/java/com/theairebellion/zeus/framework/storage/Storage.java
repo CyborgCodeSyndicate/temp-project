@@ -186,6 +186,7 @@ public class Storage {
          value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
          justification = "This write is intentional for initializing defaultStorageEnum under controlled conditions."
    )
+   @SuppressWarnings("java:S2696")
    public Storage sub(Enum<?> subKey) {
 
       List<Object> values = data.get(subKey);
@@ -202,8 +203,8 @@ public class Storage {
       }
 
       Object existingLatest = values.get(values.size() - 1);
-      if (existingLatest instanceof Storage) {
-         return (Storage) existingLatest;
+      if (existingLatest instanceof Storage result) {
+         return result;
       }
 
       throw new IllegalStateException(
@@ -235,6 +236,7 @@ public class Storage {
                try {
                   updatedObjects.add(((Late<?>) o).join());
                } catch (Exception ignored) {
+                  //ignore failure
                }
             } else {
                updatedObjects.add(o);
@@ -272,6 +274,7 @@ public class Storage {
     *
     * @return a snapshot of the entire storage contents
     */
+   @SuppressWarnings("java:S1452")
    public Map<Enum<?>, List<Object>> getData() {
       Map<Enum<?>, List<Object>> copy = new HashMap<>();
       for (Map.Entry<Enum<?>, LinkedList<Object>> entry : data.entrySet()) {

@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -58,6 +59,11 @@ import static com.theairebellion.zeus.framework.util.ResourceLoader.loadResource
  */
 public class AllureStepHelper {
 
+   public static final String CONTENT_TYPE = "text/plain";
+
+   private AllureStepHelper() {
+   }
+
    private static final String ALLURE_RESULTS_DIR = "allure-results";
    private static final String ENVIRONMENT_PROPERTIES_FILE = "environment.properties";
    private static final String CATEGORIES_JSON_PATH = "allure/json/categories.json";
@@ -86,15 +92,16 @@ public class AllureStepHelper {
 
    /**
     * Attaches filtered logs to Allure based on the test name.
-    *
-    * <p>This method reads a system log file and filters for entries containing a test scenario identifier.
+    * <p>
+    * This method reads a system log file and filters for entries containing a test scenario identifier.
     * If the test name is unavailable or if no matching log entries are found, a fallback message is attached.
+    * </p>
     *
     * @param testName The name of the test scenario to filter logs for.
     */
    public static void attachFilteredLogsToAllure(String testName) {
       if (testName == null || testName.isEmpty()) {
-         Allure.addAttachment("Filtered Logs", "text/plain", "Test name is not available.", ".log");
+         Allure.addAttachment("Filtered Logs", CONTENT_TYPE, "Test name is not available.", ".log");
          return;
       }
 
@@ -111,9 +118,9 @@ public class AllureStepHelper {
                ? "No logs found for test: " + testName
                : filteredLogs;
 
-         Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain", attachmentContent, ".log");
+         Allure.addAttachment("Filtered Logs for Test: " + testName, CONTENT_TYPE, attachmentContent, ".log");
       } catch (IOException e) {
-         Allure.addAttachment("Filtered Logs for Test: " + testName, "text/plain",
+         Allure.addAttachment("Filtered Logs for Test: " + testName, CONTENT_TYPE,
                "Failed to read logs. Error: " + e.getMessage(), ".log");
       }
    }
@@ -263,51 +270,56 @@ public class AllureStepHelper {
 
    /**
     * Writes the collected configuration properties to the environment properties file.
-    *
-    * <p>The file is written to the {@code allure-results} directory. If the directory does not exist,
+    * <p>
+    * The file is written to the {@code allure-results} directory. If the directory does not exist,
     * it is created.
+    * </p>
     *
     * @param propertiesMap A map containing configuration keys and values.
     * @throws RuntimeException if writing to the file fails.
     */
    private static void writeEnvironmentProperties(Map<String, List<String>> propertiesMap) {
       File allureResultsDir = new File(ALLURE_RESULTS_DIR);
+
       if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
-         throw new RuntimeException("Failed to create allure results directory: " + allureResultsDir.getAbsolutePath());
+         throw new UncheckedIOException(new IOException("Failed to create allure results directory: " +
+               allureResultsDir.getAbsolutePath()));
       }
+
       File environmentFile = new File(allureResultsDir, ENVIRONMENT_PROPERTIES_FILE);
       try (Writer writer = new OutputStreamWriter(new FileOutputStream(environmentFile), StandardCharsets.UTF_8)) {
          for (Map.Entry<String, List<String>> entry : propertiesMap.entrySet()) {
-            String key = entry.getKey();
-            String combinedValues = String.join("; ", entry.getValue());
-            writer.write(key + "=" + combinedValues + "\n");
+            String combinedValues = String.join(", ", entry.getValue());
+            writer.write(entry.getKey() + "=" + combinedValues + "\n");
          }
       } catch (IOException e) {
-         throw new RuntimeException("Failed to write environment.properties file", e);
+         throw new UncheckedIOException("Failed to write environment.properties file", e);
       }
    }
 
    /**
     * Writes the categories JSON file for Allure reports.
-    *
-    * <p>This method loads the JSON content from a resource file and writes it to a file named
+    * <p>
+    * This method loads the JSON content from a resource file and writes it to a file named
     * {@code categories.json} in the {@code allure-results} directory.
+    * </p>
     *
     * @throws RuntimeException if writing to the file fails.
     */
    private static void writeCategoriesJson() {
       String categoriesJson = loadResourceFile(CATEGORIES_JSON_PATH);
-
       File allureResultsDir = new File(ALLURE_RESULTS_DIR);
+
       if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
-         throw new RuntimeException("Failed to create allure results directory: " + allureResultsDir.getAbsolutePath());
+         throw new UncheckedIOException(new IOException("Failed to create allure results directory: " +
+               allureResultsDir.getAbsolutePath()));
       }
 
       File categoriesFile = new File(allureResultsDir, CATEGORIES_JSON);
       try (Writer writer = new OutputStreamWriter(new FileOutputStream(categoriesFile), StandardCharsets.UTF_8)) {
          writer.write(categoriesJson);
       } catch (IOException e) {
-         throw new RuntimeException("Failed to write categories.json file", e);
+         throw new UncheckedIOException("Failed to write categories.json file", e);
       }
    }
 

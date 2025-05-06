@@ -107,7 +107,7 @@ public interface Endpoint<T extends Enum<T>> {
     * @return A new instance of the endpoint with the query parameter added.
     */
    default Endpoint<T> withQueryParam(String key, Object value) {
-      return new ParametrizedEndpoint<>(this).withQueryParam(key, value);
+      return new ParametrizedEndpoint<T>(this).withQueryParam(key, value);
    }
 
    /**
@@ -118,7 +118,7 @@ public interface Endpoint<T extends Enum<T>> {
     * @return A new instance of the endpoint with the path parameter added.
     */
    default Endpoint<T> withPathParam(String key, Object value) {
-      return new ParametrizedEndpoint<>(this).withPathParam(key, value);
+      return new ParametrizedEndpoint<T>(this).withPathParam(key, value);
    }
 
    /**
@@ -129,7 +129,7 @@ public interface Endpoint<T extends Enum<T>> {
     * @return A new instance of the endpoint with the header added.
     */
    default Endpoint<T> withHeader(String key, String value) {
-      return new ParametrizedEndpoint<>(this).withHeader(key, value);
+      return new ParametrizedEndpoint<T>(this).withHeader(key, value);
    }
 
    /**
@@ -140,7 +140,7 @@ public interface Endpoint<T extends Enum<T>> {
     * @return A new instance of the endpoint with the multi-value header added.
     */
    default Endpoint<T> withHeader(String key, List<String> values) {
-      return new ParametrizedEndpoint<>(this).withHeader(key, values);
+      return new ParametrizedEndpoint<T>(this).withHeader(key, values);
    }
 
    /**
