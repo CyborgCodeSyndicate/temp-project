@@ -6,9 +6,13 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.tables.TableElement;
 import java.util.function.Consumer;
 
+import static com.example.project.ui.elements.TableTypes.SIMPLE;
+
 public enum Tables implements TableElement<Tables> {
 
-   CAMPAIGNS(TableEntry.class);
+   CAMPAIGNS(TableEntry.class),
+   ORDERS(TableEntry.class, SIMPLE);
+
 
    private final Class<?> rowRepresentationClass;
    private final TableComponentType tableType;
