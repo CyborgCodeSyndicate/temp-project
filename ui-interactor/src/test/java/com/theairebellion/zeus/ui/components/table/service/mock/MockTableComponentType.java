@@ -1,9 +1,9 @@
-package com.theairebellion.zeus.ui.components.table.base.mock;
+package com.theairebellion.zeus.ui.components.table.service.mock;
 
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 
 public enum MockTableComponentType implements TableComponentType {
-    VALUE;
+    DUMMY_TABLE;
 
     @Override
     public Enum<?> getType() {

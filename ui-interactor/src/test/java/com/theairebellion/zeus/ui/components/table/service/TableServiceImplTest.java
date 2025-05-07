@@ -1,324 +1,380 @@
 package com.theairebellion.zeus.ui.components.table.service;
 
-import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.table.base.TableComponentType;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
+import com.theairebellion.zeus.ui.components.table.service.mock.MockTableComponentType;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.validator.UiTableValidator;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@DisplayName("TableServiceImpl Tests")
 @SuppressWarnings("all")
 class TableServiceImplTest extends BaseUnitUITest {
 
-    private TestTableServiceImpl testService;
+    @Mock private SmartWebDriver smartWebDriver;
+    @Mock private TableServiceRegistry tableServiceRegistry;
+    @Mock private UiTableValidator uiTableValidator;
+    @Mock private Table tableMock;
+    @Mock private TableImpl mockTableImpl;
+    @Mock private TableField<TestData> mockTableField;
+    @Mock private Assertion mockAssertion;
+    @Mock private TestData mockTestData;
 
-    @Mock
-    private SmartWebDriver smartWebDriver;
+    private TableServiceImpl service;
+    private MockedStatic<ComponentFactory> factoryMock;
+    private final MockTableComponentType componentType = MockTableComponentType.DUMMY_TABLE;
 
-    @Mock
-    private TableServiceRegistry tableServiceRegistry;
+    private static final Class<TestData> TEST_DATA_CLASS = TestData.class;
+    private static final List<String> SAMPLE_CRITERIA = List.of("search");
+    private static final String SAMPLE_FILTER_VALUE = "filterVal";
+    private static final String SAMPLE_TABLE_OBJECT = "table object";
+    private static final List<TestData> SAMPLE_ROW_LIST = List.of(new TestData());
 
-    @Mock
-    private UiTableValidator uiTableValidator;
-
-    @Mock
-    private static Table tableMock;
-
-    private final DummyTableComponentType dummyComponentType = DummyTableComponentType.DUMMY;
+    private static class TestData {}
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        testService = new TestTableServiceImpl(smartWebDriver, tableServiceRegistry, uiTableValidator, tableMock);
+        service = new TableServiceImpl(smartWebDriver, tableServiceRegistry, uiTableValidator);
+
+        factoryMock = Mockito.mockStatic(ComponentFactory.class);
+        factoryMock.when(() -> ComponentFactory.getTableComponent(any(TableComponentType.class), eq(smartWebDriver)))
+                .thenReturn(mockTableImpl);
+
+        // Use doReturn/when for generics
+        doReturn(SAMPLE_ROW_LIST).when(mockTableImpl).readTable(any(Class.class));
+        doReturn(SAMPLE_ROW_LIST).when(mockTableImpl).readTable(any(Class.class), any(TableField[].class));
+        doReturn(SAMPLE_ROW_LIST).when(mockTableImpl).readTable(anyInt(), anyInt(), any(Class.class));
+        doReturn(SAMPLE_ROW_LIST).when(mockTableImpl).readTable(anyInt(), anyInt(), any(Class.class), any(TableField[].class));
+
+        doReturn(mockTestData).when(mockTableImpl).readRow(anyInt(), any(Class.class));
+        doReturn(mockTestData).when(mockTableImpl).readRow(any(List.class), any(Class.class));
+        doReturn(mockTestData).when(mockTableImpl).readRow(anyInt(), any(Class.class), any(TableField[].class));
+        doReturn(mockTestData).when(mockTableImpl).readRow(any(List.class), any(Class.class), any(TableField[].class));
+
+        // Specify matchers precisely for overloaded methods
+        doNothing().when(mockTableImpl).insertCellValue(anyInt(), any(Class.class), any(TestData.class));
+        doNothing().when(mockTableImpl).insertCellValue(anyInt(), any(Class.class), any(TableField.class), anyInt(), any(String[].class));
+        doNothing().when(mockTableImpl).insertCellValue(anyList(), any(Class.class), any(TableField.class), anyInt(), any(String[].class));
+        doNothing().when(mockTableImpl).insertCellValue(anyList(), any(Class.class), any(TestData.class));
+
+        doNothing().when(mockTableImpl).filterTable(any(Class.class), any(TableField.class), any(FilterStrategy.class), any(String[].class));
+        doNothing().when(mockTableImpl).sortTable(any(Class.class), any(TableField.class), any(SortingStrategy.class));
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (factoryMock != null) {
+            factoryMock.close();
+        }
     }
 
     @Nested
+    @DisplayName("ReadTable Method Delegation")
     class ReadTableTests {
         @Test
+        @DisplayName("readTable(type, class) delegates")
         void testReadTableNoFields() {
-            List<String> result = List.of("row1", "row2");
-            when(tableMock.readTable(String.class)).thenReturn(result);
-            List<String> tableResult = testService.readTable(dummyComponentType, String.class);
-            assertEquals(result, tableResult);
-            verify(tableMock).readTable(String.class);
+            // Given
+
+            // When
+            List<TestData> actualResult = service.readTable(componentType, TEST_DATA_CLASS);
+
+            // Then
+            assertThat(actualResult).isSameAs(SAMPLE_ROW_LIST);
+            verify(mockTableImpl).readTable(TEST_DATA_CLASS);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock); // Verify interface mock wasn't used directly for these calls
         }
 
         @Test
+        @DisplayName("readTable(type, class, fields) delegates")
         void testReadTableWithFields() {
-            List<String> result = List.of("row1", "row2");
-            TableField<String> field = createDummyTableField();
-            when(tableMock.readTable(eq(String.class), any())).thenReturn(result);
-            List<String> tableResult = testService.readTable(dummyComponentType, String.class, field);
-            assertEquals(result, tableResult);
-            verify(tableMock).readTable(eq(String.class), any());
+            // Given
+
+            // When
+            var actualResult = service.readTable(componentType, TEST_DATA_CLASS, mockTableField);
+
+            // Then
+            assertThat(actualResult).isSameAs(SAMPLE_ROW_LIST);
+            verify(mockTableImpl).readTable(eq(TEST_DATA_CLASS), eq(mockTableField));
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock);
         }
 
         @Test
+        @DisplayName("readTable(type, start, end, class) delegates")
         void testReadTableRangeNoFields() {
-            List<String> result = List.of("row1", "row2");
-            when(tableMock.readTable(1, 2, String.class)).thenReturn(result);
-            List<String> tableResult = testService.readTable(dummyComponentType, 1, 2, String.class);
-            assertEquals(result, tableResult);
-            verify(tableMock).readTable(1, 2, String.class);
+            // Given
+
+            // When
+            var actualResult = service.readTable(componentType, 1, 3, TEST_DATA_CLASS);
+
+            // Then
+            assertThat(actualResult).isSameAs(SAMPLE_ROW_LIST);
+            verify(mockTableImpl).readTable(1, 3, TEST_DATA_CLASS);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock);
         }
 
         @Test
+        @DisplayName("readTable(type, start, end, class, fields) delegates")
         void testReadTableRangeWithFields() {
-            List<String> result = List.of("row1", "row2");
-            TableField<String> field = createDummyTableField();
-            when(tableMock.readTable(1, 2, String.class, field)).thenReturn(result);
-            List<String> tableResult = testService.readTable(dummyComponentType, 1, 2, String.class, field);
-            assertEquals(result, tableResult);
-            verify(tableMock).readTable(1, 2, String.class, field);
+            // Given
+
+            // When
+            var actualResult = service.readTable(componentType, 1, 3, TEST_DATA_CLASS, mockTableField);
+
+            // Then
+            assertThat(actualResult).isSameAs(SAMPLE_ROW_LIST);
+            verify(mockTableImpl).readTable(1, 3, TEST_DATA_CLASS, mockTableField);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock);
         }
     }
 
     @Nested
+    @DisplayName("ReadRow Method Delegation")
     class ReadRowTests {
         @Test
+        @DisplayName("readRow(type, index, class) delegates")
         void testReadRowByIndex() {
-            String row = "row";
-            when(tableMock.readRow(2, String.class)).thenReturn(row);
-            String result = testService.readRow(dummyComponentType, 2, String.class);
-            assertEquals(row, result);
-            verify(tableMock).readRow(2, String.class);
+            // Given
+
+            // When
+            var result = service.readRow(componentType, 2, TEST_DATA_CLASS);
+
+            // Then
+            assertThat(result).isSameAs(mockTestData);
+            verify(mockTableImpl).readRow(2, TEST_DATA_CLASS);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock);
         }
 
         @Test
+        @DisplayName("readRow(type, criteria, class) delegates")
         void testReadRowByCriteria() {
-            String row = "row";
-            List<String> criteria = List.of("search");
-            when(tableMock.readRow(criteria, String.class)).thenReturn(row);
-            String result = testService.readRow(dummyComponentType, criteria, String.class);
-            assertEquals(row, result);
-            verify(tableMock).readRow(criteria, String.class);
+            // Given
+
+            // When
+            var result = service.readRow(componentType, SAMPLE_CRITERIA, TEST_DATA_CLASS);
+
+            // Then
+            assertThat(result).isSameAs(mockTestData);
+            verify(mockTableImpl).readRow(SAMPLE_CRITERIA, TEST_DATA_CLASS);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock);
         }
 
         @Test
+        @DisplayName("readRow(type, index, class, fields) delegates")
         void testReadRowByIndexWithFields() {
-            String row = "row";
-            TableField<String> field = createDummyTableField();
-            when(tableMock.readRow(2, String.class, field)).thenReturn(row);
-            String result = testService.readRow(dummyComponentType, 2, String.class, field);
-            assertEquals(row, result);
-            verify(tableMock).readRow(2, String.class, field);
+            // Given
+
+            // When
+            var result = service.readRow(componentType, 2, TEST_DATA_CLASS, mockTableField);
+
+            // Then
+            assertThat(result).isSameAs(mockTestData);
+            verify(mockTableImpl).readRow(2, TEST_DATA_CLASS, mockTableField);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock);
         }
 
         @Test
+        @DisplayName("readRow(type, criteria, class, fields) delegates")
         void testReadRowByCriteriaWithFields() {
-            String row = "row";
-            List<String> criteria = List.of("search");
-            TableField<String> field = createDummyTableField();
-            when(tableMock.readRow(criteria, String.class, field)).thenReturn(row);
-            String result = testService.readRow(dummyComponentType, criteria, String.class, field);
-            assertEquals(row, result);
-            verify(tableMock).readRow(criteria, String.class, field);
+            // Given
+
+            // When
+            var result = service.readRow(componentType, SAMPLE_CRITERIA, TEST_DATA_CLASS, mockTableField);
+
+            // Then
+            assertThat(result).isSameAs(mockTestData);
+            verify(mockTableImpl).readRow(SAMPLE_CRITERIA, TEST_DATA_CLASS, mockTableField);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
+            verifyNoMoreInteractions(tableMock);
         }
     }
 
     @Nested
+    @DisplayName("InsertCellValue Method Delegation")
     class InsertCellValueTests {
         @Test
+        @DisplayName("insertCellValue(type, index, class, data) delegates")
         void testInsertCellValueDataByIndex() {
-            testService.insertCellValue(dummyComponentType, 2, String.class, "data");
-            verify(tableMock).insertCellValue(2, String.class, "data");
+            // Given - mockTestData and other mocks setup in @BeforeEach
+
+            // When
+            service.insertCellValue(componentType, 2, TEST_DATA_CLASS, mockTestData);
+
+            // Then
+            verify(mockTableImpl).insertCellValue(2, TEST_DATA_CLASS, mockTestData);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
         }
 
         @Test
+        @DisplayName("insertCellValue(type, index, class, field, cellIndex, value) delegates")
         void testInsertCellValueFieldByIndex() {
-            TableField<String> field = createDummyTableField();
-            testService.insertCellValue(dummyComponentType, 2, String.class, field, 1, "val");
-            verify(tableMock).insertCellValue(2, String.class, field, 1, "val");
+            // Given - setup in @BeforeEach
+
+            // When
+            service.insertCellValue(componentType, 2, TEST_DATA_CLASS, mockTableField, 1, SAMPLE_FILTER_VALUE);
+
+            // Then
+            verify(mockTableImpl).insertCellValue(2, TEST_DATA_CLASS, mockTableField, 1, SAMPLE_FILTER_VALUE);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
         }
 
         @Test
+        @DisplayName("insertCellValue(type, criteria, class, data) delegates")
         void testInsertCellValueDataByCriteria() {
-            List<String> criteria = List.of("search");
-            testService.insertCellValue(dummyComponentType, criteria, String.class, "data");
-            verify(tableMock).insertCellValue(criteria, String.class, "data");
+            // Given - setup in @BeforeEach
+
+            // When
+            service.insertCellValue(componentType, SAMPLE_CRITERIA, TEST_DATA_CLASS, mockTestData);
+
+            // Then
+            verify(mockTableImpl).insertCellValue(SAMPLE_CRITERIA, TEST_DATA_CLASS, mockTestData);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
         }
 
         @Test
+        @DisplayName("insertCellValue(type, criteria, class, field, cellIndex, value) delegates")
         void testInsertCellValueFieldByCriteria() {
-            List<String> criteria = List.of("search");
-            TableField<String> field = createDummyTableField();
-            testService.insertCellValue(dummyComponentType, criteria, String.class, field, 1, "val");
-            verify(tableMock).insertCellValue(criteria, String.class, field, 1, "val");
+            // Given - setup in @BeforeEach
+
+            // When
+            service.insertCellValue(componentType, SAMPLE_CRITERIA, TEST_DATA_CLASS, mockTableField, 1, SAMPLE_FILTER_VALUE);
+
+            // Then
+            verify(mockTableImpl).insertCellValue(SAMPLE_CRITERIA, TEST_DATA_CLASS, mockTableField, 1, SAMPLE_FILTER_VALUE);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
         }
     }
 
     @Nested
+    @DisplayName("Table Operation Method Delegation")
     class TableOperationTests {
         @Test
+        @DisplayName("filterTable delegates")
         void testFilterTable() {
-            TableField<String> field = createDummyTableField();
-            testService.filterTable(dummyComponentType, String.class, field, FilterStrategy.SELECT, "val");
-            verify(tableMock).filterTable(String.class, field, FilterStrategy.SELECT, "val");
+            // Given - setup in @BeforeEach
+
+            // When
+            service.filterTable(componentType, TEST_DATA_CLASS, mockTableField, FilterStrategy.SELECT, SAMPLE_FILTER_VALUE);
+
+            // Then
+            verify(mockTableImpl).filterTable(TEST_DATA_CLASS, mockTableField, FilterStrategy.SELECT, SAMPLE_FILTER_VALUE);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
         }
 
         @Test
+        @DisplayName("sortTable delegates")
         void testSortTable() {
-            TableField<String> field = createDummyTableField();
-            testService.sortTable(dummyComponentType, String.class, field, SortingStrategy.ASC);
-            verify(tableMock).sortTable(String.class, field, SortingStrategy.ASC);
+            // Given - setup in @BeforeEach
+
+            // When
+            service.sortTable(componentType, TEST_DATA_CLASS, mockTableField, SortingStrategy.ASC);
+
+            // Then
+            verify(mockTableImpl).sortTable(TEST_DATA_CLASS, mockTableField, SortingStrategy.ASC);
+            verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
         }
     }
 
     @Nested
+    @DisplayName("Validation Method Tests")
     class ValidationTests {
         @Test
+        @DisplayName("validate delegates to UiTableValidator")
         void testValidate_WithValidInput() {
-            Assertion assertion1 = mock(Assertion.class);
-            Assertion assertion2 = mock(Assertion.class);
+            // Given
+            List<AssertionResult<?>> expectedResults = List.of(mock(AssertionResult.class));
+            doReturn(expectedResults).when(uiTableValidator).validateTable(eq(SAMPLE_TABLE_OBJECT), eq(mockAssertion));
 
-            // Create expected results with explicit type casting
-            @SuppressWarnings("unchecked")
-            List<AssertionResult<String>> expectedResults = (List<AssertionResult<String>>)
-                    (List<?>) List.of(
-                            mock(AssertionResult.class),
-                            mock(AssertionResult.class)
-                    );
+            // When
+            var results = service.validate(SAMPLE_TABLE_OBJECT, mockAssertion);
 
-            // Mock the validator to return expected results
-            // Use .thenAnswer to handle generic type complexity
-            when(uiTableValidator.validateTable(
-                    eq("table object"),
-                    eq(assertion1),
-                    eq(assertion2)
-            )).thenAnswer(invocation -> expectedResults);
-
-            // Execute the validate method
-            List<AssertionResult<String>> results = testService.validate("table object", assertion1, assertion2);
-
-            // Verify the validator was called with the correct parameters
-            verify(uiTableValidator).validateTable(
-                    eq("table object"),
-                    eq(assertion1),
-                    eq(assertion2)
-            );
-
-            // Verify the results match what we expected
-            assertEquals(expectedResults, results);
+            // Then
+            assertThat(results).isSameAs(expectedResults);
+            verify(uiTableValidator).validateTable(SAMPLE_TABLE_OBJECT, mockAssertion);
+            factoryMock.verifyNoInteractions();
+            verifyNoInteractions(tableMock);
+            verify(mockTableImpl, never()).setServiceRegistry(any());
         }
 
         @Test
+        @DisplayName("validate throws exception for null table")
         void testValidate_WithNullTable() {
-            // Create mock assertions
-            Assertion assertion = mock(Assertion.class);
+            // Given
 
-            // Execute and verify exception thrown for null table
-            IllegalArgumentException ex = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> testService.validate(null, assertion)
-            );
-
-            // Verify the exception message
-            assertEquals("Table cannot be null for validation.", ex.getMessage());
+            // When / Then
+            assertThatThrownBy(() -> service.validate(null, mockAssertion))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Table cannot be null for validation.");
+            verifyNoInteractions(uiTableValidator);
         }
 
         @Test
+        @DisplayName("validate throws exception for null assertions")
         void testValidate_WithNullAssertions() {
-            // Execute and verify exception thrown for null assertions
-            IllegalArgumentException ex = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> testService.validate("table object", (Assertion[]) null)
-            );
+            // Given
 
-            // Verify the exception message
-            assertEquals("At least one assertion must be provided.", ex.getMessage());
+            // When / Then
+            assertThatThrownBy(() -> service.validate(SAMPLE_TABLE_OBJECT, (Assertion[]) null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("At least one assertion must be provided.");
+            verifyNoInteractions(uiTableValidator);
         }
 
         @Test
+        @DisplayName("validate throws exception for empty assertions")
         void testValidate_WithEmptyAssertions() {
-            // Execute and verify exception thrown for empty assertions array
-            IllegalArgumentException ex = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> testService.validate("table object", new Assertion[0])
-            );
+            // Given
 
-            // Verify the exception message
-            assertEquals("At least one assertion must be provided.", ex.getMessage());
+            // When / Then
+            assertThatThrownBy(() -> service.validate(SAMPLE_TABLE_OBJECT))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("At least one assertion must be provided.");
+            verifyNoInteractions(uiTableValidator);
         }
     }
 
     @Nested
-    class ComponentCreationTests {
+    @DisplayName("Component Caching Tests")
+    class ComponentCachingTests {
         @Test
-        void testCreateComponent() {
-            // Create a new instance of TableServiceImpl that calls the real createComponent method
-            TableServiceImpl realTableService = new TableServiceImpl(smartWebDriver, tableServiceRegistry, uiTableValidator) {
-                // Expose the protected createComponent method for testing
-                @Override
-                public Table createComponent(TableComponentType componentType) {
-                    return super.createComponent(componentType);
-                }
-            };
+        @DisplayName("Component is cached and reused")
+        void testComponentCaching() {
+            // Given
 
-            // Mock static ComponentFactory
-            try (MockedStatic<ComponentFactory> componentFactoryMock = mockStatic(ComponentFactory.class)) {
-                // Create mock TableImpl
-                TableImpl mockTableImpl = mock(TableImpl.class);
+            // When
+            service.readTable(componentType, TEST_DATA_CLASS);
+            service.readRow(componentType, 1, TEST_DATA_CLASS);
 
-                // Set up the mock to return our mockTableImpl when getTableComponent is called
-                componentFactoryMock.when(() -> ComponentFactory.getTableComponent(any(TableComponentType.class), any(SmartWebDriver.class)))
-                        .thenReturn(mockTableImpl);
-
-                // Call createComponent
-                Table result = realTableService.createComponent(dummyComponentType);
-
-                // Verify that the factory was called with the right parameters
-                componentFactoryMock.verify(() -> ComponentFactory.getTableComponent(dummyComponentType, smartWebDriver));
-
-                // Verify the service registry was set on the table
-                verify(mockTableImpl).setServiceRegistry(tableServiceRegistry);
-
-                // Verify the result is our mock table
-                assertSame(mockTableImpl, result);
-            }
-        }
-    }
-
-    // Helper method to create a dummy TableField
-    private <T> TableField<T> createDummyTableField() {
-        return (instance, obj) -> {};
-    }
-
-    // Existing enums and inner classes remain the same
-    enum DummyTableComponentType implements TableComponentType {
-        DUMMY;
-
-        @Override
-        public Enum<?> getType() {
-            return this;
-        }
-    }
-
-    static class TestTableServiceImpl extends TableServiceImpl {
-        TestTableServiceImpl(SmartWebDriver driver, TableServiceRegistry registry, UiTableValidator uiTableValidator, Table tableMock) {
-            super(driver, registry, uiTableValidator);
-        }
-
-        @Override
-        protected Table getOrCreateComponent(TableComponentType componentType) {
-            return tableMock;
+            // Then
+            factoryMock.verify(() -> ComponentFactory.getTableComponent(eq(componentType), eq(smartWebDriver)), times(1));
+            verify(mockTableImpl, times(1)).setServiceRegistry(tableServiceRegistry);
         }
     }
 }
