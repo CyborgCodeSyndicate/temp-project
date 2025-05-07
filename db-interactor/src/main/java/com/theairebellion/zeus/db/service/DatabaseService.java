@@ -56,7 +56,7 @@ public class DatabaseService {
      * @param query The query to execute.
      * @return The query response containing the result set.
      */
-    public QueryResponse query(DbQuery query) {
+    public QueryResponse query(DbQuery<?> query) {
         DatabaseConfiguration dbConfig = query.config();
         DbClient client = dbClientManager.getClient(dbConfig);
         return client.executeQuery(query.query());
@@ -71,7 +71,7 @@ public class DatabaseService {
      * @param <T>        The type parameter for the extracted value.
      * @return The extracted value.
      */
-    public <T> T query(DbQuery query, String jsonPath, Class<T> resultType) {
+    public <T> T query(DbQuery<?> query, String jsonPath, Class<T> resultType) {
         DatabaseConfiguration dbConfig = query.config();
         DbClient client = dbClientManager.getClient(dbConfig);
 
@@ -104,7 +104,7 @@ public class DatabaseService {
      * @param <T>        The expected result type.
      * @return A list of assertion results indicating pass or failure.
      */
-    public <T> List<AssertionResult<T>> queryAndValidate(DbQuery query, Assertion... assertions) {
+    public <T> List<AssertionResult<T>> queryAndValidate(DbQuery<?> query, Assertion... assertions) {
         DatabaseConfiguration dbConfig = query.config();
         DbClient client = dbClientManager.getClient(dbConfig);
 

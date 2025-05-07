@@ -118,6 +118,7 @@ public class ParametrizedEndpoint<T extends Enum<T>> implements Endpoint<T> {
      * @return A new instance with the query parameter added.
      * @throws IllegalArgumentException if the key or value is invalid.
      */
+    @Override
     public ParametrizedEndpoint<T> withQueryParam(String key, Object value) {
         validateParam(key, value);
         Map<String, Object> newQueryParams = new HashMap<>(this.queryParams);
@@ -133,6 +134,7 @@ public class ParametrizedEndpoint<T extends Enum<T>> implements Endpoint<T> {
      * @return A new instance with the path parameter added.
      * @throws IllegalArgumentException if the key or value is invalid.
      */
+    @Override
     public ParametrizedEndpoint<T> withPathParam(String key, Object value) {
         validateParam(key, value);
         Map<String, Object> newPathParams = new HashMap<>(this.pathParams);
@@ -148,6 +150,7 @@ public class ParametrizedEndpoint<T extends Enum<T>> implements Endpoint<T> {
      * @return A new instance with the header added.
      * @throws IllegalArgumentException if the key or value is invalid.
      */
+    @Override
     public ParametrizedEndpoint<T> withHeader(String key, String value) {
         validateParam(key, value);
         Map<String, List<String>> newHeaders = new HashMap<>(this.additionalHeaders);
@@ -163,6 +166,7 @@ public class ParametrizedEndpoint<T extends Enum<T>> implements Endpoint<T> {
      * @return A new instance with the header added.
      * @throws IllegalArgumentException if the key or values are invalid.
      */
+    @Override
     public ParametrizedEndpoint<T> withHeader(String key, List<String> values) {
         validateParam(key, values);
         Map<String, List<String>> newHeaders = new HashMap<>(this.additionalHeaders);
