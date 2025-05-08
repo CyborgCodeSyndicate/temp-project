@@ -28,8 +28,8 @@ import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
  */
 public class TestContextManager {
 
-    private TestContextManager() {
-    }
+   private TestContextManager() {
+   }
 
    /**
     * Key used for tracking the total number of parameters in a test method.
@@ -68,7 +68,7 @@ public class TestContextManager {
     * @param extensionContext the JUnit extension context
     */
    public static void storeArgument(SuperQuest superQuest, DataForge<?> dataForge,
-         Object argument, ExtensionContext extensionContext) {
+                                    Object argument, ExtensionContext extensionContext) {
       superQuest.getStorage().sub(ARGUMENTS).put(dataForge.enumImpl(), argument);
 
       ExtensionContext.Store store = extensionContext.getStore(ExtensionContext.Namespace.GLOBAL);

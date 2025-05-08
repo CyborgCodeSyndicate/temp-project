@@ -92,10 +92,9 @@ public class AllureStepHelper {
 
    /**
     * Attaches filtered logs to Allure based on the test name.
-    * <p>
-    * This method reads a system log file and filters for entries containing a test scenario identifier.
+    *
+    * <p>This method reads a system log file and filters for entries containing a test scenario identifier.
     * If the test name is unavailable or if no matching log entries are found, a fallback message is attached.
-    * </p>
     *
     * @param testName The name of the test scenario to filter logs for.
     */
@@ -270,10 +269,9 @@ public class AllureStepHelper {
 
    /**
     * Writes the collected configuration properties to the environment properties file.
-    * <p>
-    * The file is written to the {@code allure-results} directory. If the directory does not exist,
+    *
+    * <p>The file is written to the {@code allure-results} directory. If the directory does not exist,
     * it is created.
-    * </p>
     *
     * @param propertiesMap A map containing configuration keys and values.
     * @throws RuntimeException if writing to the file fails.
@@ -282,8 +280,8 @@ public class AllureStepHelper {
       File allureResultsDir = new File(ALLURE_RESULTS_DIR);
 
       if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
-         throw new UncheckedIOException(new IOException("Failed to create allure results directory: " +
-               allureResultsDir.getAbsolutePath()));
+         throw new UncheckedIOException(new IOException("Failed to create allure results directory: "
+               + allureResultsDir.getAbsolutePath()));
       }
 
       File environmentFile = new File(allureResultsDir, ENVIRONMENT_PROPERTIES_FILE);
@@ -299,10 +297,9 @@ public class AllureStepHelper {
 
    /**
     * Writes the categories JSON file for Allure reports.
-    * <p>
-    * This method loads the JSON content from a resource file and writes it to a file named
+    *
+    * <p>This method loads the JSON content from a resource file and writes it to a file named
     * {@code categories.json} in the {@code allure-results} directory.
-    * </p>
     *
     * @throws RuntimeException if writing to the file fails.
     */
@@ -311,8 +308,8 @@ public class AllureStepHelper {
       File allureResultsDir = new File(ALLURE_RESULTS_DIR);
 
       if (!allureResultsDir.exists() && !allureResultsDir.mkdirs()) {
-         throw new UncheckedIOException(new IOException("Failed to create allure results directory: " +
-               allureResultsDir.getAbsolutePath()));
+         throw new UncheckedIOException(new IOException("Failed to create allure results directory: "
+               + allureResultsDir.getAbsolutePath()));
       }
 
       File categoriesFile = new File(allureResultsDir, CATEGORIES_JSON);
