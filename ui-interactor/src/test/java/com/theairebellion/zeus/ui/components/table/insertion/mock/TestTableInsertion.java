@@ -6,14 +6,14 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
 public class TestTableInsertion implements TableInsertion {
 
-    public SmartWebElement capturedElement;
-    public ComponentType capturedComponent;
-    public String[] capturedValues;
+   public SmartWebElement capturedElement;
+   public ComponentType capturedComponent;
+   public String[] capturedValues;
 
-    @Override
-    public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
-        capturedElement = cellElement;
-        capturedComponent = componentType;
-        capturedValues = values;
-    }
+   @Override
+   public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
+      capturedElement = cellElement;
+      capturedComponent = componentType;
+      capturedValues = values;
+   }
 }

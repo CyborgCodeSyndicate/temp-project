@@ -15,15 +15,15 @@ import static org.mockito.Mockito.mock;
 @SuppressWarnings("all")
 public class CellInsertionFunctionTest extends BaseUnitUITest {
 
-    @Test
-    void testAcceptMethod() {
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        TestCellInsertionFunction function = new TestCellInsertionFunction();
-        SmartWebElement element = new MockSmartWebElement(webElement, driver);
-        String[] values = {"val1", "val2"};
-        function.accept(element, values);
-        assertSame(element, function.capturedElement);
-        assertArrayEquals(values, function.capturedValues);
-    }
+   @Test
+   void testAcceptMethod() {
+      WebElement webElement = mock(WebElement.class);
+      WebDriver driver = mock(WebDriver.class);
+      TestCellInsertionFunction function = new TestCellInsertionFunction();
+      SmartWebElement element = new MockSmartWebElement(webElement, driver);
+      String[] values = {"val1", "val2"};
+      function.accept(element, values);
+      assertSame(element, function.capturedElement);
+      assertArrayEquals(values, function.capturedValues);
+   }
 }

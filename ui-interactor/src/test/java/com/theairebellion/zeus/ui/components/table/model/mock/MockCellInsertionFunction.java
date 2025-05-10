@@ -5,7 +5,7 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
 public class MockCellInsertionFunction implements CellInsertionFunction {
 
-    @Override
-    public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
-    }
+   @Override
+   public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
+   }
 }

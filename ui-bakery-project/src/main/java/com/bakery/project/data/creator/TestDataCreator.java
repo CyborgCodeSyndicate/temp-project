@@ -5,39 +5,39 @@ import com.theairebellion.zeus.framework.parameters.Late;
 
 public enum TestDataCreator implements DataForge<TestDataCreator> {
 
-    VALID_SELLER(DataCreationFunctions::createValidSeller),
-    VALID_ORDER(DataCreationFunctions::createValidOrder),
-    VALID_LATE_ORDER(DataCreationFunctions::createValidLateOrder);
+   VALID_SELLER(DataCreationFunctions::createValidSeller),
+   VALID_ORDER(DataCreationFunctions::createValidOrder),
+   VALID_LATE_ORDER(DataCreationFunctions::createValidLateOrder);
 
 
-    public static final class Data {
+   public static final class Data {
 
-        public static final String VALID_SELLER = "VALID_SELLER";
-        public static final String VALID_ORDER = "VALID_ORDER";
-        public static final String VALID_LATE_ORDER = "VALID_LATE_ORDER";
-
-
-        private Data() {
-        }
-
-    }
-
-    private final Late<Object> createDataFunction;
+      public static final String VALID_SELLER = "VALID_SELLER";
+      public static final String VALID_ORDER = "VALID_ORDER";
+      public static final String VALID_LATE_ORDER = "VALID_LATE_ORDER";
 
 
-    TestDataCreator(final Late<Object> createDataFunction) {
-        this.createDataFunction = createDataFunction;
-    }
+      private Data() {
+      }
+
+   }
+
+   private final Late<Object> createDataFunction;
 
 
-    @Override
-    public Late<Object> dataCreator() {
-        return createDataFunction;
-    }
+   TestDataCreator(final Late<Object> createDataFunction) {
+      this.createDataFunction = createDataFunction;
+   }
 
 
-    @Override
-    public TestDataCreator enumImpl() {
-        return this;
-    }
+   @Override
+   public Late<Object> dataCreator() {
+      return createDataFunction;
+   }
+
+
+   @Override
+   public TestDataCreator enumImpl() {
+      return this;
+   }
 }

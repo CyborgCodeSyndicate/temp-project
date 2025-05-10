@@ -16,17 +16,17 @@ import static org.mockito.Mockito.mock;
 @SuppressWarnings("all")
 public class TableInsertionTest extends BaseUnitUITest {
 
-    @Test
-    void testTableInsertion() {
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        TestTableInsertion insertion = new TestTableInsertion();
-        SmartWebElement element = new MockSmartWebElement(webElement, driver);
-        MockComponentType compType = MockComponentType.DUMMY;
-        String[] values = {"insert1", "insert2"};
-        insertion.tableInsertion(element, compType, values);
-        assertSame(element, insertion.capturedElement);
-        assertSame(compType, insertion.capturedComponent);
-        assertArrayEquals(values, insertion.capturedValues);
-    }
+   @Test
+   void testTableInsertion() {
+      WebElement webElement = mock(WebElement.class);
+      WebDriver driver = mock(WebDriver.class);
+      TestTableInsertion insertion = new TestTableInsertion();
+      SmartWebElement element = new MockSmartWebElement(webElement, driver);
+      MockComponentType compType = MockComponentType.DUMMY;
+      String[] values = {"insert1", "insert2"};
+      insertion.tableInsertion(element, compType, values);
+      assertSame(element, insertion.capturedElement);
+      assertSame(compType, insertion.capturedComponent);
+      assertArrayEquals(values, insertion.capturedValues);
+   }
 }

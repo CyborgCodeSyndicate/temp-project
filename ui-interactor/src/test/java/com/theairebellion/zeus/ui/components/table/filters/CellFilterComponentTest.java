@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CellFilterComponentTest extends BaseUnitUITest {
 
-    @Test
-    void testGetters() {
-        CellFilterComponent component = new CellFilterComponent(MockComponentType.class, "DUMMY_FILTER");
-        assertEquals(MockComponentType.class, component.getType());
-        assertEquals("DUMMY_FILTER", component.getComponentType());
-    }
+   @Test
+   void testGetters() {
+      CellFilterComponent component = new CellFilterComponent(MockComponentType.class, "DUMMY_FILTER");
+      assertEquals(MockComponentType.class, component.getType());
+      assertEquals("DUMMY_FILTER", component.getComponentType());
+   }
 }

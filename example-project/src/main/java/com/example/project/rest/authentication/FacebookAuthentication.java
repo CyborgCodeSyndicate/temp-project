@@ -6,9 +6,9 @@ import io.restassured.http.Header;
 
 public class FacebookAuthentication extends BaseAuthenticationClient {
 
-    @Override
-    protected Header authenticateImpl(final RestService restService, final String username, final String password) {
-        return new Header("header", "facebook");
-    }
+   @Override
+   protected Header authenticateImpl(final RestService restService, final String username, final String password) {
+      return new Header("header", "facebook");
+   }
 
 }

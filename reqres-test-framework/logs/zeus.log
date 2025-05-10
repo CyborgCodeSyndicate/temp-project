@@ -1,8 +1,286 @@
 Support for convention-based @Component names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.
-{"@version":1,"source_host":"DESKTOP-4TIJ8R7","message":"Support for convention-based @Component names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-04-25T12:23:41.404+0200","level":"WARN","logger_name":"org.springframework.context.annotation.AnnotationBeanNameGenerator"}
-Starting CreateTwoUsersEvolutionTest using Java 17.0.13 with PID 19372 (started by 38975 in C:\Users\38975\IdeaProjects\temp-project\reqres-test-framework)
-{"@version":1,"source_host":"DESKTOP-4TIJ8R7","message":"Starting CreateTwoUsersEvolutionTest using Java 17.0.13 with PID 19372 (started by 38975 in C:\\Users\\38975\\IdeaProjects\\temp-project\\reqres-test-framework)","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-04-25T12:23:41.451+0200","level":"INFO","logger_name":"com.reqres.test.framework.CreateTwoUsersEvolutionTest"}
+{"@version":1,"source_host":"speshevski","message":"Support for convention-based @Component names is deprecated and will be removed in a future version of the framework. Please annotate the 'value' attribute in @com.theairebellion.zeus.framework.annotation.TestService with @AliasFor(annotation=Component.class) to declare an explicit alias for @Component's 'value' attribute.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:26.929+0200","level":"WARN","logger_name":"org.springframework.context.annotation.AnnotationBeanNameGenerator"}
+Starting UserLifecycleEvolutionTest using Java 17.0.14 with PID 10228 (started by stefa in C:\Users\stefa\OneDrive\Desktop\Stefan\Private Repos\temp-project\reqres-test-framework)
+{"@version":1,"source_host":"speshevski","message":"Starting UserLifecycleEvolutionTest using Java 17.0.14 with PID 10228 (started by stefa in C:\\Users\\stefa\\OneDrive\\Desktop\\Stefan\\Private Repos\\temp-project\\reqres-test-framework)","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:27.001+0200","level":"INFO","logger_name":"com.reqres.test.framework.UserLifecycleEvolutionTest"}
 No active profile set, falling back to 1 default profile: "default"
-{"@version":1,"source_host":"DESKTOP-4TIJ8R7","message":"No active profile set, falling back to 1 default profile: \"default\"","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-04-25T12:23:41.467+0200","level":"INFO","logger_name":"com.reqres.test.framework.CreateTwoUsersEvolutionTest"}
-Started CreateTwoUsersEvolutionTest in 2.074 seconds (process running for 7.225)
-{"@version":1,"source_host":"DESKTOP-4TIJ8R7","message":"Started CreateTwoUsersEvolutionTest in 2.074 seconds (process running for 7.225)","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-04-25T12:23:42.678+0200","level":"INFO","logger_name":"com.reqres.test.framework.CreateTwoUsersEvolutionTest"}
+{"@version":1,"source_host":"speshevski","message":"No active profile set, falling back to 1 default profile: \"default\"","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:27.003+0200","level":"INFO","logger_name":"com.reqres.test.framework.UserLifecycleEvolutionTest"}
+Started UserLifecycleEvolutionTest in 2.052 seconds (process running for 6.613)
+{"@version":1,"source_host":"speshevski","message":"Started UserLifecycleEvolutionTest in 2.052 seconds (process running for 6.613)","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:28.161+0200","level":"INFO","logger_name":"com.reqres.test.framework.UserLifecycleEvolutionTest"}
+The quest: 'testUserLifecycleBasic(Quest)' has begun and is crafted.
+The quest: 'testUserLifecycleWithAuth(Quest)' has begun and is crafted.
+The quest: 'testUserLifecycleWithPreQuest(Quest)' has begun and is crafted.
+The quest: 'testUserLifecycleWithCustomService(Quest)' has begun and is crafted.
+The quest: 'testUserLifecycleWithRipper(Quest)' has begun and is crafted.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"The quest: 'testUserLifecycleBasic(Quest)' has begun and is crafted.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:30.437+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest: 'testUserLifecycleWithCustomService(Quest)' has begun and is crafted.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:30.437+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest: 'testUserLifecycleWithPreQuest(Quest)' has begun and is crafted.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:30.437+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest: 'testUserLifecycleWithRipper(Quest)' has begun and is crafted.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:30.437+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"The quest: 'testUserLifecycleWithAuth(Quest)' has begun and is crafted.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:30.437+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest has undertaken a journey through: 'API'
+The quest has undertaken a journey through: 'API'
+The quest has undertaken a journey through: 'API'
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:30.456+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:30.457+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:30.457+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:30.456+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:30.469+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Sending request to endpoint POST-https://reqres.in/api/login.
+Sending request to endpoint POST-https://reqres.in/api/login.
+Sending request to endpoint POST-https://reqres.in/api/login.
+Sending request to endpoint POST-https://reqres.in/api/login.
+Sending request to endpoint POST-https://reqres.in/api/login.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/login.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:32.532+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/login.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:32.532+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/login.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:32.532+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/login.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:32.532+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/login.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:32.532+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2065ms.
+Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2070ms.
+Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2068ms.
+Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2067ms.
+Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2070ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2065ms.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:34.643+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2067ms.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:34.643+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2070ms.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:34.643+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2068ms.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:34.643+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Response with status: 200 received from endpoint: POST-https://reqres.in/api/login in 2070ms.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:34.643+0200","level":"STEP","logger_name":"Zeus.API"}
+Request to endpoint POST-https://reqres.in/api/login took too long: 2067ms.
+Request to endpoint POST-https://reqres.in/api/login took too long: 2068ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Request to endpoint POST-https://reqres.in/api/login took too long: 2067ms.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:34.742+0200","level":"WARN","logger_name":"Zeus.API"}
+Request to endpoint POST-https://reqres.in/api/login took too long: 2065ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Request to endpoint POST-https://reqres.in/api/login took too long: 2065ms.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:34.743+0200","level":"WARN","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Request to endpoint POST-https://reqres.in/api/login took too long: 2068ms.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:34.742+0200","level":"WARN","logger_name":"Zeus.API"}
+Request to endpoint POST-https://reqres.in/api/login took too long: 2070ms.
+Request to endpoint POST-https://reqres.in/api/login took too long: 2070ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Request to endpoint POST-https://reqres.in/api/login took too long: 2070ms.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:34.744+0200","level":"WARN","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Request to endpoint POST-https://reqres.in/api/login took too long: 2070ms.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:34.744+0200","level":"WARN","logger_name":"Zeus.API"}
+Successfully authenticated user: eve.holt@reqres.in
+Successfully authenticated user: eve.holt@reqres.in
+Successfully authenticated user: eve.holt@reqres.in
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Successfully authenticated user: eve.holt@reqres.in","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:35.875+0200","level":"INFO","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Successfully authenticated user: eve.holt@reqres.in","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:35.875+0200","level":"INFO","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Successfully authenticated user: eve.holt@reqres.in","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:35.875+0200","level":"INFO","logger_name":"Zeus.API"}
+Successfully authenticated user: eve.holt@reqres.in
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Successfully authenticated user: eve.holt@reqres.in","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:35.876+0200","level":"INFO","logger_name":"Zeus.API"}
+The quest has undertaken a journey through: 'API'
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:35.877+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:35.877+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:35.911+0200","level":"STEP","logger_name":"Zeus.API"}
+Prepared RequestSpecification with pathParams: {}, queryParams: {}, headers: {Authorization=[Bearer QpwL5tke4Pnpja7X4]}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Prepared RequestSpecification with pathParams: {}, queryParams: {}, headers: {Authorization=[Bearer QpwL5tke4Pnpja7X4]}","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:35.912+0200","level":"INFO","logger_name":"Zeus.API"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:35.915+0200","level":"STEP","logger_name":"Zeus.API"}
+The quest has undertaken a journey through: 'API'
+The quest has undertaken a journey through: 'API'
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.143+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.143+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.143+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.152+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.152+0200","level":"STEP","logger_name":"Zeus.API"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.158+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 228ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 228ms.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.187+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 245ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 245ms.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.191+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.205+0200","level":"INFO","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.207+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.223+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.223+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 225ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 225ms.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.396+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.418+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.423+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Prepared RequestSpecification with pathParams: {}, queryParams: {}, headers: {Authorization=[Bearer QpwL5tke4Pnpja7X4]}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Prepared RequestSpecification with pathParams: {}, queryParams: {}, headers: {Authorization=[Bearer QpwL5tke4Pnpja7X4]}","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.443+0200","level":"INFO","logger_name":"Zeus.API"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.445+0200","level":"STEP","logger_name":"Zeus.API"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.446+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 280ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 280ms.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.452+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 284ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 284ms.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.461+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.493+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.497+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.502+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.508+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.539+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.548+0200","level":"STEP","logger_name":"Zeus.API"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.551+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.570+0200","level":"STEP","logger_name":"Zeus.API"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.584+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Sending request to endpoint POST-https://reqres.in/api/users.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint POST-https://reqres.in/api/users.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.592+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 216ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 216ms.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.694+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 232ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 232ms.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.696+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.717+0200","level":"INFO","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.717+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.721+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.721+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Starting hard validation...
+Starting hard validation...
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Starting hard validation...","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.723+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Starting hard validation...","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.723+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 225ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 225ms.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.785+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.798+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.800+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.801+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Starting hard validation...
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Starting hard validation...","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.802+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 229ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 229ms.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.809+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.824+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.827+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.829+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 227ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Response with status: 201 received from endpoint: POST-https://reqres.in/api/users in 227ms.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.831+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting hard validation...
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Starting hard validation...","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.832+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.846+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 201, Actual: 201)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 201, Actual: 201)","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.849+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest has undertaken a journey through: 'Gondor'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'Gondor'","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.850+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.851+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Starting hard validation...
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Starting hard validation...","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.852+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+Hard validation completed successfully.
+Hard validation completed successfully.
+Hard validation completed successfully.
+Hard validation completed successfully.
+Hard validation completed successfully.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Hard validation completed successfully.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.859+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Hard validation completed successfully.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.859+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Hard validation completed successfully.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.859+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Hard validation completed successfully.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.859+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Hard validation completed successfully.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.859+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest has left the journey.
+The quest has left the journey.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest has left the journey.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.860+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest has reached his end
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has left the journey.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.860+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest has reached his end","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.860+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest has reached his end
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has reached his end","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.860+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}
+Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.870+0200","level":"INFO","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.870+0200","level":"INFO","logger_name":"Zeus.API"}
+Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {Authorization=[Bearer QpwL5tke4Pnpja7X4]}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {Authorization=[Bearer QpwL5tke4Pnpja7X4]}","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.871+0200","level":"INFO","logger_name":"Zeus.API"}
+The ripper has arrived
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The ripper has arrived","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.872+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The ripper has arrived
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The ripper has arrived","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.872+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Sending request to endpoint DELETE-https://reqres.in/api/users/3.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint DELETE-https://reqres.in/api/users/3.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:36.877+0200","level":"STEP","logger_name":"Zeus.API"}
+Sending request to endpoint DELETE-https://reqres.in/api/users/3.
+Sending request to endpoint DELETE-https://reqres.in/api/users/3.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint DELETE-https://reqres.in/api/users/3.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:36.878+0200","level":"STEP","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint DELETE-https://reqres.in/api/users/3.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:36.878+0200","level":"STEP","logger_name":"Zeus.API"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.980+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.984+0200","level":"INFO","logger_name":"Zeus.API"}
+Sending request to endpoint DELETE-https://reqres.in/api/users/3.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint DELETE-https://reqres.in/api/users/3.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:36.987+0200","level":"STEP","logger_name":"Zeus.API"}
+The quest has undertaken a journey through: 'API'
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest has undertaken a journey through: 'API'","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.994+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Prepared RequestSpecification with pathParams: {id=3}, queryParams: {}, headers: {}","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:36.997+0200","level":"INFO","logger_name":"Zeus.API"}
+Sending request to endpoint DELETE-https://reqres.in/api/users/3.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Sending request to endpoint DELETE-https://reqres.in/api/users/3.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:37.001+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 278ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 278ms.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:37.175+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 279ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 279ms.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:37.176+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:37.188+0200","level":"INFO","logger_name":"Zeus.API"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:37.188+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 204, Actual: 204)
+✔ Validation passed: IS (Expected: 204, Actual: 204)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 204, Actual: 204)","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:37.192+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 204, Actual: 204)","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:37.192+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest has left the journey.
+The quest has left the journey.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest has left the journey.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:37.193+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"The quest has left the journey.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:37.193+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest has reached his end
+The quest has reached his end
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest has reached his end","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:37.193+0200","level":"INFO","logger_name":"Zeus.TEST"}
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"The quest has reached his end","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:37.193+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 314ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 314ms.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:37.211+0200","level":"STEP","logger_name":"Zeus.API"}
+The quest of 'testUserLifecycleWithPreQuest(Quest)' has concluded with glory. Status: SUCCESS. Duration: 6 seconds.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithPreQuest"},"@version":1,"source_host":"speshevski","message":"The quest of 'testUserLifecycleWithPreQuest(Quest)' has concluded with glory. Status: SUCCESS. Duration: 6 seconds.","thread_name":"ForkJoinPool-1-worker-1","@timestamp":"2025-05-08T14:12:37.220+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest of 'testUserLifecycleWithAuth(Quest)' has concluded with glory. Status: SUCCESS. Duration: 6 seconds.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithAuth"},"@version":1,"source_host":"speshevski","message":"The quest of 'testUserLifecycleWithAuth(Quest)' has concluded with glory. Status: SUCCESS. Duration: 6 seconds.","thread_name":"ForkJoinPool-1-worker-2","@timestamp":"2025-05-08T14:12:37.221+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:37.227+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 204, Actual: 204)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 204, Actual: 204)","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:37.230+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest has left the journey.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"The quest has left the journey.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:37.231+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest has reached his end
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"The quest has reached his end","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:37.232+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest of 'testUserLifecycleBasic(Quest)' has concluded with glory. Status: SUCCESS. Duration: 6 seconds.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleBasic"},"@version":1,"source_host":"speshevski","message":"The quest of 'testUserLifecycleBasic(Quest)' has concluded with glory. Status: SUCCESS. Duration: 6 seconds.","thread_name":"ForkJoinPool-1-worker-5","@timestamp":"2025-05-08T14:12:37.241+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 286ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 286ms.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:37.302+0200","level":"STEP","logger_name":"Zeus.API"}
+Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 298ms.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Response with status: 204 received from endpoint: DELETE-https://reqres.in/api/users/3 in 298ms.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:37.307+0200","level":"STEP","logger_name":"Zeus.API"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:37.328+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 204, Actual: 204)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 204, Actual: 204)","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:37.334+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+DataRipper processed target: 'DELETE_ADMIN_USER_FLOW'.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"DataRipper processed target: 'DELETE_ADMIN_USER_FLOW'.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:37.335+0200","level":"INFO","logger_name":"Zeus.TEST"}
+Starting response validation with 1 assertion(s).
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"Starting response validation with 1 assertion(s).","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:37.339+0200","level":"INFO","logger_name":"Zeus.API"}
+✔ Validation passed: IS (Expected: 204, Actual: 204)
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"✔ Validation passed: IS (Expected: 204, Actual: 204)","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:37.343+0200","level":"VALIDATION","logger_name":"Zeus.TEST"}
+The quest of 'testUserLifecycleWithCustomService(Quest)' has concluded with glory. Status: SUCCESS. Duration: 7 seconds.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithCustomService"},"@version":1,"source_host":"speshevski","message":"The quest of 'testUserLifecycleWithCustomService(Quest)' has concluded with glory. Status: SUCCESS. Duration: 7 seconds.","thread_name":"ForkJoinPool-1-worker-3","@timestamp":"2025-05-08T14:12:37.343+0200","level":"INFO","logger_name":"Zeus.TEST"}
+DataRipper processed target: 'DELETE_ADMIN_USER_FLOW'.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"DataRipper processed target: 'DELETE_ADMIN_USER_FLOW'.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:37.344+0200","level":"INFO","logger_name":"Zeus.TEST"}
+The quest of 'testUserLifecycleWithRipper(Quest)' has concluded with glory. Status: SUCCESS. Duration: 7 seconds.
+{"mdc":{"testName":"UserLifecycleEvolutionTest.testUserLifecycleWithRipper"},"@version":1,"source_host":"speshevski","message":"The quest of 'testUserLifecycleWithRipper(Quest)' has concluded with glory. Status: SUCCESS. Duration: 7 seconds.","thread_name":"ForkJoinPool-1-worker-4","@timestamp":"2025-05-08T14:12:37.352+0200","level":"INFO","logger_name":"Zeus.TEST"}

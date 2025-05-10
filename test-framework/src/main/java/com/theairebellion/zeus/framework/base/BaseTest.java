@@ -15,136 +15,147 @@ import static com.theairebellion.zeus.framework.util.PropertiesUtil.addSystemPro
 
 /**
  * Base test class providing foundational test setup and utilities.
- * <p>
- * This class serves as the base for all test classes, handling global test configurations,
+ *
+ * <p>This class serves as the base for all test classes, handling global test configurations,
  * logging setup, and utility methods for retrieving stored test data.
  * It ensures consistent test initialization and provides convenience methods
  * for accessing stored test artifacts.
- * </p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 @Odyssey
 @SpringBootTest(
-        classes = {TestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.NONE
+      classes = {TestConfig.class},
+      webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 @Tag("exclude-from-verify")
 public class BaseTest {
 
-    private static final String RETRIEVAL_LOG_TEMPLATE = "Fetching data from storage by key: '{}' and type: '{}'";
+   private static final String RETRIEVAL_LOG_TEMPLATE = "Fetching data from storage by key: '{}' and type: '{}'";
 
-    static {
-        synchronized (BaseTest.class) {
-            addSystemProperties();
-            LoggerContext context = (LoggerContext) LogManager.getContext(false);
-            context.reconfigure();
-        }
-    }
+   static {
+      synchronized (BaseTest.class) {
+         addSystemProperties();
+         LoggerContext context = (LoggerContext) LogManager.getContext(false);
+         context.reconfigure();
+      }
+   }
 
-    /**
-     * Retrieves stored test data by key.
-     *
-     * @param key   The key identifying the stored data.
-     * @param clazz The expected type of the retrieved object.
-     * @param <T>   The type parameter corresponding to the retrieved object.
-     * @return The stored test data of the specified type.
-     */
-    protected <T> T retrieve(Enum<?> key, Class<T> clazz) {
-        SuperQuest quest = QuestHolder.get();
-        LogTest.extended(RETRIEVAL_LOG_TEMPLATE, key.name(), clazz.getName());
-        return quest.getStorage().get(key, clazz);
-    }
+   /**
+    * Retrieves stored test data by key.
+    *
+    * @param key   The key identifying the stored data.
+    * @param clazz The expected type of the retrieved object.
+    * @param <T>   The type parameter corresponding to the retrieved object.
+    * @return The stored test data of the specified type.
+    */
+   protected <T> T retrieve(Enum<?> key, Class<T> clazz) {
+      SuperQuest quest = QuestHolder.get();
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, key.name(), clazz.getName());
+      return quest.getStorage().get(key, clazz);
+   }
 
-    /**
-     * Retrieves stored test data from a sub-key.
-     *
-     * @param subKey The sub-key identifying the data subset.
-     * @param key    The key identifying the stored data.
-     * @param clazz  The expected type of the retrieved object.
-     * @param <T>    The type parameter corresponding to the retrieved object.
-     * @return The stored test data from the specified sub-key.
-     */
-    protected <T> T retrieve(Enum<?> subKey, Enum<?> key, Class<T> clazz) {
-        SuperQuest quest = QuestHolder.get();
-        LogTest.extended(RETRIEVAL_LOG_TEMPLATE, key.name(), clazz.getName());
-        return quest.getStorage().sub(subKey).get(key, clazz);
-    }
+   /**
+    * Retrieves stored test data from a sub-key.
+    *
+    * @param subKey The sub-key identifying the data subset.
+    * @param key    The key identifying the stored data.
+    * @param clazz  The expected type of the retrieved object.
+    * @param <T>    The type parameter corresponding to the retrieved object.
+    * @return The stored test data from the specified sub-key.
+    */
+   protected <T> T retrieve(Enum<?> subKey, Enum<?> key, Class<T> clazz) {
+      SuperQuest quest = QuestHolder.get();
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, key.name(), clazz.getName());
+      return quest.getStorage().sub(subKey).get(key, clazz);
+   }
 
-    /**
-     * Retrieves test data using a {@code DataExtractor}.
-     *
-     * @param extractor The data extractor to retrieve test data.
-     * @param clazz     The expected type of the retrieved object.
-     * @param <T>       The type parameter corresponding to the retrieved object.
-     * @return The extracted test data of the specified type.
-     */
-    protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
-        SuperQuest quest = QuestHolder.get();
-        LogTest.extended(RETRIEVAL_LOG_TEMPLATE, extractor.getKey().name(),
-                clazz.getName());
-        return quest.getStorage().get(extractor, clazz);
-    }
-
-    /**
-     * Retrieves test data using a {@code DataExtractor} at a specified index.
-     *
-     * @param extractor The data extractor to retrieve test data.
-     * @param index     The index of the extracted data.
-     * @param clazz     The expected type of the retrieved object.
-     * @param <T>       The type parameter corresponding to the retrieved object.
-     * @return The extracted test data of the specified type at the given index.
-     */
-    protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
-        SuperQuest quest = QuestHolder.get();
-        LogTest.extended(RETRIEVAL_LOG_TEMPLATE, extractor.getKey().name(),
-                clazz.getName());
-        return quest.getStorage().get(extractor, clazz, index);
-    }
-
-    //todo: JavaDocs
-    protected <T> T hookData(Object value, Class<T> clazz) {
-        SuperQuest quest = QuestHolder.get();
-        LogTest.extended(RETRIEVAL_LOG_TEMPLATE, value,
+   /**
+    * Retrieves test data using a {@code DataExtractor}.
+    *
+    * @param extractor The data extractor to retrieve test data.
+    * @param clazz     The expected type of the retrieved object.
+    * @param <T>       The type parameter corresponding to the retrieved object.
+    * @return The extracted test data of the specified type.
+    */
+   protected <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
+      SuperQuest quest = QuestHolder.get();
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, extractor.getKey().name(),
             clazz.getName());
-        return quest.getStorage().getHookData(value, clazz);
-    }
+      return quest.getStorage().get(extractor, clazz);
+   }
 
-    /**
-     * Provides static utility methods for retrieving stored test data.
-     */
-    public static final class DefaultStorage {
+   /**
+    * Retrieves test data using a {@code DataExtractor} at a specified index.
+    *
+    * @param extractor The data extractor to retrieve test data.
+    * @param index     The index of the extracted data.
+    * @param clazz     The expected type of the retrieved object.
+    * @param <T>       The type parameter corresponding to the retrieved object.
+    * @return The extracted test data of the specified type at the given index.
+    */
+   protected <T> T retrieve(DataExtractor<T> extractor, int index, Class<T> clazz) {
+      SuperQuest quest = QuestHolder.get();
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, extractor.getKey().name(),
+            clazz.getName());
+      return quest.getStorage().get(extractor, clazz, index);
+   }
+
+   /**
+    * Retrieves data that was stored by a test hook (e.g., DbHook or ApiHook).
+    *
+    * <p>This method looks up hook-scoped data using the provided key object and
+    * returns it as an instance of the specified class.</p>
+    *
+    * @param value the key object under which hook data was stored
+    * @param clazz the expected type of the retrieved data
+    * @param <T>   the type parameter of the returned data
+    * @return the hook-stored data, cast to {@code T}
+    */
+   protected <T> T hookData(Object value, Class<T> clazz) {
+      SuperQuest quest = QuestHolder.get();
+      LogTest.extended(RETRIEVAL_LOG_TEMPLATE, value,
+            clazz.getName());
+      return quest.getStorage().getHookData(value, clazz);
+   }
+
+   /**
+    * Provides static utility methods for retrieving stored test data.
+    *
+    * @author Cyborg Code Syndicate 💍👨💻
+    */
+   public static final class DefaultStorage {
 
 
-        private DefaultStorage() {
-        }
+      private DefaultStorage() {
+      }
 
-        /**
-         * Retrieves stored test data by key within a sub-storage context.
-         *
-         * @param key   The key identifying the stored data.
-         * @param clazz The expected type of the retrieved object.
-         * @param <T>   The type parameter corresponding to the retrieved object.
-         * @return The stored test data of the specified type.
-         */
-        public static <T> T retrieve(Enum<?> key, Class<T> clazz) {
-            SuperQuest quest = QuestHolder.get();
-            return quest.getStorage().sub().get(key, clazz);
-        }
+      /**
+       * Retrieves stored test data by key within a sub-storage context.
+       *
+       * @param key   The key identifying the stored data.
+       * @param clazz The expected type of the retrieved object.
+       * @param <T>   The type parameter corresponding to the retrieved object.
+       * @return The stored test data of the specified type.
+       */
+      public static <T> T retrieve(Enum<?> key, Class<T> clazz) {
+         SuperQuest quest = QuestHolder.get();
+         return quest.getStorage().sub().get(key, clazz);
+      }
 
-        /**
-         * Retrieves test data using a {@code DataExtractor} within a sub-storage context.
-         *
-         * @param extractor The data extractor to retrieve test data.
-         * @param clazz     The expected type of the retrieved object.
-         * @param <T>       The type parameter corresponding to the retrieved object.
-         * @return The extracted test data of the specified type.
-         */
-        public static <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
-            SuperQuest quest = QuestHolder.get();
-            return quest.getStorage().sub().get(extractor, clazz);
-        }
+      /**
+       * Retrieves test data using a {@code DataExtractor} within a sub-storage context.
+       *
+       * @param extractor The data extractor to retrieve test data.
+       * @param clazz     The expected type of the retrieved object.
+       * @param <T>       The type parameter corresponding to the retrieved object.
+       * @return The extracted test data of the specified type.
+       */
+      public static <T> T retrieve(DataExtractor<T> extractor, Class<T> clazz) {
+         SuperQuest quest = QuestHolder.get();
+         return quest.getStorage().sub().get(extractor, clazz);
+      }
 
-    }
+   }
 
 }

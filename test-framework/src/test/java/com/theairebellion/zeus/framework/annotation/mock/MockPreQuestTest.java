@@ -5,7 +5,7 @@ import com.theairebellion.zeus.framework.annotation.PreQuest;
 
 public class MockPreQuestTest {
 
-    @PreQuest({@Journey(value = "prequest", order = 5)})
-    public void mockPreQuestMethod() {
-    }
+   @PreQuest({@Journey(value = "prequest", order = 5)})
+   public void mockPreQuestMethod() {
+   }
 }

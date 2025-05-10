@@ -7,28 +7,25 @@ import java.lang.annotation.Target;
 
 /**
  * Custom annotation for specifying a configuration source.
- * <p>
- * This annotation is used to mark configuration interfaces with a logical
+ *
+ * <p>This annotation is used to mark configuration interfaces with a logical
  * name that represents their configuration source. It serves as metadata
  * that can be used for documentation, reflection, or dynamic configuration
  * handling.
- * </p>
  *
- * <p>
- * This annotation does not directly influence how configurations are loaded
+ * <p>This annotation does not directly influence how configurations are loaded
  * but acts as a marker for tools and frameworks that rely on metadata.
- * </p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ConfigSource {
 
-    /**
-     * Specifies the name of the configuration source.
-     *
-     * @return The logical name of the configuration source.
-     */
-    String value();
+   /**
+    * Specifies the name of the configuration source.
+    *
+    * @return The logical name of the configuration source.
+    */
+   String value();
 }

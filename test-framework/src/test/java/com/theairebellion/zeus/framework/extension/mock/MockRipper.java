@@ -4,7 +4,7 @@ import com.theairebellion.zeus.framework.annotation.Ripper;
 
 public class MockRipper {
 
-    @Ripper(targets = {"MOCK_TARGET"})
-    public void testMethod() {
-    }
+   @Ripper(targets = {"MOCK_TARGET"})
+   public void testMethod() {
+   }
 }
