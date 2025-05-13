@@ -9,9 +9,9 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * component type must also meet the contract defined for general components.
  *
  * <p>Implementation classes will typically be used to label or categorize
- * different kinds of item list components for use in a UI automation framework.</p>
+ * different kinds of item list components for use in a UI automation framework.
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface ItemListComponentType extends ComponentType {
 

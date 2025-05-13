@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserResponse {
 
-    DataResponse data;
-    SupportResponse support;
+   DataResponse data;
+   SupportResponse support;
 
 }

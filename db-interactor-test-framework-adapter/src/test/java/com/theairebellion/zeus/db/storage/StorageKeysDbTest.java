@@ -10,40 +10,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("StorageKeysDb enum tests")
 class StorageKeysDbTest {
 
-    @Test
-    @DisplayName("DB enum constant should have the correct name")
-    void dbEnumShouldHaveCorrectName() {
-        // When
-        String enumName = StorageKeysDb.DB.name();
+   @Test
+   @DisplayName("DB enum constant should have the correct name")
+   void dbEnumShouldHaveCorrectName() {
+      // When
+      String enumName = StorageKeysDb.DB.name();
 
-        // Then
-        assertThat(enumName)
-                .as("StorageKeysDb.DB should have name 'DB'")
-                .isEqualTo("DB");
-    }
+      // Then
+      assertThat(enumName)
+            .as("StorageKeysDb.DB should have name 'DB'")
+            .isEqualTo("DB");
+   }
 
-    @ParameterizedTest
-    @EnumSource(StorageKeysDb.class)
-    @DisplayName("All enum constants should return non-null toString values")
-    void allEnumConstantsShouldHaveValidToString(StorageKeysDb key) {
-        // When
-        String stringValue = key.toString();
+   @ParameterizedTest
+   @EnumSource(StorageKeysDb.class)
+   @DisplayName("All enum constants should return non-null toString values")
+   void allEnumConstantsShouldHaveValidToString(StorageKeysDb key) {
+      // When
+      String stringValue = key.toString();
 
-        // Then
-        assertThat(stringValue)
-                .as("Enum toString() should not return null")
-                .isNotNull();
-    }
+      // Then
+      assertThat(stringValue)
+            .as("Enum toString() should not return null")
+            .isNotNull();
+   }
 
-    @Test
-    @DisplayName("valueOf should correctly map string to enum constant")
-    void valueOfShouldMapStringToEnumConstant() {
-        // When
-        StorageKeysDb enumValue = StorageKeysDb.valueOf("DB");
+   @Test
+   @DisplayName("valueOf should correctly map string to enum constant")
+   void valueOfShouldMapStringToEnumConstant() {
+      // When
+      StorageKeysDb enumValue = StorageKeysDb.valueOf("DB");
 
-        // Then
-        assertThat(enumValue)
-                .as("valueOf('DB') should return StorageKeysDb.DB")
-                .isEqualTo(StorageKeysDb.DB);
-    }
+      // Then
+      assertThat(enumValue)
+            .as("valueOf('DB') should return StorageKeysDb.DB")
+            .isEqualTo(StorageKeysDb.DB);
+   }
 }

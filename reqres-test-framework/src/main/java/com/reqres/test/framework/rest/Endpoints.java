@@ -5,42 +5,48 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
 
-public enum Endpoints implements Endpoint<Endpoints> {
+import static com.reqres.test.framework.utils.Headers.API_KEY_HEADER;
+import static com.reqres.test.framework.utils.Headers.API_KEY_VALUE;
 
-    GET_ALL_USERS(Method.GET, "/users?{page}"),
-    GET_USER(Method.GET, "/users/{id}"),
-    CREATE_USER(Method.POST, "/users"),
-    LOGIN_USER(Method.POST, "/login"),
-    DELETE_USER(Method.DELETE, "/users/{id}");
+public enum Endpoints implements Endpoint {
 
-    private final Method method;
-    private final String url;
+   GET_ALL_USERS(Method.GET, "/users?{page}"),
+   GET_USER(Method.GET, "/users/{id}"),
+   POST_CREATE_USER(Method.POST, "/users"),
+   POST_LOGIN_USER(Method.POST, "/login"),
+   DELETE_USER(Method.DELETE, "/users/{id}"),
+   GET_ALL_RESOURCES(Method.GET, "/unknown?{page}"),
+   GET_RESOURCE(Method.GET, "/unknown/{id}");
 
-    Endpoints(final Method method, final String url) {
-        this.method = method;
-        this.url = url;
-    }
+   private final Method method;
+   private final String url;
 
-    @Override
-    public Method method() {
-        return method;
-    }
+   Endpoints(final Method method, final String url) {
+      this.method = method;
+      this.url = url;
+   }
 
-    @Override
-    public String url() {
-        return url;
-    }
+   @Override
+   public Method method() {
+      return method;
+   }
 
-    @Override
-    public Endpoints enumImpl() {
-        return this;
-    }
+   @Override
+   public String url() {
+      return url;
+   }
 
-    @Override
-    public RequestSpecification defaultConfiguration() {
-        RequestSpecification spec = Endpoint.super.defaultConfiguration();
-        spec.contentType(ContentType.JSON);
-        return spec;
-    }
+   @Override
+   public Enum<?> enumImpl() {
+      return this;
+   }
+
+   @Override
+   public RequestSpecification defaultConfiguration() {
+      RequestSpecification spec = Endpoint.super.defaultConfiguration();
+      spec.contentType(ContentType.JSON);
+      spec.header(API_KEY_HEADER, API_KEY_VALUE);
+      return spec;
+   }
 
 }

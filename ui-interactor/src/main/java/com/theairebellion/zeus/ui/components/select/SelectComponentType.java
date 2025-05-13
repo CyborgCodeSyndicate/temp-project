@@ -8,9 +8,9 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  *
  * <p>Implementation classes may encapsulate various configurations or styles of select
  * widgets, ensuring that UI testing remains consistent when handling dropdowns
- * or multi-select elements within an application.</p>
+ * or multi-select elements within an application.
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface SelectComponentType extends ComponentType {
 

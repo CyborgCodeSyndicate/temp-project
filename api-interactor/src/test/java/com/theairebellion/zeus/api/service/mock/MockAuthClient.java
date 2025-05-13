@@ -8,13 +8,14 @@ import lombok.NonNull;
 
 public class MockAuthClient extends BaseAuthenticationClient {
 
-    @Override
-    public AuthenticationKey authenticate(@NonNull RestService restService, @NonNull String user, String pass, boolean cache) {
-        return new AuthenticationKey("username", "password", null);
-    }
+   @Override
+   public AuthenticationKey authenticate(@NonNull RestService restService, @NonNull String user,
+                                         String pass, boolean cache) {
+      return new AuthenticationKey("username", "password", null);
+   }
 
-    @Override
-    protected Header authenticateImpl(RestService restService, String username, String password) {
-        return null;
-    }
+   @Override
+   protected Header authenticateImpl(RestService restService, String username, String password) {
+      return null;
+   }
 }
