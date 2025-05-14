@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.selenium.smart;
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElement;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElementFunctions;
@@ -757,7 +757,7 @@ class SmartWebElementTest extends BaseUnitUITest {
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> mockFunction =
                         (driver, element, exceptionObj, params) -> {
                             // Simulate some handling logic
-                            LogUI.error("Exception handled: " + exceptionObj.getMessage());
+                            LogUi.error("Exception handled: " + exceptionObj.getMessage());
                            throw new RuntimeException("Test");
                         };
 
@@ -994,7 +994,7 @@ class SmartWebElementTest extends BaseUnitUITest {
             // Arrange
             IllegalArgumentException exception = new IllegalArgumentException("Unsupported element operation");
 
-            try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class);
+            try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class);
                  MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class)) {
 
                 // Create mock enum for exception handling with no matching handler
@@ -1023,7 +1023,7 @@ class SmartWebElementTest extends BaseUnitUITest {
                 );
 
                 // Verify that the error was logged
-                logUIMock.verify(() -> LogUI.error(anyString()));
+                LogUiMock.verify(() -> LogUi.error(anyString()));
             }
         }
     }

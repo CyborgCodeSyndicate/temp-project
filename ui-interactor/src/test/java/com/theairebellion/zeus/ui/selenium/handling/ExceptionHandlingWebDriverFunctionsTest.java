@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
@@ -39,9 +39,9 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
         @Test
         @DisplayName("Should throw IllegalArgumentException when args are empty")
         void testHandleNoSuchElementWithEmptyArgs() {
-            try (MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+            try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
                 // Setup void method mocking properly
-                mockedLogUI.when(() -> LogUI.error(anyString())).thenAnswer(invocation -> null);
+                mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
                 // Test with empty args array
                 Object[] emptyArgs = new Object[0];
@@ -50,7 +50,7 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
                 });
 
                 // Verify error was logged
-                mockedLogUI.verify(() -> LogUI.error(anyString()));
+                mockedLogUi.verify(() -> LogUi.error(anyString()));
 
                 // Check exception message
                 assertEquals("FIND_ELEMENT action requires a By locator.", exception.getMessage());
@@ -60,9 +60,9 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
         @Test
         @DisplayName("Should throw IllegalArgumentException when first arg is null")
         void testHandleNoSuchElementWithNullArgs() {
-            try (MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+            try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
                 // Setup void method mocking properly
-                mockedLogUI.when(() -> LogUI.error(anyString())).thenAnswer(invocation -> null);
+                mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
                 // Test with null arg
                 Object[] nullArgs = new Object[]{null};
@@ -71,7 +71,7 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
                 });
 
                 // Verify error was logged
-                mockedLogUI.verify(() -> LogUI.error(anyString()));
+                mockedLogUi.verify(() -> LogUi.error(anyString()));
 
                 // Check exception message
                 assertEquals("FIND_ELEMENT action requires a By locator.", exception.getMessage());
@@ -81,9 +81,9 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
         @Test
         @DisplayName("Should throw IllegalArgumentException when first arg is not a By")
         void testHandleNoSuchElementWithNonByArg() {
-            try (MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+            try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
                 // Setup void method mocking properly
-                mockedLogUI.when(() -> LogUI.error(anyString())).thenAnswer(invocation -> null);
+                mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
                 // Test with non-By argument
                 Object[] invalidArgs = new Object[]{"not a By object"};
@@ -92,7 +92,7 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
                 });
 
                 // Verify error was logged
-                mockedLogUI.verify(() -> LogUI.error(anyString()));
+                mockedLogUi.verify(() -> LogUi.error(anyString()));
 
                 // Check exception message
                 assertEquals("FIND_ELEMENT action requires a By locator.", exception.getMessage());
@@ -136,10 +136,10 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
         @DisplayName("Should throw NoSuchElementException when element not found")
         void testHandleNoSuchElementWhenElementNotFound() {
             try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class);
-                 MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+                 MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
 
                 // Setup void method mocking properly
-                mockedLogUI.when(() -> LogUI.error(anyString())).thenAnswer(invocation -> null);
+                mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
                 // Create test data
                 By byLocator = By.id("testId");
@@ -156,7 +156,7 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
 
                 // Verify methods were called
                 mockedHelper.verify(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(By.class)));
-                mockedLogUI.verify(() -> LogUI.error(anyString()));
+                mockedLogUi.verify(() -> LogUi.error(anyString()));
 
             }
         }

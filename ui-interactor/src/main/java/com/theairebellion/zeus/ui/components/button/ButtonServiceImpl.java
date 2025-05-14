@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.components.button;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
@@ -50,7 +50,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     @Override
     public void click(final ButtonComponentType componentType, final SmartWebElement container,
                       final String buttonText) {
-        LogUI.step("Clicking button: " + buttonText + " in container");
+        LogUi.step("Clicking button: " + buttonText + " in container");
         buttonComponent(componentType).click(container, buttonText);
     }
 
@@ -62,7 +62,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public void click(final ButtonComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Clicking button in container");
+        LogUi.step("Clicking button in container");
         buttonComponent(componentType).click(container);
     }
 
@@ -74,7 +74,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public void click(final ButtonComponentType componentType, final String buttonText) {
-        LogUI.step("Clicking button: " + buttonText);
+        LogUi.step("Clicking button: " + buttonText);
         buttonComponent(componentType).click(buttonText);
     }
 
@@ -86,7 +86,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public void click(final ButtonComponentType componentType, final By buttonLocator) {
-        LogUI.step("Clicking button using locator: " + buttonLocator);
+        LogUi.step("Clicking button using locator: " + buttonLocator);
         buttonComponent(componentType).click(buttonLocator);
     }
 
@@ -101,7 +101,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final SmartWebElement container,
                              final String buttonText) {
-        LogUI.step("Checking if button is enabled: " + buttonText);
+        LogUi.step("Checking if button is enabled: " + buttonText);
         return buttonComponent(componentType).isEnabled(container, buttonText);
     }
 
@@ -114,7 +114,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Checking if button is enabled in container");
+        LogUi.step("Checking if button is enabled in container");
         return buttonComponent(componentType).isEnabled(container);
     }
 
@@ -127,7 +127,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final String buttonText) {
-        LogUI.step("Checking if button is enabled: " + buttonText);
+        LogUi.step("Checking if button is enabled: " + buttonText);
         return buttonComponent(componentType).isEnabled(buttonText);
     }
 
@@ -140,7 +140,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isEnabled(final ButtonComponentType componentType, final By buttonLocator) {
-        LogUI.step("Checking if button is enabled using locator: " + buttonLocator);
+        LogUi.step("Checking if button is enabled using locator: " + buttonLocator);
         return buttonComponent(componentType).isEnabled(buttonLocator);
     }
 
@@ -155,7 +155,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final SmartWebElement container,
                              final String buttonText) {
-        LogUI.step("Checking if button is visible: " + buttonText);
+        LogUi.step("Checking if button is visible: " + buttonText);
         return buttonComponent(componentType).isVisible(container, buttonText);
     }
 
@@ -168,7 +168,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Checking if button is visible in container");
+        LogUi.step("Checking if button is visible in container");
         return buttonComponent(componentType).isVisible(container);
     }
 
@@ -181,7 +181,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final String buttonText) {
-        LogUI.step("Checking if button is visible: " + buttonText);
+        LogUi.step("Checking if button is visible: " + buttonText);
         return buttonComponent(componentType).isVisible(buttonText);
     }
 
@@ -194,7 +194,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
      */
     @Override
     public boolean isVisible(final ButtonComponentType componentType, final By buttonLocator) {
-        LogUI.step("Checking if button is visible using locator: " + buttonLocator);
+        LogUi.step("Checking if button is visible using locator: " + buttonLocator);
         return buttonComponent(componentType).isVisible(buttonLocator);
     }
 
@@ -221,7 +221,7 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
         if (!(componentType instanceof ButtonComponentType buttonType)) {
             throw new IllegalArgumentException("Component type needs to be from: ButtonComponentType.");
         }
-        LogUI.step("Performing table insertion in cell element");
+        LogUi.step("Performing table insertion in cell element");
         buttonComponent(buttonType).clickElementInCell(cellElement);
     }
 

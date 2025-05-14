@@ -4,7 +4,7 @@ import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
@@ -51,7 +51,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public void insert(final InputComponentType componentType, final SmartWebElement container, final String value) {
-        LogUI.step("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
+        LogUi.step("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
         inputComponent(componentType).insert(container, value);
     }
 
@@ -66,7 +66,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     @Override
     public void insert(final InputComponentType componentType, final SmartWebElement container,
                        final String inputFieldLabel, final String value) {
-        LogUI.step("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
+        LogUi.step("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
                 componentType.getType().name());
         inputComponent(componentType).insert(container, inputFieldLabel, value);
     }
@@ -80,7 +80,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public void insert(final InputComponentType componentType, final String inputFieldLabel, final String value) {
-        LogUI.step("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
+        LogUi.step("Inserting value: '{}' into input field labeled: '{}' of type: '{}'.", value, inputFieldLabel,
                 componentType.getType().name());
         inputComponent(componentType).insert(inputFieldLabel, value);
     }
@@ -95,7 +95,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     @Override
     public void insert(final InputComponentType componentType, final By inputFieldContainerLocator,
                        final String value) {
-        LogUI.step("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
+        LogUi.step("Inserting value: '{}' into input component of type: '{}'.", value, componentType.getType().name());
         inputComponent(componentType).insert(inputFieldContainerLocator, value);
     }
 
@@ -107,7 +107,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public void clear(final InputComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Clearing value in input component of type: '{}'.", componentType.getType().name());
+        LogUi.step("Clearing value in input component of type: '{}'.", componentType.getType().name());
         inputComponent(componentType).clear(container);
     }
 
@@ -121,7 +121,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     @Override
     public void clear(final InputComponentType componentType, final SmartWebElement container,
                       final String inputFieldLabel) {
-        LogUI.step("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
+        LogUi.step("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         inputComponent(componentType).clear(container, inputFieldLabel);
     }
@@ -134,7 +134,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public void clear(final InputComponentType componentType, final String inputFieldLabel) {
-        LogUI.step("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
+        LogUi.step("Clearing value in input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         inputComponent(componentType).clear(inputFieldLabel);
     }
@@ -147,7 +147,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public void clear(final InputComponentType componentType, final By inputFieldContainerLocator) {
-        LogUI.step("Clearing value in input component of type: '{}'.", componentType.getType().name());
+        LogUi.step("Clearing value in input component of type: '{}'.", componentType.getType().name());
         inputComponent(componentType).clear(inputFieldContainerLocator);
     }
 
@@ -160,7 +160,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public String getValue(final InputComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Fetching value from input component of type: '{}'.", componentType.getType().name());
+        LogUi.step("Fetching value from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getValue(container);
     }
 
@@ -175,7 +175,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     @Override
     public String getValue(final InputComponentType componentType, final SmartWebElement container,
                            final String inputFieldLabel) {
-        LogUI.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
+        LogUi.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return inputComponent(componentType).getValue(container, inputFieldLabel);
     }
@@ -189,7 +189,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public String getValue(final InputComponentType componentType, final String inputFieldLabel) {
-        LogUI.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
+        LogUi.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return inputComponent(componentType).getValue(inputFieldLabel);
     }
@@ -203,7 +203,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public String getValue(final InputComponentType componentType, final By inputFieldContainerLocator) {
-        LogUI.step("Fetching value from input component of type: '{}'.", componentType.getType().name());
+        LogUi.step("Fetching value from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getValue(inputFieldContainerLocator);
     }
 
@@ -216,7 +216,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public boolean isEnabled(final InputComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
+        LogUi.step("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
         return inputComponent(componentType).isEnabled(container);
     }
 
@@ -231,7 +231,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     @Override
     public boolean isEnabled(final InputComponentType componentType, final SmartWebElement container,
                              final String inputFieldLabel) {
-        LogUI.step("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
+        LogUi.step("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
                 componentType.getType().name());
         return inputComponent(componentType).isEnabled(container, inputFieldLabel);
     }
@@ -245,7 +245,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public boolean isEnabled(final InputComponentType componentType, final String inputFieldLabel) {
-        LogUI.step("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
+        LogUi.step("Checking if input field labeled: '{}' of type: '{}' is enabled.", inputFieldLabel,
                 componentType.getType().name());
         return inputComponent(componentType).isEnabled(inputFieldLabel);
     }
@@ -259,7 +259,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public boolean isEnabled(final InputComponentType componentType, final By inputFieldContainerLocator) {
-        LogUI.step("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
+        LogUi.step("Checking if input component of type: '{}' is enabled.", componentType.getType().name());
         return inputComponent(componentType).isEnabled(inputFieldContainerLocator);
     }
 
@@ -272,7 +272,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public String getErrorMessage(final InputComponentType componentType, final SmartWebElement container) {
-        LogUI.step("Fetching error message from input component of type: '{}'.", componentType.getType().name());
+        LogUi.step("Fetching error message from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(container);
     }
 
@@ -287,7 +287,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
     @Override
     public String getErrorMessage(final InputComponentType componentType, final SmartWebElement container,
                                   final String inputFieldLabel) {
-        LogUI.step("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
+        LogUi.step("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(container, inputFieldLabel);
     }
@@ -301,7 +301,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public String getErrorMessage(final InputComponentType componentType, final String inputFieldLabel) {
-        LogUI.step("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
+        LogUi.step("Fetching error message from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
                 componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(inputFieldLabel);
     }
@@ -315,7 +315,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
      */
     @Override
     public String getErrorMessage(final InputComponentType componentType, final By inputFieldContainerLocator) {
-        LogUI.step("Fetching error message from input component of type: '{}'.", componentType.getType().name());
+        LogUi.step("Fetching error message from input component of type: '{}'.", componentType.getType().name());
         return inputComponent(componentType).getErrorMessage(inputFieldContainerLocator);
     }
 
@@ -332,7 +332,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
         if (!(componentType instanceof InputComponentType)) {
             throw new IllegalArgumentException("Component type needs to be from: InputComponentType.");
         }
-        LogUI.step("Inserting values into table cell for component type: '{}'.", componentType.getType().name());
+        LogUi.step("Inserting values into table cell for component type: '{}'.", componentType.getType().name());
         inputComponent((InputComponentType) componentType).tableInsertion(cellElement, values);
     }
 
@@ -351,7 +351,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
         if (!(componentType instanceof InputComponentType)) {
             throw new IllegalArgumentException("Component type needs to be from: InputComponentType.");
         }
-        LogUI.step("Applying table filter for component type: '{}' with strategy: '{}'.",
+        LogUi.step("Applying table filter for component type: '{}' with strategy: '{}'.",
                 componentType.getType().name(), filterStrategy);
         inputComponent((InputComponentType) componentType).tableFilter(cellElement, filterStrategy, values);
     }
@@ -368,7 +368,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
         if (!(componentType instanceof InputComponentType)) {
             throw new IllegalArgumentException("Component type needs to be from: InputComponentType.");
         }
-        LogUI.step("Inserting value into component of type: '{}' using locator.", componentType.getType().name());
+        LogUi.step("Inserting value into component of type: '{}' using locator.", componentType.getType().name());
         insert((InputComponentType) componentType, locator, (String) values[0]);
     }
 

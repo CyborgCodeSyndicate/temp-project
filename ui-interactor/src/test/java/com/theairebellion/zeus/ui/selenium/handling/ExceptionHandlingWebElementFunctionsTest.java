@@ -1,7 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
 import com.theairebellion.zeus.ui.selenium.helper.LocatorParser;
@@ -98,9 +98,9 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
     @Test
     void testHandleNoSuchElementWithInvalidArgs() {
-        try (MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+        try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
             // Setup void method mocking properly
-            mockedLogUI.when(() -> LogUI.error(anyString())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -132,7 +132,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             assertTrue(invalidException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
 
             // Verify error was logged at least once
-            mockedLogUI.verify(() -> LogUI.error(anyString()), atLeastOnce());
+            mockedLogUi.verify(() -> LogUi.error(anyString()), atLeastOnce());
         }
     }
 
@@ -175,10 +175,10 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleNoSuchElementWhenElementNotFound() {
         try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
 
             // Setup void method mocking properly
-            mockedLogUI.when(() -> LogUI.error(anyString())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -199,7 +199,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Verify methods were called
             mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
     }
 
@@ -364,7 +364,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementClickIntercepted_NullExceptionMessage() {
 
-        try (MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+        try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -380,7 +380,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                 () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
                     mockDriver, element, WebElementAction.CLICK, exception));
 
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
 
     }
@@ -389,7 +389,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementClickIntercepted_NullLocatorString() {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLog = mockStatic(LogUI.class)
+             MockedStatic<LogUi> mockedLog = mockStatic(LogUi.class)
         ) {
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -410,7 +410,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
             // Verify parser was called
             mockedParser.verify(() -> LocatorParser.extractBlockingElementLocator("Some error message"));
-            mockedLog.verify(() -> LogUI.error(anyString()));
+            mockedLog.verify(() -> LogUi.error(anyString()));
         }
     }
 
@@ -421,10 +421,10 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
              MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class)) {
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
 
             // Setup logging
-            mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -448,7 +448,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                     mockDriver, element, WebElementAction.CLICK, exception));
 
             // Verify the warning was logged
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
     }
 
@@ -456,7 +456,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementClickIntercepted_GeneralException() {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
              MockedStatic<By> mockedBy = mockStatic(By.class);
              MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
@@ -464,7 +464,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
              );) {
 
             // Setup logger mock
-            mockedLogUI.when(() -> LogUI.warn(anyString())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -486,7 +486,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                     mockDriver, element, WebElementAction.CLICK, clickException));
 
             // Verify the warning was logged with the message
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
     }
 
@@ -526,7 +526,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementNotInteractable_TimeoutException() {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
              MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
                  (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, true, false)
@@ -538,7 +538,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                  })) {
 
             // Setup logger mock
-            mockedLogUI.when(() -> LogUI.warn(anyString())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
 
             // Setup element mocks
             SmartWebElement element = mock(SmartWebElement.class);
@@ -556,7 +556,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                     mockDriver, element, WebElementAction.CLICK));
 
             // Verify the warning was logged
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
     }
 
@@ -564,7 +564,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementNotInteractable_GeneralException() {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
              MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
                  (mock, context) -> {
                      RuntimeException generalException = new RuntimeException("Test exception");
@@ -572,7 +572,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                  })) {
 
             // Setup logger mock
-            mockedLogUI.when(() -> LogUI.warn(anyString())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
 
             // Setup element mocks
             SmartWebElement element = mock(SmartWebElement.class);
@@ -592,7 +592,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                     mockDriver, element, WebElementAction.CLICK));
 
             // Verify the warning was logged with the message
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
     }
 
@@ -643,7 +643,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementClickIntercepted_TimeoutExceptionBranch() throws Exception {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
              MockedStatic<By> mockedBy = mockStatic(By.class);
              MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
@@ -651,7 +651,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
              );) {
 
             // Setup logger mock
-            mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -675,7 +675,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                 mockDriver, element, WebElementAction.CLICK, clickException);
 
             // Verify the correct warning was logged
-            mockedLogUI.verify(() -> LogUI.warn(any()));
+            mockedLogUi.verify(() -> LogUi.warn(any()));
         }
     }
 
@@ -683,7 +683,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementClickIntercepted_GeneralExceptionBranch() {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
              MockedStatic<By> mockedBy = mockStatic(By.class);
              MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
@@ -691,8 +691,8 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
              )) {
 
             // Setup logger mock
-            mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
-            mockedLogUI.when(() -> LogUI.error(any())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.error(any())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -727,7 +727,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
             verify(usedWait, times(1)).until(any());
 
             // Verify warning log was attempted (inside catch TimeoutException)
-            mockedLogUI.verify(() -> LogUI.warn(any()), atMost(1));
+            mockedLogUi.verify(() -> LogUi.warn(any()), atMost(1));
         }
     }
 
@@ -735,7 +735,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementNotInteractable_TimeoutExceptionBranch() throws Exception {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
              MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
                  (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, true, false)
@@ -747,7 +747,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                  })) {
 
             // Setup logger mock
-            mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -769,7 +769,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                     mockDriver, element, WebElementAction.CLICK));
 
             // Verify the correct warning was logged
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
     }
 
@@ -777,7 +777,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
     @Test
     void testHandleElementNotInteractable_GeneralExceptionBranch() throws Exception {
         try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUI> mockedLogUI = mockStatic(LogUI.class);
+             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
              MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
                  (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, false, true)
@@ -789,7 +789,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                  })) {
 
             // Setup logger mock
-            mockedLogUI.when(() -> LogUI.warn(any())).thenAnswer(invocation -> null);
+            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
 
             // Create test elements
             SmartWebElement element = mock(SmartWebElement.class);
@@ -811,7 +811,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                     mockDriver, element, WebElementAction.CLICK));
 
             // Verify the correct warning was logged
-            mockedLogUI.verify(() -> LogUI.error(any()));
+            mockedLogUi.verify(() -> LogUi.error(any()));
         }
     }
 

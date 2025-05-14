@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.components.select;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
@@ -77,7 +77,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public void selectOptions(final SelectComponentType componentType, final SmartWebElement container,
                               final String... values) {
-        LogUI.step(String.format(SELECT_OPTIONS_CONTAINER, Arrays.toString(values), container, componentType));
+        LogUi.step(String.format(SELECT_OPTIONS_CONTAINER, Arrays.toString(values), container, componentType));
         selectComponent(componentType).selectOptions(container, values);
     }
 
@@ -91,7 +91,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
      */
     @Override
     public void selectOption(SelectComponentType componentType, SmartWebElement container, String value) {
-        LogUI.step(String.format(SELECT_OPTION_CONTAINER, value, container, componentType));
+        LogUi.step(String.format(SELECT_OPTION_CONTAINER, value, container, componentType));
         selectOptions(componentType, container, value);
     }
 
@@ -105,7 +105,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public void selectOptions(final SelectComponentType componentType, final By containerLocator,
                               final String... values) {
-        LogUI.step(String.format(SELECT_OPTIONS_LOCATOR, Arrays.toString(values), containerLocator, componentType));
+        LogUi.step(String.format(SELECT_OPTIONS_LOCATOR, Arrays.toString(values), containerLocator, componentType));
         selectComponent(componentType).selectOptions(containerLocator, values);
     }
 
@@ -120,7 +120,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public void selectOption(final SelectComponentType componentType, final By containerLocator,
                              final String value) {
-        LogUI.step(String.format(SELECT_OPTION_LOCATOR, value, containerLocator, componentType));
+        LogUi.step(String.format(SELECT_OPTION_LOCATOR, value, containerLocator, componentType));
         selectOptions(componentType, containerLocator, value);
     }
 
@@ -136,7 +136,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public List<String> selectOptions(final SelectComponentType componentType, final SmartWebElement container,
                                       final Strategy strategy) {
-        LogUI.step(String.format(SELECT_OPTIONS_STRATEGY_CONTAINER, strategy, container, componentType));
+        LogUi.step(String.format(SELECT_OPTIONS_STRATEGY_CONTAINER, strategy, container, componentType));
         return selectComponent(componentType).selectOptions(container, strategy);
     }
 
@@ -152,7 +152,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public List<String> selectOptions(final SelectComponentType componentType, final By containerLocator,
                                       final Strategy strategy) {
-        LogUI.step(String.format(SELECT_OPTIONS_STRATEGY_LOCATOR, strategy, containerLocator, componentType));
+        LogUi.step(String.format(SELECT_OPTIONS_STRATEGY_LOCATOR, strategy, containerLocator, componentType));
         return selectComponent(componentType).selectOptions(containerLocator, strategy);
     }
 
@@ -165,7 +165,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
      */
     @Override
     public List<String> getAvailableOptions(final SelectComponentType componentType, final SmartWebElement container) {
-        LogUI.step(String.format(GET_AVAILABLE_OPTIONS_CONTAINER, container, componentType));
+        LogUi.step(String.format(GET_AVAILABLE_OPTIONS_CONTAINER, container, componentType));
         return selectComponent(componentType).getAvailableOptions(container);
     }
 
@@ -178,7 +178,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
      */
     @Override
     public List<String> getAvailableOptions(final SelectComponentType componentType, final By containerLocator) {
-        LogUI.step(String.format(GET_AVAILABLE_OPTIONS_LOCATOR, containerLocator, componentType));
+        LogUi.step(String.format(GET_AVAILABLE_OPTIONS_LOCATOR, containerLocator, componentType));
         return selectComponent(componentType).getAvailableOptions(containerLocator);
     }
 
@@ -191,7 +191,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
      */
     @Override
     public List<String> getSelectedOptions(final SelectComponentType componentType, final SmartWebElement container) {
-        LogUI.step(String.format(GET_SELECTED_OPTIONS_CONTAINER, container, componentType));
+        LogUi.step(String.format(GET_SELECTED_OPTIONS_CONTAINER, container, componentType));
         return selectComponent(componentType).getSelectedOptions(container);
     }
 
@@ -204,7 +204,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
      */
     @Override
     public List<String> getSelectedOptions(final SelectComponentType componentType, final By containerLocator) {
-        LogUI.step(String.format(GET_SELECTED_OPTIONS_LOCATOR, containerLocator, componentType));
+        LogUi.step(String.format(GET_SELECTED_OPTIONS_LOCATOR, containerLocator, componentType));
         return selectComponent(componentType).getSelectedOptions(containerLocator);
     }
 
@@ -219,7 +219,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public boolean isOptionVisible(final SelectComponentType componentType, final SmartWebElement container,
                                    final String value) {
-        LogUI.step(String.format(CHECK_OPTION_VISIBLE_CONTAINER, value, container, componentType));
+        LogUi.step(String.format(CHECK_OPTION_VISIBLE_CONTAINER, value, container, componentType));
         return selectComponent(componentType).isOptionVisible(container, value);
     }
 
@@ -234,7 +234,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public boolean isOptionVisible(final SelectComponentType componentType, final By containerLocator,
                                    final String value) {
-        LogUI.step(String.format(CHECK_OPTION_VISIBLE_LOCATOR, value, containerLocator, componentType));
+        LogUi.step(String.format(CHECK_OPTION_VISIBLE_LOCATOR, value, containerLocator, componentType));
         return selectComponent(componentType).isOptionVisible(containerLocator, value);
     }
 
@@ -249,7 +249,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public boolean isOptionEnabled(final SelectComponentType componentType, final SmartWebElement container,
                                    final String value) {
-        LogUI.step(String.format(CHECK_OPTION_ENABLED_CONTAINER, value, container, componentType));
+        LogUi.step(String.format(CHECK_OPTION_ENABLED_CONTAINER, value, container, componentType));
         return selectComponent(componentType).isOptionEnabled(container, value);
     }
 
@@ -264,7 +264,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     @Override
     public boolean isOptionEnabled(final SelectComponentType componentType, final By containerLocator,
                                    final String value) {
-        LogUI.step(String.format(CHECK_OPTION_ENABLED_LOCATOR, value, containerLocator, componentType));
+        LogUi.step(String.format(CHECK_OPTION_ENABLED_LOCATOR, value, containerLocator, componentType));
         return selectComponent(componentType).isOptionEnabled(containerLocator, value);
     }
 
@@ -281,7 +281,7 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
         if (!(componentType instanceof SelectComponentType selectType)) {
             throw new IllegalArgumentException("Component type needs to be from: SelectComponentType.");
         }
-        LogUI.step(String.format(INSERT_SELECT_VALUES_LOCATOR, Arrays.toString(values), componentType, locator));
+        LogUi.step(String.format(INSERT_SELECT_VALUES_LOCATOR, Arrays.toString(values), componentType, locator));
         String[] stringValues = Arrays.stream(values)
                 .map(String::valueOf)
                 .toArray(String[]::new);

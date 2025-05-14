@@ -3,7 +3,7 @@ package com.theairebellion.zeus.ui.components.checkbox;
 import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
@@ -79,7 +79,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
     @Override
     public void select(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
         String text = checkBoxText != null ? String.join(", ", checkBoxText) : "no text added";
-        LogUI.step(String.format(SELECT_WITH_TEXT, componentType, text));
+        LogUi.step(String.format(SELECT_WITH_TEXT, componentType, text));
         checkboxComponent(componentType).select(container, checkBoxText);
     }
 
@@ -93,7 +93,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public String select(final CheckboxComponentType componentType, final SmartWebElement container, final Strategy strategy) {
-        LogUI.step(String.format(SELECT_USING_STRATEGY, componentType, strategy));
+        LogUi.step(String.format(SELECT_USING_STRATEGY, componentType, strategy));
         return checkboxComponent(componentType).select(container, strategy);
     }
 
@@ -105,7 +105,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public void select(final CheckboxComponentType componentType, final String... checkBoxText) {
-        LogUI.step(String.format(SELECT_WITH_TEXT, componentType, String.join(", ", checkBoxText)));
+        LogUi.step(String.format(SELECT_WITH_TEXT, componentType, String.join(", ", checkBoxText)));
         checkboxComponent(componentType).select(checkBoxText);
     }
 
@@ -117,7 +117,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public void select(final CheckboxComponentType componentType, final By... checkBoxLocator) {
-        LogUI.step(String.format(SELECT_BY_LOCATOR, componentType));
+        LogUi.step(String.format(SELECT_BY_LOCATOR, componentType));
         checkboxComponent(componentType).select(checkBoxLocator);
     }
 
@@ -130,7 +130,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public void deSelect(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
-        LogUI.step(String.format(DESELECT_WITH_TEXT, componentType, String.join(", ", checkBoxText)));
+        LogUi.step(String.format(DESELECT_WITH_TEXT, componentType, String.join(", ", checkBoxText)));
         checkboxComponent(componentType).deSelect(container, checkBoxText);
     }
 
@@ -144,7 +144,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public String deSelect(final CheckboxComponentType componentType, final SmartWebElement container, final Strategy strategy) {
-        LogUI.step(String.format(DESELECT_USING_STRATEGY, componentType, strategy));
+        LogUi.step(String.format(DESELECT_USING_STRATEGY, componentType, strategy));
         return checkboxComponent(componentType).deSelect(container, strategy);
     }
 
@@ -156,7 +156,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public void deSelect(final CheckboxComponentType componentType, final String... checkBoxText) {
-        LogUI.step(String.format(DESELECT_WITH_TEXT, componentType, String.join(", ", checkBoxText)));
+        LogUi.step(String.format(DESELECT_WITH_TEXT, componentType, String.join(", ", checkBoxText)));
         checkboxComponent(componentType).deSelect(checkBoxText);
     }
 
@@ -168,7 +168,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public void deSelect(final CheckboxComponentType componentType, final By... checkBoxLocator) {
-        LogUI.step(String.format(DESELECT_BY_LOCATOR, componentType));
+        LogUi.step(String.format(DESELECT_BY_LOCATOR, componentType));
         checkboxComponent(componentType).deSelect(checkBoxLocator);
     }
 
@@ -182,7 +182,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean areSelected(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
-        LogUI.step(String.format(CHECKBOXES_SELECTED, componentType));
+        LogUi.step(String.format(CHECKBOXES_SELECTED, componentType));
         return checkboxComponent(componentType).areSelected(container, checkBoxText);
     }
 
@@ -195,7 +195,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean areSelected(final CheckboxComponentType componentType, final String... checkBoxText) {
-        LogUI.step(String.format(CHECKBOXES_SELECTED, componentType));
+        LogUi.step(String.format(CHECKBOXES_SELECTED, componentType));
         return checkboxComponent(componentType).areSelected(checkBoxText);
     }
 
@@ -208,7 +208,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean areSelected(final CheckboxComponentType componentType, final By... checkBoxLocator) {
-        LogUI.step(String.format(CHECKBOXES_SELECTED_BY_LOCATOR, componentType));
+        LogUi.step(String.format(CHECKBOXES_SELECTED_BY_LOCATOR, componentType));
         return checkboxComponent(componentType).areSelected(checkBoxLocator);
     }
 
@@ -222,7 +222,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean isSelected(final CheckboxComponentType componentType, final SmartWebElement container, final String checkBoxText) {
-        LogUI.step(String.format(CHECKBOX_SELECTED, componentType));
+        LogUi.step(String.format(CHECKBOX_SELECTED, componentType));
         return checkboxComponent(componentType).areSelected(container, checkBoxText);
     }
 
@@ -235,7 +235,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean isSelected(final CheckboxComponentType componentType, final String checkBoxText) {
-        LogUI.step(String.format(CHECKBOX_SELECTED, componentType));
+        LogUi.step(String.format(CHECKBOX_SELECTED, componentType));
         return checkboxComponent(componentType).areSelected(checkBoxText);
     }
 
@@ -248,7 +248,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean isSelected(final CheckboxComponentType componentType, final By checkBoxLocator) {
-        LogUI.step(String.format(CHECKBOX_SELECTED_BY_LOCATOR, componentType));
+        LogUi.step(String.format(CHECKBOX_SELECTED_BY_LOCATOR, componentType));
         return checkboxComponent(componentType).areSelected(checkBoxLocator);
     }
 
@@ -262,7 +262,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean areEnabled(final CheckboxComponentType componentType, final SmartWebElement container, final String... checkBoxText) {
-        LogUI.step(String.format(CHECKBOXES_ENABLED, componentType));
+        LogUi.step(String.format(CHECKBOXES_ENABLED, componentType));
         return checkboxComponent(componentType).areEnabled(container, checkBoxText);
     }
 
@@ -275,7 +275,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean areEnabled(final CheckboxComponentType componentType, final String... checkBoxText) {
-        LogUI.step(String.format(CHECKBOXES_ENABLED, componentType));
+        LogUi.step(String.format(CHECKBOXES_ENABLED, componentType));
         return checkboxComponent(componentType).areEnabled(checkBoxText);
     }
 
@@ -288,7 +288,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean areEnabled(final CheckboxComponentType componentType, final By... checkBoxLocator) {
-        LogUI.step(String.format(CHECKBOXES_ENABLED_BY_LOCATOR, componentType));
+        LogUi.step(String.format(CHECKBOXES_ENABLED_BY_LOCATOR, componentType));
         return checkboxComponent(componentType).areEnabled(checkBoxLocator);
     }
 
@@ -302,7 +302,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean isEnabled(final CheckboxComponentType componentType, final SmartWebElement container, final String checkBoxText) {
-        LogUI.step(String.format(CHECKBOX_ENABLED, componentType));
+        LogUi.step(String.format(CHECKBOX_ENABLED, componentType));
         return checkboxComponent(componentType).areEnabled(container, checkBoxText);
     }
 
@@ -315,7 +315,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean isEnabled(final CheckboxComponentType componentType, final String checkBoxText) {
-        LogUI.step(String.format(CHECKBOX_ENABLED, componentType));
+        LogUi.step(String.format(CHECKBOX_ENABLED, componentType));
         return checkboxComponent(componentType).areEnabled(checkBoxText);
     }
 
@@ -328,7 +328,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public boolean isEnabled(final CheckboxComponentType componentType, final By checkBoxLocator) {
-        LogUI.step(String.format(CHECKBOX_ENABLED_BY_LOCATOR, componentType));
+        LogUi.step(String.format(CHECKBOX_ENABLED_BY_LOCATOR, componentType));
         return checkboxComponent(componentType).areEnabled(checkBoxLocator);
     }
 
@@ -341,7 +341,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public List<String> getSelected(final CheckboxComponentType componentType, final SmartWebElement container) {
-        LogUI.step(String.format(GET_SELECTED_CHECKBOXES, componentType));
+        LogUi.step(String.format(GET_SELECTED_CHECKBOXES, componentType));
         return checkboxComponent(componentType).getSelected(container);
     }
 
@@ -354,7 +354,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public List<String> getSelected(final CheckboxComponentType componentType, final By containerLocator) {
-        LogUI.step(String.format(GET_SELECTED_CHECKBOXES_BY_LOCATOR, componentType));
+        LogUi.step(String.format(GET_SELECTED_CHECKBOXES_BY_LOCATOR, componentType));
         return checkboxComponent(componentType).getSelected(containerLocator);
     }
 
@@ -367,7 +367,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public List<String> getAll(final CheckboxComponentType componentType, final SmartWebElement container) {
-        LogUI.step(String.format(GET_ALL_CHECKBOXES, componentType));
+        LogUi.step(String.format(GET_ALL_CHECKBOXES, componentType));
         return checkboxComponent(componentType).getAll(container);
     }
 
@@ -380,7 +380,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
      */
     @Override
     public List<String> getAll(final CheckboxComponentType componentType, final By containerLocator) {
-        LogUI.step(String.format(GET_ALL_CHECKBOXES_BY_LOCATOR, componentType));
+        LogUi.step(String.format(GET_ALL_CHECKBOXES_BY_LOCATOR, componentType));
         return checkboxComponent(componentType).getAll(containerLocator);
     }
 
@@ -396,7 +396,7 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
         if (!(componentType instanceof CheckboxComponentType checkboxType)) {
             throw new IllegalArgumentException("Component type needs to be from: CheckboxComponentType.");
         }
-        LogUI.step(String.format(INSERT_VALUE_INTO_CHECKBOX, checkboxType));
+        LogUi.step(String.format(INSERT_VALUE_INTO_CHECKBOX, checkboxType));
         select(checkboxType, (String) values[0]);
     }
 

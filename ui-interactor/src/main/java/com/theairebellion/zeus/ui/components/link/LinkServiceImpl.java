@@ -4,7 +4,7 @@ import com.theairebellion.zeus.ui.components.base.AbstractComponentService;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
@@ -64,7 +64,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, SmartWebElement container, String buttonText) {
-        LogUI.step(String.format(CLICK_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(CLICK_WITH_TEXT, componentType, buttonText));
         linkComponent((LinkComponentType) componentType).click(container, buttonText);
     }
 
@@ -76,7 +76,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, final SmartWebElement container) {
-        LogUI.step(String.format(CLICK, componentType));
+        LogUi.step(String.format(CLICK, componentType));
         linkComponent((LinkComponentType) componentType).click(container);
     }
 
@@ -88,7 +88,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, final String buttonText) {
-        LogUI.step(String.format(CLICK_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(CLICK_WITH_TEXT, componentType, buttonText));
         linkComponent((LinkComponentType) componentType).click(buttonText);
     }
 
@@ -100,7 +100,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> void click(final T componentType, final By buttonLocator) {
-        LogUI.step(String.format(CLICK_USING_LOCATOR, componentType, buttonLocator));
+        LogUi.step(String.format(CLICK_USING_LOCATOR, componentType, buttonLocator));
         linkComponent((LinkComponentType) componentType).click(buttonLocator);
     }
 
@@ -113,7 +113,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final SmartWebElement container, final String buttonText) {
-        LogUI.step(String.format(DOUBLE_CLICK_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(DOUBLE_CLICK_WITH_TEXT, componentType, buttonText));
         linkComponent(componentType).doubleClick(container, buttonText);
     }
 
@@ -125,7 +125,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final SmartWebElement container) {
-        LogUI.step(String.format(DOUBLE_CLICK, componentType));
+        LogUi.step(String.format(DOUBLE_CLICK, componentType));
         linkComponent(componentType).doubleClick(container);
     }
 
@@ -137,7 +137,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final String buttonText) {
-        LogUI.step(String.format(DOUBLE_CLICK_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(DOUBLE_CLICK_WITH_TEXT, componentType, buttonText));
         linkComponent(componentType).doubleClick(buttonText);
     }
 
@@ -149,7 +149,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public void doubleClick(final LinkComponentType componentType, final By buttonLocator) {
-        LogUI.step(String.format(DOUBLE_CLICK_USING_LOCATOR, componentType, buttonLocator));
+        LogUi.step(String.format(DOUBLE_CLICK_USING_LOCATOR, componentType, buttonLocator));
         linkComponent(componentType).doubleClick(buttonLocator);
     }
 
@@ -160,7 +160,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container, final String buttonText) {
-        LogUI.step(String.format(CHECK_ENABLED_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(CHECK_ENABLED_WITH_TEXT, componentType, buttonText));
         return linkComponent((LinkComponentType) componentType).isEnabled(container, buttonText);
     }
 
@@ -173,7 +173,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final SmartWebElement container) {
-        LogUI.step(String.format(CHECK_ENABLED, componentType));
+        LogUi.step(String.format(CHECK_ENABLED, componentType));
         return linkComponent((LinkComponentType) componentType).isEnabled(container);
     }
 
@@ -186,7 +186,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final String buttonText) {
-        LogUI.step(String.format(CHECK_ENABLED_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(CHECK_ENABLED_WITH_TEXT, componentType, buttonText));
         return linkComponent((LinkComponentType) componentType).isEnabled(buttonText);
     }
 
@@ -199,7 +199,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isEnabled(final T componentType, final By buttonLocator) {
-        LogUI.step(String.format(CHECK_ENABLED_USING_LOCATOR, componentType, buttonLocator));
+        LogUi.step(String.format(CHECK_ENABLED_USING_LOCATOR, componentType, buttonLocator));
         return linkComponent((LinkComponentType) componentType).isEnabled(buttonLocator);
     }
 
@@ -213,7 +213,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container, final String buttonText) {
-        LogUI.step(String.format(CHECK_VISIBLE_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(CHECK_VISIBLE_WITH_TEXT, componentType, buttonText));
         return linkComponent((LinkComponentType) componentType).isVisible(container, buttonText);
     }
 
@@ -226,7 +226,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final SmartWebElement container) {
-        LogUI.step(String.format(CHECK_VISIBLE, componentType));
+        LogUi.step(String.format(CHECK_VISIBLE, componentType));
         return linkComponent((LinkComponentType) componentType).isVisible(container);
     }
 
@@ -239,7 +239,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final String buttonText) {
-        LogUI.step(String.format(CHECK_VISIBLE_WITH_TEXT, componentType, buttonText));
+        LogUi.step(String.format(CHECK_VISIBLE_WITH_TEXT, componentType, buttonText));
         return linkComponent((LinkComponentType) componentType).isVisible(buttonText);
     }
 
@@ -252,7 +252,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
      */
     @Override
     public <T extends ButtonComponentType> boolean isVisible(final T componentType, final By buttonLocator) {
-        LogUI.step(String.format(CHECK_VISIBLE_USING_LOCATOR, componentType, buttonLocator));
+        LogUi.step(String.format(CHECK_VISIBLE_USING_LOCATOR, componentType, buttonLocator));
         return linkComponent((LinkComponentType) componentType).isVisible(buttonLocator);
     }
 
@@ -268,7 +268,7 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
         if (!(componentType instanceof LinkComponentType linkType)) {
             throw new IllegalArgumentException("Component type needs to be from: LinkComponentType.");
         }
-        LogUI.step(String.format(INSERT_VALUES_IN_CELL, String.join(", ", values), componentType));
+        LogUi.step(String.format(INSERT_VALUES_IN_CELL, String.join(", ", values), componentType));
         linkComponent(linkType).clickElementInCell(cellElement);
     }
 
