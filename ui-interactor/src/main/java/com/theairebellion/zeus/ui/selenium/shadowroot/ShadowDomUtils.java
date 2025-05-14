@@ -27,55 +27,6 @@ public class ShadowDomUtils {
    private static final String VALUE = "value";
    private static final String MAX_WAIT = "maxWait";
    private static final String POLL_INTERVAL = "pollInterval";
-
-   private ShadowDomUtils() {
-   }
-
-   /**
-    * Converts a Selenium {@code By} locator into a map representation.
-    * This is used by JavaScript scripts for element searching.
-    *
-    * @param by Selenium {@code By} locator.
-    * @return A map containing the locator type and value.
-    * @throws IllegalArgumentException if an unsupported locator type is used.
-    */
-   private static Map<String, Object> parseBy(By by) {
-      String asString = by.toString(); // e.g. "By.id: username"
-
-      if (asString.startsWith("By.id: ")) {
-         return Map.of("type", "id",
-               VALUE, asString.substring("By.id: ".length()).trim());
-      } else if (asString.startsWith("By.name: ")) {
-         return Map.of("type", "name",
-               VALUE, asString.substring("By.name: ".length()).trim());
-      } else if (asString.startsWith("By.className: ")) {
-         return Map.of("type", "className",
-               VALUE, asString.substring("By.className: ".length()).trim());
-      } else if (asString.startsWith("By.cssSelector: ")) {
-         return Map.of("type", "css",
-               VALUE, asString.substring("By.cssSelector: ".length()).trim());
-      } else if (asString.startsWith("By.tagName: ")) {
-         return Map.of("type", "tagName",
-               VALUE, asString.substring("By.tagName: ".length()).trim());
-      } else if (asString.startsWith("By.linkText: ")) {
-         return Map.of("type", "linkText",
-               VALUE, asString.substring("By.linkText: ".length()).trim());
-      } else if (asString.startsWith("By.partialLinkText: ")) {
-         return Map.of("type", "partialLinkText",
-               VALUE, asString.substring("By.partialLinkText: ".length()).trim());
-      } else if (asString.startsWith("By.xpath: ")) {
-         throw new IllegalArgumentException(
-               "Xpath selectors are not supported inside shadow roots. Please change your xpath selector: "
-                     + asString + "to any other selenium supported selector");
-      } else {
-         throw new IllegalArgumentException("Unsupported By type: " + asString);
-      }
-   }
-
-   // -------------------------------------------------------------------------------------------
-   // 1) SCRIPTS FOR FINDING A SINGLE ELEMENT (with optional in-JS waiting)
-   // -------------------------------------------------------------------------------------------
-
    /**
     * JavaScript function to locate a single shadow DOM element.
     * The script searches for elements inside shadow roots and supports
@@ -172,76 +123,6 @@ public class ShadowDomUtils {
          }
          return findShadowElement(arguments[0]);
          """;
-
-
-   /**
-    * Finds the first matching element across the entire document, including nested shadow roots.
-    * Waits up to the default timeout duration, polling at defined intervals.
-    *
-    * @param driver The {@link SmartWebDriver} instance.
-    * @param by     The {@link By} locator to use.
-    * @return The found {@link SmartWebElement}, or null if not found.
-    */
-   public static SmartWebElement findElementInShadowRoots(SmartWebDriver driver, By by) {
-      long wait = getUiConfig().waitDuration()
-            * 1000L;
-      return findElementInShadowRoots(driver, by, wait);
-   }
-
-   /**
-    * Finds the first matching element across the document and nested shadow roots with a specified timeout.
-    *
-    * @param driver       The {@link SmartWebDriver} instance.
-    * @param by           The {@link By} locator.
-    * @param waitInMillis Maximum wait time in milliseconds.
-    * @return The found {@link SmartWebElement}, or null if not found.
-    */
-   public static SmartWebElement findElementInShadowRoots(SmartWebDriver driver, By by, long waitInMillis) {
-      JavascriptExecutor js = (JavascriptExecutor) driver.getOriginal();
-      Map<String, Object> selector = parseBy(by);
-
-      selector = new java.util.HashMap<>(selector);
-      selector.put(MAX_WAIT, waitInMillis);
-      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
-
-      WebElement element = (WebElement) js.executeScript(FIND_SHADOW_ELEMENT_JS, selector);
-      if (element == null) {
-         throw new UiInteractionException("Finding element in shadow root via java script failed");
-      }
-
-      return new SmartWebElement(element, driver.getOriginal());
-   }
-
-   /**
-    * Finds the first matching element in nested Shadow DOMs, starting from a given root element.
-    * Waits up to the configured maximum wait time, polling every {@code DEFAULT_POLL_INTERVAL_MS}.
-    *
-    * @param root The root {@link SmartWebElement} to start the search from.
-    * @param by   The {@link By} locator to use for finding the element.
-    * @return The found {@link SmartWebElement}, or {@code null} if no element is found within the time limit.
-    */
-   public static SmartWebElement findElementInShadowRoots(SmartWebElement root, By by) {
-      if (root == null) {
-         return null;
-      }
-      WebDriver driver = root.getDriver();
-      JavascriptExecutor js = (JavascriptExecutor) driver;
-
-      Map<String, Object> selector = parseBy(by);
-      selector = new java.util.HashMap<>(selector);
-      long wait = getUiConfig().waitDuration() * 1000L;
-      selector.put(MAX_WAIT, wait);
-      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
-
-      WebElement element = (WebElement) js.executeScript(FIND_SHADOW_ELEMENT_FROM_ELEMENT_JS, root.getOriginal(),
-            selector);
-      if (element == null) {
-         throw new UiInteractionException("Finding element in shadow root via java script failed");
-      }
-
-      return new SmartWebElement(element, driver);
-   }
-
    /**
     * JavaScript function to locate a single shadow DOM element.
     * The script searches for elements inside shadow roots and supports
@@ -348,9 +229,8 @@ public class ShadowDomUtils {
          """;
 
    // -------------------------------------------------------------------------------------------
-   // 2) SCRIPTS FOR FINDING MULTIPLE ELEMENTS + WAIT
+   // 1) SCRIPTS FOR FINDING A SINGLE ELEMENT (with optional in-JS waiting)
    // -------------------------------------------------------------------------------------------
-
    /**
     * JavaScript function to find all matching elements within Shadow DOMs.
     * The script recursively searches the main document and any shadow roots
@@ -445,65 +325,6 @@ public class ShadowDomUtils {
          }
          return findShadowElements(arguments[0]);
          """;
-
-   /**
-    * Finds all matching elements across the document and nested shadow roots.
-    * Waits up to the configured maximum wait time, polling every {@code DEFAULT_POLL_INTERVAL_MS}.
-    *
-    * @param driver The {@link SmartWebDriver} instance.
-    * @param by     The {@link By} locator to use for finding the elements.
-    * @return A list of {@link SmartWebElement} containing all matching elements, or an empty list if no elements
-    *       are found.
-    */
-   public static java.util.List<SmartWebElement> findElementsInShadowRoots(SmartWebDriver driver, By by) {
-      JavascriptExecutor js = (JavascriptExecutor) driver.getOriginal();
-
-      Map<String, Object> selector = parseBy(by);
-      selector = new java.util.HashMap<>(selector);
-      long wait = getUiConfig().waitDuration() * 1000L;
-      selector.put(MAX_WAIT, wait);
-      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
-
-      Object result = js.executeScript(FIND_SHADOW_ELEMENTS_JS, selector);
-      // The returned object should be a List<RemoteWebElement> if found
-      if (result instanceof java.util.List) {
-         return ((java.util.List<WebElement>) result).stream()
-               .map(webElement -> new SmartWebElement(webElement, driver.getOriginal())).toList();
-      }
-      // otherwise return empty
-      return java.util.Collections.emptyList();
-   }
-
-   /**
-    * Finds all matching elements within a given Shadow DOM root.
-    * Waits up to the configured maximum wait time, polling every {@code DEFAULT_POLL_INTERVAL_MS}.
-    *
-    * @param root The root {@link SmartWebElement} to start the search from.
-    * @param by   The {@link By} locator to use for finding the elements.
-    * @return A list of {@link SmartWebElement} containing all matching elements, or an empty list if no elements
-    *       are found.
-    */
-   public static java.util.List<SmartWebElement> findElementsInShadowRoots(SmartWebElement root, By by) {
-      if (root == null) {
-         return java.util.Collections.emptyList();
-      }
-      WebDriver driver = root.getDriver();
-      JavascriptExecutor js = (JavascriptExecutor) driver;
-
-      Map<String, Object> selector = parseBy(by);
-      selector = new java.util.HashMap<>(selector);
-      long wait = getUiConfig().waitDuration() * 1000L;
-      selector.put(MAX_WAIT, wait);
-      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
-
-      Object result = js.executeScript(FIND_SHADOW_ELEMENTS_FROM_ELEMENT_JS, root.getOriginal(), selector);
-      if (result instanceof java.util.List) {
-         return ((java.util.List<WebElement>) result).stream()
-               .map(webElement -> new SmartWebElement(webElement, driver)).toList();
-      }
-      return java.util.Collections.emptyList();
-   }
-
    /**
     * JavaScript function to find all matching elements starting from a given root element.
     * The script searches within the specified root element and its shadow DOM,
@@ -595,6 +416,180 @@ public class ShadowDomUtils {
          }
          return findShadowElementsFromRoot(arguments[0], arguments[1]);
          """;
+
+   private ShadowDomUtils() {
+   }
+
+   /**
+    * Converts a Selenium {@code By} locator into a map representation.
+    * This is used by JavaScript scripts for element searching.
+    *
+    * @param by Selenium {@code By} locator.
+    * @return A map containing the locator type and value.
+    * @throws IllegalArgumentException if an unsupported locator type is used.
+    */
+   private static Map<String, Object> parseBy(By by) {
+      String asString = by.toString(); // e.g. "By.id: username"
+
+      if (asString.startsWith("By.id: ")) {
+         return Map.of("type", "id",
+               VALUE, asString.substring("By.id: ".length()).trim());
+      } else if (asString.startsWith("By.name: ")) {
+         return Map.of("type", "name",
+               VALUE, asString.substring("By.name: ".length()).trim());
+      } else if (asString.startsWith("By.className: ")) {
+         return Map.of("type", "className",
+               VALUE, asString.substring("By.className: ".length()).trim());
+      } else if (asString.startsWith("By.cssSelector: ")) {
+         return Map.of("type", "css",
+               VALUE, asString.substring("By.cssSelector: ".length()).trim());
+      } else if (asString.startsWith("By.tagName: ")) {
+         return Map.of("type", "tagName",
+               VALUE, asString.substring("By.tagName: ".length()).trim());
+      } else if (asString.startsWith("By.linkText: ")) {
+         return Map.of("type", "linkText",
+               VALUE, asString.substring("By.linkText: ".length()).trim());
+      } else if (asString.startsWith("By.partialLinkText: ")) {
+         return Map.of("type", "partialLinkText",
+               VALUE, asString.substring("By.partialLinkText: ".length()).trim());
+      } else if (asString.startsWith("By.xpath: ")) {
+         throw new IllegalArgumentException(
+               "Xpath selectors are not supported inside shadow roots. Please change your xpath selector: "
+                     + asString + "to any other selenium supported selector");
+      } else {
+         throw new IllegalArgumentException("Unsupported By type: " + asString);
+      }
+   }
+
+   /**
+    * Finds the first matching element across the entire document, including nested shadow roots.
+    * Waits up to the default timeout duration, polling at defined intervals.
+    *
+    * @param driver The {@link SmartWebDriver} instance.
+    * @param by     The {@link By} locator to use.
+    * @return The found {@link SmartWebElement}, or null if not found.
+    */
+   public static SmartWebElement findElementInShadowRoots(SmartWebDriver driver, By by) {
+      long wait = getUiConfig().waitDuration()
+            * 1000L;
+      return findElementInShadowRoots(driver, by, wait);
+   }
+
+   // -------------------------------------------------------------------------------------------
+   // 2) SCRIPTS FOR FINDING MULTIPLE ELEMENTS + WAIT
+   // -------------------------------------------------------------------------------------------
+
+   /**
+    * Finds the first matching element across the document and nested shadow roots with a specified timeout.
+    *
+    * @param driver       The {@link SmartWebDriver} instance.
+    * @param by           The {@link By} locator.
+    * @param waitInMillis Maximum wait time in milliseconds.
+    * @return The found {@link SmartWebElement}, or null if not found.
+    */
+   public static SmartWebElement findElementInShadowRoots(SmartWebDriver driver, By by, long waitInMillis) {
+      JavascriptExecutor js = (JavascriptExecutor) driver.getOriginal();
+      Map<String, Object> selector = parseBy(by);
+
+      selector = new java.util.HashMap<>(selector);
+      selector.put(MAX_WAIT, waitInMillis);
+      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
+
+      WebElement element = (WebElement) js.executeScript(FIND_SHADOW_ELEMENT_JS, selector);
+      if (element == null) {
+         throw new UiInteractionException("Finding element in shadow root via java script failed");
+      }
+
+      return new SmartWebElement(element, driver.getOriginal());
+   }
+
+   /**
+    * Finds the first matching element in nested Shadow DOMs, starting from a given root element.
+    * Waits up to the configured maximum wait time, polling every {@code DEFAULT_POLL_INTERVAL_MS}.
+    *
+    * @param root The root {@link SmartWebElement} to start the search from.
+    * @param by   The {@link By} locator to use for finding the element.
+    * @return The found {@link SmartWebElement}, or {@code null} if no element is found within the time limit.
+    */
+   public static SmartWebElement findElementInShadowRoots(SmartWebElement root, By by) {
+      if (root == null) {
+         return null;
+      }
+      WebDriver driver = root.getDriver();
+      JavascriptExecutor js = (JavascriptExecutor) driver;
+
+      Map<String, Object> selector = parseBy(by);
+      selector = new java.util.HashMap<>(selector);
+      long wait = getUiConfig().waitDuration() * 1000L;
+      selector.put(MAX_WAIT, wait);
+      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
+
+      WebElement element = (WebElement) js.executeScript(FIND_SHADOW_ELEMENT_FROM_ELEMENT_JS, root.getOriginal(),
+            selector);
+      if (element == null) {
+         throw new UiInteractionException("Finding element in shadow root via java script failed");
+      }
+
+      return new SmartWebElement(element, driver);
+   }
+
+   /**
+    * Finds all matching elements across the document and nested shadow roots.
+    * Waits up to the configured maximum wait time, polling every {@code DEFAULT_POLL_INTERVAL_MS}.
+    *
+    * @param driver The {@link SmartWebDriver} instance.
+    * @param by     The {@link By} locator to use for finding the elements.
+    * @return A list of {@link SmartWebElement} containing all matching elements, or an empty list if no elements
+    * are found.
+    */
+   public static java.util.List<SmartWebElement> findElementsInShadowRoots(SmartWebDriver driver, By by) {
+      JavascriptExecutor js = (JavascriptExecutor) driver.getOriginal();
+
+      Map<String, Object> selector = parseBy(by);
+      selector = new java.util.HashMap<>(selector);
+      long wait = getUiConfig().waitDuration() * 1000L;
+      selector.put(MAX_WAIT, wait);
+      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
+
+      Object result = js.executeScript(FIND_SHADOW_ELEMENTS_JS, selector);
+      // The returned object should be a List<RemoteWebElement> if found
+      if (result instanceof java.util.List) {
+         return ((java.util.List<WebElement>) result).stream()
+               .map(webElement -> new SmartWebElement(webElement, driver.getOriginal())).toList();
+      }
+      // otherwise return empty
+      return java.util.Collections.emptyList();
+   }
+
+   /**
+    * Finds all matching elements within a given Shadow DOM root.
+    * Waits up to the configured maximum wait time, polling every {@code DEFAULT_POLL_INTERVAL_MS}.
+    *
+    * @param root The root {@link SmartWebElement} to start the search from.
+    * @param by   The {@link By} locator to use for finding the elements.
+    * @return A list of {@link SmartWebElement} containing all matching elements, or an empty list if no elements
+    * are found.
+    */
+   public static java.util.List<SmartWebElement> findElementsInShadowRoots(SmartWebElement root, By by) {
+      if (root == null) {
+         return java.util.Collections.emptyList();
+      }
+      WebDriver driver = root.getDriver();
+      JavascriptExecutor js = (JavascriptExecutor) driver;
+
+      Map<String, Object> selector = parseBy(by);
+      selector = new java.util.HashMap<>(selector);
+      long wait = getUiConfig().waitDuration() * 1000L;
+      selector.put(MAX_WAIT, wait);
+      selector.put(POLL_INTERVAL, DEFAULT_POLL_INTERVAL_MS);
+
+      Object result = js.executeScript(FIND_SHADOW_ELEMENTS_FROM_ELEMENT_JS, root.getOriginal(), selector);
+      if (result instanceof java.util.List) {
+         return ((java.util.List<WebElement>) result).stream()
+               .map(webElement -> new SmartWebElement(webElement, driver)).toList();
+      }
+      return java.util.Collections.emptyList();
+   }
 
    /**
     * Checks whether there are elements with Shadow DOM in the current document.

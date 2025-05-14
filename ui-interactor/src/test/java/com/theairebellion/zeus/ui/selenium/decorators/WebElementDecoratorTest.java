@@ -29,13 +29,6 @@ class WebElementDecoratorTest {
 
    private TestWebElementDecorator decorator;
 
-   // Create a concrete implementation of the abstract class for testing
-   private static class TestWebElementDecorator extends WebElementDecorator {
-      public TestWebElementDecorator(WebElement original) {
-         super(original);
-      }
-   }
-
    @BeforeEach
    void setUp() {
       decorator = new TestWebElementDecorator(mockWebElement);
@@ -272,5 +265,12 @@ class WebElementDecoratorTest {
       // Then
       assertEquals(expectedScreenshot, result);
       verify(mockWebElement).getScreenshotAs(outputType);
+   }
+
+   // Create a concrete implementation of the abstract class for testing
+   private static class TestWebElementDecorator extends WebElementDecorator {
+      public TestWebElementDecorator(WebElement original) {
+         super(original);
+      }
    }
 }

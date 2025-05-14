@@ -1,18 +1,17 @@
 package com.theairebellion.zeus.ui.components.select;
 
-import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
-import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.select.mock.MockSelectComponentType;
 import com.theairebellion.zeus.ui.components.select.mock.MockSelectService;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,17 +19,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("SelectService Interface Default Methods")
 class SelectServiceTest extends BaseUnitUITest {
 
-   private MockSelectService service;
-   private SmartWebElement container;
-   private By locator;
-   private Strategy strategy;
-
    private static final MockSelectComponentType DEFAULT_TYPE = MockSelectComponentType.DUMMY_SELECT;
    private static final String[] SAMPLE_VALUES = {"val1", "val2"};
    private static final String SINGLE_VALUE = "singleVal";
    private static final List<String> EXPECTED_OPTIONS = List.of("option1", "option2");
    private static final String OPTION_VALUE = "optionValue";
-
+   private MockSelectService service;
+   private SmartWebElement container;
+   private By locator;
+   private Strategy strategy;
 
    @BeforeEach
    void setUp() {

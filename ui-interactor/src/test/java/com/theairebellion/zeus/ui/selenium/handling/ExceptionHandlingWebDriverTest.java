@@ -53,6 +53,21 @@ class ExceptionHandlingWebDriverTest {
       assertEquals("findElements", ExceptionHandlingWebDriver.FIND_ELEMENTS.getMethodName());
    }
 
+   @Test
+   @DisplayName("Enum should have correct number of values")
+   void testEnumHasCorrectNumberOfValues() {
+      assertEquals(2, ExceptionHandlingWebDriver.values().length);
+   }
+
+   // Make sure the default constructor is not used
+   @Test
+   @DisplayName("Private constructor should not be accessible")
+   void testPrivateConstructorNotAccessible() {
+      // This doesn't actually test the constructor but ensures coverage
+      // by acknowledging the enum has a default constructor
+      assertNotNull(ExceptionHandlingWebDriver.FIND_ELEMENT);
+   }
+
    @Nested
    @DisplayName("Tests for exception handler mappings")
    class ExceptionHandlerMappingTests {
@@ -185,20 +200,5 @@ class ExceptionHandlingWebDriverTest {
       void testFindElementsMapHasCorrectSize() {
          assertEquals(1, ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap().size());
       }
-   }
-
-   @Test
-   @DisplayName("Enum should have correct number of values")
-   void testEnumHasCorrectNumberOfValues() {
-      assertEquals(2, ExceptionHandlingWebDriver.values().length);
-   }
-
-   // Make sure the default constructor is not used
-   @Test
-   @DisplayName("Private constructor should not be accessible")
-   void testPrivateConstructorNotAccessible() {
-      // This doesn't actually test the constructor but ensures coverage
-      // by acknowledging the enum has a default constructor
-      assertNotNull(ExceptionHandlingWebDriver.FIND_ELEMENT);
    }
 }

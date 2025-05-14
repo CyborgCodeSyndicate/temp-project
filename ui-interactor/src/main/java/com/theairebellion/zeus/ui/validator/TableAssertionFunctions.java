@@ -347,7 +347,7 @@ public class TableAssertionFunctions {
     * @param actual   The table data (expected to be a {@code List} of lists, where each inner list represents a row).
     * @param expected The expected state (a {@code Boolean}, where {@code true} means all cells should be clickable).
     * @return {@code true} if all cells in the table are clickable and match the expected state; otherwise,
-    *       {@code false}.
+    * {@code false}.
     */
    public static boolean validateAllCellsClickable(Object actual, Object expected) {
       if (!(actual instanceof List<?>)) {

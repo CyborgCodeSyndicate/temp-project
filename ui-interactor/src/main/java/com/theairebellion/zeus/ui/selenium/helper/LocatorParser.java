@@ -24,11 +24,10 @@ import org.openqa.selenium.support.pagefactory.ByChained;
  */
 public class LocatorParser {
 
-   private LocatorParser() {
-   }
-
    private static final String LOCATOR_NOT_FOUND_MESSAGE = "Locator not found";
    private static final String NO_MESSAGE_AVAILABLE = "No message available";
+   private LocatorParser() {
+   }
 
    /**
     * Updates the WebElement reference by parsing locators from the element string representation.

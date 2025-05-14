@@ -33,6 +33,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 public class BaseInsertionServiceTest {
+   public enum DummyEnum implements DummyComponentType {
+      VALUE1, VALUE2;
+
+      @Override
+      public Enum<?> getType() {
+         return this;
+      }
+   }
+
    @Retention(RetentionPolicy.RUNTIME)
    @Target(ElementType.FIELD)
    public @interface DummyAnnotation {
@@ -47,15 +56,6 @@ public class BaseInsertionServiceTest {
 
    // --- Dummy Component Type interface and enum ---
    public interface DummyComponentType extends ComponentType {
-   }
-
-   public enum DummyEnum implements DummyComponentType {
-      VALUE1, VALUE2;
-
-      @Override
-      public Enum<?> getType() {
-         return this;
-      }
    }
 
    // --- Dummy DTO with annotated fields ---
@@ -253,10 +253,6 @@ public class BaseInsertionServiceTest {
       @DisplayName("When given an enum class without a valid interface, then IllegalStateException is thrown")
       void testExtractComponentTypeClassFailure() {
 
-         interface FaultyInterface extends InputComponentType {
-
-         }
-
          enum FaultyEnum implements FaultyInterface {
             VALUE;
 
@@ -265,6 +261,10 @@ public class BaseInsertionServiceTest {
             public Enum<?> getType() {
                return this;
             }
+         }
+
+         interface FaultyInterface extends InputComponentType {
+
          }
          IllegalStateException ex = assertThrows(IllegalStateException.class,
                () -> TestInsertionService.extractComponentTypeClass(FaultyEnum.class));

@@ -9,45 +9,96 @@ import org.openqa.selenium.By;
 @ImplementationOfType("DUMMY")
 public record MockInputImpl(SmartWebDriver driver) implements Input {
 
-    @Override
-    public void insert(SmartWebElement container, String value) { }
-    @Override
-    public void insert(SmartWebElement container, String inputFieldLabel, String value) { }
-    @Override
-    public void insert(String inputFieldLabel, String value) { }
-    @Override
-    public void insert(By inputFieldContainerLocator, String value) { }
-    @Override
-    public void clear(SmartWebElement container) { }
-    @Override
-    public void clear(SmartWebElement container, String inputFieldLabel) { }
-    @Override
-    public void clear(String inputFieldLabel) { }
-    @Override
-    public void clear(By inputFieldContainerLocator) { }
-    @Override
-    public String getValue(SmartWebElement container) { return ""; }
-    @Override
-    public String getValue(SmartWebElement container, String inputFieldLabel) { return ""; }
-    @Override
-    public String getValue(String inputFieldLabel) { return ""; }
-    @Override
-    public String getValue(By inputFieldContainerLocator) { return ""; }
-    @Override
-    public boolean isEnabled(SmartWebElement container) { return false; }
-    @Override
-    public boolean isEnabled(SmartWebElement container, String inputFieldLabel) { return false; }
-    @Override
-    public boolean isEnabled(String inputFieldLabel) { return false; }
-    @Override
-    public boolean isEnabled(By inputFieldContainerLocator) { return false; }
-    @Override
-    public String getErrorMessage(SmartWebElement container) { return ""; }
-    @Override
-    public String getErrorMessage(SmartWebElement container, String inputFieldLabel) { return ""; }
-    @Override
-    public String getErrorMessage(String inputFieldLabel) { return ""; }
-    @Override
-    public String getErrorMessage(By inputFieldContainerLocator) { return ""; }
+   @Override
+   public void insert(SmartWebElement container, String value) {
+   }
+
+   @Override
+   public void insert(SmartWebElement container, String inputFieldLabel, String value) {
+   }
+
+   @Override
+   public void insert(String inputFieldLabel, String value) {
+   }
+
+   @Override
+   public void insert(By inputFieldContainerLocator, String value) {
+   }
+
+   @Override
+   public void clear(SmartWebElement container) {
+   }
+
+   @Override
+   public void clear(SmartWebElement container, String inputFieldLabel) {
+   }
+
+   @Override
+   public void clear(String inputFieldLabel) {
+   }
+
+   @Override
+   public void clear(By inputFieldContainerLocator) {
+   }
+
+   @Override
+   public String getValue(SmartWebElement container) {
+      return "";
+   }
+
+   @Override
+   public String getValue(SmartWebElement container, String inputFieldLabel) {
+      return "";
+   }
+
+   @Override
+   public String getValue(String inputFieldLabel) {
+      return "";
+   }
+
+   @Override
+   public String getValue(By inputFieldContainerLocator) {
+      return "";
+   }
+
+   @Override
+   public boolean isEnabled(SmartWebElement container) {
+      return false;
+   }
+
+   @Override
+   public boolean isEnabled(SmartWebElement container, String inputFieldLabel) {
+      return false;
+   }
+
+   @Override
+   public boolean isEnabled(String inputFieldLabel) {
+      return false;
+   }
+
+   @Override
+   public boolean isEnabled(By inputFieldContainerLocator) {
+      return false;
+   }
+
+   @Override
+   public String getErrorMessage(SmartWebElement container) {
+      return "";
+   }
+
+   @Override
+   public String getErrorMessage(SmartWebElement container, String inputFieldLabel) {
+      return "";
+   }
+
+   @Override
+   public String getErrorMessage(String inputFieldLabel) {
+      return "";
+   }
+
+   @Override
+   public String getErrorMessage(By inputFieldContainerLocator) {
+      return "";
+   }
 
 }

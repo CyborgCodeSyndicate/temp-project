@@ -81,29 +81,6 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("all")
 class TableImplTest extends BaseUnitUITest {
 
-   // --- Mocks ---
-   @Mock
-   private SmartWebDriver driver;
-   @Mock
-   private SmartWebElement container;
-   @Mock
-   private SmartWebElement rowElement;
-   @Mock
-   private SmartWebElement cellElement;
-   @Mock
-   private SmartWebElement headerRowElement;
-   @Mock
-   private SmartWebElement headerCellElement;
-   @Mock
-   private WebDriverWait wait;
-   @Mock
-   private TableServiceRegistry registry;
-
-   // --- Test Subject & Helpers ---
-   private List<SmartWebElement> rows;
-   private TableLocators locators;
-   private TestTableImpl tableImpl;
-
    // --- Constants ---
    private static final String SECTION_1 = "section1";
    private static final String SECTION_2 = "section2";
@@ -129,8 +106,71 @@ class TableImplTest extends BaseUnitUITest {
    private static final List<String> CRITERIA_NO_MATCH = List.of("no match");
    private static final String CELL_TEXT_1 = "cell 1 text";
    private static final String CELL_TEXT_VALUE = "value";
+   // --- Mocks ---
+   @Mock
+   private SmartWebDriver driver;
+   @Mock
+   private SmartWebElement container;
+   @Mock
+   private SmartWebElement rowElement;
+   @Mock
+   private SmartWebElement cellElement;
+   @Mock
+   private SmartWebElement headerRowElement;
+   @Mock
+   private SmartWebElement headerCellElement;
+   @Mock
+   private WebDriverWait wait;
+   @Mock
+   private TableServiceRegistry registry;
+   // --- Test Subject & Helpers ---
+   private List<SmartWebElement> rows;
+   private TableLocators locators;
+   private TestTableImpl tableImpl;
 
    // --- Inner Row Model Classes (Necessary for scenarios) ---
+
+   @BeforeEach
+   void setUp() {
+      // Given
+      MockitoAnnotations.openMocks(this); // Ensures @Mock fields are initialized
+      rows = new ArrayList<>(List.of(rowElement));
+      locators = new TableLocators(TABLE_LOCATOR, ROWS_LOCATOR, HEADER_LOCATOR);
+      WorkingCellInsertionFunction.reset();
+      WorkingCellFilterFunction.reset();
+
+      // Instantiate the TestTableImpl (make sure TestTableImpl class is defined correctly)
+      tableImpl = spy(new TestTableImpl(driver, registry, locators, container, rows, headerRowElement));
+
+      // Setup common mock behaviors needed by TableImpl logic being tested
+      lenient().when(driver.getWait()).thenReturn(wait);
+      lenient().when(wait.until(any())).thenReturn(true);
+      lenient().when(driver.findSmartElement(TABLE_LOCATOR)).thenReturn(container);
+      lenient().when(container.findSmartElements(ROWS_LOCATOR)).thenReturn(rows);
+      lenient().when(rowElement.findSmartElement(CELL_LOCATOR_DUMMY)).thenReturn(cellElement);
+      lenient().when(cellElement.findSmartElement(TEXT_LOCATOR_DUMMY)).thenReturn(cellElement);
+      lenient().when(cellElement.getText()).thenReturn(CELL_TEXT_VALUE);
+      lenient().when(container.findSmartElement(HEADER_LOCATOR)).thenReturn(headerRowElement);
+      lenient().when(headerRowElement.findSmartElement(HEADER_CELL_LOCATOR_DUMMY)).thenReturn(headerCellElement);
+   }
+
+   // Helper to setup static mocks for component lookup (used in insertion/filter tests)
+   private void setupStaticMocksForComponentLookup(MockedStatic<ReflectionUtil> reflectionUtilMock, MockedStatic<UiConfigHolder> uiConfigHolderMock) {
+      var uiConfig = mock(UiConfig.class);
+      uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+      // Use lenient() if these might not be called in every path of the test using the helper
+      lenient().when(uiConfig.projectPackage()).thenReturn("com.theairebellion.zeus"); // Or test package
+   }
+
+   // --- Inner Mock Component Type (Keep Necessary) ---
+   enum MockComponentTypeForTable implements ComponentType {
+      INSERT_TYPE, FILTER_TYPE;
+
+      @Override
+      public Enum<?> getType() {
+         return this;
+      } // Return self for simple type checking
+   }
 
    @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
    static class DummyRow {
@@ -262,13 +302,13 @@ class TableImplTest extends BaseUnitUITest {
       @CustomCellInsertion(insertionFunction = PrivateConstructorInsertionFunction.class) // Private constructor
       TableCell field = new TableCell("bad");
 
-      public void setField(TableCell c) {
-         field = c;
-      }
-
       public TableCell getField() {
          return field;
       } // Add getter
+
+      public void setField(TableCell c) {
+         field = c;
+      }
    }
 
    @TableInfo(tableContainerLocator = @FindBy(id = "t"), rowsLocator = @FindBy(id = "r"), headerRowLocator = @FindBy(id = "h"))
@@ -303,12 +343,12 @@ class TableImplTest extends BaseUnitUITest {
    static class RowMissingLocator {
       private TableCell fieldWithoutLocator;
 
-      public void setFieldWithoutLocator(TableCell c) {
-         fieldWithoutLocator = c;
-      }
-
       public TableCell getFieldWithoutLocator() {
          return fieldWithoutLocator;
+      }
+
+      public void setFieldWithoutLocator(TableCell c) {
+         fieldWithoutLocator = c;
       }
    }
 
@@ -368,6 +408,12 @@ class TableImplTest extends BaseUnitUITest {
       static SmartWebElement lastCell;
       static String[] lastValues;
 
+      static void reset() {
+         callCount = 0;
+         lastCell = null;
+         lastValues = null;
+      }
+
       @Override
       public void cellInsertionFunction(SmartWebElement element, String... vals) {
          accept(element, vals);
@@ -379,12 +425,6 @@ class TableImplTest extends BaseUnitUITest {
          lastCell = cell;
          lastValues = vals;
       }
-
-      static void reset() {
-         callCount = 0;
-         lastCell = null;
-         lastValues = null;
-      }
    }
 
    static class WorkingCellFilterFunction implements CellFilterFunction {
@@ -392,6 +432,13 @@ class TableImplTest extends BaseUnitUITest {
       static SmartWebElement lastCell;
       static FilterStrategy lastStrategy;
       static String[] lastValues;
+
+      static void reset() {
+         callCount = 0;
+         lastCell = null;
+         lastStrategy = null;
+         lastValues = null;
+      }
 
       @Override
       public void cellFilterFunction(SmartWebElement element, FilterStrategy strategy, String... vals) {
@@ -405,23 +452,6 @@ class TableImplTest extends BaseUnitUITest {
          lastStrategy = strategy;
          lastValues = vals;
       }
-
-      static void reset() {
-         callCount = 0;
-         lastCell = null;
-         lastStrategy = null;
-         lastValues = null;
-      }
-   }
-
-   // --- Inner Mock Component Type (Keep Necessary) ---
-   enum MockComponentTypeForTable implements ComponentType {
-      INSERT_TYPE, FILTER_TYPE;
-
-      @Override
-      public Enum<?> getType() {
-         return this;
-      } // Return self for simple type checking
    }
 
    // --- Test Implementation of TableImpl (Keep) ---
@@ -484,28 +514,34 @@ class TableImplTest extends BaseUnitUITest {
       }
    }
 
-   @BeforeEach
-   void setUp() {
-      // Given
-      MockitoAnnotations.openMocks(this); // Ensures @Mock fields are initialized
-      rows = new ArrayList<>(List.of(rowElement));
-      locators = new TableLocators(TABLE_LOCATOR, ROWS_LOCATOR, HEADER_LOCATOR);
-      WorkingCellInsertionFunction.reset();
-      WorkingCellFilterFunction.reset();
+   // Function with private constructor for negative tests
+   static class PrivateConstructorInsertionFunction implements CellInsertionFunction {
+      private PrivateConstructorInsertionFunction() {
+         // Private constructor makes it non-instantiable via reflection's default newInstance()
+      }
 
-      // Instantiate the TestTableImpl (make sure TestTableImpl class is defined correctly)
-      tableImpl = spy(new TestTableImpl(driver, registry, locators, container, rows, headerRowElement));
+      @Override
+      public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
+         // Implementation not needed for this test scenario
+      }
 
-      // Setup common mock behaviors needed by TableImpl logic being tested
-      lenient().when(driver.getWait()).thenReturn(wait);
-      lenient().when(wait.until(any())).thenReturn(true);
-      lenient().when(driver.findSmartElement(TABLE_LOCATOR)).thenReturn(container);
-      lenient().when(container.findSmartElements(ROWS_LOCATOR)).thenReturn(rows);
-      lenient().when(rowElement.findSmartElement(CELL_LOCATOR_DUMMY)).thenReturn(cellElement);
-      lenient().when(cellElement.findSmartElement(TEXT_LOCATOR_DUMMY)).thenReturn(cellElement);
-      lenient().when(cellElement.getText()).thenReturn(CELL_TEXT_VALUE);
-      lenient().when(container.findSmartElement(HEADER_LOCATOR)).thenReturn(headerRowElement);
-      lenient().when(headerRowElement.findSmartElement(HEADER_CELL_LOCATOR_DUMMY)).thenReturn(headerCellElement);
+      @Override
+      public void accept(SmartWebElement cell, String[] values) {
+         // Implementation not needed for this test scenario
+      }
+   }
+
+   // Helper class with private constructor for testing instantiation failure
+   static class PrivateConstructorFilterFunction implements CellFilterFunction {
+      private PrivateConstructorFilterFunction() {
+         // Private constructor prevents easy instantiation via reflection's newInstance()
+      }
+
+      @Override
+      public void cellFilterFunction(SmartWebElement cellElement, FilterStrategy filterStrategy, String... values) {
+         // Implementation not needed as instantiation should fail first
+         fail("Instantiation should have failed for PrivateConstructorFilterFunction");
+      }
    }
 
    @Nested
@@ -1266,44 +1302,17 @@ class TableImplTest extends BaseUnitUITest {
       }
    }
 
-   // Helper to setup static mocks for component lookup (used in insertion/filter tests)
-   private void setupStaticMocksForComponentLookup(MockedStatic<ReflectionUtil> reflectionUtilMock, MockedStatic<UiConfigHolder> uiConfigHolderMock) {
-      var uiConfig = mock(UiConfig.class);
-      uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-      // Use lenient() if these might not be called in every path of the test using the helper
-      lenient().when(uiConfig.projectPackage()).thenReturn("com.theairebellion.zeus"); // Or test package
-   }
-
-   // Function with private constructor for negative tests
-   static class PrivateConstructorInsertionFunction implements CellInsertionFunction {
-      private PrivateConstructorInsertionFunction() {
-         // Private constructor makes it non-instantiable via reflection's default newInstance()
-      }
-
-      @Override
-      public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
-         // Implementation not needed for this test scenario
-      }
-
-      @Override
-      public void accept(SmartWebElement cell, String[] values) {
-         // Implementation not needed for this test scenario
-      }
-   }
-
    @Nested
    @DisplayName("Table Filtering Tests (Public API)")
    class TableFilteringTest {
-
-      @Mock
-      private TableFilter mockFilterService; // Mock the service interface
 
       // Constants for filtering tests
       private static final String FILTER_VALUE = "filter value";
       private static final String[] FILTER_VALUES = {"filter value", "another"};
       private static final String HEADER_CELL_FILTER_CLASS = "filterHeaderCell"; // From FilterRow annotation
       private static final String COMPONENT_TYPE_FILTER = "FILTER_TYPE"; // From FilterRow annotation
-
+      @Mock
+      private TableFilter mockFilterService; // Mock the service interface
 
       @BeforeEach
       void setupFilteringTests() {
@@ -1435,19 +1444,6 @@ class TableImplTest extends BaseUnitUITest {
          assertThatThrownBy(() -> tableImpl.filterTable(BadCustomFilterRow.class, field, FilterStrategy.SELECT, FILTER_VALUE))
                .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
                .hasMessageContaining("Failed to instantiate custom cell filter function");
-      }
-   }
-
-   // Helper class with private constructor for testing instantiation failure
-   static class PrivateConstructorFilterFunction implements CellFilterFunction {
-      private PrivateConstructorFilterFunction() {
-         // Private constructor prevents easy instantiation via reflection's newInstance()
-      }
-
-      @Override
-      public void cellFilterFunction(SmartWebElement cellElement, FilterStrategy filterStrategy, String... values) {
-         // Implementation not needed as instantiation should fail first
-         fail("Instantiation should have failed for PrivateConstructorFilterFunction");
       }
    }
 

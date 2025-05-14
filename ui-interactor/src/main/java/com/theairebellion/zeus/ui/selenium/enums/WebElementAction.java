@@ -116,6 +116,33 @@ public enum WebElementAction {
    };
 
    /**
+    * The method name associated with the action.
+    */
+   private final String methodName;
+
+   /**
+    * Constructor to associate a method name with the enum constant.
+    *
+    * @param methodName The method name as a string.
+    */
+   WebElementAction(String methodName) {
+      this.methodName = methodName;
+   }
+
+   /**
+    * Performs the given action on a WebElement.
+    *
+    * @param driver  The WebDriver instance.
+    * @param element The target WebElement.
+    * @param action  The action to perform.
+    * @param args    Additional arguments for the action.
+    * @return The result of the action, if applicable.
+    */
+   public static Object performAction(WebDriver driver, WebElement element, WebElementAction action, Object... args) {
+      return action.performActionWebElement(driver, element, args);
+   }
+
+   /**
     * Performs the defined action on a WebElement.
     *
     * @param driver  The WebDriver instance.
@@ -133,31 +160,4 @@ public enum WebElementAction {
     * @return The result of the action, if applicable.
     */
    public abstract Object performActionWebDriver(WebDriver driver, Object... args);
-
-   /**
-    * Performs the given action on a WebElement.
-    *
-    * @param driver  The WebDriver instance.
-    * @param element The target WebElement.
-    * @param action  The action to perform.
-    * @param args    Additional arguments for the action.
-    * @return The result of the action, if applicable.
-    */
-   public static Object performAction(WebDriver driver, WebElement element, WebElementAction action, Object... args) {
-      return action.performActionWebElement(driver, element, args);
-   }
-
-   /**
-    * The method name associated with the action.
-    */
-   private final String methodName;
-
-   /**
-    * Constructor to associate a method name with the enum constant.
-    *
-    * @param methodName The method name as a string.
-    */
-   WebElementAction(String methodName) {
-      this.methodName = methodName;
-   }
 }

@@ -19,14 +19,14 @@ import org.aeonbits.owner.ConfigCache;
  */
 public class UiConfigHolder {
 
-   private UiConfigHolder() {
-   }
-
-
    /**
     * Singleton instance of the UI configuration
     */
    private static UiConfig config;
+
+
+   private UiConfigHolder() {
+   }
 
    /**
     * Retrieves the global {@link UiConfig} instance.

@@ -20,13 +20,6 @@ class TableReflectionUtilTest {
 
    // Reuse or create minimal test data classes:
 
-   static class TestTableRow {
-      public TableCell cell;
-      public List<TableCell> cellList;
-      public List<String> stringList;
-      public List<?> rawList;
-   }
-
    @Test
    void extractTextsFromRow_WithSingleTableCell_ShouldReturnListOfText() {
       // Given
@@ -87,7 +80,6 @@ class TableReflectionUtilTest {
       assertTrue(result.contains("list cell 1"));
       assertTrue(result.contains("list cell 2"));
    }
-
 
    @Test
    void extractElementsFromRow_WithSingleTableCell_ShouldReturnListOfElements() {
@@ -182,7 +174,6 @@ class TableReflectionUtilTest {
       assertFalse(result);
    }
 
-
    @Test
    void isListOfTableCell_WithListOfNonTableCell_ShouldReturnFalse() throws Exception {
       // Given
@@ -217,5 +208,12 @@ class TableReflectionUtilTest {
 
       // Then
       assertEquals(Arrays.asList("hello", "world", "test"), result);
+   }
+
+   static class TestTableRow {
+      public TableCell cell;
+      public List<TableCell> cellList;
+      public List<String> stringList;
+      public List<?> rawList;
    }
 }

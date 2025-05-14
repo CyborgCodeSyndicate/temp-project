@@ -47,6 +47,14 @@ class ExceptionHandlingWebElementTest {
       assertFalse(enumValue.getExceptionHandlingMap().isEmpty());
    }
 
+   @Test
+   @DisplayName("Private constructor should not be accessible")
+   void testPrivateConstructorNotAccessible() {
+      // This doesn't actually test the constructor but ensures coverage
+      // by acknowledging the enum has a default constructor
+      assertNotNull(ExceptionHandlingWebElement.FIND_ELEMENT);
+   }
+
    @Nested
    @DisplayName("Tests for method names")
    class MethodNameTests {
@@ -617,13 +625,5 @@ class ExceptionHandlingWebElementTest {
             );
          }
       }
-   }
-
-   @Test
-   @DisplayName("Private constructor should not be accessible")
-   void testPrivateConstructorNotAccessible() {
-      // This doesn't actually test the constructor but ensures coverage
-      // by acknowledging the enum has a default constructor
-      assertNotNull(ExceptionHandlingWebElement.FIND_ELEMENT);
    }
 }

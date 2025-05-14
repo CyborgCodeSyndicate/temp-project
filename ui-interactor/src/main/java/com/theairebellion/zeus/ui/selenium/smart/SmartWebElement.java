@@ -41,10 +41,10 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
       + "and throwing exceptions is acceptable.")
 public class SmartWebElement extends WebElementDecorator {
 
+   private final WebDriverWait wait;
    @Getter
    @Setter
    private WebDriver driver;
-   private final WebDriverWait wait;
 
    /**
     * Constructs a {@code SmartWebElement} wrapping the given {@link WebElement}.

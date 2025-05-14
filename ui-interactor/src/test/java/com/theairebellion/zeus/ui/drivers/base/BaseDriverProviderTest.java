@@ -22,49 +22,6 @@ class BaseDriverProviderTest {
    @Spy
    private TestDriverProvider driverProvider;
 
-   private static class TestDriverProvider extends BaseDriverProvider<ChromeOptions> {
-      private final AtomicBoolean downloadDriverCalled = new AtomicBoolean(false);
-
-      @Override
-      protected String getDriverType() {
-         return DRIVER_TYPE;
-      }
-
-      @Override
-      public ChromeOptions createOptions() {
-         return new ChromeOptions();
-      }
-
-      @Override
-      public org.openqa.selenium.WebDriver createDriver(ChromeOptions options) {
-         return null;
-      }
-
-      @Override
-      public void applyDefaultArguments(ChromeOptions options) {
-         // No implementation needed for test
-      }
-
-      @Override
-      public void applyHeadlessArguments(ChromeOptions options) {
-         // No implementation needed for test
-      }
-
-      @Override
-      public void downloadDriver(String version) {
-         downloadDriverCalled.set(true);
-         assertEquals(VERSION, version, "The version passed to downloadDriver should match the expected version");
-      }
-
-      public boolean wasDownloadDriverCalled() {
-         return downloadDriverCalled.get();
-      }
-
-      public void resetDownloadDriverCalled() {
-         downloadDriverCalled.set(false);
-      }
-   }
-
    @BeforeEach
    void setUp() throws Exception {
       // Reset the DRIVER_DOWNLOAD_STATUS field before each test
@@ -160,5 +117,48 @@ class BaseDriverProviderTest {
 
       // Then it should return the expected value
       assertEquals(DRIVER_TYPE, driverType, "getDriverType should return the expected driver type");
+   }
+
+   private static class TestDriverProvider extends BaseDriverProvider<ChromeOptions> {
+      private final AtomicBoolean downloadDriverCalled = new AtomicBoolean(false);
+
+      @Override
+      protected String getDriverType() {
+         return DRIVER_TYPE;
+      }
+
+      @Override
+      public ChromeOptions createOptions() {
+         return new ChromeOptions();
+      }
+
+      @Override
+      public org.openqa.selenium.WebDriver createDriver(ChromeOptions options) {
+         return null;
+      }
+
+      @Override
+      public void applyDefaultArguments(ChromeOptions options) {
+         // No implementation needed for test
+      }
+
+      @Override
+      public void applyHeadlessArguments(ChromeOptions options) {
+         // No implementation needed for test
+      }
+
+      @Override
+      public void downloadDriver(String version) {
+         downloadDriverCalled.set(true);
+         assertEquals(VERSION, version, "The version passed to downloadDriver should match the expected version");
+      }
+
+      public boolean wasDownloadDriverCalled() {
+         return downloadDriverCalled.get();
+      }
+
+      public void resetDownloadDriverCalled() {
+         downloadDriverCalled.set(false);
+      }
    }
 }

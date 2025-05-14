@@ -61,6 +61,16 @@ public class InsertionServiceFieldImplTest {
       }
    }
 
+   public enum AnotherComponentType implements ComponentType {
+      ;
+
+
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
    // A DTO with multiple annotated fields:
    static class ExampleDTOUI {
 
@@ -107,16 +117,6 @@ public class InsertionServiceFieldImplTest {
             componentType = "ANOTHER",
             order = 1)
       private String unregisteredField = "test2";
-   }
-
-   public enum AnotherComponentType implements ComponentType {
-      ;
-
-
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
    }
 
    // -----------------------------------------------------------

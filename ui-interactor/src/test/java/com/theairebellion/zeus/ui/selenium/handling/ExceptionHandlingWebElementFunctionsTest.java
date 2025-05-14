@@ -1,11 +1,11 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
-import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
 import com.theairebellion.zeus.ui.selenium.helper.LocatorParser;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -24,7 +24,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,779 +45,757 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
 
-    @Mock
-    private WebDriver mockDriver;
+   @Mock
+   private WebDriver mockDriver;
 
-    @Mock
-    private WebElement mockWebElement;
+   @Mock
+   private WebElement mockWebElement;
 
+   // Helper method for argument matching with "contains"
+   private static String contains(String substring) {
+      return argThat(string -> string != null && string.contains(substring));
+   }
 
-    @Test
-    void testHandleStaleElement() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+   @Test
+   void testHandleStaleElement() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
 
-            // Setup mocks
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                .thenReturn(element);
+         // Setup mocks
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
+               .thenReturn(element);
 
-            // Call the method - we'll just verify that the updateWebElement is called
-            // and not worry about verifying WebElementAction.performAction since it can't be mocked
-            ExceptionHandlingWebElementFunctions.handleStaleElement(mockDriver, element, WebElementAction.CLICK);
+         // Call the method - we'll just verify that the updateWebElement is called
+         // and not worry about verifying WebElementAction.performAction since it can't be mocked
+         ExceptionHandlingWebElementFunctions.handleStaleElement(mockDriver, element, WebElementAction.CLICK);
 
-            // Verify the static method was called
-            mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
-        }
-    }
+         // Verify the static method was called
+         mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
+      }
+   }
 
+   @Test
+   void testHandleStaleElementWithArgs() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
+         String arg = "test-arg";
 
-    @Test
-    void testHandleStaleElementWithArgs() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
-            String arg = "test-arg";
+         // Setup mocks
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
+               .thenReturn(element);
 
-            // Setup mocks
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                .thenReturn(element);
+         // Call the method
+         ExceptionHandlingWebElementFunctions.handleStaleElement(mockDriver, element, WebElementAction.SEND_KEYS,
+               arg);
 
-            // Call the method
-            ExceptionHandlingWebElementFunctions.handleStaleElement(mockDriver, element, WebElementAction.SEND_KEYS,
-                arg);
+         // Verify the static method was called
+         mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
+      }
+   }
 
-            // Verify the static method was called
-            mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
-        }
-    }
+   @Test
+   void testHandleNoSuchElementWithInvalidArgs() {
+      try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+         // Setup void method mocking properly
+         mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
 
-    @Test
-    void testHandleNoSuchElementWithInvalidArgs() {
-        try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
-            // Setup void method mocking properly
-            mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
+         // Test with various invalid args
+         // Empty args
+         Object[] emptyArgs = new Object[0];
+         IllegalArgumentException emptyException = assertThrows(IllegalArgumentException.class, () -> {
+            ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                  WebElementAction.FIND_ELEMENT, emptyArgs);
+         });
+         assertTrue(emptyException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
 
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+         // Null args
+         Object[] nullArgs = new Object[] {null};
+         IllegalArgumentException nullException = assertThrows(IllegalArgumentException.class, () -> {
+            ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                  WebElementAction.FIND_ELEMENT, nullArgs);
+         });
+         assertTrue(nullException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
 
-            // Test with various invalid args
-            // Empty args
-            Object[] emptyArgs = new Object[0];
-            IllegalArgumentException emptyException = assertThrows(IllegalArgumentException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
-                    WebElementAction.FIND_ELEMENT, emptyArgs);
-            });
-            assertTrue(emptyException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
+         // Non-By args
+         Object[] invalidArgs = new Object[] {"not a By object"};
+         IllegalArgumentException invalidException = assertThrows(IllegalArgumentException.class, () -> {
+            ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                  WebElementAction.FIND_ELEMENT, invalidArgs);
+         });
+         assertTrue(invalidException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
 
-            // Null args
-            Object[] nullArgs = new Object[]{null};
-            IllegalArgumentException nullException = assertThrows(IllegalArgumentException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
-                    WebElementAction.FIND_ELEMENT, nullArgs);
-            });
-            assertTrue(nullException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
+         // Verify error was logged at least once
+         mockedLogUi.verify(() -> LogUi.error(anyString()), atLeastOnce());
+      }
+   }
 
-            // Non-By args
-            Object[] invalidArgs = new Object[]{"not a By object"};
-            IllegalArgumentException invalidException = assertThrows(IllegalArgumentException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
-                    WebElementAction.FIND_ELEMENT, invalidArgs);
-            });
-            assertTrue(invalidException.getMessage().contains("FIND_ELEMENT action requires a By locator"));
+   @Test
+   void testHandleNoSuchElementWhenElementFound() {
+      try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class)) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
 
-            // Verify error was logged at least once
-            mockedLogUi.verify(() -> LogUi.error(anyString()), atLeastOnce());
-        }
-    }
+         SmartWebElement foundElement = mock(SmartWebElement.class);
+         WebElement foundWebElement = mock(WebElement.class);
+         when(foundElement.getOriginal()).thenReturn(foundWebElement);
 
+         By byLocator = By.id("testId");
+         Object[] args = new Object[] {byLocator};
 
-    @Test
-    void testHandleNoSuchElementWhenElementFound() {
-        try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class)) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+         // Setup mocks
+         mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
+               .thenReturn(foundElement);
 
-            SmartWebElement foundElement = mock(SmartWebElement.class);
-            WebElement foundWebElement = mock(WebElement.class);
-            when(foundElement.getOriginal()).thenReturn(foundWebElement);
+         // Create a real WebElementAction - don't try to mock it since it's an enum
+         WebElementAction action = WebElementAction.FIND_ELEMENT;
 
-            By byLocator = By.id("testId");
-            Object[] args = new Object[]{byLocator};
+         try {
+            // Call method - this may throw exceptions in the test environment but we just need
+            // to verify the helper method was called
+            ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, action, args);
+         } catch (Exception e) {
+            // Ignore exceptions, just verify the helper method was called
+         }
 
-            // Setup mocks
-            mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
-                .thenReturn(foundElement);
+         // Verify method was called
+         mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
+      }
+   }
 
-            // Create a real WebElementAction - don't try to mock it since it's an enum
-            WebElementAction action = WebElementAction.FIND_ELEMENT;
+   @Test
+   void testHandleNoSuchElementWhenElementNotFound() {
+      try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
 
-            try {
-                // Call method - this may throw exceptions in the test environment but we just need
-                // to verify the helper method was called
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, action, args);
-            } catch (Exception e) {
-                // Ignore exceptions, just verify the helper method was called
-            }
+         // Setup void method mocking properly
+         mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
 
-            // Verify method was called
-            mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
-        }
-    }
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
 
+         By byLocator = By.id("testId");
+         Object[] args = new Object[] {byLocator};
 
-    @Test
-    void testHandleNoSuchElementWhenElementNotFound() {
-        try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+         // Setup mocks
+         mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
+               .thenReturn(null);
 
-            // Setup void method mocking properly
-            mockedLogUi.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
+         // Execute method and expect exception
+         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
+            ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
+                  WebElementAction.FIND_ELEMENT, args);
+         });
 
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+         // Verify methods were called
+         mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
+   }
 
-            By byLocator = By.id("testId");
-            Object[] args = new Object[]{byLocator};
+   @Test
+   void testHandleElementClickIntercepted() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
 
-            // Setup mocks
-            mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
-                .thenReturn(null);
+         ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
+         when(clickException.getMessage()).thenReturn("Other element would receive the click: <div>");
 
-            // Execute method and expect exception
-            NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
-                ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element,
-                    WebElementAction.FIND_ELEMENT, args);
-            });
+         // Setup mocks
+         mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
+               .thenReturn("//div");
 
-            // Verify methods were called
-            mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-    }
-
-
-    @Test
-    void testHandleElementClickIntercepted() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
-
-            ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
-            when(clickException.getMessage()).thenReturn("Other element would receive the click: <div>");
-
-            // Setup mocks
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
-                .thenReturn("//div");
-
-            try {
-                // Call method - may throw errors in test but we just want to verify parser was called
-                ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(mockDriver, element,
-                    WebElementAction.CLICK, clickException);
-            } catch (Exception e) {
-                // Ignore expected exceptions
-            }
-
-            // Verify methods were called
-            mockedParser.verify(() -> LocatorParser.extractBlockingElementLocator(anyString()));
-        }
-    }
-
-
-    @Test
-    void testHandleElementClickInterceptedWithNullMessage() {
-        // Create test elements
-        SmartWebElement element = mock(SmartWebElement.class);
-        when(element.getOriginal()).thenReturn(mockWebElement);
-
-        ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
-        when(clickException.getMessage()).thenReturn(null);
-
-        try {
-            // Call method - may throw but we just want to verify it doesn't crash on null message
+         try {
+            // Call method - may throw errors in test but we just want to verify parser was called
             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(mockDriver, element,
-                WebElementAction.CLICK, clickException);
-            // If we get here without exception, the test passes
-            assertTrue(true);
-        } catch (Exception e) {
+                  WebElementAction.CLICK, clickException);
+         } catch (Exception e) {
             // Ignore expected exceptions
-            assertTrue(true);
-        }
-    }
+         }
 
+         // Verify methods were called
+         mockedParser.verify(() -> LocatorParser.extractBlockingElementLocator(anyString()));
+      }
+   }
 
-    @Test
-    void testHandleElementClickInterceptedWithArgs() {
-        // Create test elements
-        SmartWebElement element = mock(SmartWebElement.class);
-        when(element.getOriginal()).thenReturn(mockWebElement);
+   @Test
+   void testHandleElementClickInterceptedWithNullMessage() {
+      // Create test elements
+      SmartWebElement element = mock(SmartWebElement.class);
+      when(element.getOriginal()).thenReturn(mockWebElement);
 
-        ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
-        when(clickException.getMessage()).thenReturn(null);
+      ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
+      when(clickException.getMessage()).thenReturn(null);
 
-        String testArg = "test input";
+      try {
+         // Call method - may throw but we just want to verify it doesn't crash on null message
+         ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(mockDriver, element,
+               WebElementAction.CLICK, clickException);
+         // If we get here without exception, the test passes
+         assertTrue(true);
+      } catch (Exception e) {
+         // Ignore expected exceptions
+         assertTrue(true);
+      }
+   }
 
-        try {
-            // Call method - we just want to verify it handles additional args
+   @Test
+   void testHandleElementClickInterceptedWithArgs() {
+      // Create test elements
+      SmartWebElement element = mock(SmartWebElement.class);
+      when(element.getOriginal()).thenReturn(mockWebElement);
+
+      ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
+      when(clickException.getMessage()).thenReturn(null);
+
+      String testArg = "test input";
+
+      try {
+         // Call method - we just want to verify it handles additional args
+         ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+               mockDriver, element, WebElementAction.SEND_KEYS, clickException, testArg);
+         // If we get here without exception, the test passes
+         assertTrue(true);
+      } catch (Exception e) {
+         // Ignore expected exceptions
+         assertTrue(true);
+      }
+   }
+
+   @Test
+   void testHandleElementNotInteractable() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
+
+         // Setup mocks
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
+               .thenReturn(element);
+
+         try {
+            // Call method - may throw in test but we want to verify parser is called
+            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element,
+                  WebElementAction.CLICK);
+         } catch (Exception e) {
+            // Ignore expected exceptions
+         }
+
+         // Verify methods were called
+         mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
+      }
+   }
+
+   @Test
+   void testHandleElementNotInteractableWithArgs() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
+
+         String testArg = "test input";
+
+         // Setup mocks
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
+               .thenReturn(element);
+
+         try {
+            // Call method - may throw but we want to verify it handles additional args
+            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element,
+                  WebElementAction.SEND_KEYS, testArg);
+         } catch (Exception e) {
+            // Ignore expected exceptions
+         }
+
+         // Verify methods were called
+         mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
+      }
+   }
+
+   @Test
+   void testHandleElementClickInterceptedWithLocatorExtractionAndBlockerWait() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
+
+         ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
+         when(clickException.getMessage()).thenReturn("Other element would receive the click: <div id='blocker'>");
+
+         // Return a valid locator when extractBlockingElementLocator is called
+         mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
+               .thenReturn("//div[@id='blocker']");
+
+         // Call method to test the branch where a blocking element is found
+         try {
             ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                mockDriver, element, WebElementAction.SEND_KEYS, clickException, testArg);
-            // If we get here without exception, the test passes
-            assertTrue(true);
-        } catch (Exception e) {
-            // Ignore expected exceptions
-            assertTrue(true);
-        }
-    }
+                  mockDriver, element, WebElementAction.CLICK, clickException);
+         } catch (Exception e) {
+            // Expected in test environment since we can't fully mock WebDriverWait
+         }
+
+         // Verify the parser was called with the exception message
+         mockedParser.verify(() ->
+               LocatorParser.extractBlockingElementLocator(
+                     eq("Other element would receive the click: <div id='blocker'>")));
+      }
+   }
+
+   @Test
+   void testHandleElementClickIntercepted_NullExceptionMessage() {
+
+      try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         WebElement original = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(original);
+
+         // Create exception with null message
+         Exception exception = mock(Exception.class);
+         when(exception.getMessage()).thenReturn(null);
 
 
-    @Test
-    void testHandleElementNotInteractable() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+         assertThrows(Exception.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+                     mockDriver, element, WebElementAction.CLICK, exception));
 
-            // Setup mocks
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                .thenReturn(element);
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
 
-            try {
-                // Call method - may throw in test but we want to verify parser is called
-                ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element,
-                    WebElementAction.CLICK);
-            } catch (Exception e) {
-                // Ignore expected exceptions
-            }
+   }
 
-            // Verify methods were called
-            mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
-        }
-    }
+   @Test
+   void testHandleElementClickIntercepted_NullLocatorString() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLog = mockStatic(LogUi.class)
+      ) {
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         WebElement original = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(original);
 
+         // Create exception with message
+         Exception exception = mock(Exception.class);
+         when(exception.getMessage()).thenReturn("Some error message");
 
-    @Test
-    void testHandleElementNotInteractableWithArgs() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+         // Make locator parser return null
+         mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(null);
 
-            String testArg = "test input";
+         // Call the method
+         assertThrows(IllegalArgumentException.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+                     mockDriver, element, WebElementAction.CLICK, exception));
 
-            // Setup mocks
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(WebDriver.class), any(SmartWebElement.class)))
-                .thenReturn(element);
+         // Verify parser was called
+         mockedParser.verify(() -> LocatorParser.extractBlockingElementLocator("Some error message"));
+         mockedLog.verify(() -> LogUi.error(anyString()));
+      }
+   }
 
-            try {
-                // Call method - may throw but we want to verify it handles additional args
-                ExceptionHandlingWebElementFunctions.handleElementNotInteractable(mockDriver, element,
-                    WebElementAction.SEND_KEYS, testArg);
-            } catch (Exception e) {
-                // Ignore expected exceptions
-            }
+   @Test
+   void testHandleElementClickIntercepted_GeneralExceptionRunTimeException() {
+      // Similar to TimeoutException test but focusing on the general exception branch
 
-            // Verify methods were called
-            mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
-        }
-    }
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<By> mockedBy = mockStatic(By.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
 
+         // Setup logging
+         mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
 
-    @Test
-    void testHandleElementClickInterceptedWithLocatorExtractionAndBlockerWait() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         WebElement original = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(original);
 
-            ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
-            when(clickException.getMessage()).thenReturn("Other element would receive the click: <div id='blocker'>");
+         // Create exception with message
+         Exception exception = mock(Exception.class);
+         when(exception.getMessage()).thenReturn("Element intercepted");
 
-            // Return a valid locator when extractBlockingElementLocator is called
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
-                .thenReturn("//div[@id='blocker']");
+         // Setup parser to return a locator
+         String locator = "//div[@id='blocker']";
+         mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(locator);
 
-            // Call method to test the branch where a blocking element is found
-            try {
-                ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, clickException);
-            } catch (Exception e) {
-                // Expected in test environment since we can't fully mock WebDriverWait
-            }
+         // Mock By.xpath to throw an exception to trigger the general exception branch
+         mockedBy.when(() -> By.xpath(locator)).thenThrow(new RuntimeException("Test exception"));
 
-            // Verify the parser was called with the exception message
-            mockedParser.verify(() ->
-                                    LocatorParser.extractBlockingElementLocator(
-                                        eq("Other element would receive the click: <div id='blocker'>")));
-        }
-    }
+         // Call the method - this should trigger the general exception branch
+         assertThrows(RuntimeException.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+                     mockDriver, element, WebElementAction.CLICK, exception));
 
+         // Verify the warning was logged
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
+   }
 
-
-    @Test
-    void testHandleElementClickIntercepted_NullExceptionMessage() {
-
-        try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
-
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Create exception with null message
-            Exception exception = mock(Exception.class);
-            when(exception.getMessage()).thenReturn(null);
-
-
-            assertThrows(Exception.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, exception));
-
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-
-    }
-
-
-    @Test
-    void testHandleElementClickIntercepted_NullLocatorString() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLog = mockStatic(LogUi.class)
-        ) {
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Create exception with message
-            Exception exception = mock(Exception.class);
-            when(exception.getMessage()).thenReturn("Some error message");
-
-            // Make locator parser return null
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(null);
-
-            // Call the method
-            assertThrows(IllegalArgumentException.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, exception));
-
-            // Verify parser was called
-            mockedParser.verify(() -> LocatorParser.extractBlockingElementLocator("Some error message"));
-            mockedLog.verify(() -> LogUi.error(anyString()));
-        }
-    }
-
-
-    @Test
-    void testHandleElementClickIntercepted_GeneralExceptionRunTimeException() {
-        // Similar to TimeoutException test but focusing on the general exception branch
-
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
-
-            // Setup logging
-            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
-
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Create exception with message
-            Exception exception = mock(Exception.class);
-            when(exception.getMessage()).thenReturn("Element intercepted");
-
-            // Setup parser to return a locator
-            String locator = "//div[@id='blocker']";
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(locator);
-
-            // Mock By.xpath to throw an exception to trigger the general exception branch
-            mockedBy.when(() -> By.xpath(locator)).thenThrow(new RuntimeException("Test exception"));
-
-            // Call the method - this should trigger the general exception branch
-            assertThrows(RuntimeException.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, exception));
-
-            // Verify the warning was logged
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-    }
-
-
-    @Test
-    void testHandleElementClickIntercepted_GeneralException() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
-             MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedConstruction<WebDriverWait> mocked = mockConstruction(
+   @Test
+   void testHandleElementClickIntercepted_GeneralException() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
+           MockedStatic<By> mockedBy = mockStatic(By.class);
+           MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
                  (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, false, true)
-             );) {
+           );) {
 
-            // Setup logger mock
-            mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
+         // Setup logger mock
+         mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
 
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            when(element.getOriginal()).thenReturn(mockWebElement);
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         when(element.getOriginal()).thenReturn(mockWebElement);
 
-            ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
-            when(clickException.getMessage()).thenReturn("Element is not clickable");
+         ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
+         when(clickException.getMessage()).thenReturn("Element is not clickable");
 
-            // Setup parser and By mocks to force general exception path
-            String locatorString = "//div[@id='blocker']";
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
-                .thenReturn(locatorString);
-            By mockBlocker = mock(By.class);
-            mockedBy.when(() -> By.xpath(locatorString)).thenReturn(mockBlocker);
+         // Setup parser and By mocks to force general exception path
+         String locatorString = "//div[@id='blocker']";
+         mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(anyString()))
+               .thenReturn(locatorString);
+         By mockBlocker = mock(By.class);
+         mockedBy.when(() -> By.xpath(locatorString)).thenReturn(mockBlocker);
 
-            // Run the method with our mocks
-            assertThrows(RuntimeException.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                    mockDriver, element, WebElementAction.CLICK, clickException));
+         // Run the method with our mocks
+         assertThrows(RuntimeException.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+                     mockDriver, element, WebElementAction.CLICK, clickException));
 
-            // Verify the warning was logged with the message
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-    }
+         // Verify the warning was logged with the message
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
+   }
 
+   @Test
+   void testHandleElementNotInteractable_CompleteFlow() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
+         // Setup mocks
+         SmartWebElement element = mock(SmartWebElement.class);
+         SmartWebElement updatedElement = mock(SmartWebElement.class);
+         WebElement mockOriginal = mock(WebElement.class);
 
-    @Test
-    void testHandleElementNotInteractable_CompleteFlow() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class)) {
-            // Setup mocks
-            SmartWebElement element = mock(SmartWebElement.class);
-            SmartWebElement updatedElement = mock(SmartWebElement.class);
-            WebElement mockOriginal = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(mockOriginal);
+         when(updatedElement.getOriginal()).thenReturn(mockOriginal);
 
-            when(element.getOriginal()).thenReturn(mockOriginal);
-            when(updatedElement.getOriginal()).thenReturn(mockOriginal);
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
+               .thenReturn(updatedElement);
 
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
-                .thenReturn(updatedElement);
+         // Run the test - we'll get an exception but that's OK as we just need to
+         // verify that LocatorParser.updateWebElement was called
+         try {
+            ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
+                  mockDriver, element, WebElementAction.CLICK);
+         } catch (Exception e) {
+            // Expected, but we should verify that it contains the Actions error
+            assertTrue(e.getMessage().contains("Actions") ||
+                  e.getMessage().contains("Interactive") ||
+                  e.getMessage().contains("interactable"));
+         }
 
-            // Run the test - we'll get an exception but that's OK as we just need to
-            // verify that LocatorParser.updateWebElement was called
-            try {
-                ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK);
-            } catch (Exception e) {
-                // Expected, but we should verify that it contains the Actions error
-                assertTrue(e.getMessage().contains("Actions") ||
-                               e.getMessage().contains("Interactive") ||
-                               e.getMessage().contains("interactable"));
-            }
+         // Verify that LocatorParser.updateWebElement was called
+         mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
+      }
+   }
 
-            // Verify that LocatorParser.updateWebElement was called
-            mockedParser.verify(() -> LocatorParser.updateWebElement(eq(mockDriver), eq(element)));
-        }
-    }
-
-
-    @Test
-    void testHandleElementNotInteractable_TimeoutException() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
-             MockedConstruction<WebDriverWait> mocked = mockConstruction(
+   @Test
+   void testHandleElementNotInteractable_TimeoutException() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
+           MockedConstruction<WebDriverWait> mocked = mockConstruction(
                  WebDriverWait.class,
                  (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, true, false)
-             );
-             MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
+           );
+           MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
                  (mock, context) -> {
-                     when(mock.moveToElement(any())).thenReturn(mock);
-                     doNothing().when(mock).perform();
+                    when(mock.moveToElement(any())).thenReturn(mock);
+                    doNothing().when(mock).perform();
                  })) {
 
-            // Setup logger mock
-            mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
+         // Setup logger mock
+         mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
 
-            // Setup element mocks
-            SmartWebElement element = mock(SmartWebElement.class);
-            SmartWebElement updatedElement = mock(SmartWebElement.class);
-            WebElement mockOriginal = mock(WebElement.class);
+         // Setup element mocks
+         SmartWebElement element = mock(SmartWebElement.class);
+         SmartWebElement updatedElement = mock(SmartWebElement.class);
+         WebElement mockOriginal = mock(WebElement.class);
 
-            when(element.getOriginal()).thenReturn(mockOriginal);
-            when(updatedElement.getOriginal()).thenReturn(mockOriginal);
+         when(element.getOriginal()).thenReturn(mockOriginal);
+         when(updatedElement.getOriginal()).thenReturn(mockOriginal);
 
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
-                .thenReturn(updatedElement);
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
+               .thenReturn(updatedElement);
 
-            assertThrows(TimeoutException.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK));
+         assertThrows(TimeoutException.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
+                     mockDriver, element, WebElementAction.CLICK));
 
-            // Verify the warning was logged
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-    }
+         // Verify the warning was logged
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
+   }
 
-
-    @Test
-    void testHandleElementNotInteractable_GeneralException() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
-             MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
+   @Test
+   void testHandleElementNotInteractable_GeneralException() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
+           MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
                  (mock, context) -> {
-                     RuntimeException generalException = new RuntimeException("Test exception");
-                     doThrow(generalException).when(mock).moveToElement(any());
+                    RuntimeException generalException = new RuntimeException("Test exception");
+                    doThrow(generalException).when(mock).moveToElement(any());
                  })) {
 
-            // Setup logger mock
-            mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
+         // Setup logger mock
+         mockedLogUi.when(() -> LogUi.warn(anyString())).thenAnswer(invocation -> null);
 
-            // Setup element mocks
-            SmartWebElement element = mock(SmartWebElement.class);
-            SmartWebElement updatedElement = mock(SmartWebElement.class);
-            WebElement mockOriginal = mock(WebElement.class);
+         // Setup element mocks
+         SmartWebElement element = mock(SmartWebElement.class);
+         SmartWebElement updatedElement = mock(SmartWebElement.class);
+         WebElement mockOriginal = mock(WebElement.class);
 
-            when(element.getOriginal()).thenReturn(mockOriginal);
-            when(updatedElement.getOriginal()).thenReturn(mockOriginal);
+         when(element.getOriginal()).thenReturn(mockOriginal);
+         when(updatedElement.getOriginal()).thenReturn(mockOriginal);
 
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
-                .thenReturn(updatedElement);
-
-
-            // Run the test to hit the general exception path
-            assertThrows(RuntimeException.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK));
-
-            // Verify the warning was logged with the message
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-    }
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(), any()))
+               .thenReturn(updatedElement);
 
 
-    /**
-     * Special testable version of ExceptionHandlingWebElementFunctions
-     * that allows us to control WebDriverWait behavior
-     */
-    static class TestableExceptionHandlingFunctions {
+         // Run the test to hit the general exception path
+         assertThrows(RuntimeException.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
+                     mockDriver, element, WebElementAction.CLICK));
 
-        // Override the WebDriverWait creation to return our controllable mock
-        static WebDriverWait createTestableWait(WebDriver driver, boolean shouldThrowTimeout,
-                                                boolean shouldThrowException) {
-            WebDriverWait mockWait = mock(WebDriverWait.class);
+         // Verify the warning was logged with the message
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
+   }
 
-            if (shouldThrowTimeout) {
-                when(mockWait.until(any())).thenThrow(new TimeoutException("Test timeout"));
-            } else if (shouldThrowException) {
-                when(mockWait.until(any())).thenThrow(new RuntimeException("Test exception"));
-            } else {
-                when(mockWait.until(any())).thenReturn(mock(WebElement.class));
-            }
+   @Test
+   void testHandleElementClickIntercepted_TimeoutExceptionBranch() throws Exception {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
+           MockedStatic<By> mockedBy = mockStatic(By.class);
+           MockedConstruction<WebDriverWait> mocked = mockConstruction(
+                 WebDriverWait.class,
+                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, true, false)
+           );) {
 
-            return mockWait;
-        }
+         // Setup logger mock
+         mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
+
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         WebElement original = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(original);
+
+         // Setup exception with message
+         ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
+         when(clickException.getMessage()).thenReturn("Element is blocked");
+
+         // Setup mocks for locator extraction
+         String testLocator = "//div[@id='blocker']";
+         mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(testLocator);
+
+         // Mock By.xpath
+         By mockBlocker = mock(By.class);
+         mockedBy.when(() -> By.xpath(testLocator)).thenReturn(mockBlocker);
+
+         // Execute the method
+         ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+               mockDriver, element, WebElementAction.CLICK, clickException);
+
+         // Verify the correct warning was logged
+         mockedLogUi.verify(() -> LogUi.warn(any()));
+      }
+   }
 
 
-        public static void configureMockWait(
+   @Test
+   void testHandleElementClickIntercepted_GeneralExceptionBranch() {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
+           MockedStatic<By> mockedBy = mockStatic(By.class);
+           MockedConstruction<WebDriverWait> mocked = mockConstruction(
+                 WebDriverWait.class,
+                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, false, true)
+           )) {
+
+         // Setup logger mock
+         mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
+         mockedLogUi.when(() -> LogUi.error(any())).thenAnswer(invocation -> null);
+
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         WebElement original = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(original);
+
+         // Setup exception with message
+         ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
+         when(clickException.getMessage()).thenReturn("Element is blocked");
+
+         // Setup mocks for locator extraction
+         String testLocator = "//div[@id='blocker']";
+         mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(testLocator);
+
+         // Mock By.xpath
+         By mockBlocker = mock(By.class);
+         mockedBy.when(() -> By.xpath(testLocator)).thenReturn(mockBlocker);
+
+         // Execute the method and assert it throws RuntimeException from our mockWait
+         RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+               ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
+                     mockDriver, element,
+                     WebElementAction.CLICK,
+                     clickException)
+         );
+
+         // Validate exception message
+         assertEquals("Test exception", thrown.getMessage());
+
+         // Validate that WebDriverWait was used
+         WebDriverWait usedWait = mocked.constructed().get(0);
+         verify(usedWait, times(1)).until(any());
+
+         // Verify warning log was attempted (inside catch TimeoutException)
+         mockedLogUi.verify(() -> LogUi.warn(any()), atMost(1));
+      }
+   }
+
+
+   @Test
+   void testHandleElementNotInteractable_TimeoutExceptionBranch() throws Exception {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
+           MockedConstruction<WebDriverWait> mocked = mockConstruction(
+                 WebDriverWait.class,
+                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, true, false)
+           );
+           MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
+                 (mock, context) -> {
+                    when(mock.moveToElement(any())).thenReturn(mock);
+                    doNothing().when(mock).perform();
+                 })) {
+
+         // Setup logger mock
+         mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
+
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         WebElement original = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(original);
+
+         // Create updated element
+         SmartWebElement updatedElement = mock(SmartWebElement.class);
+         WebElement updatedOriginal = mock(WebElement.class);
+         when(updatedElement.getOriginal()).thenReturn(updatedOriginal);
+
+         // Setup LocatorParser
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(), any())).thenReturn(updatedElement);
+
+
+         // Execute the method
+         assertThrows(TimeoutException.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
+                     mockDriver, element, WebElementAction.CLICK));
+
+         // Verify the correct warning was logged
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
+   }
+
+
+   @Test
+   void testHandleElementNotInteractable_GeneralExceptionBranch() throws Exception {
+      try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
+           MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
+           MockedConstruction<WebDriverWait> mocked = mockConstruction(
+                 WebDriverWait.class,
+                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, false, true)
+           );
+           MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
+                 (mock, context) -> {
+                    when(mock.moveToElement(any())).thenReturn(mock);
+                    doNothing().when(mock).perform();
+                 })) {
+
+         // Setup logger mock
+         mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
+
+         // Create test elements
+         SmartWebElement element = mock(SmartWebElement.class);
+         WebElement original = mock(WebElement.class);
+         when(element.getOriginal()).thenReturn(original);
+
+         // Create updated element
+         SmartWebElement updatedElement = mock(SmartWebElement.class);
+         WebElement updatedOriginal = mock(WebElement.class);
+         when(updatedElement.getOriginal()).thenReturn(updatedOriginal);
+
+         // Setup LocatorParser
+         mockedParser.when(() -> LocatorParser.updateWebElement(any(), any())).thenReturn(updatedElement);
+
+
+         // Execute the method
+         assertThrows(RuntimeException.class,
+               () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
+                     mockDriver, element, WebElementAction.CLICK));
+
+         // Verify the correct warning was logged
+         mockedLogUi.verify(() -> LogUi.error(any()));
+      }
+   }
+
+   /**
+    * Special testable version of ExceptionHandlingWebElementFunctions
+    * that allows us to control WebDriverWait behavior
+    */
+   static class TestableExceptionHandlingFunctions {
+
+      // Override the WebDriverWait creation to return our controllable mock
+      static WebDriverWait createTestableWait(WebDriver driver, boolean shouldThrowTimeout,
+                                              boolean shouldThrowException) {
+         WebDriverWait mockWait = mock(WebDriverWait.class);
+
+         if (shouldThrowTimeout) {
+            when(mockWait.until(any())).thenThrow(new TimeoutException("Test timeout"));
+         } else if (shouldThrowException) {
+            when(mockWait.until(any())).thenThrow(new RuntimeException("Test exception"));
+         } else {
+            when(mockWait.until(any())).thenReturn(mock(WebElement.class));
+         }
+
+         return mockWait;
+      }
+
+
+      public static void configureMockWait(
             WebDriverWait mockWait,
             boolean shouldThrowTimeout,
             boolean shouldThrowException
-        ) {
-            if (shouldThrowTimeout) {
-                when(mockWait.until(any()))
-                    .thenThrow(new TimeoutException("Test timeout"));
-            } else if (shouldThrowException) {
-                when(mockWait.until(any()))
-                    .thenThrow(new RuntimeException("Test exception"));
-            } else {
-                when(mockWait.until(any()))
-                    .thenReturn(mock(WebElement.class));
-            }
-        }
+      ) {
+         if (shouldThrowTimeout) {
+            when(mockWait.until(any()))
+                  .thenThrow(new TimeoutException("Test timeout"));
+         } else if (shouldThrowException) {
+            when(mockWait.until(any()))
+                  .thenThrow(new RuntimeException("Test exception"));
+         } else {
+            when(mockWait.until(any()))
+                  .thenReturn(mock(WebElement.class));
+         }
+      }
 
-    }
-
-
-    @Test
-    void testHandleElementClickIntercepted_TimeoutExceptionBranch() throws Exception {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
-             MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedConstruction<WebDriverWait> mocked = mockConstruction(
-                 WebDriverWait.class,
-                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, true, false)
-             );) {
-
-            // Setup logger mock
-            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
-
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Setup exception with message
-            ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
-            when(clickException.getMessage()).thenReturn("Element is blocked");
-
-            // Setup mocks for locator extraction
-            String testLocator = "//div[@id='blocker']";
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(testLocator);
-
-            // Mock By.xpath
-            By mockBlocker = mock(By.class);
-            mockedBy.when(() -> By.xpath(testLocator)).thenReturn(mockBlocker);
-
-            // Execute the method
-            ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                mockDriver, element, WebElementAction.CLICK, clickException);
-
-            // Verify the correct warning was logged
-            mockedLogUi.verify(() -> LogUi.warn(any()));
-        }
-    }
-
-
-    @Test
-    void testHandleElementClickIntercepted_GeneralExceptionBranch() {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
-             MockedStatic<By> mockedBy = mockStatic(By.class);
-             MockedConstruction<WebDriverWait> mocked = mockConstruction(
-                 WebDriverWait.class,
-                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, false, true)
-             )) {
-
-            // Setup logger mock
-            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
-            mockedLogUi.when(() -> LogUi.error(any())).thenAnswer(invocation -> null);
-
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Setup exception with message
-            ElementClickInterceptedException clickException = mock(ElementClickInterceptedException.class);
-            when(clickException.getMessage()).thenReturn("Element is blocked");
-
-            // Setup mocks for locator extraction
-            String testLocator = "//div[@id='blocker']";
-            mockedParser.when(() -> LocatorParser.extractBlockingElementLocator(any())).thenReturn(testLocator);
-
-            // Mock By.xpath
-            By mockBlocker = mock(By.class);
-            mockedBy.when(() -> By.xpath(testLocator)).thenReturn(mockBlocker);
-
-            // Execute the method and assert it throws RuntimeException from our mockWait
-            RuntimeException thrown = assertThrows(RuntimeException.class, () ->
-                                                                               ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
-                                                                                   mockDriver, element,
-                                                                                   WebElementAction.CLICK,
-                                                                                   clickException)
-            );
-
-            // Validate exception message
-            assertEquals("Test exception", thrown.getMessage());
-
-            // Validate that WebDriverWait was used
-            WebDriverWait usedWait = mocked.constructed().get(0);
-            verify(usedWait, times(1)).until(any());
-
-            // Verify warning log was attempted (inside catch TimeoutException)
-            mockedLogUi.verify(() -> LogUi.warn(any()), atMost(1));
-        }
-    }
-
-
-    @Test
-    void testHandleElementNotInteractable_TimeoutExceptionBranch() throws Exception {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
-             MockedConstruction<WebDriverWait> mocked = mockConstruction(
-                 WebDriverWait.class,
-                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, true, false)
-             );
-             MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
-                 (mock, context) -> {
-                     when(mock.moveToElement(any())).thenReturn(mock);
-                     doNothing().when(mock).perform();
-                 })) {
-
-            // Setup logger mock
-            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
-
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Create updated element
-            SmartWebElement updatedElement = mock(SmartWebElement.class);
-            WebElement updatedOriginal = mock(WebElement.class);
-            when(updatedElement.getOriginal()).thenReturn(updatedOriginal);
-
-            // Setup LocatorParser
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(), any())).thenReturn(updatedElement);
-
-
-            // Execute the method
-            assertThrows(TimeoutException.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK));
-
-            // Verify the correct warning was logged
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-    }
-
-
-    @Test
-    void testHandleElementNotInteractable_GeneralExceptionBranch() throws Exception {
-        try (MockedStatic<LocatorParser> mockedParser = mockStatic(LocatorParser.class);
-             MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class);
-             MockedConstruction<WebDriverWait> mocked = mockConstruction(
-                 WebDriverWait.class,
-                 (mockWait, context) -> TestableExceptionHandlingFunctions.configureMockWait(mockWait, false, true)
-             );
-             MockedConstruction<Actions> mockedActions = mockConstruction(Actions.class,
-                 (mock, context) -> {
-                     when(mock.moveToElement(any())).thenReturn(mock);
-                     doNothing().when(mock).perform();
-                 })) {
-
-            // Setup logger mock
-            mockedLogUi.when(() -> LogUi.warn(any())).thenAnswer(invocation -> null);
-
-            // Create test elements
-            SmartWebElement element = mock(SmartWebElement.class);
-            WebElement original = mock(WebElement.class);
-            when(element.getOriginal()).thenReturn(original);
-
-            // Create updated element
-            SmartWebElement updatedElement = mock(SmartWebElement.class);
-            WebElement updatedOriginal = mock(WebElement.class);
-            when(updatedElement.getOriginal()).thenReturn(updatedOriginal);
-
-            // Setup LocatorParser
-            mockedParser.when(() -> LocatorParser.updateWebElement(any(), any())).thenReturn(updatedElement);
-
-
-            // Execute the method
-            assertThrows(RuntimeException.class,
-                () -> ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
-                    mockDriver, element, WebElementAction.CLICK));
-
-            // Verify the correct warning was logged
-            mockedLogUi.verify(() -> LogUi.error(any()));
-        }
-    }
-
-
-    // Helper method for argument matching with "contains"
-    private static String contains(String substring) {
-        return argThat(string -> string != null && string.contains(substring));
-    }
+   }
 
 }

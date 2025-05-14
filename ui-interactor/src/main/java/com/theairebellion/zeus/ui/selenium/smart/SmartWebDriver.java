@@ -36,12 +36,10 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 @Getter
 public class SmartWebDriver extends WebDriverDecorator {
 
+   private static final String SECONDS = " seconds";
    private final WebDriverWait wait;
    @Setter
    private boolean keepDriverForSession;
-
-
-   private static final String SECONDS = " seconds";
 
 
    /**
@@ -172,13 +170,13 @@ public class SmartWebDriver extends WebDriverDecorator {
       Consumer<Function<WebDriver, ?>> waitFn = (waitInMillis == null)
             ? this::waitWithoutFailure
             : condition -> {
-               try {
-                  WebDriverWait customWait = new WebDriverWait(getOriginal(), Duration.ofMillis(waitInMillis));
-                  customWait.until(condition);
-               } catch (Exception ignored) {
-                  //ignore failure from wait
-               }
-            };
+         try {
+            WebDriverWait customWait = new WebDriverWait(getOriginal(), Duration.ofMillis(waitInMillis));
+            customWait.until(condition);
+         } catch (Exception ignored) {
+            //ignore failure from wait
+         }
+      };
 
       try {
          if (getUiConfig().useShadowRoot()) {

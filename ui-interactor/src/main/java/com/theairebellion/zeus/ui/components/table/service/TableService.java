@@ -27,6 +27,18 @@ public interface TableService {
     */
    TableComponentType DEFAULT_TYPE = getDefaultType();
 
+   private static TableComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(TableComponentType.class,
+               getUiConfig().tableDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (ReflectionException e) {
+         return ReflectionUtil.findEnumImplementationsOfInterface(TableComponentType.class,
+               getUiConfig().tableDefaultType(),
+               "com.theairebellion.zeus");
+      }
+   }
+
    /**
     * Reads all rows from the table.
     *
@@ -369,7 +381,6 @@ public interface TableService {
       insertCellValue(tableComponentType, searchCriteria, classType, field, 1, values);
    }
 
-
    /**
     * Inserts values into a specific indexed cell within a row that matches the search criteria.
     *
@@ -494,19 +505,6 @@ public interface TableService {
     */
    <T> void sortTable(TableComponentType tableComponentType, Class<T> tclass, TableField<T> column,
                       SortingStrategy sortingStrategy);
-
-
-   private static TableComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(TableComponentType.class,
-               getUiConfig().tableDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (ReflectionException e) {
-         return ReflectionUtil.findEnumImplementationsOfInterface(TableComponentType.class,
-               getUiConfig().tableDefaultType(),
-               "com.theairebellion.zeus");
-      }
-   }
 
    /**
     * Validates a table against a set of assertions.

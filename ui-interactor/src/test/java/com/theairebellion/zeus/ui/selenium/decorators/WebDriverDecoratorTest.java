@@ -28,13 +28,6 @@ class WebDriverDecoratorTest {
 
    private TestWebDriverDecorator decorator;
 
-   // Create a concrete implementation of the abstract class for testing
-   private static class TestWebDriverDecorator extends WebDriverDecorator {
-      public TestWebDriverDecorator(WebDriver original) {
-         super(original);
-      }
-   }
-
    @BeforeEach
    void setUp() {
       decorator = new TestWebDriverDecorator(mockWebDriver);
@@ -48,7 +41,6 @@ class WebDriverDecoratorTest {
       // Then it should return the same instance
       assertSame(mockWebDriver, result);
    }
-
 
    @Test
    void shouldDelegateGetMethod() {
@@ -205,5 +197,12 @@ class WebDriverDecoratorTest {
       // Then
       assertEquals(options, result);
       verify(mockWebDriver).manage();
+   }
+
+   // Create a concrete implementation of the abstract class for testing
+   private static class TestWebDriverDecorator extends WebDriverDecorator {
+      public TestWebDriverDecorator(WebDriver original) {
+         super(original);
+      }
    }
 }

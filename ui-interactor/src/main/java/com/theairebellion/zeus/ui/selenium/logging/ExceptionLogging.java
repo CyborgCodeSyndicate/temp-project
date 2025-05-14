@@ -98,8 +98,8 @@ public enum ExceptionLogging {
     * @param exceptionLoggingMap A map of exception classes to their respective logging functions.
     */
    ExceptionLogging(final Class<?> targetClass, final WebElementAction action,
-         Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[],
-               InvocationTargetException>> exceptionLoggingMap) {
+                    Map<Class<? extends Throwable>, FourConsumer<Object, WebElementAction, Object[],
+                          InvocationTargetException>> exceptionLoggingMap) {
       this.targetClass = targetClass;
       this.action = action;
       this.exceptionLoggingMap = exceptionLoggingMap;

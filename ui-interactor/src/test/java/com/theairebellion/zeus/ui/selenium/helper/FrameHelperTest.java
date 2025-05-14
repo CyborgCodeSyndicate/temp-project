@@ -1,10 +1,10 @@
 package com.theairebellion.zeus.ui.selenium.helper;
 
-import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

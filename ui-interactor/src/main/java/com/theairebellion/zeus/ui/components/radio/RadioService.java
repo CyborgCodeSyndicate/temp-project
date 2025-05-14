@@ -25,6 +25,21 @@ public interface RadioService extends Insertion {
    RadioComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default radio component type from the configuration.
+    *
+    * @return The default RadioComponentType.
+    */
+   private static RadioComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(RadioComponentType.class,
+               getUiConfig().radioDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Selects a radio button within a container based on the button text. Uses the default radio component type.
     *
     * @param container       The SmartWebElement that contains the radio buttons.
@@ -316,7 +331,7 @@ public interface RadioService extends Insertion {
     * @param componentType    The specific type of radio component.
     * @param containerLocator The By locator for the container element that contains the radio buttons.
     * @return The text of the selected radio button in the container identified by the locator, based on the specified
-    *     component type.
+    * component type.
     */
    String getSelected(RadioComponentType componentType, By containerLocator);
 
@@ -357,22 +372,7 @@ public interface RadioService extends Insertion {
     * @param componentType    The specific type of radio component.
     * @param containerLocator The By locator for the container element that contains the radio buttons.
     * @return A list of texts of all radio buttons in the container identified by the locator and based on the
-    *     specified component type.
+    * specified component type.
     */
    List<String> getAll(RadioComponentType componentType, By containerLocator);
-
-   /**
-    * Retrieves the default radio component type from the configuration.
-    *
-    * @return The default RadioComponentType.
-    */
-   private static RadioComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(RadioComponentType.class,
-               getUiConfig().radioDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

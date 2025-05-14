@@ -26,6 +26,21 @@ public interface ModalService {
    ModalComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default modal component type.
+    *
+    * @return The default modal component type.
+    */
+   private static ModalComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(ModalComponentType.class,
+               getUiConfig().modalDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Checks if the modal is currently opened, using the default modal component type.
     *
     * @return true if the modal is opened, false otherwise.
@@ -159,19 +174,4 @@ public interface ModalService {
     * @param componentType The specific modal component type.
     */
    void close(ModalComponentType componentType);
-
-   /**
-    * Retrieves the default modal component type.
-    *
-    * @return The default modal component type.
-    */
-   private static ModalComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(ModalComponentType.class,
-               getUiConfig().modalDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

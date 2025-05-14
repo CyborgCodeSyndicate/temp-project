@@ -7,23 +7,37 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
-import org.junit.jupiter.api.*;
+import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openqa.selenium.By;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @DisplayName("SelectServiceImpl Unit Tests")
 class SelectServiceImplTest extends BaseUnitUITest {
 
+   private static final String[] OPTIONS_ARRAY = {"option1", "option2"};
+   private static final String SINGLE_OPTION = "option1";
+   private static final List<String> MOCK_OPTIONS_LIST = List.of("optA", "optB");
+   private static final String OPTION_VALUE = "optionValue";
+   private final MockSelectComponentType componentType = MockSelectComponentType.DUMMY_SELECT;
    @Mock
    private SmartWebDriver driver;
    @Mock
@@ -34,15 +48,8 @@ class SelectServiceImplTest extends BaseUnitUITest {
    private Strategy strategy;
    @Mock
    private Select selectMock;
-
    private SelectServiceImpl service;
    private MockedStatic<ComponentFactory> factoryMock;
-   private final MockSelectComponentType componentType = MockSelectComponentType.DUMMY_SELECT;
-
-   private static final String[] OPTIONS_ARRAY = {"option1", "option2"};
-   private static final String SINGLE_OPTION = "option1";
-   private static final List<String> MOCK_OPTIONS_LIST = List.of("optA", "optB");
-   private static final String OPTION_VALUE = "optionValue";
 
    @BeforeEach
    void setUp() {

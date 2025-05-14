@@ -22,6 +22,111 @@ public class InsertionServiceRegistryTest {
       registry = new InsertionServiceRegistry();
    }
 
+   // Simple fake classes or interfaces for the test
+   interface MockedComponentType extends ComponentType {
+   }
+
+   interface AnotherMockedComponentType extends ComponentType {
+   }
+
+   // A dynamic class that pretends to be a ComponentType
+   static class DynamicMockedComponentType implements ComponentType {
+
+      private final int id;
+
+      DynamicMockedComponentType(int id) {
+         this.id = id;
+      }
+
+      @Override
+      public Enum<?> getType() {
+         return null; // Not important for this test
+      }
+
+      @Override
+      public boolean equals(Object o) {
+         if (this == o) return true;
+         if (!(o instanceof DynamicMockedComponentType)) return false;
+         DynamicMockedComponentType that = (DynamicMockedComponentType) o;
+         return id == that.id;
+      }
+
+      @Override
+      public int hashCode() {
+         return Integer.hashCode(id);
+      }
+   }
+
+   static class UniqueType1 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType2 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType3 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType4 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType5 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType6 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType7 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType8 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType9 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
+   static class UniqueType10 implements ComponentType {
+      @Override
+      public Enum<?> getType() {
+         return null;
+      }
+   }
+
    @Nested
    @DisplayName("Method: registerService(Class<? extends ComponentType>, Insertion)")
    class RegisterServiceMethodTest {
@@ -140,111 +245,6 @@ public class InsertionServiceRegistryTest {
             assertSame(insertedServices.get(i), registry.getService(uniqueTypes[i]),
                   "Expected non-null insertion after concurrent registration for " + uniqueTypes[i].getSimpleName());
          }
-      }
-   }
-
-   // Simple fake classes or interfaces for the test
-   interface MockedComponentType extends ComponentType {
-   }
-
-   interface AnotherMockedComponentType extends ComponentType {
-   }
-
-   // A dynamic class that pretends to be a ComponentType
-   static class DynamicMockedComponentType implements ComponentType {
-
-      private final int id;
-
-      DynamicMockedComponentType(int id) {
-         this.id = id;
-      }
-
-      @Override
-      public Enum<?> getType() {
-         return null; // Not important for this test
-      }
-
-      @Override
-      public boolean equals(Object o) {
-         if (this == o) return true;
-         if (!(o instanceof DynamicMockedComponentType)) return false;
-         DynamicMockedComponentType that = (DynamicMockedComponentType) o;
-         return id == that.id;
-      }
-
-      @Override
-      public int hashCode() {
-         return Integer.hashCode(id);
-      }
-   }
-
-   static class UniqueType1 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType2 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType3 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType4 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType5 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType6 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType7 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType8 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType9 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
-      }
-   }
-
-   static class UniqueType10 implements ComponentType {
-      @Override
-      public Enum<?> getType() {
-         return null;
       }
    }
 }

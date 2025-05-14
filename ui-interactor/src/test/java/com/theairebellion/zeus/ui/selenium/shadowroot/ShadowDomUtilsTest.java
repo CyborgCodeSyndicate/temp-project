@@ -1,10 +1,10 @@
 package com.theairebellion.zeus.ui.selenium.shadowroot;
 
-import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +78,18 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
    @DisplayName("parseBy tests")
    class ParseByTests {
 
+      static Stream<Arguments> supportedByTypes() {
+         return Stream.of(
+               Arguments.of(By.id("testId"), "id", "testId"),
+               Arguments.of(By.name("testName"), "name", "testName"),
+               Arguments.of(By.className("testClass"), "className", "testClass"),
+               Arguments.of(By.cssSelector("div.test"), "css", "div.test"),
+               Arguments.of(By.tagName("div"), "tagName", "div"),
+               Arguments.of(By.linkText("Click me"), "linkText", "Click me"),
+               Arguments.of(By.partialLinkText("Click"), "partialLinkText", "Click")
+         );
+      }
+
       @ParameterizedTest
       @MethodSource("supportedByTypes")
       @DisplayName("parseBy should handle all supported By types correctly")
@@ -92,18 +104,6 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
          // Verify results
          assertEquals(expectedType, result.get("type"));
          assertEquals(expectedValue, result.get("value"));
-      }
-
-      static Stream<Arguments> supportedByTypes() {
-         return Stream.of(
-               Arguments.of(By.id("testId"), "id", "testId"),
-               Arguments.of(By.name("testName"), "name", "testName"),
-               Arguments.of(By.className("testClass"), "className", "testClass"),
-               Arguments.of(By.cssSelector("div.test"), "css", "div.test"),
-               Arguments.of(By.tagName("div"), "tagName", "div"),
-               Arguments.of(By.linkText("Click me"), "linkText", "Click me"),
-               Arguments.of(By.partialLinkText("Click"), "partialLinkText", "Click")
-         );
       }
 
       @Test

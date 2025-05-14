@@ -8,58 +8,58 @@ import static org.mockito.Mockito.mock;
 
 public class MockSmartWebElement extends SmartWebElement {
 
-    public static MockSmartWebElement createMock() {
-        WebElement element = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        return new MockSmartWebElement(element, driver);
-    }
+   public MockSmartWebElement(WebElement original, WebDriver driver) {
+      super(original, driver);
+   }
 
-    public MockSmartWebElement(WebElement original, WebDriver driver) {
-        super(original, driver);
-    }
+   public static MockSmartWebElement createMock() {
+      WebElement element = mock(WebElement.class);
+      WebDriver driver = mock(WebDriver.class);
+      return new MockSmartWebElement(element, driver);
+   }
 
-    @Override
-    public String getText() {
-        return "dummy";
-    }
+   @Override
+   public String getText() {
+      return "dummy";
+   }
 
-    @Override
-    public String getAttribute(String name) {
-        return "dummy-attr";
-    }
+   @Override
+   public String getAttribute(String name) {
+      return "dummy-attr";
+   }
 
-    @Override
-    public void click() {
+   @Override
+   public void click() {
 
-    }
+   }
 
-    @Override
-    public void submit() {
+   @Override
+   public void submit() {
 
-    }
+   }
 
-    @Override
-    public void clear() {
+   @Override
+   public void clear() {
 
-    }
+   }
 
-    @Override
-    public void sendKeys(CharSequence... keysToSend) {
+   @Override
+   public void sendKeys(CharSequence... keysToSend) {
 
-    }
+   }
 
-    @Override
-    public boolean isDisplayed() {
-        return true;
-    }
+   @Override
+   public boolean isDisplayed() {
+      return true;
+   }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+   @Override
+   public boolean isEnabled() {
+      return true;
+   }
 
-    @Override
-    public boolean isSelected() {
-        return false;
-    }
+   @Override
+   public boolean isSelected() {
+      return false;
+   }
 }

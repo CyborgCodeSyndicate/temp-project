@@ -20,16 +20,6 @@ import java.util.function.BiConsumer;
 public interface TableField<T> {
 
    /**
-    * Invokes the setter method for the corresponding field in the provided instance.
-    *
-    * @param instance The object instance on which to set the field value.
-    * @param o        The value to be set.
-    * @throws IllegalAccessException    If the method is not accessible.
-    * @throws InvocationTargetException If the method invocation fails.
-    */
-   void invoke(T instance, Object o) throws IllegalAccessException, InvocationTargetException;
-
-   /**
     * Creates a {@code TableField} from a given {@link BiConsumer}, which represents
     * a setter method for a specific field.
     *
@@ -41,5 +31,15 @@ public interface TableField<T> {
    static <T, P> TableField<T> of(BiConsumer<T, P> consumer) {
       return (t, obj) -> consumer.accept(t, (P) obj);
    }
+
+   /**
+    * Invokes the setter method for the corresponding field in the provided instance.
+    *
+    * @param instance The object instance on which to set the field value.
+    * @param o        The value to be set.
+    * @throws IllegalAccessException    If the method is not accessible.
+    * @throws InvocationTargetException If the method invocation fails.
+    */
+   void invoke(T instance, Object o) throws IllegalAccessException, InvocationTargetException;
 
 }

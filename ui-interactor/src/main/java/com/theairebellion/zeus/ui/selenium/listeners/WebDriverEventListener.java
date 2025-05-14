@@ -22,62 +22,6 @@ import org.openqa.selenium.support.events.WebDriverListener;
 public class WebDriverEventListener implements WebDriverListener {
 
    /**
-    * Logs an informational message before an element is clicked.
-    *
-    * @param element The WebElement that is about to be clicked.
-    */
-   @Override
-   public void beforeClick(final WebElement element) {
-      LogUi.extended("Element: '{}' is about to get clicked", element.toString());
-   }
-
-   /**
-    * Logs an informational message after an element is clicked.
-    *
-    * @param element The WebElement that was clicked.
-    */
-   @Override
-   public void afterClick(final WebElement element) {
-      LogUi.extended("Element: '{}' was clicked", element.toString());
-   }
-
-   /**
-    * Handles errors occurring during WebDriver method executions.
-    *
-    * <p>This method logs the exception details and determines if the exception should be handled by
-    * the framework or logged as unhandled.
-    *
-    * @param target The object on which the method was invoked.
-    * @param method The method that caused the exception.
-    * @param args   The arguments passed to the method.
-    * @param e      The invocation target exception.
-    */
-   @Override
-   public void onError(final Object target, final Method method, final Object[] args,
-                       final InvocationTargetException e) {
-      Throwable cause = e.getCause();
-
-      LogUi.extended("Exception in method {}: {}", method.getName(), cause.getMessage());
-      SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(cause);
-
-      if (result.comingFromWait()) {
-         return;
-      }
-
-      if (result.foundAnnotatedMethod()) {
-         if (result.foundHandleException()) {
-            LogUi.error("Exception was not handled");
-         } else {
-            LogUi.info("Framework will try to handle the exception");
-         }
-      } else {
-         LogUi.info("No implementation in framework for exception handling in this method");
-      }
-      exceptionLogging(target, method, args, e, cause);
-
-   }
-
-   /**
     * Logs and handles exceptions based on predefined criteria.
     *
     * @param target The object on which the method was invoked.
@@ -151,6 +95,62 @@ public class WebDriverEventListener implements WebDriverListener {
          return !paramType.isPrimitive();
       }
       return paramType.isAssignableFrom(argType);
+   }
+
+   /**
+    * Logs an informational message before an element is clicked.
+    *
+    * @param element The WebElement that is about to be clicked.
+    */
+   @Override
+   public void beforeClick(final WebElement element) {
+      LogUi.extended("Element: '{}' is about to get clicked", element.toString());
+   }
+
+   /**
+    * Logs an informational message after an element is clicked.
+    *
+    * @param element The WebElement that was clicked.
+    */
+   @Override
+   public void afterClick(final WebElement element) {
+      LogUi.extended("Element: '{}' was clicked", element.toString());
+   }
+
+   /**
+    * Handles errors occurring during WebDriver method executions.
+    *
+    * <p>This method logs the exception details and determines if the exception should be handled by
+    * the framework or logged as unhandled.
+    *
+    * @param target The object on which the method was invoked.
+    * @param method The method that caused the exception.
+    * @param args   The arguments passed to the method.
+    * @param e      The invocation target exception.
+    */
+   @Override
+   public void onError(final Object target, final Method method, final Object[] args,
+                       final InvocationTargetException e) {
+      Throwable cause = e.getCause();
+
+      LogUi.extended("Exception in method {}: {}", method.getName(), cause.getMessage());
+      SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(cause);
+
+      if (result.comingFromWait()) {
+         return;
+      }
+
+      if (result.foundAnnotatedMethod()) {
+         if (result.foundHandleException()) {
+            LogUi.error("Exception was not handled");
+         } else {
+            LogUi.info("Framework will try to handle the exception");
+         }
+      } else {
+         LogUi.info("No implementation in framework for exception handling in this method");
+      }
+      exceptionLogging(target, method, args, e, cause);
+
    }
 
 }

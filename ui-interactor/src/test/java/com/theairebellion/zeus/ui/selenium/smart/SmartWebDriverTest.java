@@ -1,12 +1,12 @@
 package com.theairebellion.zeus.ui.selenium.smart;
 
-import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebDriverFunctions;
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -82,6 +82,60 @@ class SmartWebDriverTest extends BaseUnitUITest {
          uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
          smartDriver = spy(new SmartWebDriver(jsDriver));
       }
+   }
+
+   @Test
+   @DisplayName("waitWithoutFailure should suppress exceptions")
+   void waitWithoutFailureShouldSuppressExceptions() throws Exception {
+      // Arrange
+      Function<WebDriver, Boolean> condition = driver -> {
+         throw new TimeoutException("Timeout waiting for condition");
+      };
+
+      WebDriverWait mockWait = mock(WebDriverWait.class);
+      doThrow(new TimeoutException("Timeout")).when(mockWait).until(any(Function.class));
+
+      // Use reflection to set the wait field
+      Field waitField = SmartWebDriver.class.getDeclaredField("wait");
+      waitField.setAccessible(true);
+      waitField.set(smartDriver, mockWait);
+
+      // Use reflection to access the private method
+      Method waitWithoutFailureMethod = SmartWebDriver.class.getDeclaredMethod(
+            "waitWithoutFailure", Function.class);
+      waitWithoutFailureMethod.setAccessible(true);
+
+      // Act - should not throw exception
+      waitWithoutFailureMethod.invoke(smartDriver, condition);
+
+      // Assert - verify wait was called
+      verify(mockWait).until(condition);
+   }
+
+   @Test
+   @DisplayName("waitWithoutFailure should complete successfully when no exception")
+   void waitWithoutFailureShouldCompleteSuccessfullyWhenNoException() throws Exception {
+      // Arrange
+      Function<WebDriver, Boolean> condition = driver -> true;
+
+      WebDriverWait mockWait = mock(WebDriverWait.class);
+      when(mockWait.until(any(Function.class))).thenReturn(true);
+
+      // Use reflection to set the wait field
+      Field waitField = SmartWebDriver.class.getDeclaredField("wait");
+      waitField.setAccessible(true);
+      waitField.set(smartDriver, mockWait);
+
+      // Use reflection to access the private method
+      Method waitWithoutFailureMethod = SmartWebDriver.class.getDeclaredMethod(
+            "waitWithoutFailure", Function.class);
+      waitWithoutFailureMethod.setAccessible(true);
+
+      // Act
+      waitWithoutFailureMethod.invoke(smartDriver, condition);
+
+      // Assert
+      verify(mockWait).until(condition);
    }
 
    @Nested
@@ -1186,59 +1240,5 @@ class SmartWebDriverTest extends BaseUnitUITest {
             logUIMock.verify(() -> LogUi.error(contains("Exception handling failed for method")));
          }
       }
-   }
-
-   @Test
-   @DisplayName("waitWithoutFailure should suppress exceptions")
-   void waitWithoutFailureShouldSuppressExceptions() throws Exception {
-      // Arrange
-      Function<WebDriver, Boolean> condition = driver -> {
-         throw new TimeoutException("Timeout waiting for condition");
-      };
-
-      WebDriverWait mockWait = mock(WebDriverWait.class);
-      doThrow(new TimeoutException("Timeout")).when(mockWait).until(any(Function.class));
-
-      // Use reflection to set the wait field
-      Field waitField = SmartWebDriver.class.getDeclaredField("wait");
-      waitField.setAccessible(true);
-      waitField.set(smartDriver, mockWait);
-
-      // Use reflection to access the private method
-      Method waitWithoutFailureMethod = SmartWebDriver.class.getDeclaredMethod(
-            "waitWithoutFailure", Function.class);
-      waitWithoutFailureMethod.setAccessible(true);
-
-      // Act - should not throw exception
-      waitWithoutFailureMethod.invoke(smartDriver, condition);
-
-      // Assert - verify wait was called
-      verify(mockWait).until(condition);
-   }
-
-   @Test
-   @DisplayName("waitWithoutFailure should complete successfully when no exception")
-   void waitWithoutFailureShouldCompleteSuccessfullyWhenNoException() throws Exception {
-      // Arrange
-      Function<WebDriver, Boolean> condition = driver -> true;
-
-      WebDriverWait mockWait = mock(WebDriverWait.class);
-      when(mockWait.until(any(Function.class))).thenReturn(true);
-
-      // Use reflection to set the wait field
-      Field waitField = SmartWebDriver.class.getDeclaredField("wait");
-      waitField.setAccessible(true);
-      waitField.set(smartDriver, mockWait);
-
-      // Use reflection to access the private method
-      Method waitWithoutFailureMethod = SmartWebDriver.class.getDeclaredMethod(
-            "waitWithoutFailure", Function.class);
-      waitWithoutFailureMethod.setAccessible(true);
-
-      // Act
-      waitWithoutFailureMethod.invoke(smartDriver, condition);
-
-      // Assert
-      verify(mockWait).until(condition);
    }
 }

@@ -38,6 +38,34 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
    }
 
    /**
+    * Resolves the specific interface that implements {@link ComponentType} from a given enum class.
+    *
+    * <p>If the provided {@code componentTypeClass} directly implements {@code ComponentType},
+    * it is returned immediately. Otherwise, this method inspects its interfaces and returns
+    * the first one that in turn extends {@code ComponentType}.</p>
+    *
+    * @param componentTypeClass the enum class (or interface) to inspect for a ComponentType implementation
+    * @return the interface class which extends {@code ComponentType}
+    * @throws IllegalStateException if no interface extending {@code ComponentType} is found
+    */
+   protected static Class<? extends ComponentType> extractComponentTypeClass(
+         final Class<? extends ComponentType> componentTypeClass) {
+      if (Arrays.asList(componentTypeClass.getInterfaces()).contains(ComponentType.class)) {
+         return componentTypeClass;
+      }
+
+      @SuppressWarnings("unchecked") final Class<? extends ComponentType> resolved =
+            (Class<? extends ComponentType>) Arrays.stream(componentTypeClass.getInterfaces())
+                  .filter(inter -> Arrays.asList(inter.getInterfaces())
+                        .contains(ComponentType.class))
+                  .findFirst()
+                  .orElseThrow(() -> new IllegalStateException(
+                        "No interface extending ComponentType found in " + componentTypeClass
+                  ));
+      return resolved;
+   }
+
+   /**
     * Processes the provided data object, extracts annotated fields, and inserts values
     * into corresponding UI components.
     *
@@ -180,34 +208,6 @@ public abstract class BaseInsertionService<A extends Annotation> implements Inse
             .sorted(Comparator.comparingInt(field ->
                   getOrder(field.getAnnotation(getAnnotationClass()))))
             .toList();
-   }
-
-   /**
-    * Resolves the specific interface that implements {@link ComponentType} from a given enum class.
-    *
-    * <p>If the provided {@code componentTypeClass} directly implements {@code ComponentType},
-    * it is returned immediately. Otherwise, this method inspects its interfaces and returns
-    * the first one that in turn extends {@code ComponentType}.</p>
-    *
-    * @param componentTypeClass the enum class (or interface) to inspect for a ComponentType implementation
-    * @return the interface class which extends {@code ComponentType}
-    * @throws IllegalStateException if no interface extending {@code ComponentType} is found
-    */
-   protected static Class<? extends ComponentType> extractComponentTypeClass(
-         final Class<? extends ComponentType> componentTypeClass) {
-      if (Arrays.asList(componentTypeClass.getInterfaces()).contains(ComponentType.class)) {
-         return componentTypeClass;
-      }
-
-      @SuppressWarnings("unchecked") final Class<? extends ComponentType> resolved =
-            (Class<? extends ComponentType>) Arrays.stream(componentTypeClass.getInterfaces())
-                  .filter(inter -> Arrays.asList(inter.getInterfaces())
-                        .contains(ComponentType.class))
-                  .findFirst()
-                  .orElseThrow(() -> new IllegalStateException(
-                        "No interface extending ComponentType found in " + componentTypeClass
-                  ));
-      return resolved;
    }
 
 }

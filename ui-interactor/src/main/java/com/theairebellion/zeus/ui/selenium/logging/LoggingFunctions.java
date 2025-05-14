@@ -41,7 +41,7 @@ public class LoggingFunctions {
     * @param e      The thrown exception.
     */
    public static void logFindElementFromRootNoSuchElementException(final Object target, final WebElementAction action,
-         final Object[] args, final InvocationTargetException e) {
+                                                                   final Object[] args, final InvocationTargetException e) {
       By locator = LocatorParser.extractLocator(args);
       Throwable cause = e.getCause();
       WebDriver driver = (WebDriver) target;
@@ -63,7 +63,7 @@ public class LoggingFunctions {
     * @param e      The thrown exception.
     */
    public static void logNoSuchElementException(final Object target, final WebElementAction action,
-         final Object[] args, final InvocationTargetException e) {
+                                                final Object[] args, final InvocationTargetException e) {
       Throwable cause = e.getCause();
       By locator = LocatorParser.extractLocator(args);
       WebElement element = target instanceof WebElement we ? we : null;
@@ -103,7 +103,7 @@ public class LoggingFunctions {
     * @param e      The thrown exception.
     */
    public static void logElementNotInteractableException(final Object target, final WebElementAction action,
-         final Object[] args, final InvocationTargetException e) {
+                                                         final Object[] args, final InvocationTargetException e) {
       Throwable cause = e.getCause();
       WebElement element = target instanceof WebElement we ? we : null;
       if (element == null) {
@@ -131,7 +131,7 @@ public class LoggingFunctions {
     * @param e      The thrown exception.
     */
    public static void logClickInvalidSelectorException(final Object target, final WebElementAction action,
-         final Object[] args, final InvocationTargetException e) {
+                                                       final Object[] args, final InvocationTargetException e) {
       By locator = LocatorParser.extractLocator(args);
       Throwable cause = e.getCause();
       String additionalInfo = String.format("Invalid selector while clicking element. Malformed locator: [%s].",
@@ -148,7 +148,7 @@ public class LoggingFunctions {
     * @param e      The thrown exception.
     */
    public static void logElementClickInterceptedException(final Object target, final WebElementAction action,
-         final Object[] args, final InvocationTargetException e) {
+                                                          final Object[] args, final InvocationTargetException e) {
       Throwable cause = e.getCause();
       WebElement element = null;
       if (target instanceof WebElement webElement) {
@@ -178,7 +178,7 @@ public class LoggingFunctions {
     * @param e      The thrown exception.
     */
    public static void logClickTimeoutException(final Object target, final WebElementAction action,
-         final Object[] args, final InvocationTargetException e) {
+                                               final Object[] args, final InvocationTargetException e) {
       Throwable cause = e.getCause();
       By locator = LocatorParser.extractLocator(args);
       long timeout = 0L;
@@ -194,7 +194,7 @@ public class LoggingFunctions {
 
 
    private static void logException(Class<? extends Throwable> throwable, Object target, String methodName,
-         Object[] methodArgs, String additionalInfo) {
+                                    Object[] methodArgs, String additionalInfo) {
       LogUi.extended("Exception: [{}] thrown on target: [{}({})] from method: [{}] called with argument types: [{}]",
             throwable.getSimpleName(),
             target.getClass().getSimpleName(),

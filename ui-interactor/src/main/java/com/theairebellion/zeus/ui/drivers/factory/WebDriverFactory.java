@@ -24,9 +24,6 @@ import org.openqa.selenium.remote.AbstractDriverOptions;
  */
 public class WebDriverFactory {
 
-   private WebDriverFactory() {
-   }
-
    /**
     * Stores registered WebDriver providers, mapped by browser type (e.g., "CHROME", "EDGE").
     */
@@ -35,6 +32,9 @@ public class WebDriverFactory {
    static {
       registerDriver("CHROME", new ChromeDriverProvider());
       registerDriver("EDGE", new EdgeDriverProvider());
+   }
+
+   private WebDriverFactory() {
    }
 
    /**

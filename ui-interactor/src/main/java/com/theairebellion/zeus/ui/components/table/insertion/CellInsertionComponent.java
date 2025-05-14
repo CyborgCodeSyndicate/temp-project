@@ -19,17 +19,15 @@ import lombok.Getter;
 public class CellInsertionComponent {
 
    /**
+    * The execution order for insertion, determining priority when multiple insertions occur.
+    */
+   int order;
+   /**
     * The type of component used for insertion.
     */
    private Class<? extends ComponentType> type;
-
    /**
     * The specific component type identifier.
     */
    private String componentType;
-
-   /**
-    * The execution order for insertion, determining priority when multiple insertions occur.
-    */
-   int order;
 }
