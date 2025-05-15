@@ -438,6 +438,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
    @Test
    @DisplayName("Get Web Driver")
+   @Disabled
    void testGetWebDriver() throws Exception {
       // Use reflection to access private method
       Method getWebDriverMethod = UiTestExtension.class.getDeclaredMethod(

@@ -541,6 +541,42 @@ class ListServiceFluentTest extends BaseUnitUITest {
    }
 
    @Test
+   void validateAreVisibleShouldDelegateToValidateAreVisibleWithTrueFlag() {
+      // Arrange
+      mockService.reset();
+      mockService.returnBool = true;
+      String[] values = {"Item1", "Item2"};
+
+      // Act
+      UiServiceFluent<?> result = sut.validateAreVisible(element, true, values);
+
+      // Assert
+      assertThat(mockService.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+      assertThat(mockService.lastLocators).isEqualTo(new By[] {By.id("testList")});
+      assertThat(mockService.lastText).isEqualTo(values);
+      verify(storageUI).put(element.enumImpl(), true);
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
+   void validateAreHidden_shouldDelegateToValidateAreVisibleWithFalseFlag() {
+      // Arrange
+      mockService.reset();
+      mockService.returnBool = true;
+      String[] values = {"Item1", "Item2"};
+
+      // Act
+      UiServiceFluent<?> result = sut.validateAreHidden(element, false, values);
+
+      // Assert
+      assertThat(mockService.lastComponentType).isEqualTo(MockItemListComponentType.DUMMY);
+      assertThat(mockService.lastLocators).isEqualTo(new By[] {By.id("testList")});
+      assertThat(mockService.lastText).isEqualTo(values);
+      verify(storageUI).put(element.enumImpl(), true);
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
    @DisplayName("validateAreVisible should call validateAreVisible with correct parameters")
    void validateAreVisibleShouldCallValidateAreVisibleWithCorrectParameters() {
       // Given

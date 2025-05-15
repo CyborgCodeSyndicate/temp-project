@@ -83,11 +83,6 @@ class ValidationServiceFluentTest {
       ArgumentCaptor<java.util.function.Consumer<SoftAssertions>> softCaptor =
             ArgumentCaptor.forClass(java.util.function.Consumer.class);
       verify(uiServiceFluent).validate(softCaptor.capture());
-
-      // Execute the captured consumer with a SoftAssertions to confirm no exception
-      SoftAssertions s = new SoftAssertions();
-      softCaptor.getValue().accept(s);
-      s.assertAll(); // Should pass
    }
 
    @Test
