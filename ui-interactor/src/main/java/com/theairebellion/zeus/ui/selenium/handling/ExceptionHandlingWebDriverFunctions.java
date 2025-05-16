@@ -39,15 +39,24 @@ public class ExceptionHandlingWebDriverFunctions {
      */
     public static Object handleNoSuchElement(WebDriver driver, WebElementAction webElementAction, Object... args) {
         if (args.length == 0 || !(args[0] instanceof By)) {
-            LogUI.error("Invalid or missing locator argument for FIND_ELEMENT.");
-            throw new IllegalArgumentException("FIND_ELEMENT action requires a By locator.");
+            LogUI.error("Invalid or missing locator argument.");
+            throw new IllegalArgumentException("Action requires a By locator.");
         }
 
-        WebElement foundElement = FrameHelper.findElementInIFrames(driver, (By) args[0]);
-        if (foundElement != null) {
-            return webElementAction.performActionWebDriver(driver, foundElement);
+        By locator = (By) args[0];
+
+        if (webElementAction == WebElementAction.FIND_ELEMENTS) {
+            WebElement container = FrameHelper.findContainerIFrame(driver, locator);
+            if (container != null) {
+                return webElementAction.performActionWebDriver(driver, locator);
+            }
+        } else {
+            WebElement foundElement = FrameHelper.findElementInIFrames(driver, locator);
+            if (foundElement != null) {
+                return webElementAction.performActionWebDriver(driver, foundElement);
+            }
         }
-        LogUI.error("Element not found in the main DOM or any iframe.");
-        throw new NoSuchElementException("Element not found in the main DOM or any iframe.");
+        LogUI.error("Element(s) not found in the main DOM or any iframe.");
+        throw new NoSuchElementException("Element(s) not found in main DOM or any iframe.");
     }
 }

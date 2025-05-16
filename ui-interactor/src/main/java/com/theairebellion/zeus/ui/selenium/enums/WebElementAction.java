@@ -6,8 +6,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.stream.Collectors;
-
 /**
  * Enum representing different WebElement actions that can be performed.
  * <p>

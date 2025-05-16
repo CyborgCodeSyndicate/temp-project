@@ -71,17 +71,24 @@ public class ExceptionHandlingWebElementFunctions {
                                              WebElementAction webElementAction, Object... args) {
         if (args.length == 0 || !(args[0] instanceof By)) {
             LogUI.error("Invalid or missing locator argument for FIND_ELEMENT.");
-            throw new IllegalArgumentException("FIND_ELEMENT action requires a By locator.");
+            throw new IllegalArgumentException("Action requires a By locator.");
         }
 
-        WebElement foundElement = FrameHelper.findElementInIFrames(driver, element.getOriginal());
-        if (foundElement != null) {
-            return webElementAction.performActionWebElement(driver, foundElement, args);
+        if (webElementAction == WebElementAction.FIND_ELEMENTS) {
+            WebElement container = FrameHelper.findContainerIFrame(driver, (By) args[0]);
+            if (container != null) {
+                return webElementAction.performActionWebDriver(driver, args);
+            }
+        } else {
+            WebElement foundElement = FrameHelper.findElementInIFrames(driver, element.getOriginal());
+            if (foundElement != null) {
+                return webElementAction.performActionWebElement(driver, foundElement, args);
+            }
         }
 
         String errorMessage = String.format(
-            "[BROKEN] WebElement action '%s' could not be executed - Element with locator '%s' not found.",
-            webElementAction.getMethodName(), args[0]
+                "[BROKEN] WebElement action '%s' could not be executed - Element with locator '%s' not found.",
+                webElementAction.getMethodName(), args[0]
         );
 
         LogUI.error(errorMessage);

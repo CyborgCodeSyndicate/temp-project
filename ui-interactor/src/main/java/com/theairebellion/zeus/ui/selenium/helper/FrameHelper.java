@@ -73,6 +73,26 @@ public class FrameHelper {
     }
 
     /**
+     * Searches for an iframe that contains a WebElement matching the given locator.
+     *
+     * @param driver The WebDriver instance.
+     * @param locator The locator of the target element to find within iframes.
+     * @return The containing {@link WebElement} (iframe) if found, otherwise {@code null}.
+     */
+    public static WebElement findContainerIFrame(WebDriver driver, By locator) {
+        List<WebElement> frames = getAllIFrames(driver);
+        for (WebElement frame : frames) {
+            driver.switchTo().frame(frame);
+            if (!driver.findElements(locator).isEmpty()) {
+                return frame;
+            }
+            driver.switchTo().defaultContent();
+        }
+
+        return null;
+    }
+
+    /**
      * Searches for an existing WebElement inside available iframes.
      *
      * @param driver  The WebDriver instance.

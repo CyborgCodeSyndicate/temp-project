@@ -95,6 +95,20 @@ class SuperQuestTest {
             assertTrue(exception.getMessage().contains("World not initialized"),
                     "Exception message should indicate world not initialized");
         }
+
+        @Test
+        @DisplayName("Should maintain separate state for different SuperQuest instances")
+        void testInstanceIsolation() {
+            Quest quest1 = new Quest();
+            Quest quest2 = new Quest();
+            SuperQuest sq1 = new SuperQuest(quest1);
+            SuperQuest sq2 = new SuperQuest(quest2);
+
+            sq1.registerWorld(MockFluentService.class, new MockFluentService());
+
+            assertThrows(IllegalArgumentException.class,
+                    () -> sq2.cast(MockFluentService.class));
+        }
     }
 
     @Nested

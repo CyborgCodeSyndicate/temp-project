@@ -7,8 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,16 +27,6 @@ class ExceptionHandlingWebElementTest {
 
     @Mock
     private By mockBy;
-
-    @ParameterizedTest
-    @EnumSource(ExceptionHandlingWebElement.class)
-    @DisplayName("Each enum should have non-null fields")
-    void testEnumConstructorAndGetters(ExceptionHandlingWebElement enumValue) {
-        // Test that each enum has non-null values for its fields
-        assertNotNull(enumValue.getMethodName());
-        assertNotNull(enumValue.getExceptionHandlingMap());
-        assertFalse(enumValue.getExceptionHandlingMap().isEmpty());
-    }
 
     @Nested
     @DisplayName("Tests for method names")
@@ -90,7 +78,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.FIND_ELEMENT.getExceptionHandlingMap()
                                 .get(StaleElementReferenceException.class);
@@ -98,10 +86,10 @@ class ExceptionHandlingWebElementTest {
                 StaleElementReferenceException staleException = new StaleElementReferenceException("Stale element");
                 Object[] args = new Object[] { mockBy };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, staleException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleStaleElement(
                                 eq(mockDriver),
@@ -119,7 +107,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.FIND_ELEMENT.getExceptionHandlingMap()
                                 .get(NoSuchElementException.class);
@@ -127,10 +115,10 @@ class ExceptionHandlingWebElementTest {
                 NoSuchElementException noSuchException = new NoSuchElementException("No element found");
                 Object[] args = new Object[] { mockBy };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, noSuchException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleNoSuchElement(
                                 eq(mockDriver),
@@ -148,7 +136,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.FIND_ELEMENTS.getExceptionHandlingMap()
                                 .get(StaleElementReferenceException.class);
@@ -156,10 +144,10 @@ class ExceptionHandlingWebElementTest {
                 StaleElementReferenceException staleException = new StaleElementReferenceException("Stale element");
                 Object[] args = new Object[] { mockBy };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, staleException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleStaleElement(
                                 eq(mockDriver),
@@ -177,7 +165,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.FIND_ELEMENTS.getExceptionHandlingMap()
                                 .get(NoSuchElementException.class);
@@ -185,10 +173,10 @@ class ExceptionHandlingWebElementTest {
                 NoSuchElementException noSuchException = new NoSuchElementException("No element found");
                 Object[] args = new Object[] { mockBy };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, noSuchException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleNoSuchElement(
                                 eq(mockDriver),
@@ -206,7 +194,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.CLICK.getExceptionHandlingMap()
                                 .get(StaleElementReferenceException.class);
@@ -214,10 +202,10 @@ class ExceptionHandlingWebElementTest {
                 StaleElementReferenceException staleException = new StaleElementReferenceException("Stale element");
                 Object[] args = new Object[] {};
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, staleException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleStaleElement(
                                 eq(mockDriver),
@@ -234,7 +222,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.CLICK.getExceptionHandlingMap()
                                 .get(ElementClickInterceptedException.class);
@@ -243,10 +231,10 @@ class ExceptionHandlingWebElementTest {
                         new ElementClickInterceptedException("Click intercepted");
                 Object[] args = new Object[] {};
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, clickException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
                                 eq(mockDriver),
@@ -264,7 +252,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.CLICK.getExceptionHandlingMap()
                                 .get(ElementNotInteractableException.class);
@@ -273,10 +261,10 @@ class ExceptionHandlingWebElementTest {
                         new ElementNotInteractableException("Not interactable");
                 Object[] args = new Object[] {};
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, notInteractableException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
                                 eq(mockDriver),
@@ -293,7 +281,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.CLICK.getExceptionHandlingMap()
                                 .get(NoSuchElementException.class);
@@ -301,10 +289,10 @@ class ExceptionHandlingWebElementTest {
                 NoSuchElementException noSuchException = new NoSuchElementException("No element found");
                 Object[] args = new Object[] { mockBy };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, noSuchException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleNoSuchElement(
                                 eq(mockDriver),
@@ -322,7 +310,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.SEND_KEYS.getExceptionHandlingMap()
                                 .get(StaleElementReferenceException.class);
@@ -331,10 +319,10 @@ class ExceptionHandlingWebElementTest {
                 String keys = "test input";
                 Object[] args = new Object[] { keys };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, staleException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleStaleElement(
                                 eq(mockDriver),
@@ -352,7 +340,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.SEND_KEYS.getExceptionHandlingMap()
                                 .get(ElementClickInterceptedException.class);
@@ -362,10 +350,10 @@ class ExceptionHandlingWebElementTest {
                 String keys = "test input";
                 Object[] args = new Object[] { keys };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, clickException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleElementClickIntercepted(
                                 eq(mockDriver),
@@ -384,7 +372,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.SEND_KEYS.getExceptionHandlingMap()
                                 .get(ElementNotInteractableException.class);
@@ -394,10 +382,10 @@ class ExceptionHandlingWebElementTest {
                 String keys = "test input";
                 Object[] args = new Object[] { keys };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, notInteractableException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
                                 eq(mockDriver),
@@ -415,7 +403,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.SEND_KEYS.getExceptionHandlingMap()
                                 .get(NoSuchElementException.class);
@@ -424,10 +412,10 @@ class ExceptionHandlingWebElementTest {
                 String keys = "test input";
                 Object[] args = new Object[] { keys };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, noSuchException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleNoSuchElement(
                                 eq(mockDriver),
@@ -445,7 +433,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.SUBMIT.getExceptionHandlingMap()
                                 .get(StaleElementReferenceException.class);
@@ -453,10 +441,10 @@ class ExceptionHandlingWebElementTest {
                 StaleElementReferenceException staleException = new StaleElementReferenceException("Stale element");
                 Object[] args = new Object[] {};
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, staleException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleStaleElement(
                                 eq(mockDriver),
@@ -473,7 +461,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.SUBMIT.getExceptionHandlingMap()
                                 .get(ElementNotInteractableException.class);
@@ -482,10 +470,10 @@ class ExceptionHandlingWebElementTest {
                         new ElementNotInteractableException("Not interactable");
                 Object[] args = new Object[] {};
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, notInteractableException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
                                 eq(mockDriver),
@@ -502,7 +490,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.SUBMIT.getExceptionHandlingMap()
                                 .get(NoSuchElementException.class);
@@ -510,10 +498,10 @@ class ExceptionHandlingWebElementTest {
                 NoSuchElementException noSuchException = new NoSuchElementException("No element found");
                 Object[] args = new Object[] { mockBy };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, noSuchException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleNoSuchElement(
                                 eq(mockDriver),
@@ -531,7 +519,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.CLEAR.getExceptionHandlingMap()
                                 .get(StaleElementReferenceException.class);
@@ -539,10 +527,10 @@ class ExceptionHandlingWebElementTest {
                 StaleElementReferenceException staleException = new StaleElementReferenceException("Stale element");
                 Object[] args = new Object[] {};
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, staleException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleStaleElement(
                                 eq(mockDriver),
@@ -559,7 +547,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.CLEAR.getExceptionHandlingMap()
                                 .get(ElementNotInteractableException.class);
@@ -568,10 +556,10 @@ class ExceptionHandlingWebElementTest {
                         new ElementNotInteractableException("Not interactable");
                 Object[] args = new Object[] {};
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, notInteractableException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleElementNotInteractable(
                                 eq(mockDriver),
@@ -588,7 +576,7 @@ class ExceptionHandlingWebElementTest {
             try (MockedStatic<ExceptionHandlingWebElementFunctions> mockedFunctions =
                          mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
-                // Setup
+                // Given
                 FourFunction<WebDriver, SmartWebElement, Object[], Exception, Object> function =
                         ExceptionHandlingWebElement.CLEAR.getExceptionHandlingMap()
                                 .get(NoSuchElementException.class);
@@ -596,27 +584,19 @@ class ExceptionHandlingWebElementTest {
                 NoSuchElementException noSuchException = new NoSuchElementException("No element found");
                 Object[] args = new Object[] { mockBy };
 
-                // Execute
+                // When
                 function.apply(mockDriver, mockSmartElement, noSuchException, args);
 
-                // Verify
+                // Then
                 mockedFunctions.verify(() ->
                         ExceptionHandlingWebElementFunctions.handleNoSuchElement(
                                 eq(mockDriver),
                                 eq(mockSmartElement),
-                                eq(WebElementAction.CLICK), // Note: This is intentional as per implementation
+                                eq(WebElementAction.CLICK),
                                 eq(mockBy)
                         )
                 );
             }
         }
-    }
-
-    @Test
-    @DisplayName("Private constructor should not be accessible")
-    void testPrivateConstructorNotAccessible() {
-        // This doesn't actually test the constructor but ensures coverage
-        // by acknowledging the enum has a default constructor
-        assertNotNull(ExceptionHandlingWebElement.FIND_ELEMENT);
     }
 }

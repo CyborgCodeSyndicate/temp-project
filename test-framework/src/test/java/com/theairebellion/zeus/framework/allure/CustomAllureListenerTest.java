@@ -5,6 +5,7 @@ import io.qameta.allure.AllureLifecycle;
 import io.qameta.allure.model.Status;
 import io.qameta.allure.model.StepResult;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -13,7 +14,7 @@ import org.mockito.ArgumentCaptor;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class CustomAllureListenerTest {
+class CustomAllureListenerTest {
 
     private AllureLifecycle lifecycleMock;
 
@@ -25,44 +26,51 @@ public class CustomAllureListenerTest {
 
     @ParameterizedTest
     @EnumSource(CustomAllureListener.StatusType.class)
+    @DisplayName("Should set correct Allure status based on StatusType enum")
     void testStartStepWithStatusType_ShouldSetCorrectStatus(CustomAllureListener.StatusType inputType) {
+        // Given
         ArgumentCaptor<StepResult> stepCaptor = ArgumentCaptor.forClass(StepResult.class);
 
-        // Act
+        // When
         CustomAllureListener.startStepWithStatusType("Test Step", inputType);
 
-        // Assert
+        // Then
         verify(lifecycleMock).startStep(anyString(), stepCaptor.capture());
         StepResult captured = stepCaptor.getValue();
 
         Status expectedStatus = getExpectedStatus(inputType);
-        assertEquals(expectedStatus, captured.getStatus());
+        assertEquals(expectedStatus, captured.getStatus(),
+                "Expected status " + expectedStatus + " for input type " + inputType + ", but got " + captured.getStatus());
     }
 
     @Test
+    @DisplayName("Should set null status when input StatusType is null")
     void testStartStepWithStatusType_ShouldSetNullStatusForNullInput() {
+        // Given
         ArgumentCaptor<StepResult> stepCaptor = ArgumentCaptor.forClass(StepResult.class);
 
-        // Act
+        // When
         CustomAllureListener.startStepWithStatusType("Test Step", null);
 
-        // Assert
+        // Then
         verify(lifecycleMock).startStep(anyString(), stepCaptor.capture());
         StepResult captured = stepCaptor.getValue();
-        assertNull(captured.getStatus());
+        assertNull(captured.getStatus(), "Expected status to be null for null input, but got " + captured.getStatus());
     }
 
     @Test
+    @DisplayName("Should return correct active step name after starting a step")
     void testGetActiveStepName_ShouldReturnCorrectStepName() {
-        // Arrange
+        // Given
         String expectedStepName = "Sample Step";
-        CustomAllureListener.startStep(expectedStepName);
 
-        // Act
+        // When
+        CustomAllureListener.startStep(expectedStepName);
         String actualStepName = CustomAllureListener.getActiveStepName();
 
-        // Assert
-        assertEquals(expectedStepName, actualStepName, "getActiveStepName should return the correct step name");
+        // Then
+        assertEquals(expectedStepName, actualStepName,
+                "Expected step name to be '" + expectedStepName + "' but got '" + actualStepName + "'");
     }
 
     private Status getExpectedStatus(CustomAllureListener.StatusType inputType) {

@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.decorators;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -42,6 +43,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("getOriginal() should return the wrapped WebDriver instance")
     void shouldReturnOriginalWebDriver() {
         // When getting the original WebDriver
         WebDriver result = decorator.getOriginal();
@@ -52,6 +54,7 @@ class WebDriverDecoratorTest {
 
 
     @Test
+    @DisplayName("get() should delegate to the original WebDriver")
     void shouldDelegateGetMethod() {
         // Given
         String url = "https://example.com";
@@ -64,6 +67,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("findElement() should delegate to original WebDriver and return the element")
     void shouldDelegateFindElementMethod() {
         // Given
         By by = By.id("testId");
@@ -78,6 +82,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("findElements() should delegate to original WebDriver and return element list")
     void shouldDelegateFindElementsMethod() {
         // Given
         By by = By.className("testClass");
@@ -93,6 +98,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("getCurrentUrl() should delegate to original WebDriver and return URL")
     void shouldDelegateGetCurrentUrlMethod() {
         // Given
         String expectedUrl = "https://example.com/page";
@@ -107,6 +113,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("getTitle() should delegate to original WebDriver and return page title")
     void shouldDelegateGetTitleMethod() {
         // Given
         String expectedTitle = "Example Page";
@@ -121,6 +128,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("getWindowHandle() should delegate to original WebDriver and return window handle")
     void shouldDelegateGetWindowHandleMethod() {
         // Given
         String expectedHandle = "window1";
@@ -135,6 +143,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("getWindowHandles() should delegate to original WebDriver and return all window handles")
     void shouldDelegateGetWindowHandlesMethod() {
         // Given
         Set<String> expectedHandles = Set.of("window1", "window2");
@@ -149,6 +158,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("close() should delegate window close operation to original WebDriver")
     void shouldDelegateCloseMethod() {
         // When
         decorator.close();
@@ -158,6 +168,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("quit() should delegate browser quit operation to original WebDriver")
     void shouldDelegateQuitMethod() {
         // When
         decorator.quit();
@@ -167,6 +178,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("switchTo() should delegate to original WebDriver and return TargetLocator")
     void shouldDelegateSwitchToMethod() {
         // Given
         WebDriver.TargetLocator targetLocator = mock(WebDriver.TargetLocator.class);
@@ -181,6 +193,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("navigate() should delegate to original WebDriver and return Navigation object")
     void shouldDelegateNavigateMethod() {
         // Given
         WebDriver.Navigation navigation = mock(WebDriver.Navigation.class);
@@ -195,6 +208,7 @@ class WebDriverDecoratorTest {
     }
 
     @Test
+    @DisplayName("manage() should delegate to original WebDriver and return Options object")
     void shouldDelegateManageMethod() {
         // Given
         WebDriver.Options options = mock(WebDriver.Options.class);

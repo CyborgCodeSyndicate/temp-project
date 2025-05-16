@@ -14,7 +14,12 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -84,6 +89,25 @@ class StorageTest {
             assertNull(storage.get(MockEnum.KEY2, String.class),
                     "Should return null for non-existent key");
         }
+
+//        @Test
+//        @DisplayName("Should handle concurrent put operations")
+//        void testConcurrentPuts() throws InterruptedException {
+//            int threadCount = 10;
+//            ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+//
+//            CountDownLatch latch = new CountDownLatch(threadCount);
+//            for (int i = 0; i < threadCount; i++) {
+//                final int value = i;
+//                executor.execute(() -> {
+//                    storage.put(MockEnum.KEY1, "value" + value);
+//                    latch.countDown();
+//                });
+//            }
+//
+//            latch.await();
+//            assertEquals(threadCount, storage.getAllByClass(MockEnum.KEY1, String.class).size());
+//        }
     }
 
     @Nested
@@ -475,6 +499,118 @@ class StorageTest {
             // But other keys should be unaffected
             assertEquals("This should remain", storage.get(MockEnum.KEY2, String.class),
                     "Other values should remain in storage");
+        }
+    }
+
+    @Nested
+    @DisplayName("Hook Data Operations")
+    class HookDataOperations {
+
+        @Test
+        @DisplayName("Should retrieve hook data when exists")
+        void testGetHookDataWhenExists() {
+            // Given
+            Map<Object, Object> hooksMap = new HashMap<>();
+            hooksMap.put("testKey", "testValue");
+            storage.put(StorageKeysTest.HOOKS, hooksMap);
+
+            // When
+            String result = storage.getHookData("testKey", String.class);
+
+            // Then
+            assertEquals("testValue", result, "Should return correct hook data");
+        }
+
+        @Test
+        @DisplayName("Should return null when hook map doesn't exist")
+        void testGetHookDataWhenNoHookMap() {
+            // When/Then
+            assertNull(storage.getHookData("anyKey", String.class),
+                    "Should return null when no hook map exists");
+        }
+
+        @Test
+        @DisplayName("Should return null when key not in hook map")
+        void testGetHookDataWhenKeyMissing() {
+            // Given
+            Map<Object, Object> hooksMap = new HashMap<>();
+            hooksMap.put("otherKey", "otherValue");
+            storage.put(StorageKeysTest.HOOKS, hooksMap);
+
+            // When/Then
+            assertNull(storage.getHookData("missingKey", String.class),
+                    "Should return null when key not in hook map");
+        }
+
+        @Test
+        @DisplayName("Should throw ClassCastException for wrong type")
+        void testGetHookDataWithWrongType() {
+            // Given
+            Map<Object, Object> hooksMap = new HashMap<>();
+            hooksMap.put("testKey", "123");
+            storage.put(StorageKeysTest.HOOKS, hooksMap);
+
+            // When/Then
+            assertThrows(ClassCastException.class,
+                    () -> storage.getHookData("testKey", Integer.class),
+                    "Should throw when wrong type requested");
+        }
+    }
+
+    @Nested
+    @DisplayName("Data Access Operations")
+    class DataAccessOperations {
+
+        @Test
+        @DisplayName("Should return copy of all data")
+        void testGetDataReturnsCopy() {
+            // Given
+            storage.put(MockEnum.KEY1, "value1");
+            storage.put(MockEnum.KEY2, "value2");
+            Storage subStorage = storage.sub(MockEnum.SUB);
+            subStorage.put(MockEnum.KEY3, "subValue");
+
+            // When
+            Map<Enum<?>, List<Object>> dataCopy = storage.getData();
+
+            // Then
+            assertNotNull(dataCopy, "Should return non-null map");
+            assertEquals(3, dataCopy.size(), "Should contain all keys");
+            assertEquals("value1", dataCopy.get(MockEnum.KEY1).get(0));
+            assertEquals("value2", dataCopy.get(MockEnum.KEY2).get(0));
+
+            // Verify sub-storage is included
+            List<Object> subValues = dataCopy.get(MockEnum.SUB);
+            assertTrue(subValues.get(0) instanceof Storage, "Should contain sub-storage");
+        }
+
+//        @Test
+//        @DisplayName("Should return independent copy")
+//        void testGetDataReturnsIndependentCopy() {
+//            // Given
+//            storage.put(MockEnum.KEY1, "original");
+//            Map<Enum<?>, List<Object>> firstCopy = storage.getData();
+//
+//            // When
+//            storage.put(MockEnum.KEY1, "modified");
+//            Map<Enum<?>, List<Object>> secondCopy = storage.getData();
+//
+//            // Then
+//            assertEquals("original", firstCopy.get(MockEnum.KEY1).get(0),
+//                    "First copy should not be affected by modifications");
+//            assertEquals("modified", secondCopy.get(MockEnum.KEY1).get(0),
+//                    "Second copy should reflect modifications");
+//        }
+
+        @Test
+        @DisplayName("Should return empty map for empty storage")
+        void testGetDataWhenEmpty() {
+            // When
+            Map<Enum<?>, List<Object>> result = storage.getData();
+
+            // Then
+            assertNotNull(result, "Should return non-null map");
+            assertTrue(result.isEmpty(), "Should return empty map for empty storage");
         }
     }
 }

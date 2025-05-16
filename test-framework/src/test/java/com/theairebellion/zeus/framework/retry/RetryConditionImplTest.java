@@ -86,4 +86,18 @@ class RetryConditionImplTest {
         assertEquals("test", functionResult, "Function should return the expected string");
         assertTrue(predicateResult, "Complex predicate should evaluate to true for the function result");
     }
+
+    @Test
+    @DisplayName("Should handle predicate that throws exceptions")
+    void testPredicateThatThrows() {
+        Predicate<Integer> throwingPredicate = value -> {
+            if (value < 0) throw new IllegalArgumentException("Negative value");
+            return value == EXPECTED_VALUE;
+        };
+        RetryConditionImpl<Integer> condition =
+                new RetryConditionImpl<>(testFunction, throwingPredicate);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> condition.condition().test(-1));
+    }
 }

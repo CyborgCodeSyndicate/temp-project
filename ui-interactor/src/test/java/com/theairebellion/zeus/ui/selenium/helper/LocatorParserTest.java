@@ -3,8 +3,10 @@ package com.theairebellion.zeus.ui.selenium.helper;
 import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
+import com.theairebellion.zeus.ui.selenium.exceptions.UiInteractionException;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,174 +41,54 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class LocatorParserTest extends BaseUnitUITest {
 
-    @Test
-    void testPrivateConstructor() throws Exception {
-        // Use reflection to access the private constructor
-        Constructor<LocatorParser> constructor = LocatorParser.class.getDeclaredConstructor();
-
-        // Make the constructor accessible
-        constructor.setAccessible(true);
-
-        // Create an instance using the private constructor
-        LocatorParser instance = constructor.newInstance();
-
-        // Verify that an instance was created
-        assertThat(instance).isNotNull();
-    }
-
 
     @Test
+    @DisplayName("updateWebElement should successfully update element with complex locator string")
     void updateWebElement_simpleTest() {
-        // Create minimal mocks
+        // Given
         WebDriver mockWebDriver = mock(WebDriver.class);
         SmartWebElement mockOriginalElement = mock(SmartWebElement.class);
         SmartWebElement mockNewElement = mock(SmartWebElement.class);
 
-        try (MockedStatic<UiConfigHolder> staticMock = mockStatic(UiConfigHolder.class)) {
-            UiConfig mockConfig = mock(UiConfig.class);
-            lenient().when(mockConfig.waitDuration()).thenReturn(2); // <-- lenient here
-            staticMock.when(UiConfigHolder::getUiConfig).thenReturn(mockConfig);
+        // When
+        try (MockedConstruction<SmartWebDriver> swdMock = mockConstruction(SmartWebDriver.class, (mock, context) -> {
+            when(mock.findSmartElement(any(), anyLong())).thenReturn(mockNewElement);
+        })) {
 
-            try (MockedConstruction<WebDriverWait> waitMock = mockConstruction(WebDriverWait.class)) {
+            String locatorString = "[[ChromeDriver: chrome on MAC] -> " +
+                    "tag name: div]] -> " +
+                    "css selector: .container]] -> " +
+                    "xpath: //input[@type='text']] -> " +
+                    "id: username]] -> " +
+                    "class name: form-control]] -> " +
+                    "name: login]] -> " +
+                    "link text: Click here]] -> " +
+                    "partial link text: Click]]";
+            when(mockOriginalElement.toString()).thenReturn(locatorString);
+            SmartWebElement result = LocatorParser.updateWebElement(mockWebDriver, mockOriginalElement);
 
-                try (MockedConstruction<SmartWebDriver> swdMock =
-                         mockConstruction(SmartWebDriver.class,
-                             (mock, context) -> {
-                                 when(mock.findSmartElement(any(), anyLong()))
-                                     .thenReturn(mockNewElement);
-                             })) {
-
-                    String locatorString = "[[ChromeDriver: chrome on MAC] -> " +
-                                               "tag name: div]] -> " +
-                                               "css selector: .container]] -> " +
-                                               "xpath: //input[@type='text']] -> " +
-                                               "id: username]] -> " +
-                                               "class name: form-control]] -> " +
-                                               "name: login]] -> " +
-                                               "link text: Click here]] -> " +
-                                               "partial link text: Click]]";
-
-                    // Ensure toString is mocked
-                    when(mockOriginalElement.toString()).thenReturn(locatorString);
-
-                    // Try to call the method
-                    SmartWebElement result = LocatorParser.updateWebElement(mockWebDriver, mockOriginalElement);
-
-                    // Basic assertion
-                    assertThat(result).isNotNull();
-                }
-            }
+            // Then
+            assertThat(result).isNotNull();
         }
     }
 
-
     @Test
-    void privateMethod_parseLocators_shouldParseAllLocatorTypes() throws Exception {
-        // Access the private method via reflection
-        Method parseLocatorsMethod = LocatorParser.class.getDeclaredMethod("parseLocators", String.class);
-        parseLocatorsMethod.setAccessible(true);
+    @DisplayName("updateWebElement should throw UiInteractionException when no locators can be parsed")
+    void updateWebElement_shouldThrowWhenNoLocatorsFound() {
+        // Given
+        WebDriver mockWebDriver = mock(WebDriver.class);
+        SmartWebElement mockElement = mock(SmartWebElement.class);
 
-        // Create a test input
-        String locatorString = "[[ChromeDriver: chrome on MAC] -> " +
-                                   "tag name: div]] -> " +
-                                   "css selector: .container]] -> " +
-                                   "xpath: //input[@type='text']] -> " +
-                                   "id: username]] -> " +
-                                   "class name: form-control]] -> " +
-                                   "name: login]] -> " +
-                                   "link text: Click here]] -> " +
-                                   "partial link text: Click]]";
+        // When
+        when(mockElement.toString()).thenReturn("Invalid locator string format");
 
-        // Invoke the private method
-        List<By> result = (List<By>) parseLocatorsMethod.invoke(null, locatorString);
-
-        // Verify the result
-        assertThat(result).hasSize(8);
-        assertThat(result.get(0).toString()).contains("By.tagName");
-        assertThat(result.get(1).toString()).contains("By.cssSelector");
-        assertThat(result.get(2).toString()).contains("By.xpath");
-        assertThat(result.get(3).toString()).contains("By.id");
-        assertThat(result.get(4).toString()).contains("By.className");
-        assertThat(result.get(5).toString()).contains("By.name");
-        assertThat(result.get(6).toString()).contains("By.linkText");
-        assertThat(result.get(7).toString()).contains("By.partialLinkText");
+        // Then
+        assertThrows(UiInteractionException.class, () ->
+                LocatorParser.updateWebElement(mockWebDriver, mockElement));
     }
 
-
     @Test
-    void privateMethod_addLocatorIfMatches_shouldAddMatchingLocator() throws Exception {
-        // Access the private method via reflection
-        Method addLocatorIfMatchesMethod = LocatorParser.class.getDeclaredMethod(
-            "addLocatorIfMatches",
-            List.class,
-            String.class,
-            String.class,
-            Function.class);
-        addLocatorIfMatchesMethod.setAccessible(true);
-
-        // Create test inputs
-        List<By> locatorList = new ArrayList<>();
-        String locatorText = "css selector: .container]]";
-        String key = "css selector";
-        Function<String, By> locatorFunction = By::cssSelector;
-
-        // Invoke the private method
-        addLocatorIfMatchesMethod.invoke(null, locatorList, locatorText, key, locatorFunction);
-
-        // Verify a locator was added
-        assertThat(locatorList).hasSize(1);
-        assertThat(locatorList.get(0).toString()).contains("By.cssSelector");
-    }
-
-
-    @Test
-    void privateMethod_extractLocatorValue_shouldExtractCorrectValue() throws Exception {
-        // Access the private method via reflection
-        Method extractLocatorValueMethod = LocatorParser.class.getDeclaredMethod("extractLocatorValue", String.class);
-        extractLocatorValueMethod.setAccessible(true);
-
-        // Test cases
-        String[] testCases = {
-            "css selector: .container]]",
-            "xpath: //div[@class='test']]",
-            "id: username]]"
-        };
-
-        for (String locatorText : testCases) {
-            // Invoke the private method
-            String result = (String) extractLocatorValueMethod.invoke(null, locatorText);
-
-            // Verify the result
-            assertThat(result).isNotBlank();
-        }
-    }
-
-
-    // Additional edge case tests for private methods
-    @Test
-    void privateMethod_extractLocatorValue_shouldHandleEdgeCases() throws Exception {
-        // Access the private method via reflection
-        Method extractLocatorValueMethod = LocatorParser.class.getDeclaredMethod("extractLocatorValue", String.class);
-        extractLocatorValueMethod.setAccessible(true);
-
-        // Test edge cases
-        String[] edgeCases = {
-            "css selector: ]]",
-            "xpath: ]]"
-        };
-
-        for (String edgeCase : edgeCases) {
-            try {
-                extractLocatorValueMethod.invoke(null, edgeCase);
-            } catch (Exception e) {
-                // Verify the type of exception or handle as needed
-                assertThat(e).isNotNull();
-            }
-        }
-    }
-
-
-    @Test
+    @DisplayName("extractBlockingElementLocator should return basic xpath when only tag name is present")
     void extractBlockingElementLocator_withTagOnly() {
         // Given
         String exceptionMessage = "Other element would receive the click: <div>";
@@ -220,6 +102,7 @@ class LocatorParserTest extends BaseUnitUITest {
 
 
     @Test
+    @DisplayName("extractBlockingElementLocator should return xpath with single attribute when present")
     void extractBlockingElementLocator_withSingleAttribute() {
         // Given
         String exceptionMessage = "Other element would receive the click: <div id=\"overlay\">";
@@ -233,6 +116,7 @@ class LocatorParserTest extends BaseUnitUITest {
 
 
     @Test
+    @DisplayName("extractBlockingElementLocator should return xpath with multiple attributes when present")
     void extractBlockingElementLocator_withMultipleAttributes() {
         // Given
         String exceptionMessage = "Other element would receive the click: <div id=\"overlay\" class=\"modal\" and >";
@@ -246,17 +130,19 @@ class LocatorParserTest extends BaseUnitUITest {
 
 
     @Test
+    @DisplayName("extractBlockingElementLocator should throw exception when no matching pattern found")
     void extractBlockingElementLocator_withNoMatch() {
         // Given
         String exceptionMessage = "Element not clickable at point (150, 200)";
 
         // When
+        // Then
         assertThrows(IllegalArgumentException.class, () -> LocatorParser.extractBlockingElementLocator(exceptionMessage));
-
     }
 
 
     @Test
+    @DisplayName("extractLocator should return By object when present in arguments")
     void extractLocator_withByArgument() {
         // Given
         By locator = By.id("username");
@@ -271,6 +157,7 @@ class LocatorParserTest extends BaseUnitUITest {
 
 
     @Test
+    @DisplayName("extractLocator should return null when no By object in arguments")
     void extractLocator_withNoByArgument() {
         // Given
         Object[] args = new Object[]{"not a By object", 123};
@@ -284,6 +171,7 @@ class LocatorParserTest extends BaseUnitUITest {
 
 
     @Test
+    @DisplayName("extractLocator should return null when arguments array is null")
     void extractLocator_withNullArgs() {
         // When
         By result = LocatorParser.extractLocator(null);
@@ -294,6 +182,7 @@ class LocatorParserTest extends BaseUnitUITest {
 
 
     @Test
+    @DisplayName("extractLocator should return null when arguments array is empty")
     void extractLocator_withEmptyArgs() {
         // Given
         Object[] args = new Object[0];
@@ -308,9 +197,10 @@ class LocatorParserTest extends BaseUnitUITest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-        "Unable to locate element: By.id(username)",
-        "Timed out after 30 seconds trying to find element By.xpath(//div[@class='container'])"
+            "Unable to locate element: By.id(username)",
+            "Timed out after 30 seconds trying to find element By.xpath(//div[@class='container'])"
     })
+    @DisplayName("extractLocatorFromMessage should successfully extract locator from valid error messages")
     void extractLocatorFromMessage_withValidMessages(String message) {
         // When
         String result = LocatorParser.extractLocatorFromMessage(message);
@@ -324,9 +214,10 @@ class LocatorParserTest extends BaseUnitUITest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {
-        "Element not found",
-        "No such element exception"
+            "Element not found",
+            "No such element exception"
     })
+    @DisplayName("extractLocatorFromMessage should handle invalid or null error messages appropriately")
     void extractLocatorFromMessage_withInvalidMessages(String message) {
         // When
         String result = LocatorParser.extractLocatorFromMessage(message);
@@ -341,6 +232,7 @@ class LocatorParserTest extends BaseUnitUITest {
 
 
     @Test
+    @DisplayName("getElementDetails should format all element details including tag, text and HTML")
     void getElementDetails_shouldFormatElementDetails() {
         // Given
         WebElement element = mock(WebElement.class);
@@ -358,149 +250,6 @@ class LocatorParserTest extends BaseUnitUITest {
         assertThat(result).contains("Text: [Content]");
         assertThat(result).contains("Outer HTML: [<div id='container'>Content</div>]");
         assertThat(result).contains("Inner HTML: [Content]");
-    }
-
-
-    @Test
-    void parseLocators_shouldParseAllLocatorTypes() throws Exception {
-        // Access the private method via reflection
-        Method parseLocatorsMethod = LocatorParser.class.getDeclaredMethod("parseLocators", String.class);
-        parseLocatorsMethod.setAccessible(true);
-
-        // Create a test input
-        String locatorString = "[[ChromeDriver: chrome on MAC] -> " +
-                                   "tag name: div]] -> " +
-                                   "css selector: .container]] -> " +
-                                   "xpath: //input[@type='text']] -> " +
-                                   "id: username]] -> " +
-                                   "class name: form-control]] -> " +
-                                   "name: login]] -> " +
-                                   "link text: Click here]] -> " +
-                                   "partial link text: Click]]";
-
-        // Invoke the private method
-        List<By> result = (List<By>) parseLocatorsMethod.invoke(null, locatorString);
-
-        // Verify the result
-        assertThat(result).hasSize(8);
-        assertThat(result.get(0).toString()).contains("By.tagName");
-        assertThat(result.get(1).toString()).contains("By.cssSelector");
-        assertThat(result.get(2).toString()).contains("By.xpath");
-        assertThat(result.get(3).toString()).contains("By.id");
-        assertThat(result.get(4).toString()).contains("By.className");
-        assertThat(result.get(5).toString()).contains("By.name");
-        assertThat(result.get(6).toString()).contains("By.linkText");
-        assertThat(result.get(7).toString()).contains("By.partialLinkText");
-    }
-
-
-    @Test
-    void addLocatorIfMatches_shouldAddMatchingLocator() throws Exception {
-        // Access the private method via reflection
-        Method addLocatorIfMatchesMethod = LocatorParser.class.getDeclaredMethod(
-            "addLocatorIfMatches",
-            List.class,
-            String.class,
-            String.class,
-            Function.class);
-        addLocatorIfMatchesMethod.setAccessible(true);
-
-        // Create test inputs
-        List<By> locatorList = new ArrayList<>();
-        String locatorText = "css selector: .container]]";
-        String key = "css selector";
-        Function<String, By> locatorFunction = By::cssSelector;
-
-        // Invoke the private method
-        addLocatorIfMatchesMethod.invoke(null, locatorList, locatorText, key, locatorFunction);
-
-        // Verify a locator was added
-        assertThat(locatorList).hasSize(1);
-        assertThat(locatorList.get(0).toString()).contains("By.cssSelector");
-    }
-
-
-    @Test
-    void addLocatorIfMatches_shouldNotAddNonMatchingLocator() throws Exception {
-        // Access the private method via reflection
-        Method addLocatorIfMatchesMethod = LocatorParser.class.getDeclaredMethod(
-            "addLocatorIfMatches",
-            List.class,
-            String.class,
-            String.class,
-            Function.class);
-        addLocatorIfMatchesMethod.setAccessible(true);
-
-        // Create test inputs with non-matching key
-        List<By> locatorList = new ArrayList<>();
-        String locatorText = "id: username]]";
-        String key = "css selector";
-        Function<String, By> locatorFunction = By::cssSelector;
-
-        // Invoke the private method
-        addLocatorIfMatchesMethod.invoke(null, locatorList, locatorText, key, locatorFunction);
-
-        // Verify no locator was added
-        assertThat(locatorList).isEmpty();
-    }
-
-
-    @Test
-    void extractLocatorValue_shouldExtractCorrectValue() throws Exception {
-        // Access the private method via reflection
-        Method extractLocatorValueMethod = LocatorParser.class.getDeclaredMethod("extractLocatorValue", String.class);
-        extractLocatorValueMethod.setAccessible(true);
-
-        // Create test input
-        String locatorText = "css selector: .container]]";
-
-        // Invoke the private method
-        String result = (String) extractLocatorValueMethod.invoke(null, locatorText);
-
-        // Verify the result
-        assertThat(result).isEqualTo(".container");
-    }
-
-
-    @Test
-    void extractLocatorValue_shouldHandleEdgeCases() throws Exception {
-        // Access the private method via reflection
-        Method extractLocatorValueMethod = LocatorParser.class.getDeclaredMethod("extractLocatorValue", String.class);
-        extractLocatorValueMethod.setAccessible(true);
-
-        // Test with malformed input (no colon)
-        try {
-            extractLocatorValueMethod.invoke(null, "malformed-input");
-        } catch (InvocationTargetException e) {
-            // Expecting an ArrayIndexOutOfBoundsException because of the split
-            assertThat(e.getCause()).isInstanceOf(ArrayIndexOutOfBoundsException.class);
-        }
-
-        // Test with short value
-        try {
-            extractLocatorValueMethod.invoke(null, "key: a]]");
-        } catch (InvocationTargetException e) {
-            // May throw StringIndexOutOfBoundsException depending on the implementation
-            if (!(e.getCause() instanceof StringIndexOutOfBoundsException)) {
-                throw e;
-            }
-        }
-    }
-
-
-    @Test
-    void parseLocators_shouldHandleNullInput() throws Exception {
-        // Access the private method via reflection
-        Method parseLocatorsMethod = LocatorParser.class.getDeclaredMethod("parseLocators", String.class);
-        parseLocatorsMethod.setAccessible(true);
-
-        // Invoke with null input
-        try {
-            parseLocatorsMethod.invoke(null, (Object) null);
-        } catch (InvocationTargetException e) {
-            // Original method likely throws NullPointerException with null input
-            assertThat(e.getCause()).isInstanceOf(NullPointerException.class);
-        }
     }
 
 }

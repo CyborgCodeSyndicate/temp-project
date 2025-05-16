@@ -48,21 +48,19 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
     private SmartWebDriver smartDriver;
 
+    private WebDriver jsDriver;
+
     @BeforeEach
     void setUp() {
         // Configure WebDriver for correct casting
-        WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
+        jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
 
         // Setup UiConfig default responses
         lenient().when(uiConfig.waitDuration()).thenReturn(10);
         lenient().when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
         lenient().when(uiConfig.useShadowRoot()).thenReturn(false);
 
-        // Create SmartWebDriver with WebDriver mock
-        try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
-            uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            smartDriver = spy(new SmartWebDriver(jsDriver));
-        }
+        smartDriver = spy(new SmartWebDriver(jsDriver));
     }
 
     @Nested
@@ -72,8 +70,6 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("Constructor should initialize with WebDriverWait")
         void constructorShouldInitializeWithWebDriverWait() {
-            // Act - SmartWebDriver already created in setUp()
-
             // Assert
             assertNotNull(smartDriver.getWait());
             assertNotNull(smartDriver.getOriginal());
@@ -87,7 +83,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElement should use findElementNoWrap when not using wrapped functions")
         void findSmartElementShouldUseFindElementNoWrapWhenNotUsingWrappedFunctions() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -100,10 +96,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 smartFinderMock.when(() -> SmartFinder.findElementNoWrap(smartDriver.getOriginal(), locator))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 SmartWebElement result = smartDriver.findSmartElement(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementNoWrap(smartDriver.getOriginal(), locator));
             }
@@ -112,7 +108,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElement should use normal find when not using shadow root")
         void findSmartElementShouldUseNormalFindWhenNotUsingShadowRoot() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -121,16 +117,14 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
                 smartFinderMock.when(() -> SmartFinder.findElementNormally(
                                 eq(smartDriver.getOriginal()), eq(locator), any(Consumer.class)))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 SmartWebElement result = smartDriver.findSmartElement(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementNormally(
                         eq(smartDriver.getOriginal()), eq(locator), any(Consumer.class)));
@@ -140,7 +134,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElement should use shadow root find when enabled")
         void findSmartElementShouldUseShadowRootFindWhenEnabled() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -149,16 +143,15 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
                 when(uiConfig.useShadowRoot()).thenReturn(true);
                 smartFinderMock.when(() -> SmartFinder.findElementWithShadowRootDriver(
                                 eq(smartDriver), eq(locator), any(Consumer.class), eq(null)))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 SmartWebElement result = smartDriver.findSmartElement(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementWithShadowRootDriver(
                         eq(smartDriver), eq(locator), any(Consumer.class), eq(null)));
@@ -168,7 +161,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElement should handle NoSuchElementException")
         void findSmartElementShouldHandleExceptions() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement expectedElement = mock(SmartWebElement.class);
             NoSuchElementException exception = new NoSuchElementException("Element not found");
@@ -179,8 +172,6 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup config mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
 
                 // Configure the SmartFinder to throw our exception
                 smartFinderMock.when(() -> SmartFinder.findElementNormally(
@@ -192,10 +183,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                                 any(WebDriver.class), eq(WebElementAction.FIND_ELEMENT), any(Object[].class)))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 SmartWebElement result = smartDriver.findSmartElement(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
 
                 // Verify the exception handler was called with the right parameters
@@ -209,7 +200,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElement with wait time should use custom wait")
         void findSmartElementWithWaitTimeShouldUseCustomWait() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             long waitTime = 5000L;
             SmartWebElement expectedElement = mock(SmartWebElement.class);
@@ -219,16 +210,15 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
                 when(uiConfig.useShadowRoot()).thenReturn(true);
                 smartFinderMock.when(() -> SmartFinder.findElementWithShadowRootDriver(
                                 eq(smartDriver), eq(locator), any(Consumer.class), eq(waitTime)))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 SmartWebElement result = smartDriver.findSmartElement(locator, waitTime);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementWithShadowRootDriver(
                         eq(smartDriver), eq(locator), any(Consumer.class), eq(waitTime)));
@@ -243,7 +233,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElements should use findElementsNoWrap when not using wrapped functions")
         void findSmartElementsShouldUseFindElementsNoWrapWhenNotUsingWrappedFunctions() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
 
@@ -256,10 +246,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 smartFinderMock.when(() -> SmartFinder.findElementsNoWrap(smartDriver.getOriginal(), locator))
                         .thenReturn(expectedElements);
 
-                // Act
+                // When
                 List<SmartWebElement> result = smartDriver.findSmartElements(locator);
 
-                // Assert
+                // Then
                 assertEquals(expectedElements, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementsNoWrap(smartDriver.getOriginal(), locator));
             }
@@ -268,7 +258,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElements should use normal find when not using shadow root")
         void findSmartElementsShouldUseNormalFindWhenNotUsingShadowRoot() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
 
@@ -277,16 +267,14 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
                 smartFinderMock.when(() -> SmartFinder.findElementsNormally(
                                 eq(smartDriver.getOriginal()), eq(locator), any(Consumer.class)))
                         .thenReturn(expectedElements);
 
-                // Act
+                // When
                 List<SmartWebElement> result = smartDriver.findSmartElements(locator);
 
-                // Assert
+                // Then
                 assertEquals(expectedElements, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementsNormally(
                         eq(smartDriver.getOriginal()), eq(locator), any(Consumer.class)));
@@ -296,7 +284,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElements should use shadow root find when enabled")
         void findSmartElementsShouldUseShadowRootFindWhenEnabled() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
 
@@ -305,16 +293,15 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
                 when(uiConfig.useShadowRoot()).thenReturn(true);
                 smartFinderMock.when(() -> SmartFinder.findElementsWithShadowRootDriver(
                                 eq(smartDriver), eq(locator), any(Consumer.class)))
                         .thenReturn(expectedElements);
 
-                // Act
+                // When
                 List<SmartWebElement> result = smartDriver.findSmartElements(locator);
 
-                // Assert
+                // Then
                 assertEquals(expectedElements, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementsWithShadowRootDriver(
                         eq(smartDriver), eq(locator), any(Consumer.class)));
@@ -324,7 +311,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findSmartElements should handle NoSuchElementException")
         void findSmartElementsShouldHandleExceptions() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
             NoSuchElementException exception = new NoSuchElementException("Elements not found");
@@ -335,8 +322,6 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup config mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
 
                 // Configure the SmartFinder to throw our exception
                 smartFinderMock.when(() -> SmartFinder.findElementsNormally(
@@ -348,10 +333,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                                 any(WebDriver.class), eq(WebElementAction.FIND_ELEMENTS), any(Object[].class)))
                         .thenReturn(expectedElements);
 
-                // Act
+                // When
                 List<SmartWebElement> results = smartDriver.findSmartElements(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElements, results);
 
                 // Verify the exception handler was called with the right parameters
@@ -370,7 +355,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElement should use normal finder when shadow root is disabled")
         void findElementShouldUseNormalFinderWhenShadowRootDisabled() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -379,15 +364,14 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
                 smartFinderMock.when(() -> SmartFinder.findElementNormally(
                                 eq(smartDriver.getOriginal()), eq(locator), any(Consumer.class)))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 WebElement result = smartDriver.findElement(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementNormally(
                         eq(smartDriver.getOriginal()), eq(locator), any(Consumer.class)));
@@ -397,7 +381,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElement should use shadow root finder when enabled")
         void findElementShouldUseShadowRootFinderWhenEnabled() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -411,10 +395,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                                 eq(smartDriver), eq(locator), any(Consumer.class), eq(10L)))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 WebElement result = smartDriver.findElement(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
                 smartFinderMock.verify(() -> SmartFinder.findElementWithShadowRootDriver(
                         eq(smartDriver), eq(locator), any(Consumer.class), eq(10L)));
@@ -424,7 +408,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElements should use normal finder when shadow root is disabled")
         void findElementsShouldUseNormalFinderWhenShadowRootDisabled() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement smartElement1 = mock(SmartWebElement.class);
             List<SmartWebElement> smartElements = Collections.singletonList(smartElement1);
@@ -434,15 +418,14 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
                 smartFinderMock.when(() -> SmartFinder.findElementsNormally(
                                 eq(smartDriver.getOriginal()), eq(locator), any(Consumer.class)))
                         .thenReturn(smartElements);
 
-                // Act
+                // When
                 List<WebElement> results = smartDriver.findElements(locator);
 
-                // Assert
+                // Then
                 assertEquals(1, results.size());
                 assertTrue(results.contains(smartElement1));
                 smartFinderMock.verify(() -> SmartFinder.findElementsNormally(
@@ -453,7 +436,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElements should use shadow root finder when enabled")
         void findElementsShouldUseShadowRootFinderWhenEnabled() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement smartElement1 = mock(SmartWebElement.class);
             List<SmartWebElement> smartElements = Collections.singletonList(smartElement1);
@@ -468,14 +451,86 @@ class SmartWebDriverTest extends BaseUnitUITest {
                                 eq(smartDriver), eq(locator), any(Consumer.class)))
                         .thenReturn(smartElements);
 
-                // Act
+                // When
                 List<WebElement> results = smartDriver.findElements(locator);
 
-                // Assert
+                // Then
                 assertEquals(1, results.size());
                 assertTrue(results.contains(smartElement1));
                 smartFinderMock.verify(() -> SmartFinder.findElementsWithShadowRootDriver(
                         eq(smartDriver), eq(locator), any(Consumer.class)));
+            }
+        }
+
+        @Test
+        @DisplayName("findElement should execute customWait.until in lambda")
+        void findElementShouldExecuteCustomWaitUntilInLambda() {
+            // Given
+            By locator = By.id("testId");
+            Function<WebDriver, Boolean> testCondition = driver -> true;
+
+            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
+                 MockedConstruction<WebDriverWait> waitMock = mockConstruction(WebDriverWait.class)) {
+
+                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+
+                // Mock SmartFinder to capture the lambda
+                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
+                    smartFinderMock.when(() -> SmartFinder.findElementNormally(
+                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
+                            .thenAnswer(invocation -> {
+                                // Get the waitFn consumer
+                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
+                                // Execute it with our test condition
+                                waitFn.accept(testCondition);
+                                return mock(SmartWebElement.class);
+                            });
+
+                    // When
+                    smartDriver.findElement(locator);
+
+                    // Then - verify WebDriverWait was constructed and until() was called
+                    assertEquals(1, waitMock.constructed().size());
+                    WebDriverWait customWait = waitMock.constructed().get(0);
+                    verify(customWait).until(any(Function.class));
+                }
+            }
+        }
+
+
+        @Test
+        @DisplayName("findElements should execute customWait.until in lambda")
+        void findElementsShouldExecuteCustomWaitUntilInLambda() {
+            // Given
+            By locator = By.id("testId");
+            Function<WebDriver, Boolean> testCondition = driver -> true;
+
+            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
+                 MockedConstruction<WebDriverWait> waitMock = mockConstruction(WebDriverWait.class)) {
+
+                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+
+                // Mock SmartFinder to capture the lambda
+                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
+                    smartFinderMock.when(() -> SmartFinder.findElementsNormally(
+                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
+                            .thenAnswer(invocation -> {
+                                // Get the waitFn consumer
+                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
+                                // Execute it with our test condition
+                                waitFn.accept(testCondition);
+                                return Collections.singletonList(mock(SmartWebElement.class));
+                            });
+
+                    // When
+                    List<WebElement> results = smartDriver.findElements(locator);
+
+                    // Then - verify WebDriverWait was constructed and until() was called
+                    assertEquals(1, waitMock.constructed().size());
+                    WebDriverWait customWait = waitMock.constructed().get(0);
+                    verify(customWait).until(any(Function.class));
+                    assertFalse(results.isEmpty());
+                }
             }
         }
     }
@@ -487,35 +542,35 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("checkNoException should return true when no exception occurs")
         void checkNoExceptionShouldReturnTrueWhenNoExceptionOccurs() {
-            // Arrange
+            // Given
             Runnable successRunnable = () -> { /* No exception */ };
 
-            // Act
+            // When
             boolean result = smartDriver.checkNoException(successRunnable);
 
-            // Assert
+            // Then
             assertTrue(result);
         }
 
         @Test
         @DisplayName("checkNoException should return false when exception occurs")
         void checkNoExceptionShouldReturnFalseWhenExceptionOccurs() {
-            // Arrange
+            // Given
             Runnable failureRunnable = () -> {
                 throw new RuntimeException("Test exception");
             };
 
-            // Act
+            // When
             boolean result = smartDriver.checkNoException(failureRunnable);
 
-            // Assert
+            // Then
             assertFalse(result);
         }
 
         @Test
         @DisplayName("waitUntilElementIsShown with element should handle successful wait")
         void waitUntilElementIsShownWithElementShouldHandleSuccessfulWait() {
-            // Arrange
+            // Given
             int waitSeconds = 5;
 
             // Create a proper ExpectedCondition implementation
@@ -541,21 +596,19 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditionsMock.when(() -> ExpectedConditions.visibilityOf(any(WebElement.class)))
                         .thenReturn(visibilityCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsShown(smartElement, waitSeconds);
 
-                // Assert
-                if (!waitMock.constructed().isEmpty()) {
-                    WebDriverWait constructedWait = waitMock.constructed().get(0);
-                    verify(constructedWait).until(any(ExpectedCondition.class));
-                }
+                // Then
+                WebDriverWait constructedWait = waitMock.constructed().get(0);
+                verify(constructedWait).until(any(ExpectedCondition.class));
             }
         }
 
         @Test
         @DisplayName("waitUntilElementIsShown with element should handle exceptions")
         void waitUntilElementIsShownWithElementShouldHandleExceptions() {
-            // Arrange
+            // Given
             int waitSeconds = 5;
 
             // Create a proper ExpectedCondition implementation
@@ -583,10 +636,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditionsMock.when(() -> ExpectedConditions.visibilityOf(any(WebElement.class)))
                         .thenReturn(visibilityCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsShown(smartElement, waitSeconds);
 
-                // Assert
+                // Then
                 logUIMock.verify(() -> LogUI.error("Element wasn't displayed after: " + waitSeconds + " seconds"));
             }
         }
@@ -594,7 +647,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("waitUntilElementIsShown with locator should handle successful wait")
         void waitUntilElementIsShownWithLocatorShouldHandleSuccessfulWait() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             int waitSeconds = 5;
 
@@ -621,21 +674,19 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditionsMock.when(() -> ExpectedConditions.presenceOfElementLocated(any(By.class)))
                         .thenReturn(presenceCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsShown(locator, waitSeconds);
 
-                // Assert
-                if (!waitMock.constructed().isEmpty()) {
-                    WebDriverWait constructedWait = waitMock.constructed().get(0);
-                    verify(constructedWait).until(any(ExpectedCondition.class));
-                }
+                // Then
+                WebDriverWait constructedWait = waitMock.constructed().get(0);
+                verify(constructedWait).until(any(ExpectedCondition.class));
             }
         }
 
         @Test
         @DisplayName("waitUntilElementIsShown with locator should handle exceptions")
         void waitUntilElementIsShownWithLocatorShouldHandleExceptions() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             int waitSeconds = 5;
 
@@ -664,10 +715,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditionsMock.when(() -> ExpectedConditions.presenceOfElementLocated(any(By.class)))
                         .thenReturn(presenceCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsShown(locator, waitSeconds);
 
-                // Assert
+                // Then
                 logUIMock.verify(() -> LogUI.error("Element wasn't displayed after: " + waitSeconds + " seconds"));
             }
         }
@@ -675,7 +726,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("waitUntilElementIsRemoved with element should handle successful wait")
         void waitUntilElementIsRemovedWithElementShouldHandleSuccessfulWait() {
-            // Arrange
+            // Given
             int waitSeconds = 5;
 
             // Create a proper ExpectedCondition implementation
@@ -701,21 +752,19 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditionsMock.when(() -> ExpectedConditions.invisibilityOf(any(WebElement.class)))
                         .thenReturn(invisibilityCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsRemoved(smartElement, waitSeconds);
 
-                // Assert
-                if (!waitMock.constructed().isEmpty()) {
-                    WebDriverWait constructedWait = waitMock.constructed().get(0);
-                    verify(constructedWait).until(any(ExpectedCondition.class));
-                }
+                // Then
+                WebDriverWait constructedWait = waitMock.constructed().get(0);
+                verify(constructedWait).until(any(ExpectedCondition.class));
             }
         }
 
         @Test
         @DisplayName("waitUntilElementIsRemoved with element should handle exceptions")
         void waitUntilElementIsRemovedWithElementShouldHandleExceptions() {
-            // Arrange
+            // Given
             int waitSeconds = 5;
 
             // Create a proper ExpectedCondition implementation
@@ -743,10 +792,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditions.when(() -> ExpectedConditions.invisibilityOf(any(WebElement.class)))
                         .thenReturn(invisibilityCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsRemoved(smartElement, waitSeconds);
 
-                // Assert - verify error was logged
+                // Then
                 logUIMock.verify(() -> LogUI.error("Element wasn't removed after: " + waitSeconds + " seconds"));
             }
         }
@@ -754,7 +803,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("waitUntilElementIsRemoved with locator should handle successful wait")
         void waitUntilElementIsRemovedWithLocatorShouldHandleSuccessfulWait() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             int waitSeconds = 5;
 
@@ -781,10 +830,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditions.when(() -> ExpectedConditions.invisibilityOfElementLocated(any(By.class)))
                         .thenReturn(invisibilityCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsRemoved(locator, waitSeconds);
 
-                // Assert - no exception and verify the wait was created correctly
+                // Then
                 assertEquals(1, mockConstructed.constructed().size());
                 WebDriverWait constructedWait = mockConstructed.constructed().get(0);
                 verify(constructedWait).until(any(ExpectedCondition.class));
@@ -794,7 +843,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("waitUntilElementIsRemoved with locator should handle exceptions")
         void waitUntilElementIsRemovedWithLocatorShouldHandleExceptions() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             int waitSeconds = 5;
 
@@ -823,245 +872,18 @@ class SmartWebDriverTest extends BaseUnitUITest {
                 expectedConditions.when(() -> ExpectedConditions.invisibilityOfElementLocated(any(By.class)))
                         .thenReturn(invisibilityCondition);
 
-                // Act
+                // When
                 smartDriver.waitUntilElementIsRemoved(locator, waitSeconds);
 
-                // Assert - verify error was logged
+                // Then
                 logUIMock.verify(() -> LogUI.error("Element wasn't removed after: " + waitSeconds + " seconds"));
             }
         }
-    }
-    @Nested
-    @DisplayName("Lambda functions in findElement and findElements")
-    class LambdaFunctionTests {
 
         @Test
-        @DisplayName("Lambda functions in findElement method should handle exception")
-        void lambdaFunctionInFindElementShouldHandleException() {
-            // Arrange
-            By locator = By.id("testId");
-            Function<WebDriver, Boolean> condition = driver -> {
-                throw new TimeoutException("Timeout waiting for condition");
-            };
-
-            // Create a spy to verify the lambda is called
-            WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
-            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
-            SmartWebDriver spyDriver = spy(realDriver);
-            when(spyDriver.getOriginal()).thenReturn(jsDriver);
-
-            // Make sure shadow root is disabled
-            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
-                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
-
-                // Mock SmartFinder to capture and execute the lambda
-                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
-                    // Create a mock that will capture the waitFn consumer
-                    smartFinderMock.when(() -> SmartFinder.findElementNormally(
-                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
-                            .thenAnswer(invocation -> {
-                                // Extract the consumer (waitFn lambda) from invocation
-                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
-
-                                // Execute the lambda with our condition that will throw
-                                waitFn.accept(condition);
-
-                                // Return a mock element
-                                return mock(SmartWebElement.class);
-                            });
-
-                    // Act
-                    spyDriver.findElement(locator);
-
-                    // Assert - No exception thrown, lambda handled exception properly
-                    smartFinderMock.verify(() -> SmartFinder.findElementNormally(
-                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
-                }
-            }
-        }
-
-        @Test
-        @DisplayName("Lambda functions in findElements method should handle exception")
-        void lambdaFunctionInFindElementsShouldHandleException() {
-            // Arrange
-            By locator = By.id("testId");
-            Function<WebDriver, Boolean> condition = driver -> {
-                throw new TimeoutException("Timeout waiting for condition");
-            };
-
-            // Create a spy to verify the lambda is called
-            WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
-            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
-            SmartWebDriver spyDriver = spy(realDriver);
-            when(spyDriver.getOriginal()).thenReturn(jsDriver);
-
-            // Make sure shadow root is disabled
-            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
-                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
-
-                // Mock SmartFinder to capture and execute the lambda
-                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
-                    // Create a mock that will capture the waitFn consumer
-                    smartFinderMock.when(() -> SmartFinder.findElementsNormally(
-                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
-                            .thenAnswer(invocation -> {
-                                // Extract the consumer (waitFn lambda) from invocation
-                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
-
-                                // Execute the lambda with our condition that will throw
-                                waitFn.accept(condition);
-
-                                // Return a mock list
-                                return Collections.singletonList(mock(SmartWebElement.class));
-                            });
-
-                    // Act
-                    spyDriver.findElements(locator);
-
-                    // Assert - No exception thrown, lambda handled exception properly
-                    smartFinderMock.verify(() -> SmartFinder.findElementsNormally(
-                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
-                }
-            }
-        }
-
-        @Test
-        @DisplayName("Lambda function in findSmartElementInternal with custom wait should handle exception")
-        void lambdaFunctionInFindSmartElementInternalShouldHandleException() {
-            // Arrange
-            By locator = By.id("testId");
-            Long waitTime = 5000L;  // Use custom wait time to trigger the lambda
-            Function<WebDriver, Boolean> condition = driver -> {
-                throw new TimeoutException("Timeout waiting for condition");
-            };
-
-            // Create a spy to verify the lambda is called
-            WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
-            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
-            SmartWebDriver spyDriver = spy(realDriver);
-            when(spyDriver.getOriginal()).thenReturn(jsDriver);
-
-            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
-                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
-
-                // Mock SmartFinder to capture and execute the lambda
-                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
-                    // Create a mock that will capture the waitFn consumer
-                    smartFinderMock.when(() -> SmartFinder.findElementNormally(
-                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
-                            .thenAnswer(invocation -> {
-                                // Extract the consumer (waitFn lambda) from invocation
-                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
-
-                                // Execute the lambda with our condition that will throw
-                                waitFn.accept(condition);
-
-                                // Return a mock element
-                                return mock(SmartWebElement.class);
-                            });
-
-                    // Act
-                    spyDriver.findSmartElement(locator, waitTime);
-
-                    // Assert - No exception thrown, lambda handled exception properly
-                    smartFinderMock.verify(() -> SmartFinder.findElementNormally(
-                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
-                }
-            }
-        }
-
-        @Test
-        @DisplayName("Lambda function in findSmartElementInternal with custom wait should handle exception")
-        void lambdaFunctionInFindSmartElementInternalShouldCallUntilFunction() {
-            // Arrange
-            By locator = By.id("testId");
-            Long waitTime = 5000L;  // Use custom wait time to trigger the lambda
-            Function<WebDriver, Boolean> condition = driver -> true;
-
-            // Create a spy to verify the lambda is called
-            WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
-            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
-            SmartWebDriver spyDriver = spy(realDriver);
-            when(spyDriver.getOriginal()).thenReturn(jsDriver);
-
-            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
-                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
-
-                // Mock SmartFinder to capture and execute the lambda
-                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
-                    // Create a mock that will capture the waitFn consumer
-                    smartFinderMock.when(() -> SmartFinder.findElementNormally(
-                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
-                            .thenAnswer(invocation -> {
-                                // Extract the consumer (waitFn lambda) from invocation
-                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
-
-                                // Execute the lambda with our condition that will throw
-                                waitFn.accept(condition);
-
-                                // Return a mock element
-                                return mock(SmartWebElement.class);
-                            });
-
-                    // Act
-                    spyDriver.findSmartElement(locator, waitTime);
-
-                    // Assert - No exception thrown, lambda handled exception properly
-                    smartFinderMock.verify(() -> SmartFinder.findElementNormally(
-                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
-                }
-            }
-        }
-
-        @Test
-        @DisplayName("Stream conversion lambdas in findElements should work properly")
-        void streamConversionLambdasInFindElementsShouldWorkProperly() {
-            // Arrange
-            By locator = By.id("testId");
-            SmartWebElement mockElement = mock(SmartWebElement.class);
-            List<SmartWebElement> mockElements = Collections.singletonList(mockElement);
-
-            // Create a spy to verify the lambda is called
-            WebDriver jsDriver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
-            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
-            SmartWebDriver spyDriver = spy(realDriver);
-            when(spyDriver.getOriginal()).thenReturn(jsDriver);
-
-            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
-                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useShadowRoot()).thenReturn(true);
-
-                // Mock SmartFinder to return our elements
-                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
-                    smartFinderMock.when(() -> SmartFinder.findElementsWithShadowRootDriver(
-                                    any(SmartWebDriver.class), any(By.class), any(Consumer.class)))
-                            .thenReturn(mockElements);
-
-                    // Act
-                    List<WebElement> results = spyDriver.findElements(locator);
-
-                    // Assert - Elements were properly converted
-                    assertEquals(1, results.size());
-                    assertSame(mockElement, results.get(0));
-                }
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("waitWithoutFailure test")
-    class WaitWithoutFailureTest {
-
-        @Test
-        @DisplayName("waitWithoutFailure should handle exceptions")
-        void waitWithoutFailureShouldHandleExceptions() throws Exception {
-            // Arrange
+        @DisplayName("waitWithoutFailure should suppress exceptions")
+        void waitWithoutFailureShouldSuppressExceptions() throws Exception {
+            // Given
             Function<WebDriver, Boolean> condition = driver -> {
                 throw new TimeoutException("Timeout waiting for condition");
             };
@@ -1079,11 +901,216 @@ class SmartWebDriverTest extends BaseUnitUITest {
                     "waitWithoutFailure", Function.class);
             waitWithoutFailureMethod.setAccessible(true);
 
-            // Act - should not throw exception
+            // When
             waitWithoutFailureMethod.invoke(smartDriver, condition);
 
-            // Assert - verify wait was called
+            // Then
             verify(mockWait).until(condition);
+        }
+
+        @Test
+        @DisplayName("waitWithoutFailure should complete successfully when no exception")
+        void waitWithoutFailureShouldCompleteSuccessfullyWhenNoException() throws Exception {
+            // Given
+            Function<WebDriver, Boolean> condition = driver -> true;
+
+            WebDriverWait mockWait = mock(WebDriverWait.class);
+            when(mockWait.until(any(Function.class))).thenReturn(true);
+
+            // Use reflection to set the wait field
+            Field waitField = SmartWebDriver.class.getDeclaredField("wait");
+            waitField.setAccessible(true);
+            waitField.set(smartDriver, mockWait);
+
+            // Use reflection to access the private method
+            Method waitWithoutFailureMethod = SmartWebDriver.class.getDeclaredMethod(
+                    "waitWithoutFailure", Function.class);
+            waitWithoutFailureMethod.setAccessible(true);
+
+            // When
+            waitWithoutFailureMethod.invoke(smartDriver, condition);
+
+            // Then
+            verify(mockWait).until(condition);
+        }
+    }
+
+    @Nested
+    @DisplayName("Lambda functions in findElement and findElements")
+    class LambdaFunctionTests {
+
+        @Test
+        @DisplayName("Lambda functions in findElement method should handle exception")
+        void lambdaFunctionInFindElementShouldHandleException() {
+            // Given
+            By locator = By.id("testId");
+            Function<WebDriver, Boolean> condition = driver -> {
+                throw new TimeoutException("Timeout waiting for condition");
+            };
+
+            // Create a spy to verify the lambda is called
+            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+            SmartWebDriver spyDriver = spy(realDriver);
+            when(spyDriver.getOriginal()).thenReturn(jsDriver);
+
+            // Make sure shadow root is disabled
+            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+
+                // Mock SmartFinder to capture and execute the lambda
+                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
+                    // Create a mock that will capture the waitFn consumer
+                    smartFinderMock.when(() -> SmartFinder.findElementNormally(
+                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
+                            .thenAnswer(invocation -> {
+                                // Extract the consumer (waitFn lambda) from invocation
+                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
+
+                                // Execute the lambda with our condition that will throw
+                                waitFn.accept(condition);
+
+                                // Return a mock element
+                                return mock(SmartWebElement.class);
+                            });
+
+                    // When
+                    spyDriver.findElement(locator);
+
+                    // Then
+                    smartFinderMock.verify(() -> SmartFinder.findElementNormally(
+                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("Lambda functions in findElements method should handle exception")
+        void lambdaFunctionInFindElementsShouldHandleException() {
+            // Given
+            By locator = By.id("testId");
+            Function<WebDriver, Boolean> condition = driver -> {
+                throw new TimeoutException("Timeout waiting for condition");
+            };
+
+            // Create a spy to verify the lambda is called
+            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+            SmartWebDriver spyDriver = spy(realDriver);
+            when(spyDriver.getOriginal()).thenReturn(jsDriver);
+
+            // Make sure shadow root is disabled
+            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+
+                // Mock SmartFinder to capture and execute the lambda
+                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
+                    // Create a mock that will capture the waitFn consumer
+                    smartFinderMock.when(() -> SmartFinder.findElementsNormally(
+                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
+                            .thenAnswer(invocation -> {
+                                // Extract the consumer (waitFn lambda) from invocation
+                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
+
+                                // Execute the lambda with our condition that will throw
+                                waitFn.accept(condition);
+
+                                // Return a mock list
+                                return Collections.singletonList(mock(SmartWebElement.class));
+                            });
+
+                    // When
+                    spyDriver.findElements(locator);
+
+                    // Then
+                    smartFinderMock.verify(() -> SmartFinder.findElementsNormally(
+                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("Lambda function in findSmartElementInternal with custom wait should handle exception")
+        void lambdaFunctionInFindSmartElementInternalShouldHandleException() {
+            // Given
+            By locator = By.id("testId");
+            Long waitTime = 5000L;  // Use custom wait time to trigger the lambda
+            Function<WebDriver, Boolean> condition = driver -> {
+                throw new TimeoutException("Timeout waiting for condition");
+            };
+
+            // Create a spy to verify the lambda is called
+            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+            SmartWebDriver spyDriver = spy(realDriver);
+            when(spyDriver.getOriginal()).thenReturn(jsDriver);
+
+            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+
+                // Mock SmartFinder to capture and execute the lambda
+                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
+                    // Create a mock that will capture the waitFn consumer
+                    smartFinderMock.when(() -> SmartFinder.findElementNormally(
+                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
+                            .thenAnswer(invocation -> {
+                                // Extract the consumer (waitFn lambda) from invocation
+                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
+
+                                // Execute the lambda with our condition that will throw
+                                waitFn.accept(condition);
+
+                                // Return a mock element
+                                return mock(SmartWebElement.class);
+                            });
+
+                    // When
+                    spyDriver.findSmartElement(locator, waitTime);
+
+                    // Then
+                    smartFinderMock.verify(() -> SmartFinder.findElementNormally(
+                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("Lambda function in findSmartElementInternal with custom wait should handle exception")
+        void lambdaFunctionInFindSmartElementInternalShouldCallUntilFunction() {
+            // Given
+            By locator = By.id("testId");
+            Long waitTime = 5000L;  // Use custom wait time to trigger the lambda
+            Function<WebDriver, Boolean> condition = driver -> true;
+
+            // Create a spy to verify the lambda is called
+            SmartWebDriver realDriver = new SmartWebDriver(jsDriver);
+            SmartWebDriver spyDriver = spy(realDriver);
+            when(spyDriver.getOriginal()).thenReturn(jsDriver);
+
+            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+
+                // Mock SmartFinder to capture and execute the lambda
+                try (MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class)) {
+                    // Create a mock that will capture the waitFn consumer
+                    smartFinderMock.when(() -> SmartFinder.findElementNormally(
+                                    any(WebDriver.class), any(By.class), any(Consumer.class)))
+                            .thenAnswer(invocation -> {
+                                // Extract the consumer (waitFn lambda) from invocation
+                                Consumer<Function<WebDriver, ?>> waitFn = invocation.getArgument(2);
+
+                                // Execute the lambda with our condition that will throw
+                                waitFn.accept(condition);
+
+                                // Return a mock element
+                                return mock(SmartWebElement.class);
+                            });
+
+                    // When
+                    spyDriver.findSmartElement(locator, waitTime);
+
+                    // Then
+                    smartFinderMock.verify(() -> SmartFinder.findElementNormally(
+                            any(WebDriver.class), any(By.class), any(Consumer.class)), times(1));
+                }
+            }
         }
     }
 
@@ -1094,7 +1121,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("handleException should use cause instead of exception if available")
         void handleExceptionShouldUseCauseIfAvailable() throws Exception {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -1108,8 +1135,6 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup config mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
 
                 // Configure the SmartFinder to throw our wrapper exception
                 smartFinderMock.when(() -> SmartFinder.findElementNormally(
@@ -1121,10 +1146,10 @@ class SmartWebDriverTest extends BaseUnitUITest {
                                 any(WebDriver.class), eq(WebElementAction.FIND_ELEMENT), any(Object[].class)))
                         .thenReturn(expectedElement);
 
-                // Act
+                // When
                 SmartWebElement result = smartDriver.findSmartElement(locator);
 
-                // Assert
+                // Then
                 assertSame(expectedElement, result);
 
                 // Verify the exception handler was called with the right parameters
@@ -1138,7 +1163,7 @@ class SmartWebDriverTest extends BaseUnitUITest {
         @Test
         @DisplayName("handleException should throw when no handler found")
         void handleExceptionShouldThrowWhenNoHandlerFound() throws Exception {
-            // Arrange
+            // Given
             By locator = By.id("testId");
             IllegalArgumentException exception = new IllegalArgumentException("Unsupported locator");
 
@@ -1148,74 +1173,59 @@ class SmartWebDriverTest extends BaseUnitUITest {
 
                 // Setup config mocks
                 uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-                when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-                when(uiConfig.useShadowRoot()).thenReturn(false);
 
                 // Configure the SmartFinder to throw our unsupported exception
                 smartFinderMock.when(() -> SmartFinder.findElementNormally(
                                 any(WebDriver.class), eq(locator), any(Consumer.class)))
                         .thenThrow(exception);
 
-                // Act & Assert
+                // When & Then
                 assertThrows(IllegalArgumentException.class, () -> smartDriver.findSmartElement(locator));
 
                 // Verify that the error was logged
                 logUIMock.verify(() -> LogUI.error(contains("Exception handling failed for method")));
             }
         }
-    }
 
-    @Test
-    @DisplayName("waitWithoutFailure should suppress exceptions")
-    void waitWithoutFailureShouldSuppressExceptions() throws Exception {
-        // Arrange
-        Function<WebDriver, Boolean> condition = driver -> {
-            throw new TimeoutException("Timeout waiting for condition");
-        };
+        @Test
+        @DisplayName("handleException should log and propagate when handler fails")
+        void handleExceptionShouldLogAndPropagateWhenHandlerFails() {
+            // Given
+            By locator = By.id("testId");
+            NoSuchElementException originalException = new NoSuchElementException("Element not found");
+            RuntimeException handlerException = new RuntimeException("Handler failed");
 
-        WebDriverWait mockWait = mock(WebDriverWait.class);
-        doThrow(new TimeoutException("Timeout")).when(mockWait).until(any(Function.class));
+            try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
+                 MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
+                 MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class);
+                 MockedStatic<ExceptionHandlingWebDriverFunctions> exceptionHandlingMock = mockStatic(ExceptionHandlingWebDriverFunctions.class)) {
 
-        // Use reflection to set the wait field
-        Field waitField = SmartWebDriver.class.getDeclaredField("wait");
-        waitField.setAccessible(true);
-        waitField.set(smartDriver, mockWait);
+                // Setup config
+                uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-        // Use reflection to access the private method
-        Method waitWithoutFailureMethod = SmartWebDriver.class.getDeclaredMethod(
-                "waitWithoutFailure", Function.class);
-        waitWithoutFailureMethod.setAccessible(true);
+                // Make SmartFinder throw our exception
+                smartFinderMock.when(() -> SmartFinder.findElementNormally(
+                                any(WebDriver.class), eq(locator), any(Consumer.class)))
+                        .thenThrow(originalException);
 
-        // Act - should not throw exception
-        waitWithoutFailureMethod.invoke(smartDriver, condition);
+                // Make handler throw an exception
+                exceptionHandlingMock.when(() -> ExceptionHandlingWebDriverFunctions.handleNoSuchElement(
+                                any(WebDriver.class), eq(WebElementAction.FIND_ELEMENT), any(Object[].class)))
+                        .thenThrow(handlerException);
 
-        // Assert - verify wait was called
-        verify(mockWait).until(condition);
-    }
+                // When/Then - should throw original exception
+                NoSuchElementException thrown = assertThrows(NoSuchElementException.class,
+                        () -> smartDriver.findSmartElement(locator));
+                assertSame(originalException, thrown);
 
-    @Test
-    @DisplayName("waitWithoutFailure should complete successfully when no exception")
-    void waitWithoutFailureShouldCompleteSuccessfullyWhenNoException() throws Exception {
-        // Arrange
-        Function<WebDriver, Boolean> condition = driver -> true;
-
-        WebDriverWait mockWait = mock(WebDriverWait.class);
-        when(mockWait.until(any(Function.class))).thenReturn(true);
-
-        // Use reflection to set the wait field
-        Field waitField = SmartWebDriver.class.getDeclaredField("wait");
-        waitField.setAccessible(true);
-        waitField.set(smartDriver, mockWait);
-
-        // Use reflection to access the private method
-        Method waitWithoutFailureMethod = SmartWebDriver.class.getDeclaredMethod(
-                "waitWithoutFailure", Function.class);
-        waitWithoutFailureMethod.setAccessible(true);
-
-        // Act
-        waitWithoutFailureMethod.invoke(smartDriver, condition);
-
-        // Assert
-        verify(mockWait).until(condition);
+                // Verify logging
+                logUIMock.verify(() -> LogUI.error(
+                        startsWith("Framework attempted to handle an exception in method"),
+                        eq(handlerException)));
+                logUIMock.verify(() -> LogUI.error(
+                        startsWith("Propagating original exception"),
+                        eq(originalException)));
+            }
+        }
     }
 }

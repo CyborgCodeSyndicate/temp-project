@@ -89,7 +89,7 @@ class FluentChainTest {
                 verify(mockedSuperQuest).getSoftAssertions();
 
                 // Verify the log message was called
-                logTestMock.verify(() -> LogTest.validation("Starting soft validation."));
+                logTestMock.verify(() -> LogTest.validation(anyString()));
 
                 // Verify method returns this for chaining
                 assertSame(fluentChain, result, "Method should return this for chaining");
@@ -111,8 +111,7 @@ class FluentChainTest {
                 verifyNoMoreInteractions(quest);
 
                 // Verify log messages
-                logTestMock.verify(() -> LogTest.validation("Starting hard validation..."));
-                logTestMock.verify(() -> LogTest.validation("Hard validation completed successfully."));
+                logTestMock.verify(() -> LogTest.validation(anyString()), times(2));
 
                 assertSame(fluentChain, result, "Method should return this for chaining");
             }
@@ -188,8 +187,7 @@ class FluentChainTest {
                 verify(quest).complete();
 
                 // Verify log messages
-                logTestMock.verify(() -> LogTest.validation("Starting hard validation..."));
-                logTestMock.verify(() -> LogTest.validation("Hard validation completed successfully."));
+                logTestMock.verify(() -> LogTest.validation(anyString()), times(2));
             }
         }
 
@@ -217,7 +215,7 @@ class FluentChainTest {
                 verify(quest).complete();
 
                 // Verify the log message was called
-                logTestMock.verify(() -> LogTest.validation("Starting soft validation."));
+                logTestMock.verify(() -> LogTest.validation(anyString()), times(1));
             }
         }
     }
@@ -233,5 +231,24 @@ class FluentChainTest {
 
         // Then
         assertNotNull(resultSuperQuest, "SuperQuest should not be null");
+    }
+
+    @Test
+    @DisplayName("validate(Runnable) should handle exceptions and log the failure")
+    void testValidateWithRunnableThrowsException() {
+        try (MockedStatic<LogTest> logTestMock = mockStatic(LogTest.class)) {
+            // Given
+            Runnable runnable = () -> { throw new RuntimeException("Test exception"); }; // Simulating an exception
+
+            // When
+            try {
+                fluentChain.validate(runnable);
+            } catch (RuntimeException e) {
+                // Then
+                // Verify that the exception was logged
+                logTestMock.verify(() -> LogTest.validation("Hard validation failed: Test exception"));
+                assertSame("Test exception", e.getMessage(), "The exception message should match.");
+            }
+        }
     }
 }

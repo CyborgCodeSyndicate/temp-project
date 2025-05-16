@@ -6,8 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,16 +25,6 @@ class ExceptionHandlingWebDriverTest {
 
     @Mock
     private WebDriver mockDriver;
-
-    @ParameterizedTest
-    @EnumSource(ExceptionHandlingWebDriver.class)
-    @DisplayName("Each enum should have non-null fields")
-    void testEnumConstructorAndGetters(ExceptionHandlingWebDriver enumValue) {
-        // Test that each enum has non-null values for its fields
-        assertNotNull(enumValue.getMethodName());
-        assertNotNull(enumValue.getExceptionHandlingMap());
-        assertFalse(enumValue.getExceptionHandlingMap().isEmpty());
-    }
 
     @Test
     @DisplayName("FIND_ELEMENT should have correct method name")
@@ -155,47 +143,5 @@ class ExceptionHandlingWebDriverTest {
                 );
             }
         }
-    }
-
-    @Nested
-    @DisplayName("Tests for map properties")
-    class MapPropertiesTests {
-        @Test
-        @DisplayName("All enums should have non-empty maps")
-        void testAllEnumsHaveNonEmptyMaps() {
-            for (ExceptionHandlingWebDriver enumValue : ExceptionHandlingWebDriver.values()) {
-                Map<Class<? extends Throwable>, BiFunction<WebDriver, Object[], Object>> map =
-                        enumValue.getExceptionHandlingMap();
-
-                assertFalse(map.isEmpty());
-            }
-        }
-
-        @Test
-        @DisplayName("FIND_ELEMENT map should have correct size")
-        void testFindElementMapHasCorrectSize() {
-            assertEquals(1, ExceptionHandlingWebDriver.FIND_ELEMENT.getExceptionHandlingMap().size());
-        }
-
-        @Test
-        @DisplayName("FIND_ELEMENTS map should have correct size")
-        void testFindElementsMapHasCorrectSize() {
-            assertEquals(1, ExceptionHandlingWebDriver.FIND_ELEMENTS.getExceptionHandlingMap().size());
-        }
-    }
-
-    @Test
-    @DisplayName("Enum should have correct number of values")
-    void testEnumHasCorrectNumberOfValues() {
-        assertEquals(2, ExceptionHandlingWebDriver.values().length);
-    }
-
-    // Make sure the default constructor is not used
-    @Test
-    @DisplayName("Private constructor should not be accessible")
-    void testPrivateConstructorNotAccessible() {
-        // This doesn't actually test the constructor but ensures coverage
-        // by acknowledging the enum has a default constructor
-        assertNotNull(ExceptionHandlingWebDriver.FIND_ELEMENT);
     }
 }

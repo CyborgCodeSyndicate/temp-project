@@ -13,24 +13,18 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class QuestFactoryTest {
 
     @Mock
     private DecoratorsFactory decoratorsFactory;
-
     private final MockFluentService mockFluentService = new MockFluentService();
 
     @AfterEach
@@ -39,39 +33,90 @@ class QuestFactoryTest {
     }
 
     @Test
-    @DisplayName("Should create Quest and register services correctly")
-    void testCreateQuestRegistersServices() throws Exception {
+    @DisplayName("Should create Quest with registered services when fluent services provided")
+    void createQuest_registersServices() throws Exception {
         // Given
         List<FluentService> providers = List.of(mockFluentService);
+        QuestFactory questFactory = createFactory(providers);
 
-        // Create the QuestFactory with the providers
-        QuestFactory questFactory = new QuestFactory(providers);
-
-        // Set the mock decoratorsFactory using reflection
-        Field factoryField = QuestFactory.class.getDeclaredField("decoratorsFactory");
-        factoryField.setAccessible(true);
-        factoryField.set(questFactory, decoratorsFactory);
-
+        FluentServiceDecorator mockDecorator = mock(FluentServiceDecorator.class);
         when(decoratorsFactory.decorate(mockFluentService, FluentServiceDecorator.class))
-                .thenAnswer(invocation -> new FluentServiceDecorator(mockFluentService));
-
-        when(decoratorsFactory.decorate(any(), eq(SuperQuest.class)))
-                .thenAnswer(invocation -> new SuperQuest(invocation.getArgument(0)));
+                .thenReturn(mockDecorator);
+        when(decoratorsFactory.decorate(any(Quest.class), eq(SuperQuest.class)))
+                .thenAnswer(inv -> new SuperQuest(inv.getArgument(0)));
 
         // When
         try (MockedStatic<LogTest> logMock = mockStatic(LogTest.class)) {
             Quest quest = questFactory.createQuest();
-            SuperQuest superQuest = QuestHolder.get();
 
             // Then
-            assertNotNull(quest, "Quest should not be null");
-            assertNotNull(superQuest, "SuperQuest should not be null");
-            assertSame(quest, superQuest.getOriginal(), "Quest should be the original inside SuperQuest");
+            assertNotNull(quest);
+            SuperQuest superQuest = QuestHolder.get();
+            assertSame(quest, superQuest.getOriginal());
 
             MockFluentService result = quest.enters(MockFluentService.class);
-            assertSame(mockFluentService, result, "Entered FluentService should match the mock instance");
+            assertSame(mockFluentService, result);
 
+            verify(mockDecorator).setQuest(any(SuperQuest.class));
+            verify(mockDecorator).postQuestSetupInitialization();
             logMock.verify(() -> LogTest.extended(anyString(), any()), times(1));
         }
+    }
+
+    @Test
+    @DisplayName("Should handle empty services collection without errors")
+    void createQuest_withEmptyServices() {
+        // Given
+        QuestFactory questFactory = createFactory(List.of());
+
+        // When
+        Quest quest = questFactory.createQuest();
+
+        // Then
+        assertNotNull(quest);
+        assertNotNull(QuestHolder.get());
+    }
+
+    @Test
+    @DisplayName("Should register multiple services when provided")
+    void createQuest_withMultipleServices() {
+        // Given
+        MockFluentService service2 = new MockFluentService();
+        List<FluentService> providers = List.of(mockFluentService, service2);
+        QuestFactory questFactory = createFactory(providers);
+
+        // Configure mocks for both services
+        FluentServiceDecorator decorator1 = mock(FluentServiceDecorator.class);
+        FluentServiceDecorator decorator2 = mock(FluentServiceDecorator.class);
+
+        when(decoratorsFactory.decorate(mockFluentService, FluentServiceDecorator.class))
+                .thenReturn(decorator1);
+        when(decoratorsFactory.decorate(service2, FluentServiceDecorator.class))
+                .thenReturn(decorator2);
+        when(decoratorsFactory.decorate(any(Quest.class), eq(SuperQuest.class)))
+                .thenAnswer(inv -> new SuperQuest(inv.getArgument(0)));
+
+        // When
+        try (MockedStatic<LogTest> logMock = mockStatic(LogTest.class)) {
+            Quest quest = questFactory.createQuest();
+
+            // Then - Verify services are accessible (without instance equality check)
+            assertNotNull(quest.enters(MockFluentService.class));
+            assertNotNull(quest.enters(MockFluentService.class));
+
+            // Verify decorator interactions
+            verify(decorator1).setQuest(any(SuperQuest.class));
+            verify(decorator1).postQuestSetupInitialization();
+            verify(decorator2).setQuest(any(SuperQuest.class));
+            verify(decorator2).postQuestSetupInitialization();
+
+            logMock.verify(() -> LogTest.extended(anyString(), any()), times(2));
+        }
+    }
+
+    private QuestFactory createFactory(List<FluentService> services) {
+        QuestFactory factory = new QuestFactory(services);
+        factory.setDecoratorsFactory(decoratorsFactory);
+        return factory;
     }
 }

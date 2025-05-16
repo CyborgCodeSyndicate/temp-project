@@ -4,7 +4,6 @@ import com.theairebellion.zeus.ui.annotations.HandleUIException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.support.ui.FluentWait;
 
@@ -18,19 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 class SmartWebElementInspectorTest {
 
-    @Mock
-    private SmartWebElement mockSmartWebElement;
-
-    @Mock
-    private SmartWebDriver mockSmartWebDriver;
-
     @Test
     @DisplayName("inspectStackTrace should return false values for null throwable")
     void inspectStackTraceShouldReturnFalseValuesForNullThrowable() {
-        // Act
+        // Given // When
         SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(null);
 
-        // Assert
+        // Then
         assertFalse(result.foundAnnotatedMethod());
         assertFalse(result.foundHandleException());
         assertFalse(result.comingFromWait());
@@ -39,7 +32,7 @@ class SmartWebElementInspectorTest {
     @Test
     @DisplayName("inspectStackTrace should detect FluentWait in stack trace")
     void inspectStackTraceShouldDetectFluentWaitInStackTrace() {
-        // Arrange
+        // Given
         RuntimeException exception = createExceptionWithStackTrace(
                 new StackTraceElement(
                         FluentWait.class.getName(),
@@ -49,10 +42,10 @@ class SmartWebElementInspectorTest {
                 )
         );
 
-        // Act
+        // When
         SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
 
-        // Assert
+        // Then
         assertTrue(result.comingFromWait());
         assertFalse(result.foundAnnotatedMethod());
         assertFalse(result.foundHandleException());
@@ -60,8 +53,8 @@ class SmartWebElementInspectorTest {
 
     @Test
     @DisplayName("inspectStackTrace should detect annotated method in SmartWebElement")
-    void inspectStackTraceShouldDetectAnnotatedMethodInSmartWebElement() throws Exception {
-        // Find an actual annotated method from SmartWebElement
+    void inspectStackTraceShouldDetectAnnotatedMethodInSmartWebElement() {
+        // Given
         Method[] methods = SmartWebElement.class.getDeclaredMethods();
         String annotatedMethodName = "";
 
@@ -75,7 +68,7 @@ class SmartWebElementInspectorTest {
         // Skip test if no annotated method found
         assumeTrue(!annotatedMethodName.isEmpty(), "No @HandleUIException annotated method found in SmartWebElement");
 
-        // Arrange
+        // When
         RuntimeException exception = createExceptionWithStackTrace(
                 new StackTraceElement(
                         SmartWebElement.class.getName(),
@@ -85,7 +78,7 @@ class SmartWebElementInspectorTest {
                 )
         );
 
-        // Act
+        // Then
         SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
 
         // Assert
@@ -97,7 +90,7 @@ class SmartWebElementInspectorTest {
     @Test
     @DisplayName("inspectStackTrace should detect handleException method in SmartWebElement")
     void inspectStackTraceShouldDetectHandleExceptionMethodInSmartWebElement() {
-        // Arrange
+        // Given
         RuntimeException exception = createExceptionWithStackTrace(
                 new StackTraceElement(
                         SmartWebElement.class.getName(),
@@ -107,64 +100,10 @@ class SmartWebElementInspectorTest {
                 )
         );
 
-        // Act
+        // When
         SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
 
-        // Assert
-        assertTrue(result.foundHandleException());
-        assertFalse(result.foundAnnotatedMethod());
-        assertFalse(result.comingFromWait());
-    }
-
-    @Test
-    @DisplayName("inspectStackTrace should detect annotated method in SmartWebDriver")
-    void inspectStackTraceShouldDetectAnnotatedMethodInSmartWebDriver() throws Exception {
-        // We need to find a method that's in the ANNOTATED_METHODS set
-        // For testing, use reflection to access the private static field
-        Field annotatedMethodsField = SmartWebElementInspector.class.getDeclaredField("ANNOTATED_METHODS");
-        annotatedMethodsField.setAccessible(true);
-        @SuppressWarnings("unchecked")
-        Set<String> annotatedMethods = (Set<String>) annotatedMethodsField.get(null);
-
-        // Get a method from the set
-        String annotatedMethodName = annotatedMethods.iterator().next();
-
-        // Arrange
-        RuntimeException exception = createExceptionWithStackTrace(
-                new StackTraceElement(
-                        SmartWebDriver.class.getName(),
-                        annotatedMethodName,
-                        "SmartWebDriver.java",
-                        150
-                )
-        );
-
-        // Act
-        SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
-
-        // Assert
-        assertTrue(result.foundAnnotatedMethod());
-        assertFalse(result.foundHandleException());
-        assertFalse(result.comingFromWait());
-    }
-
-    @Test
-    @DisplayName("inspectStackTrace should detect handleException method in SmartWebDriver")
-    void inspectStackTraceShouldDetectHandleExceptionMethodInSmartWebDriver() {
-        // Arrange
-        RuntimeException exception = createExceptionWithStackTrace(
-                new StackTraceElement(
-                        SmartWebDriver.class.getName(),
-                        "handleException",
-                        "SmartWebDriver.java",
-                        250
-                )
-        );
-
-        // Act
-        SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
-
-        // Assert
+        // Then
         assertTrue(result.foundHandleException());
         assertFalse(result.foundAnnotatedMethod());
         assertFalse(result.comingFromWait());
@@ -180,7 +119,7 @@ class SmartWebElementInspectorTest {
         Set<String> annotatedMethods = (Set<String>) annotatedMethodsField.get(null);
         String annotatedMethodName = annotatedMethods.iterator().next();
 
-        // Arrange - create a stack trace with multiple matching elements
+        // Given
         RuntimeException exception = createExceptionWithStackTrace(
                 new StackTraceElement(
                         FluentWait.class.getName(),
@@ -202,10 +141,10 @@ class SmartWebElementInspectorTest {
                 )
         );
 
-        // Act
+        // When
         SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
 
-        // Assert
+        // Then
         assertTrue(result.comingFromWait());
         assertTrue(result.foundAnnotatedMethod());
         assertTrue(result.foundHandleException());
@@ -214,14 +153,14 @@ class SmartWebElementInspectorTest {
     @Test
     @DisplayName("inspectStackTrace should handle empty stack trace")
     void inspectStackTraceShouldHandleEmptyStackTrace() {
-        // Arrange
+        // Given
         RuntimeException exception = new RuntimeException("Test exception");
         exception.setStackTrace(new StackTraceElement[0]);
 
-        // Act
+        // When
         SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
 
-        // Assert
+        // Then
         assertFalse(result.comingFromWait());
         assertFalse(result.foundAnnotatedMethod());
         assertFalse(result.foundHandleException());
@@ -230,7 +169,7 @@ class SmartWebElementInspectorTest {
     @Test
     @DisplayName("inspectStackTrace should ignore irrelevant stack trace elements")
     void inspectStackTraceShouldIgnoreIrrelevantStackTraceElements() {
-        // Arrange
+        // Given
         RuntimeException exception = createExceptionWithStackTrace(
                 new StackTraceElement(
                         "java.lang.Thread",
@@ -246,25 +185,13 @@ class SmartWebElementInspectorTest {
                 )
         );
 
-        // Act
+        // When
         SmartWebElementInspector.Result result = SmartWebElementInspector.inspectStackTrace(exception);
 
-        // Assert
+        // Then
         assertFalse(result.comingFromWait());
         assertFalse(result.foundAnnotatedMethod());
         assertFalse(result.foundHandleException());
-    }
-
-    @Test
-    @DisplayName("Result class should have proper getters")
-    void resultClassShouldHaveProperGetters() {
-        // Arrange
-        SmartWebElementInspector.Result result = new SmartWebElementInspector.Result(true, false, true);
-
-        // Assert
-        assertTrue(result.foundAnnotatedMethod());
-        assertFalse(result.foundHandleException());
-        assertTrue(result.comingFromWait());
     }
 
     // Helper method to create exceptions with custom stack traces

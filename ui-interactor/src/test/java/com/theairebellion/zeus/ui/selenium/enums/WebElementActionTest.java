@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.selenium.enums;
 import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,6 +32,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("getMethodName() should return correct Selenium method names for all action types")
     void testGetMethodName() {
         assertEquals("findElement", WebElementAction.FIND_ELEMENT.getMethodName());
         assertEquals("findElements", WebElementAction.FIND_ELEMENTS.getMethodName());
@@ -41,11 +43,11 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("performAction() static method should execute FIND_ELEMENT and return SmartWebElement wrapper")
     void testPerformActionStaticMethod() {
         // We can't mock enum instances, but we can verify the behavior
         // by checking the result matches what the enum instance would return
 
-        By testLocator = By.id("testId");
         Object result = WebElementAction.performAction(mockDriver, mockElement, WebElementAction.FIND_ELEMENT);
 
         // Verify that result is a SmartWebElement wrapping our mockElement
@@ -54,6 +56,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("FIND_ELEMENT.performActionWebElement() should wrap element in SmartWebElement")
     void testFindElementPerformActionWebElement() {
         // When
         Object result = WebElementAction.FIND_ELEMENT.performActionWebElement(mockDriver, mockElement);
@@ -64,6 +67,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("FIND_ELEMENT.performActionWebDriver() should wrap provided element in SmartWebElement")
     void testFindElementPerformActionWebDriver() {
         // Given
         WebElement element = mock(WebElement.class);
@@ -77,6 +81,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("FIND_ELEMENTS.performActionWebElement() should find and wrap child elements in SmartWebElement list")
     void testFindElementsPerformActionWebElement() {
         // Given
         By selector = By.id("testId");
@@ -102,6 +107,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("FIND_ELEMENTS.performActionWebDriver() should find and wrap elements in SmartWebElement list")
     void testFindElementsPerformActionWebDriver() {
         // Given
         By selector = By.id("testId");
@@ -127,6 +133,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("CLICK.performActionWebElement() should delegate click to element and return null")
     void testClickPerformActionWebElement() {
         // When
         Object result = WebElementAction.CLICK.performActionWebElement(mockDriver, mockElement);
@@ -137,6 +144,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("CLICK.performActionWebDriver() should do nothing and return null (no element to click)")
     void testClickPerformActionWebDriver() {
         // When
         Object result = WebElementAction.CLICK.performActionWebDriver(mockDriver);
@@ -147,6 +155,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("SEND_KEYS.performActionWebElement() should delegate text input to element and return null")
     void testSendKeysPerformActionWebElement() {
         // Given
         String text = "test text";
@@ -160,6 +169,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("SEND_KEYS.performActionWebDriver() should do nothing and return null (no element for input)")
     void testSendKeysPerformActionWebDriver() {
         // When
         Object result = WebElementAction.SEND_KEYS.performActionWebDriver(mockDriver);
@@ -170,6 +180,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("SUBMIT.performActionWebElement() should delegate submit to element and return null")
     void testSubmitPerformActionWebElement() {
         // When
         Object result = WebElementAction.SUBMIT.performActionWebElement(mockDriver, mockElement);
@@ -180,6 +191,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("SUBMIT.performActionWebDriver() should do nothing and return null (no element to submit)")
     void testSubmitPerformActionWebDriver() {
         // When
         Object result = WebElementAction.SUBMIT.performActionWebDriver(mockDriver);
@@ -190,6 +202,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("CLEAR.performActionWebElement() should delegate clear to element and return null")
     void testClearPerformActionWebElement() {
         // When
         Object result = WebElementAction.CLEAR.performActionWebElement(mockDriver, mockElement);
@@ -200,6 +213,7 @@ class WebElementActionTest extends BaseUnitUITest {
     }
 
     @Test
+    @DisplayName("CLEAR.performActionWebDriver() should do nothing and return null (no element to clear)")
     void testClearPerformActionWebDriver() {
         // When
         Object result = WebElementAction.CLEAR.performActionWebDriver(mockDriver);
@@ -207,5 +221,19 @@ class WebElementActionTest extends BaseUnitUITest {
         // Then
         assertNull(result);
         verifyNoInteractions(mockDriver);
+    }
+
+    @Test
+    @DisplayName("FIND_ELEMENTS should handle empty list from WebDriver")
+    void testFindElementsWithEmptyList() {
+        // When
+        when(mockDriver.findElements(any())).thenReturn(List.of());
+
+        @SuppressWarnings("unchecked")
+        List<SmartWebElement> result = (List<SmartWebElement>)
+                WebElementAction.FIND_ELEMENTS.performActionWebDriver(mockDriver, By.id("test"));
+
+        // Then
+        assertTrue(result.isEmpty());
     }
 }

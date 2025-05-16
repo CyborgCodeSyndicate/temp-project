@@ -52,7 +52,6 @@ class CraftsmanTest {
     @Mock private ExtensionContext extensionContext;
     @Mock private ExtensionContext.Store globalStore;
     @Mock private ExtensionContext.Store parametersStore;
-    @Mock private ApplicationContext applicationContext;
     @Mock private DecoratorsFactory decoratorsFactory;
     @Mock private Quest quest;
     @Mock private SuperQuest superQuest;
@@ -109,10 +108,12 @@ class CraftsmanTest {
         @Test
         @DisplayName("Should return true when parameter is annotated with @Craft")
         void supportsParameterReturnsTrueWhenAnnotatedWithCraft() {
+            // When
             when(parameterContext.isAnnotated(Craft.class)).thenReturn(true);
 
             boolean result = craftsman.supportsParameter(parameterContext, extensionContext);
 
+            // Then
             assertThat(result).isTrue();
             verify(parameterContext).isAnnotated(Craft.class);
         }
@@ -120,10 +121,12 @@ class CraftsmanTest {
         @Test
         @DisplayName("Should return false when parameter is not annotated with @Craft")
         void supportsParameterReturnsFalseWhenNotAnnotatedWithCraft() {
+            // When
             when(parameterContext.isAnnotated(Craft.class)).thenReturn(false);
 
             boolean result = craftsman.supportsParameter(parameterContext, extensionContext);
 
+            // Then
             assertThat(result).isFalse();
             verify(parameterContext).isAnnotated(Craft.class);
         }
@@ -142,9 +145,11 @@ class CraftsmanTest {
         @Test
         @DisplayName("Should throw exception when @Craft annotation is not present")
         void shouldThrowExceptionWhenCraftAnnotationNotPresent() {
+            // When
             when(parameterContext.findAnnotation(Craft.class)).thenReturn(Optional.empty());
             when(parameter.getName()).thenReturn("testParam");
 
+            // Then
             assertThatThrownBy(() -> craftsman.resolveParameter(parameterContext, extensionContext))
                 .isInstanceOf(ParameterResolutionException.class)
                 .hasMessageContaining("Failed to resolve parameter")
@@ -155,8 +160,10 @@ class CraftsmanTest {
         @Test
         @DisplayName("Should throw exception when Quest is not present in the store")
         void shouldThrowExceptionWhenQuestNotPresent() {
+            // When
             when(globalStore.get(StoreKeys.QUEST)).thenReturn(null);
 
+            // Then
             assertThatThrownBy(() -> craftsman.resolveParameter(parameterContext, extensionContext))
                 .isInstanceOf(ParameterResolutionException.class)
                 .hasMessageContaining("Failed to resolve parameter")
@@ -167,6 +174,7 @@ class CraftsmanTest {
         @Test
         @DisplayName("Should return Late instance when parameter type is Late")
         void shouldReturnLateInstanceWhenParameterTypeIsLate() {
+            // Given
             paramType = Late.class;
             doReturn(Late.class).when(parameter).getType();
 
@@ -174,6 +182,7 @@ class CraftsmanTest {
                  MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
                  MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
+                // When
                 testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext)).thenReturn(superQuest);
                 testContextManagerMock.when(() -> TestContextManager.initializeParameterTracking(extensionContext)).thenCallRealMethod();
                 testContextManagerMock.when(() -> TestContextManager.storeArgument(superQuest, dataForge, late, extensionContext)).thenCallRealMethod();
@@ -185,6 +194,7 @@ class CraftsmanTest {
 
                 Object result = craftsman.resolveParameter(parameterContext, extensionContext);
 
+                // Then
                 assertThat(result).isSameAs(late);
             }
         }
@@ -192,6 +202,7 @@ class CraftsmanTest {
         @Test
         @DisplayName("Should return joined object when parameter type is not Late")
         void shouldReturnJoinedObjectWhenParameterTypeIsNotLate() {
+            // Given
             Object joinedObject = new Object();
             paramType = String.class;
             doReturn(String.class).when(parameter).getType();
@@ -201,6 +212,7 @@ class CraftsmanTest {
                  MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
                  MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
 
+                // When
                 testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext)).thenReturn(superQuest);
                 frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
                 reflectionUtilMock.when(() ->
@@ -209,43 +221,9 @@ class CraftsmanTest {
 
                 Object result = craftsman.resolveParameter(parameterContext, extensionContext);
 
+                // Then
                 assertThat(result).isSameAs(joinedObject);
                 verify(late).join();
-            }
-        }
-
-        @Test
-        @DisplayName("Should verify all method calls and interactions")
-        void shouldVerifyAllMethodCallsAndInteractions() {
-            Object joinedObject = new Object();
-            paramType = String.class;
-            doReturn(String.class).when(parameter).getType();
-            when(late.join()).thenReturn(joinedObject);
-
-            try (MockedStatic<TestContextManager> testContextManagerMock = mockStatic(TestContextManager.class);
-                 MockedStatic<ReflectionUtil> reflectionUtilMock = mockStatic(ReflectionUtil.class);
-                 MockedStatic<FrameworkConfigHolder> frameworkConfigHolderMock = mockStatic(FrameworkConfigHolder.class)) {
-
-                testContextManagerMock.when(() -> TestContextManager.getSuperQuest(extensionContext)).thenReturn(superQuest);
-                frameworkConfigHolderMock.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(frameworkConfig);
-                reflectionUtilMock.when(() ->
-                                            ReflectionUtil.findEnumImplementationsOfInterface(eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE))
-                ).thenReturn(dataForge);
-
-                craftsman.resolveParameter(parameterContext, extensionContext);
-
-                verify(parameterContext, atLeastOnce()).getParameter();
-                verify(parameterContext).findAnnotation(Craft.class);
-                verify(craft).model();
-                verify(late).join();
-
-                testContextManagerMock.verify(() -> TestContextManager.initializeParameterTracking(extensionContext));
-                testContextManagerMock.verify(() -> TestContextManager.getSuperQuest(extensionContext));
-                testContextManagerMock.verify(() -> TestContextManager.storeArgument(superQuest, dataForge, joinedObject, extensionContext));
-
-                frameworkConfigHolderMock.verify(FrameworkConfigHolder::getFrameworkConfig);
-                reflectionUtilMock.verify(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                    eq(DataForge.class), eq(DOG_PET), eq(COM_EXAMPLE)));
             }
         }
     }

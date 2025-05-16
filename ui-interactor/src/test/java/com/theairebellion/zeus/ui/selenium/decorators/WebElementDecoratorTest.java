@@ -1,6 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.decorators;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -9,10 +10,7 @@ import org.openqa.selenium.*;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +34,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getOriginal() should return the exact same WebElement instance that was wrapped")
     void shouldReturnOriginalWebElement() {
         // When getting the original WebElement
         WebElement result = decorator.getOriginal();
@@ -45,6 +44,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("click() should delegate to the original WebElement's click method")
     void shouldDelegateClickMethod() {
         // When
         decorator.click();
@@ -54,6 +54,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("submit() should delegate to the original WebElement's submit method")
     void shouldDelegateSubmitMethod() {
         // When
         decorator.submit();
@@ -63,6 +64,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("sendKeys() should delegate to the original WebElement's sendKeys method with provided input")
     void shouldDelegateSendKeysMethod() {
         // Given
         CharSequence[] keysToSend = new CharSequence[]{"test input"};
@@ -75,6 +77,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("clear() should delegate to the original WebElement's clear method")
     void shouldDelegateClearMethod() {
         // When
         decorator.clear();
@@ -84,6 +87,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getTagName() should delegate to original WebElement and return its tag name")
     void shouldDelegateGetTagNameMethod() {
         // Given
         String expectedTagName = "div";
@@ -98,6 +102,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getAttribute() should delegate to original WebElement and return the requested attribute value")
     void shouldDelegateGetAttributeMethod() {
         // Given
         String attributeName = "id";
@@ -113,6 +118,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("isSelected() should delegate to original WebElement and return its selected state")
     void shouldDelegateIsSelectedMethod() {
         // Given
         when(mockWebElement.isSelected()).thenReturn(true);
@@ -126,6 +132,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("isEnabled() should delegate to original WebElement and return its enabled state")
     void shouldDelegateIsEnabledMethod() {
         // Given
         when(mockWebElement.isEnabled()).thenReturn(true);
@@ -139,6 +146,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getText() should delegate to original WebElement and return its text content")
     void shouldDelegateGetTextMethod() {
         // Given
         String expectedText = "Element text";
@@ -153,6 +161,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("findElements() should delegate to original WebElement and return list of child elements")
     void shouldDelegateFindElementsMethod() {
         // Given
         By by = By.className("child");
@@ -169,6 +178,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("findElement() should delegate to original WebElement and return the first matching child element")
     void shouldDelegateFindElementMethod() {
         // Given
         By by = By.id("childId");
@@ -184,6 +194,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("isDisplayed() should delegate to original WebElement and return its visibility state")
     void shouldDelegateIsDisplayedMethod() {
         // Given
         when(mockWebElement.isDisplayed()).thenReturn(false);
@@ -197,6 +208,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getLocation() should delegate to original WebElement and return its position coordinates")
     void shouldDelegateGetLocationMethod() {
         // Given
         Point expectedLocation = new Point(10, 20);
@@ -211,6 +223,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getSize() should delegate to original WebElement and return its dimension")
     void shouldDelegateGetSizeMethod() {
         // Given
         Dimension expectedSize = new Dimension(100, 200);
@@ -225,6 +238,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getCssValue() should delegate to original WebElement and return the CSS property value")
     void shouldDelegateGetCssValueMethod() {
         // Given
         String propertyName = "color";
@@ -240,6 +254,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getRect() should delegate to original WebElement and return its rectangle dimensions")
     void shouldDelegateGetRectMethod() {
         // Given
         Rectangle expectedRect = new Rectangle(10, 20, 100, 200);
@@ -254,6 +269,7 @@ class WebElementDecoratorTest {
     }
 
     @Test
+    @DisplayName("getScreenshotAs() should delegate to original WebElement and return screenshot in specified format")
     void shouldDelegateGetScreenshotAsMethod() {
         // Given
         OutputType<String> outputType = OutputType.BASE64;
@@ -266,5 +282,28 @@ class WebElementDecoratorTest {
         // Then
         assertEquals(expectedScreenshot, result);
         verify(mockWebElement).getScreenshotAs(outputType);
+    }
+
+    @Test
+    @DisplayName("Constructor should throw IllegalArgumentException when original WebElement is null")
+    void shouldThrowExceptionWhenOriginalIsNull() {
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new TestWebElementDecorator(null));
+        assertEquals("original WebElement must not be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("sendKeys() should handle empty input array")
+    void shouldHandleEmptySendKeys() {
+        decorator.sendKeys();
+        verify(mockWebElement).sendKeys();
+    }
+
+    @Test
+    @DisplayName("getAttribute() should handle null return value")
+    void shouldHandleNullAttribute() {
+        when(mockWebElement.getAttribute("missing")).thenReturn(null);
+        assertNull(decorator.getAttribute("missing"));
     }
 }

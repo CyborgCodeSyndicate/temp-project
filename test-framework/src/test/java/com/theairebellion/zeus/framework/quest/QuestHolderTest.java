@@ -72,4 +72,44 @@ class QuestHolderTest {
         // When/Then
         assertNull(QuestHolder.get(), "Should return null when no SuperQuest has been set");
     }
+
+    @Test
+    @DisplayName("Should maintain separate instances per thread")
+    void testThreadLocalPerThread() throws Exception {
+        // Given
+        Quest quest1 = new Quest();
+        SuperQuest superQuest1 = new SuperQuest(quest1);
+
+        Quest quest2 = new Quest();
+        SuperQuest superQuest2 = new SuperQuest(quest2);
+
+        // When
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            QuestHolder.set(superQuest1);
+            assertSame(superQuest1, QuestHolder.get());
+        });
+
+        QuestHolder.set(superQuest2);
+        future.get();
+
+        // Then
+        assertSame(superQuest2, QuestHolder.get());
+    }
+
+    @Test
+    @DisplayName("Clear should only affect current thread")
+    void clear_shouldNotAffectOtherThreads() throws Exception {
+        // Given
+        SuperQuest sq = new SuperQuest(new Quest());
+        QuestHolder.set(sq);
+
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            QuestHolder.set(new SuperQuest(new Quest()));
+            QuestHolder.clear();
+        });
+        future.get();
+
+        // Then
+        assertSame(sq, QuestHolder.get());
+    }
 }

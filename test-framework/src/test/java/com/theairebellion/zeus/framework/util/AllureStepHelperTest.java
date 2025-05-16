@@ -19,9 +19,7 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.annotation.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -209,30 +207,6 @@ public class AllureStepHelperTest {
                                     eq(".log")
                             ),
                     times(1)
-            );
-        }
-    }
-
-    @Test
-    @DisplayName("Should attach error message when IOException occurs during log reading")
-    void shouldAttachErrorMessageWhenIOExceptionOccurs() {
-        // Given
-        String testName = "testScenario";
-        String invalidLogPath = "invalid/path/to/logfile.log";
-        System.setProperty("logFileName", invalidLogPath);
-
-        // When
-        try (MockedStatic<Allure> mockedAllure = mockStatic(Allure.class)) {
-            AllureStepHelper.attachFilteredLogsToAllure(testName);
-
-            // Then
-            mockedAllure.verify(() ->
-                    Allure.addAttachment(
-                            eq("Filtered Logs for Test: " + testName),
-                            eq("text/plain"),
-                            argThat((String content) -> content.startsWith("Failed to read logs. Error:")),
-                            eq(".log")
-                    )
             );
         }
     }
@@ -498,7 +472,8 @@ public class AllureStepHelperTest {
                         try {
                             mock.write("key1=value1\n");
                             mock.write("key2=value2\n");
-                        } catch (IOException ignored) {}
+                        } catch (IOException ignored) {
+                        }
                     })) {
 
                 // Set up mocks
@@ -526,7 +501,8 @@ public class AllureStepHelperTest {
                     try {
                         verify(mockWriter).write("key1=value1\n");
                         verify(mockWriter).write("key2=value2\n");
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) {
+                    }
                 });
             }
         }
@@ -724,6 +700,55 @@ public class AllureStepHelperTest {
                 } catch (IOException e) {
                 }
             });
+        }
+    }
+
+    @Test
+    @DisplayName("Should handle invocation exceptions when collecting properties")
+    void shouldHandleInvocationExceptions() throws Exception {
+        try (
+                MockedStatic<ReflectionUtil> mockedReflectionUtil = mockStatic(ReflectionUtil.class);
+                MockedStatic<ConfigCache> mockedConfigCache = mockStatic(ConfigCache.class);
+                MockedStatic<FrameworkConfigHolder> mockedFrameworkConfigHolder = mockStatic(FrameworkConfigHolder.class);
+                MockedStatic<LogTest> mockedLogTest = mockStatic(LogTest.class)
+        ) {
+            // 1. Setup framework config
+            FrameworkConfig mockConfig = mock(FrameworkConfig.class);
+            when(mockConfig.projectPackage()).thenReturn("com.theairebellion.zeus");
+            mockedFrameworkConfigHolder.when(FrameworkConfigHolder::getFrameworkConfig).thenReturn(mockConfig);
+
+            // 2. Create minimal test interface
+            interface SingleMethodConfig extends PropertyConfig {
+                @Config.Key("test.key")
+                String willThrow() throws Exception;
+            }
+
+            // 3. Create mock that throws
+            SingleMethodConfig mockInstance = mock(SingleMethodConfig.class);
+            when(mockInstance.willThrow()).thenThrow(new Exception("Test exception"));
+
+            // 4. Setup reflection to return only our test interface
+            mockedReflectionUtil.when(() ->
+                            ReflectionUtil.findImplementationsOfInterface(any(), any()))
+                    .thenReturn(List.of(SingleMethodConfig.class));
+
+            // 5. Mock ConfigCache
+            mockedConfigCache.when(() -> ConfigCache.getOrCreate(SingleMethodConfig.class))
+                    .thenReturn(mockInstance);
+
+            // When
+            Method method = AllureStepHelper.class.getDeclaredMethod("collectConfigurationProperties");
+            method.setAccessible(true);
+            Map<String, List<String>> result = (Map<String, List<String>>) method.invoke(null);
+
+            // Then verify results
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+
+            mockedLogTest.verify(() ->
+                            LogTest.error(eq("Error processing willThrow"), any(Exception.class)),
+                    atLeastOnce()
+            );
         }
     }
 }

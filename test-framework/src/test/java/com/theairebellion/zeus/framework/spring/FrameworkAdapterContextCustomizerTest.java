@@ -91,6 +91,21 @@ class FrameworkAdapterContextCustomizerTest {
             // No exception should be thrown and no method called on the mock context
             verifyNoInteractions(mockContext);
         }
+
+        @Test
+        @DisplayName("Should handle empty basePackages array")
+        void handlesEmptyBasePackages() {
+            // Given
+            FrameworkAdapterContextCustomizer customizer =
+                    new FrameworkAdapterContextCustomizer(new String[0]);
+            TestAnnotationConfigApplicationContext context = new TestAnnotationConfigApplicationContext();
+
+            // When
+            customizer.customizeContext(context, mergedConfig);
+
+            // Then
+            assertArrayEquals(new String[0], context.getScannedPackages());
+        }
     }
 
     @Nested
@@ -158,6 +173,32 @@ class FrameworkAdapterContextCustomizerTest {
             // Then
             String expected = "FrameworkAdapterContextCustomizer{basePackages=" + Arrays.toString(packages) + "}";
             assertEquals(expected, result, "toString output should match expected format");
+        }
+
+        @Test
+        @DisplayName("Equals should return false for different type")
+        void equalsReturnsFalseForDifferentType() {
+            // Given
+            FrameworkAdapterContextCustomizer customizer =
+                    new FrameworkAdapterContextCustomizer(new String[]{"com.example"});
+
+            // When/Then
+            assertFalse(customizer.equals("not a customizer"),
+                    "Should return false when comparing with different type");
+        }
+
+        @Test
+        @DisplayName("Equals should be order-sensitive for packages")
+        void equalsIsOrderSensitive() {
+            // Given
+            FrameworkAdapterContextCustomizer customizer1 =
+                    new FrameworkAdapterContextCustomizer(new String[]{"a", "b"});
+            FrameworkAdapterContextCustomizer customizer2 =
+                    new FrameworkAdapterContextCustomizer(new String[]{"b", "a"});
+
+            // When/Then
+            assertNotEquals(customizer1, customizer2,
+                    "Should not be equal when package order differs");
         }
     }
 }

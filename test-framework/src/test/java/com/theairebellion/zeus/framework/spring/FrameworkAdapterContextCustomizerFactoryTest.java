@@ -1,5 +1,6 @@
 package com.theairebellion.zeus.framework.spring;
 
+import com.theairebellion.zeus.framework.annotation.FrameworkAdapter;
 import com.theairebellion.zeus.framework.spring.mock.AnnotatedTestClass;
 import com.theairebellion.zeus.framework.spring.mock.NonAnnotatedTestClass;
 import org.junit.jupiter.api.DisplayName;
@@ -80,6 +81,36 @@ class FrameworkAdapterContextCustomizerFactoryTest {
 
             // Then
             assertNotNull(customizer, "Customizer should not be null even with null configAttributes");
+        }
+
+        @Test
+        @DisplayName("Should deduplicate identical packages")
+        void testDuplicatePackages() {
+            // Given
+            @FrameworkAdapter(basePackages = {"com.pkg", "com.pkg"})
+            class DuplicatePackageClass {}
+
+            // When
+            ContextCustomizer customizer = factory.createContextCustomizer(DuplicatePackageClass.class, null);
+
+            // Then
+            String[] packages = (String[]) ReflectionTestUtils.getField(customizer, "basePackages");
+            assertEquals(1, packages.length);
+        }
+
+        @Test
+        @DisplayName("Should create customizer with correct package order")
+        void testPackageOrderPreserved() {
+            // Given
+            @FrameworkAdapter(basePackages = {"com.pkg1", "com.pkg2"})
+            class OrderedPackageClass {}
+
+            // When
+            ContextCustomizer customizer = factory.createContextCustomizer(OrderedPackageClass.class, null);
+
+            // Then
+            String[] packages = (String[]) ReflectionTestUtils.getField(customizer, "basePackages");
+            assertArrayEquals(new String[]{"com.pkg1", "com.pkg2"}, packages);
         }
     }
 }
