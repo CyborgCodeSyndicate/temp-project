@@ -15,62 +15,65 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openqa.selenium.WebDriver;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @DisplayName("AbstractComponentService Tests")
 class AbstractComponentServiceTest extends BaseUnitUITest {
 
-    @Mock
-    private WebDriver webDriver;
+   @Mock
+   private WebDriver webDriver;
 
-    private SmartWebDriver smartWebDriver;
-    private MockComponentService service;
+   private SmartWebDriver smartWebDriver;
+   private MockComponentService service;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        smartWebDriver = new SmartWebDriver(webDriver);
-        service = new MockComponentService(smartWebDriver);
-    }
+   @BeforeEach
+   void setUp() {
+      MockitoAnnotations.openMocks(this);
+      smartWebDriver = new SmartWebDriver(webDriver);
+      service = new MockComponentService(smartWebDriver);
+   }
 
-    @Nested
-    @DisplayName("Component caching tests")
-    class ComponentCachingTests {
+   @Nested
+   @DisplayName("Component caching tests")
+   class ComponentCachingTests {
 
-        @Test
-        @DisplayName("Should return the same component instance for the same type")
-        void testComponentCaching() {
-            // When
-            MockComponent compA1 = service.getOrCreateComponent(MockType.A);
-            MockComponent compA2 = service.getOrCreateComponent(MockType.A);
+      @Test
+      @DisplayName("Should return the same component instance for the same type")
+      void testComponentCaching() {
+         // When
+         MockComponent compA1 = service.getOrCreateComponent(MockType.A);
+         MockComponent compA2 = service.getOrCreateComponent(MockType.A);
 
-            // Then
-            assertNotNull(compA1);
-            assertSame(compA1, compA2, "Should return the same instance for the same type");
-        }
+         // Then
+         assertNotNull(compA1);
+         assertSame(compA1, compA2, "Should return the same instance for the same type");
+      }
 
-        @Test
-        @DisplayName("Should return different component instances for different types")
-        void testDifferentComponentTypes() {
-            // When
-            MockComponent compA = service.getOrCreateComponent(MockType.A);
-            MockComponent compB = service.getOrCreateComponent(MockType.B);
+      @Test
+      @DisplayName("Should return different component instances for different types")
+      void testDifferentComponentTypes() {
+         // When
+         MockComponent compA = service.getOrCreateComponent(MockType.A);
+         MockComponent compB = service.getOrCreateComponent(MockType.B);
 
-            // Then
-            assertNotSame(compA, compB, "Should return different instances for different types");
-        }
-    }
+         // Then
+         assertNotSame(compA, compB, "Should return different instances for different types");
+      }
+   }
 
-    @ParameterizedTest
-    @EnumSource(MockType.class)
-    @DisplayName("Should create components with correct values for each type")
-    void testComponentValues(MockType type) {
-        // When
-        MockComponent component = service.getOrCreateComponent(type);
+   @ParameterizedTest
+   @EnumSource(MockType.class)
+   @DisplayName("Should create components with correct values for each type")
+   void testComponentValues(MockType type) {
+      // When
+      MockComponent component = service.getOrCreateComponent(type);
 
-        // Then
-        assertNotNull(component);
-        assertEquals(type.name(), component.getValue(),
-                "Component value should match type name");
-    }
+      // Then
+      assertNotNull(component);
+      assertEquals(type.name(), component.getValue(),
+            "Component value should match type name");
+   }
 }

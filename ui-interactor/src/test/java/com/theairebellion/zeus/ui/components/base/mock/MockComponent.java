@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class MockComponent {
 
-    private final String value;
+   private final String value;
 
-    public MockComponent(String value) {
-        this.value = value;
-    }
+   public MockComponent(String value) {
+      this.value = value;
+   }
 }

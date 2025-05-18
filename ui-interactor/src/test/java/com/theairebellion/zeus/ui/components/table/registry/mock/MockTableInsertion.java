@@ -6,7 +6,7 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
 public class MockTableInsertion implements TableInsertion {
 
-    @Override
-    public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
-    }
+   @Override
+   public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
+   }
 }

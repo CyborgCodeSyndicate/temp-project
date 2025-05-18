@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DataResponse {
 
-    private int id;
-    private String email;
-    @JsonProperty("first_name")
-    private String firstName;
-    @JsonProperty("last_name")
-    private String lastName;
-    private String avatar;
+   private int id;
+   private String email;
+   @JsonProperty("first_name")
+   private String firstName;
+   @JsonProperty("last_name")
+   private String lastName;
+   private String avatar;
 
 }

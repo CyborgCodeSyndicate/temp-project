@@ -5,7 +5,7 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 
 public class MockBaseComponent extends BaseComponent {
 
-    public MockBaseComponent(SmartWebDriver driver) {
-        super(driver);
-    }
+   public MockBaseComponent(SmartWebDriver driver) {
+      super(driver);
+   }
 }

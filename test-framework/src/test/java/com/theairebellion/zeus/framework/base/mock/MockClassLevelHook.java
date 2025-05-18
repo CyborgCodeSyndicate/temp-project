@@ -4,5 +4,5 @@ import com.theairebellion.zeus.framework.base.ClassLevelHook;
 
 public class MockClassLevelHook implements ClassLevelHook {
 
-    public MockService dummyService = new MockService();
+   public MockService dummyService = new MockService();
 }

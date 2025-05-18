@@ -4,26 +4,22 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.junit5.AllureJunit5;
 import io.qameta.allure.model.Status;
 import io.qameta.allure.model.StepResult;
-
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.UUID;
 
 /**
  * Custom Allure listener for managing structured Allure steps and test lifecycle.
- * <p>
- * This class extends {@link AllureJunit5} to provide additional functionality for tracking parent and nested steps
- * in Allure reports. It ensures proper test structuring, supports dynamic step statuses, and enables test ID tracking.
- * </p>
  *
- * <p>Features:</p>
+ * <p>This class extends {@link AllureJunit5} to provide additional functionality for tracking parent and nested steps
+ * in Allure reports. It ensures proper test structuring, supports dynamic step statuses, and enables test ID tracking.
+ *
+ * <p>Features:
  * <ul>
  *     <li>Tracks parent steps and child steps in Allure reports.</li>
  *     <li>Manages step statuses dynamically (INFO, SUCCESS, WARNING, ERROR).</li>
  *     <li>Supports clearing and setting test identifiers for traceability.</li>
  * </ul>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public class CustomAllureListener extends AllureJunit5 {
 

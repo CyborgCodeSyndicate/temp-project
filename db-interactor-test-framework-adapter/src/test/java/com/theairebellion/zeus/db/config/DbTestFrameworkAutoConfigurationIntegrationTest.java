@@ -26,59 +26,59 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-        DbTestFrameworkAutoConfigurationIntegrationTest.TestConfig.class,
-        DbTestFrameworkAutoConfiguration.class
+      DbTestFrameworkAutoConfigurationIntegrationTest.TestConfig.class,
+      DbTestFrameworkAutoConfiguration.class
 })
 class DbTestFrameworkAutoConfigurationIntegrationTest {
 
-    /**
-     * Test configuration that provides mock dependencies
-     */
-    @Configuration
-    static class TestConfig {
+   /**
+    * Test configuration that provides mock dependencies
+    */
+   @Configuration
+   static class TestConfig {
 
-        @Bean
-        @Primary
-        public ObjectMapper objectMapper() {
-            return Mockito.mock(ObjectMapper.class);
-        }
+      @Bean
+      @Primary
+      public ObjectMapper objectMapper() {
+         return Mockito.mock(ObjectMapper.class);
+      }
 
-        @Bean
-        public BaseDbConnectorService baseDbConnectorService() {
-            return Mockito.mock(BaseDbConnectorService.class);
-        }
+      @Bean
+      public BaseDbConnectorService baseDbConnectorService() {
+         return Mockito.mock(BaseDbConnectorService.class);
+      }
 
-        @Bean
-        public com.jayway.jsonpath.Configuration jsonPathConfiguration() {
-            return Mockito.mock(com.jayway.jsonpath.Configuration.class);
-        }
+      @Bean
+      public com.jayway.jsonpath.Configuration jsonPathConfiguration() {
+         return Mockito.mock(com.jayway.jsonpath.Configuration.class);
+      }
 
-        @Bean
-        public JsonPathExtractor jsonPathExtractor(
-                ObjectMapper objectMapper,
-                com.jayway.jsonpath.Configuration jsonPathConfig) {
-            return new JsonPathExtractor(objectMapper, jsonPathConfig);
-        }
-    }
+      @Bean
+      public JsonPathExtractor jsonPathExtractor(
+            ObjectMapper objectMapper,
+            com.jayway.jsonpath.Configuration jsonPathConfig) {
+         return new JsonPathExtractor(objectMapper, jsonPathConfig);
+      }
+   }
 
-    @Autowired
-    private ApplicationContext applicationContext;
+   @Autowired
+   private ApplicationContext applicationContext;
 
-    @Test
-    @DisplayName("Auto-configuration should create and wire all required beans with the correct implementation types")
-    void shouldCreateAndWireAllRequiredBeans() {
-        // First verify that the context was loaded properly
-        assertThat(applicationContext).isNotNull();
+   @Test
+   @DisplayName("Auto-configuration should create and wire all required beans with the correct implementation types")
+   void shouldCreateAndWireAllRequiredBeans() {
+      // First verify that the context was loaded properly
+      assertThat(applicationContext).isNotNull();
 
-        // Verify that the primary beans are correctly registered with the expected implementation types
-        assertThat(applicationContext.getBean(DbClientManager.class))
-                .as("DbClientManager bean should be available")
-                .isNotNull()
-                .isInstanceOf(AllureDbClientManager.class);
+      // Verify that the primary beans are correctly registered with the expected implementation types
+      assertThat(applicationContext.getBean(DbClientManager.class))
+            .as("DbClientManager bean should be available")
+            .isNotNull()
+            .isInstanceOf(AllureDbClientManager.class);
 
-        assertThat(applicationContext.getBean(QueryResponseValidator.class))
-                .as("QueryResponseValidator bean should be available")
-                .isNotNull()
-                .isInstanceOf(QueryResponseValidatorAllureImpl.class);
-    }
+      assertThat(applicationContext.getBean(QueryResponseValidator.class))
+            .as("QueryResponseValidator bean should be available")
+            .isNotNull()
+            .isInstanceOf(QueryResponseValidatorAllureImpl.class);
+   }
 }

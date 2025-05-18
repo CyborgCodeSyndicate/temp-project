@@ -6,8 +6,8 @@ import com.example.project.db.Queries;
 import com.example.project.model.Student;
 import com.example.project.rest.authentication.AdminAuth;
 import com.example.project.rest.authentication.PortalAuthentication;
-import com.example.project.ui.authentication.AdminUI;
-import com.example.project.ui.authentication.FacebookUILogging;
+import com.example.project.ui.authentication.AdminUi;
+import com.example.project.ui.authentication.FacebookUiLogging;
 import com.example.project.ui.elements.InputFields;
 import com.theairebellion.zeus.api.annotations.API;
 import com.theairebellion.zeus.api.annotations.AuthenticateViaApiAs;
@@ -40,37 +40,37 @@ import static com.theairebellion.zeus.validator.core.AssertionTypes.NOT_NULL;
 public class NewTest extends BaseTest {
 
 
-    @Test
-    @AuthenticateViaApiAs(credentials = AdminAuth.class, type = PortalAuthentication.class, cacheCredentials = true)
-    @InterceptRequests(requestUrlSubStrings = {"api/create-campaign", "upload"})
-    @AuthenticateViaUiAs(credentials = AdminUI.class, type = FacebookUILogging.class, cacheCredentials = true)
-    public void scenario_some(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student,
-                              @Craft(model = Data.VALID_STUDENT) Late<Student> student1) {
-        quest
+   @Test
+   @AuthenticateViaApiAs(credentials = AdminAuth.class, type = PortalAuthentication.class, cacheCredentials = true)
+   @InterceptRequests(requestUrlSubStrings = {"api/create-campaign", "upload"})
+   @AuthenticateViaUiAs(credentials = AdminUi.class, type = FacebookUiLogging.class, cacheCredentials = true)
+   public void scenario_some(Quest quest, @Craft(model = Data.VALID_STUDENT) Student student,
+                             @Craft(model = Data.VALID_STUDENT) Late<Student> student1) {
+      quest
             .enters(World.OLYMPYS)
             .request(ENDPOINT_EXAMPLE.withPathParam("campaignId", 17).withQueryParam("page", 1), student)
             .validateResponse(
-                retrieve(ENDPOINT_EXAMPLE, Response.class),
-                Assertion.builder().target(STATUS).type(IS).expected(200).build(),
-                Assertion.builder().target(BODY).key("id").type(NOT_NULL).build(),
-                Assertion.builder().target(BODY).key("list").type(CONTAINS).expected("Ssfsdf").build())
+                  retrieve(ENDPOINT_EXAMPLE, Response.class),
+                  Assertion.builder().target(STATUS).type(IS).expected(200).build(),
+                  Assertion.builder().target(BODY).key("id").type(NOT_NULL).build(),
+                  Assertion.builder().target(BODY).key("list").type(CONTAINS).expected("Ssfsdf").build())
             .then()
             .enters(World.UNDERWORLD)
             .query(Queries.QUERY_ORDER.withParam("id",
-                retrieve(responseBodyExtraction(ENDPOINT_EXAMPLE, "$.id"), Long.class)))
+                  retrieve(responseBodyExtraction(ENDPOINT_EXAMPLE, "$.id"), Long.class)))
             .validate(retrieve(Queries.QUERY_ORDER, QueryResponse.class),
-                Assertion.builder().target(NUMBER_ROWS).type(IS).expected(3).soft(true)
-                    .build())
+                  Assertion.builder().target(NUMBER_ROWS).type(IS).expected(3).soft(true)
+                        .build())
             .then()
             .enters(World.EARTH)
             .input().insert(InputFields.USERNAME, student1.join().getName())
             .input().insert(InputFields.PASSWORD, student.getName())
             .input().insert(InputFields.PASSWORD,
-                String.valueOf(
-                    retrieve(DataExtractorsUi.responseBodyExtraction("api/create-campaign", "$.id"), Long.class)))
+                  String.valueOf(
+                        retrieve(DataExtractorsUi.responseBodyExtraction("api/create-campaign", "$.id"), Long.class)))
             .then()
             .enters(World.FORGE)
             .complete();
-    }
+   }
 
 }

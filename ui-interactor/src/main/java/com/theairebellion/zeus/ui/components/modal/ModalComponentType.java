@@ -8,13 +8,12 @@ import com.theairebellion.zeus.ui.components.base.ComponentType;
  * in a UI automation framework.
  *
  * <p>Implementation classes can represent different modal styles, enabling
- * consistent handling across various dialog presentations within the application.</p>
+ * consistent handling across various dialog presentations within the application.
  *
  * <p>This interface helps group modal attributes and identification logic,
- * ensuring that all modals are managed under a common contract.</p>
+ * ensuring that all modals are managed under a common contract.
  *
- *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public interface ModalComponentType extends ComponentType {
 }

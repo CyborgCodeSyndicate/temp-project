@@ -7,7 +7,8 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 
 public class MockTableFilter implements TableFilter {
 
-    @Override
-    public void tableFilter(SmartWebElement cellElement, ComponentType componentType, FilterStrategy filterStrategy, String... values) {
-    }
+   @Override
+   public void tableFilter(SmartWebElement cellElement, ComponentType componentType,
+         FilterStrategy filterStrategy, String... values) {
+   }
 }

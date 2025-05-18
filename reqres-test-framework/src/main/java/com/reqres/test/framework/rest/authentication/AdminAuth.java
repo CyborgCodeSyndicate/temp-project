@@ -6,16 +6,16 @@ import org.aeonbits.owner.ConfigCache;
 
 public class AdminAuth implements Credentials {
 
-    private static final TestData testData = ConfigCache.getOrCreate(TestData.class);
+   private static final TestData testData = ConfigCache.getOrCreate(TestData.class);
 
-    @Override
-    public String username() {
-        return testData.username();
-    }
+   @Override
+   public String username() {
+      return testData.username();
+   }
 
-    @Override
-    public String password() {
-        return testData.password();
-    }
+   @Override
+   public String password() {
+      return testData.password();
+   }
 
 }
