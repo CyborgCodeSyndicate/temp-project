@@ -16,12 +16,12 @@ import org.openqa.selenium.support.pagefactory.ByChained;
 
 /**
  * Utility class for parsing and handling locators in Selenium.
- * <p>
- * This class provides methods for extracting locators from exception messages,
+ *
+ * <p>This class provides methods for extracting locators from exception messages,
  * updating WebElement references, and converting locator strings into By objects.
  * </p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public class LocatorParser {
 
@@ -105,7 +105,9 @@ public class LocatorParser {
     * @return The extracted locator string, or a default message if not found.
     */
    public static String extractLocatorFromMessage(String message) {
-      if (message == null) return NO_MESSAGE_AVAILABLE;
+      if (message == null) {
+         return NO_MESSAGE_AVAILABLE;
+      }
       String locatorPattern = "By\\.(\\w+)\\((.*?)\\)";
       Pattern pattern = Pattern.compile(locatorPattern);
       Matcher matcher = pattern.matcher(message);
@@ -116,15 +118,15 @@ public class LocatorParser {
     * Retrieves detailed information about a WebElement.
     *
     * @param element   The target WebElement.
-    * @param outerHTML The outer HTML representation of the element.
-    * @param innerHTML The inner HTML representation of the element.
+    * @param outerHtml The outer HTML representation of the element.
+    * @param innerHtml The inner HTML representation of the element.
     * @return A formatted string with element details.
     */
-   public static String getElementDetails(WebElement element, String outerHTML, String innerHTML) {
+   public static String getElementDetails(WebElement element, String outerHtml, String innerHtml) {
       String tag = element.getTagName();
       String text = element.getText();
       return String.format("Tag: [%s]%nText: [%s]%nOuter HTML: [%s]%nInner HTML: [%s]",
-            tag, text, outerHTML, innerHTML);
+            tag, text, outerHtml, innerHtml);
    }
 
    /**

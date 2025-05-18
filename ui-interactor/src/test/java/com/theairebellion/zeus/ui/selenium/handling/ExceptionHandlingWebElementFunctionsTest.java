@@ -155,13 +155,13 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          Object[] args = new Object[] {byLocator};
 
          // Setup mocks
-         mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
+         mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
                .thenReturn(element);
          WebElementAction action = WebElementAction.FIND_ELEMENT;
          ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, action, args);
 
          // Verify method was called
-         mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
+         mockedHelper.verify(() -> FrameHelper.findElementInIframes(eq(mockDriver), eq(mockWebElement)));
       }
    }
 
@@ -181,7 +181,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          Object[] args = new Object[] {byLocator};
 
          // Setup mocks
-         mockedHelper.when(() -> FrameHelper.findElementInIFrames(any(WebDriver.class), any(WebElement.class)))
+         mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
                .thenReturn(null);
 
          // Execute method and expect exception
@@ -191,7 +191,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          });
 
          // Verify methods were called
-         mockedHelper.verify(() -> FrameHelper.findElementInIFrames(eq(mockDriver), eq(mockWebElement)));
+         mockedHelper.verify(() -> FrameHelper.findElementInIframes(eq(mockDriver), eq(mockWebElement)));
          mockedLogUi.verify(() -> LogUi.error(any()));
       }
    }
@@ -204,7 +204,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          By locator = By.id("testId");
          Object[] args = new Object[] {locator};
          SmartWebElement element = mock(SmartWebElement.class);
-         mockedHelper.when(() -> FrameHelper.findContainerIFrame(any(), any()))
+         mockedHelper.when(() -> FrameHelper.findContainerIframe(any(), any()))
                .thenReturn(mock(WebElement.class));
 
          // When
@@ -212,7 +212,7 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
                mockDriver, element, WebElementAction.FIND_ELEMENTS, args);
 
          // Then
-         mockedHelper.verify(() -> FrameHelper.findContainerIFrame(eq(mockDriver), eq(locator)));
+         mockedHelper.verify(() -> FrameHelper.findContainerIframe(eq(mockDriver), eq(locator)));
          assertNotNull(result);
          assertTrue(result instanceof List);
       }
@@ -229,12 +229,12 @@ class ExceptionHandlingWebElementFunctionsTest extends BaseUnitUITest {
          SmartWebElement element = mock(SmartWebElement.class);
 
          // When
-         mockedHelper.when(() -> FrameHelper.findContainerIFrame(any(), any()))
+         mockedHelper.when(() -> FrameHelper.findContainerIframe(any(), any()))
                .thenReturn(null);
 
          // Then
          assertThrows(NoSuchElementException.class, () -> ExceptionHandlingWebElementFunctions.handleNoSuchElement(mockDriver, element, WebElementAction.FIND_ELEMENTS, args));
-         mockedHelper.verify(() -> FrameHelper.findContainerIFrame(any(WebDriver.class), any(By.class)));
+         mockedHelper.verify(() -> FrameHelper.findContainerIframe(any(WebDriver.class), any(By.class)));
          mockedLogUi.verify(() -> LogUi.error(anyString()));
       }
    }

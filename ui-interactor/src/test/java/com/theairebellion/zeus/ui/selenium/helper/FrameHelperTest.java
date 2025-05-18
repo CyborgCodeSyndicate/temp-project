@@ -1,21 +1,16 @@
 package com.theairebellion.zeus.ui.selenium.helper;
 
 import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openqa.selenium.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,7 +36,7 @@ class FrameHelperTest extends BaseUnitUITest {
         when(driver.switchTo()).thenReturn(targetLocator);
         when(targetLocator.defaultContent()).thenReturn(driver);
         when(driver.findElements(any())).thenReturn(List.of(element));
-        SmartWebElement result = FrameHelper.findElementInIFrames(driver, locator);
+        SmartWebElement result = FrameHelper.findElementInIframes(driver, locator);
 
         // Then
         assertNotNull(result);
@@ -65,7 +60,7 @@ class FrameHelperTest extends BaseUnitUITest {
         frames.add(frameElement);
         when(((JavascriptExecutor) driver).executeScript(anyString())).thenReturn(frames);
         when(driver.findElements(locator)).thenReturn(List.of()).thenReturn(List.of(element));
-        SmartWebElement result = FrameHelper.findElementInIFrames(driver, locator);
+        SmartWebElement result = FrameHelper.findElementInIframes(driver, locator);
 
         // Then
         assertNotNull(result);
@@ -87,7 +82,7 @@ class FrameHelperTest extends BaseUnitUITest {
         List<WebElement> frames = new ArrayList<>();
         frames.add(frameElement);
         when(((JavascriptExecutor) driver).executeScript(anyString())).thenReturn(frames);
-        SmartWebElement result = FrameHelper.findElementInIFrames(driver, locator);
+        SmartWebElement result = FrameHelper.findElementInIframes(driver, locator);
 
         // Assert
         assertNull(result);
@@ -118,7 +113,7 @@ class FrameHelperTest extends BaseUnitUITest {
         List<WebElement> matchingElements = new ArrayList<>();
         matchingElements.add(foundElement);
         when(driver.findElements(any(By.class))).thenReturn(matchingElements);
-        SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
+        SmartWebElement result = FrameHelper.findElementInIframes(driver, element);
 
         // Then
         assertNotNull(result);
@@ -148,7 +143,7 @@ class FrameHelperTest extends BaseUnitUITest {
         List<WebElement> elements = new ArrayList<>();
         elements.add(nonMatchingElement);
         when(driver.findElements(any(By.class))).thenReturn(elements);
-        SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
+        SmartWebElement result = FrameHelper.findElementInIframes(driver, element);
 
         // Then
         assertNull(result);
@@ -174,7 +169,7 @@ class FrameHelperTest extends BaseUnitUITest {
         when(((JavascriptExecutor) driver).executeScript(anyString(), any()))
                 .thenThrow(new JavascriptException("JS Error"));
         when(element.getTagName()).thenReturn("div");
-        SmartWebElement result = FrameHelper.findElementInIFrames(driver, element);
+        SmartWebElement result = FrameHelper.findElementInIframes(driver, element);
 
         // Then
         assertNull(result);
@@ -183,7 +178,7 @@ class FrameHelperTest extends BaseUnitUITest {
 
     @Test
     @DisplayName("findContainerIFrame should return containing iframe when element exists in first iframe")
-    void findContainerIFrame_ElementInFirstIFrame() {
+    void findContainerIFrame_ElementInFirstIframe() {
         // Given
         WebDriver driver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
         WebDriver.TargetLocator targetLocator = mock(WebDriver.TargetLocator.class);
@@ -196,7 +191,7 @@ class FrameHelperTest extends BaseUnitUITest {
                 .thenReturn(List.of(mock(WebElement.class)));
         List<WebElement> frames = List.of(frameElement);
         when(((JavascriptExecutor) driver).executeScript(anyString())).thenReturn(frames);
-        WebElement result = FrameHelper.findContainerIFrame(driver, locator);
+        WebElement result = FrameHelper.findContainerIframe(driver, locator);
 
         // Assert
         assertEquals(frameElement, result);
@@ -205,7 +200,7 @@ class FrameHelperTest extends BaseUnitUITest {
 
     @Test
     @DisplayName("findContainerIFrame should return null when element not found in any iframe")
-    void findContainerIFrame_ElementNotFound() {
+    void findContainerIframe_ElementNotFound() {
         // Given
         WebDriver driver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
         WebDriver.TargetLocator targetLocator = mock(WebDriver.TargetLocator.class);
@@ -217,7 +212,7 @@ class FrameHelperTest extends BaseUnitUITest {
         when(driver.findElements(locator)).thenReturn(List.of());
         List<WebElement> frames = List.of(frameElement);
         when(((JavascriptExecutor) driver).executeScript(anyString())).thenReturn(frames);
-        WebElement result = FrameHelper.findContainerIFrame(driver, locator);
+        WebElement result = FrameHelper.findContainerIframe(driver, locator);
 
         // Then
         assertNull(result);
@@ -226,7 +221,7 @@ class FrameHelperTest extends BaseUnitUITest {
 
     @Test
     @DisplayName("findContainerIFrame should return correct iframe when element exists in second iframe")
-    void findContainerIFrame_ElementInSecondIFrame() {
+    void findContainerIFrame_ElementInSecondIframe() {
         // Given
         WebDriver driver = mock(WebDriver.class, withSettings().extraInterfaces(JavascriptExecutor.class));
         WebDriver.TargetLocator targetLocator = mock(WebDriver.TargetLocator.class);
@@ -242,7 +237,7 @@ class FrameHelperTest extends BaseUnitUITest {
 
         List<WebElement> frames = List.of(frame1, frame2);
         when(((JavascriptExecutor) driver).executeScript(anyString())).thenReturn(frames);
-        WebElement result = FrameHelper.findContainerIFrame(driver, locator);
+        WebElement result = FrameHelper.findContainerIframe(driver, locator);
 
         // Then
         assertEquals(frame2, result);

@@ -17,15 +17,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Provides utility functions for handling WebElement exceptions.
- * <p>
- * This class defines methods to recover from common Selenium exceptions
+ *
+ * <p>This class defines methods to recover from common Selenium exceptions
  * such as {@link NoSuchElementException}, {@link TimeoutException}, and
  * {@link org.openqa.selenium.StaleElementReferenceException}. It aims to
  * improve test stability by implementing fallback strategies for locating and
  * interacting with elements.
  * </p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public class ExceptionHandlingWebElementFunctions {
 
@@ -74,12 +74,12 @@ public class ExceptionHandlingWebElementFunctions {
       }
 
       if (webElementAction == WebElementAction.FIND_ELEMENTS) {
-         WebElement container = FrameHelper.findContainerIFrame(driver, (By) args[0]);
+         WebElement container = FrameHelper.findContainerIframe(driver, (By) args[0]);
          if (container != null) {
             return webElementAction.performActionWebDriver(driver, args);
          }
       } else {
-         WebElement foundElement = FrameHelper.findElementInIFrames(driver, element.getOriginal());
+         WebElement foundElement = FrameHelper.findElementInIframes(driver, element.getOriginal());
          if (foundElement != null) {
             return webElementAction.performActionWebElement(driver, foundElement, args);
          }

@@ -30,6 +30,8 @@ public class CustomAllureListener extends AllureJunit5 {
 
    /**
     * Enumeration for defining different step status types in Allure reporting.
+    *
+    * @author Cyborg Code Syndicate 💍👨💻
     */
    public enum StatusType {
       /**
@@ -60,8 +62,8 @@ public class CustomAllureListener extends AllureJunit5 {
 
    /**
     * Starts a new step.
-    * <p>
-    * This method creates a new step entry in Allure and sets the step name variable.
+    *
+    * <p>This method creates a new step entry in Allure and sets the step name variable.
     * </p>
     *
     * @param name The name of the step.

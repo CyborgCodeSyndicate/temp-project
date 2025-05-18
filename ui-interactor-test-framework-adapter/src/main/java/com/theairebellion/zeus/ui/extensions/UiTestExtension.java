@@ -68,8 +68,8 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.USERNAME;
 
 /**
  * JUnit 5 test extension for managing UI-related test execution lifecycle.
- * <p>
- * This extension provides support for:
+ *
+ * <p>This extension provides support for:
  * <ul>
  *     <li>Intercepting UI-related HTTP requests using {@link InterceptRequests}.</li>
  *     <li>Automating login via UI authentication using {@link AuthenticateViaUiAs}.</li>
@@ -77,12 +77,12 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.USERNAME;
  *     <li>Registering UI assertions and handling WebDriver session cleanup.</li>
  *     <li>Intercepting backend requests in Chrome DevTools.</li>
  * </ul>
- * <p>
- * It integrates with {@link SmartWebDriver} for Selenium interactions and works
+ *
+ * <p>It integrates with {@link SmartWebDriver} for Selenium interactions and works
  * with {@link Quest} for structured test execution.
  * </p>
  *
- * @author Cyborg Code Syndicate
+ * @author Cyborg Code Syndicate 💍👨💻
  */
 public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback,
       TestExecutionExceptionHandler, LauncherSessionListener {
@@ -156,7 +156,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
                   if (enumClassImplementations.size() > 1) {
                      throw new IllegalStateException(
-                           "There is more than one enum for representing different types of databases. Only 1 is allowed");
+                           "There is more than one enum for representing different types of databases. "
+                                 + "Only 1 is allowed");
                   }
 
                   if (enumClassImplementations.size() == 1) {
@@ -218,8 +219,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
                   if (body != null && body.length() > 10000) {
                      response.setBody(String.format(
-                           "Response body truncated. Original length: %d characters. " +
-                                 "First 100 characters: %s",
+                           "Response body truncated. Original length: %d characters. "
+                                 + "First 100 characters: %s",
                            body.length(),
                            body.substring(0, 100)
                      ));
@@ -249,8 +250,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
                         quest -> postQuestCreationLogin(quest, decoratorsFactory, credentials.username(),
                               credentials.password(), login.type(), login.cacheCredentials());
                   addQuestConsumer(context, questConsumer);
-               } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                        NoSuchMethodException e) {
+               } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                        | NoSuchMethodException e) {
                   throw new AuthenticationUiException("Failed to instantiate login credentials", e);
                }
             });
@@ -367,21 +368,21 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
    private static void postQuestCreationRegisterCustomServices(SuperQuest quest) {
 
-      List<Class<? extends UiServiceFluent>> customUIServices =
+      List<Class<? extends UiServiceFluent>> customUiServices =
             ReflectionUtil.findImplementationsOfInterface(UiServiceFluent.class, getUiConfig().projectPackage());
-      if (customUIServices.size() > 1) {
+      if (customUiServices.size() > 1) {
          throw new IllegalStateException(
                "There is more than one UI services that extends from UiServiceFluent. Only 1 is allowed");
       }
-      if (!customUIServices.isEmpty()) {
-         Class<? extends UiServiceFluent> customUiServiceFluentClass = customUIServices.get(0);
+      if (!customUiServices.isEmpty()) {
+         Class<? extends UiServiceFluent> customUiServiceFluentClass = customUiServices.get(0);
          try {
             SmartWebDriver driver = quest.artifact(UiServiceFluent.class, SmartWebDriver.class);
             quest.registerWorld(customUiServiceFluentClass, customUiServiceFluentClass.getDeclaredConstructor(
                   SmartWebDriver.class, SuperQuest.class).newInstance(driver, quest));
             quest.removeWorld(UiServiceFluent.class);
-         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                  NoSuchMethodException e) {
+         } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                  | NoSuchMethodException e) {
             throw new ServiceInitializationException("Failed to register custom UI service", e);
          }
       }
@@ -400,8 +401,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
          BaseLoginClient baseLoginClient = type.getDeclaredConstructor().newInstance();
          baseLoginClient.login(decoratorsFactory.decorate(uiServiceFluent, SuperUiServiceFluent.class), username,
                password, cache);
-      } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-               NoSuchMethodException e) {
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+               | NoSuchMethodException e) {
          throw new AuthenticationUiException("Failed to instantiate or execute login client", e);
       }
    }
@@ -416,8 +417,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             (assertionError, driver) -> takeScreenshot(unwrapDriver(driver.getOriginal()),
                   "soft_assert_failure_" + testName),
             stackTrace -> Arrays.stream(stackTrace)
-                  .anyMatch(element -> element.getClassName().contains(SELENIUM_PACKAGE) ||
-                        element.getClassName().contains(UI_MODULE_PACKAGE))
+                  .anyMatch(element -> element.getClassName().contains(SELENIUM_PACKAGE)
+                        || element.getClassName().contains(UI_MODULE_PACKAGE))
       );
    }
 
