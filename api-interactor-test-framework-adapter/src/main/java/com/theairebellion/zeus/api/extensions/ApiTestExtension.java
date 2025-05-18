@@ -14,7 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.ApplicationContext;
@@ -46,16 +45,6 @@ public class ApiTestExtension implements BeforeTestExecutionCallback {
       context.getTestMethod()
             .map(method -> method.getAnnotation(AuthenticateViaApiAs.class))
             .ifPresent(annotation -> handleAuthentication(context, annotation));
-   }
-
-   /**
-    * Executes post-test cleanup after test execution.
-    *
-    * @param context The test execution context.
-    */
-   @Override
-   public void afterTestExecution(final ExtensionContext context) {
-      CustomAllureListener.stopParentStep();
    }
 
    private void handleAuthentication(final ExtensionContext context, final AuthenticateViaApiAs annotation) {

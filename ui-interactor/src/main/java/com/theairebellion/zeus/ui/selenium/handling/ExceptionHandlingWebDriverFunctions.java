@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
 import org.openqa.selenium.By;
@@ -39,7 +39,7 @@ public class ExceptionHandlingWebDriverFunctions {
      */
     public static Object handleNoSuchElement(WebDriver driver, WebElementAction webElementAction, Object... args) {
         if (args.length == 0 || !(args[0] instanceof By)) {
-            LogUI.error("Invalid or missing locator argument.");
+            LogUi.error("Invalid or missing locator argument.");
             throw new IllegalArgumentException("Action requires a By locator.");
         }
 
@@ -56,7 +56,7 @@ public class ExceptionHandlingWebDriverFunctions {
                 return webElementAction.performActionWebDriver(driver, foundElement);
             }
         }
-        LogUI.error("Element(s) not found in the main DOM or any iframe.");
+        LogUi.error("Element(s) not found in the main DOM or any iframe.");
         throw new NoSuchElementException("Element(s) not found in main DOM or any iframe.");
     }
 }
