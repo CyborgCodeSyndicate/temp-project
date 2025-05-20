@@ -13,9 +13,9 @@ import lombok.Setter;
 @Setter
 public class Student {
 
-    private String name;
-    private long id;
-    private String surname;
-    private int age;
+   private String name;
+   private long id;
+   private String surname;
+   private int age;
 
 }

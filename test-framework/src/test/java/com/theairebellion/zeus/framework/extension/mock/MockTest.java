@@ -6,12 +6,12 @@ import com.theairebellion.zeus.framework.annotation.PreQuest;
 
 public class MockTest {
 
-    @PreQuest({
-            @Journey(value = "mockJourney", journeyData = {@JourneyData(value = "mockData", late = false)}, order = 1)
-    })
-    public void annotatedMethod() {
-    }
+   @PreQuest({
+         @Journey(value = "mockJourney", journeyData = {@JourneyData(value = "mockData", late = false)}, order = 1)
+   })
+   public void annotatedMethod() {
+   }
 
-    public void nonAnnotatedMethod() {
-    }
+   public void nonAnnotatedMethod() {
+   }
 }

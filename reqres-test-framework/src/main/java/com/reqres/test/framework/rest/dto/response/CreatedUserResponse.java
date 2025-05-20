@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreatedUserResponse {
 
-    private String name;
-    private String job;
-    private String id;
-    private String createdAt;
+   private String name;
+   private String job;
+   private String id;
+   private String createdAt;
 
 }

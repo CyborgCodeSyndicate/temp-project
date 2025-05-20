@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 public class TableFieldTestRow {
 
-    private String value;
+   private String value;
 }

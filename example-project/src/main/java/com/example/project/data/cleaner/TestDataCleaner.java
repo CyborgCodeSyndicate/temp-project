@@ -2,36 +2,35 @@ package com.example.project.data.cleaner;
 
 import com.theairebellion.zeus.framework.parameters.DataRipper;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
-
 import java.util.function.Consumer;
 
 public enum TestDataCleaner implements DataRipper<TestDataCleaner> {
-    ALL_CREATED_STUDENTS(DataCleanUpFunctions::cleanAllStudents);
+   ALL_CREATED_STUDENTS(DataCleanUpFunctions::cleanAllStudents);
 
-    public static final class Data {
-        public static final String ALL_CREATED_STUDENTS = "ALL_CREATED_STUDENTS";
+   public static final class Data {
+      public static final String ALL_CREATED_STUDENTS = "ALL_CREATED_STUDENTS";
 
-        private Data() {
-        }
-    }
-
-
-    private final Consumer<SuperQuest> cleanUpFunction;
+      private Data() {
+      }
+   }
 
 
-    TestDataCleaner(final Consumer<SuperQuest> cleanUpFunction) {
-        this.cleanUpFunction = cleanUpFunction;
-    }
+   private final Consumer<SuperQuest> cleanUpFunction;
 
 
-    @Override
-    public Consumer<SuperQuest> eliminate() {
-        return cleanUpFunction;
-    }
+   TestDataCleaner(final Consumer<SuperQuest> cleanUpFunction) {
+      this.cleanUpFunction = cleanUpFunction;
+   }
 
 
-    @Override
-    public TestDataCleaner enumImpl() {
-        return this;
-    }
+   @Override
+   public Consumer<SuperQuest> eliminate() {
+      return cleanUpFunction;
+   }
+
+
+   @Override
+   public TestDataCleaner enumImpl() {
+      return this;
+   }
 }

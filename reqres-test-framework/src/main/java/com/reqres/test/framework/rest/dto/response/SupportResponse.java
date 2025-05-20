@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SupportResponse {
 
-    private String url;
-    private String text;
+   private String url;
+   private String text;
 
 }
