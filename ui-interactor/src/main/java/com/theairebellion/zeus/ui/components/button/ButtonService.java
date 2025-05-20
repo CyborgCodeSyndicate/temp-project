@@ -21,6 +21,21 @@ public interface ButtonService extends TableInsertion {
    ButtonComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default button component type from the configuration.
+    *
+    * @return The default ButtonComponentType.
+    */
+   private static ButtonComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(ButtonComponentType.class,
+               getUiConfig().buttonDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Clicks a button with the specified text inside a container, using the default button component type.
     *
     * @param container  The SmartWebElement container that contains the button.
@@ -245,19 +260,4 @@ public interface ButtonService extends TableInsertion {
     * @return true if the button is visible, false otherwise.
     */
    <T extends ButtonComponentType> boolean isVisible(T componentType, By buttonLocator);
-
-   /**
-    * Retrieves the default button component type from the configuration.
-    *
-    * @return The default ButtonComponentType.
-    */
-   private static ButtonComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(ButtonComponentType.class,
-               getUiConfig().buttonDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

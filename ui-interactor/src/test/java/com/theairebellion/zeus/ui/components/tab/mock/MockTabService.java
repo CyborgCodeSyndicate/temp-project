@@ -1,141 +1,71 @@
 package com.theairebellion.zeus.ui.components.tab.mock;
 
-import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
+import com.theairebellion.zeus.ui.components.button.mock.MockButtonService;
 import com.theairebellion.zeus.ui.components.tab.TabComponentType;
 import com.theairebellion.zeus.ui.components.tab.TabService;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
 
-public class MockTabService implements TabService {
+public class MockTabService extends MockButtonService implements TabService {
 
-   public TabComponentType lastComponentType;
-   public SmartWebElement lastContainer;
-   public By lastLocator;
-   public String lastText;
-   public boolean returnBool;
+   public boolean returnIsSelected = false;
 
+   public MockTabService() {
+      super();
+      reset();
+   }
+
+   private void setLastTabType(TabComponentType type) {
+      super.explicitComponentType = type;
+      if (MockTabComponentType.DUMMY_TAB.equals(type)) {
+         super.lastComponentTypeUsed = type;
+      } else {
+         super.lastComponentTypeUsed = null;
+      }
+      super.lastButtonText = null;
+      super.lastLocator = null;
+   }
+
+   @Override
    public void reset() {
-      lastComponentType = null;
-      lastContainer = null;
-      lastLocator = null;
-      lastText = null;
-      returnBool = false;
+      super.reset();
+      this.returnIsSelected = false;
    }
 
    @Override
    public boolean isSelected(TabComponentType componentType, SmartWebElement container, String tabText) {
-      lastComponentType = componentType;
-      lastContainer = container;
-      lastText = tabText;
-      return returnBool;
+      setLastTabType(componentType);
+      super.lastContainer = container;
+      super.lastButtonText = tabText;
+      super.lastLocator = null;
+      return returnIsSelected;
    }
 
    @Override
    public boolean isSelected(TabComponentType componentType, SmartWebElement container) {
-      lastComponentType = componentType;
-      lastContainer = container;
-      return returnBool;
+      setLastTabType(componentType);
+      super.lastContainer = container;
+      super.lastButtonText = null;
+      super.lastLocator = null;
+      return returnIsSelected;
    }
 
    @Override
    public boolean isSelected(TabComponentType componentType, String tabText) {
-      lastComponentType = componentType;
-      lastText = tabText;
-      return returnBool;
+      setLastTabType(componentType);
+      super.lastButtonText = tabText;
+      super.lastContainer = null;
+      super.lastLocator = null;
+      return returnIsSelected;
    }
 
    @Override
    public boolean isSelected(TabComponentType componentType, By tabLocator) {
-      lastComponentType = componentType;
-      lastLocator = tabLocator;
-      return returnBool;
+      setLastTabType(componentType);
+      super.lastLocator = tabLocator;
+      super.lastContainer = null;
+      super.lastButtonText = null;
+      return returnIsSelected;
    }
 
-   @Override
-   public <T extends ButtonComponentType> void click(T componentType, SmartWebElement container, String buttonText) {
-      lastComponentType = (TabComponentType) componentType;
-      lastContainer = container;
-      lastText = buttonText;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> void click(T componentType, SmartWebElement container) {
-      lastComponentType = (TabComponentType) componentType;
-      lastContainer = container;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> void click(T componentType, String buttonText) {
-      lastComponentType = (TabComponentType) componentType;
-      lastText = buttonText;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> void click(T componentType, By buttonLocator) {
-      lastComponentType = (TabComponentType) componentType;
-      lastLocator = buttonLocator;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement container, String buttonText) {
-      lastComponentType = (TabComponentType) componentType;
-      lastContainer = container;
-      lastText = buttonText;
-      return returnBool;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isEnabled(T componentType, SmartWebElement container) {
-      lastComponentType = (TabComponentType) componentType;
-      lastContainer = container;
-      return returnBool;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isEnabled(T componentType, String buttonText) {
-      lastComponentType = (TabComponentType) componentType;
-      lastText = buttonText;
-      return returnBool;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isEnabled(T componentType, By buttonLocator) {
-      lastComponentType = (TabComponentType) componentType;
-      lastLocator = buttonLocator;
-      return returnBool;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement container, String buttonText) {
-      lastComponentType = (TabComponentType) componentType;
-      lastContainer = container;
-      lastText = buttonText;
-      return returnBool;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isVisible(T componentType, SmartWebElement container) {
-      lastComponentType = (TabComponentType) componentType;
-      lastContainer = container;
-      return returnBool;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isVisible(T componentType, String buttonText) {
-      lastComponentType = (TabComponentType) componentType;
-      lastText = buttonText;
-      return returnBool;
-   }
-
-   @Override
-   public <T extends ButtonComponentType> boolean isVisible(T componentType, By buttonLocator) {
-      lastComponentType = (TabComponentType) componentType;
-      lastLocator = buttonLocator;
-      return returnBool;
-   }
-
-   @Override
-   public void tableInsertion(SmartWebElement cellElement, ComponentType componentType, String... values) {
-   }
 }

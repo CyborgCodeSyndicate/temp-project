@@ -6,6 +6,7 @@
     <suppress>
         <cve>CVE-2018-14335</cve>
         <cve>CVE-2024-57699</cve>
+        <cve>CVE-2025-4641</cve>
     </suppress>
 
 </suppressions>

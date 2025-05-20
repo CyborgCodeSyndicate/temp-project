@@ -25,6 +25,21 @@ public interface RadioService extends Insertion {
    RadioComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default radio component type from the configuration.
+    *
+    * @return The default RadioComponentType.
+    */
+   private static RadioComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(RadioComponentType.class,
+               getUiConfig().radioDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Selects a radio button within a container based on the button text. Uses the default radio component type.
     *
     * @param container       The SmartWebElement that contains the radio buttons.
@@ -360,19 +375,4 @@ public interface RadioService extends Insertion {
     *     specified component type.
     */
    List<String> getAll(RadioComponentType componentType, By containerLocator);
-
-   /**
-    * Retrieves the default radio component type from the configuration.
-    *
-    * @return The default RadioComponentType.
-    */
-   private static RadioComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(RadioComponentType.class,
-               getUiConfig().radioDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

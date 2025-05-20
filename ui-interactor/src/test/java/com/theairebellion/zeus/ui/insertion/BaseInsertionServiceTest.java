@@ -353,13 +353,13 @@ public class BaseInsertionServiceTest {
       }
    }
 
-   // --- Test to verify that LogUI.info is invoked after insertion ---
+   // --- Test to verify that LogUi.info is invoked after insertion ---
    @Nested
    @DisplayName("Logging Tests")
    class LoggingTests {
 
       @Test
-      @DisplayName("After insertion, LogUI.info is called")
+      @DisplayName("After insertion, LogUi.info is called")
       void testLogUIInfoCalled() {
          DummyDTO dto = new DummyDTO();
          InsertionServiceRegistry registry = new InsertionServiceRegistry();
@@ -367,10 +367,10 @@ public class BaseInsertionServiceTest {
          Insertion mockInsertion = mock(Insertion.class);
          registry.registerService(DummyComponentType.class, mockInsertion);
 
-         // Use Mockito to mock static methods of LogUI.
+         // Use Mockito to mock static methods of LogUi.
          try (var mockedStatic = mockStatic(LogUi.class)) {
             service.insertData(dto);
-            // Verify that LogUI.info was called at least once.
+            // Verify that LogUi.info was called at least once.
             mockedStatic.verify(() -> LogUi.info(anyString(), any()));
          }
       }

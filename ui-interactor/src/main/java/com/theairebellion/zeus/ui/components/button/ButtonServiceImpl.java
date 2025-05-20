@@ -217,8 +217,11 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
    @Override
    public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
                               final String... values) {
+      if (!(componentType instanceof ButtonComponentType buttonType)) {
+         throw new IllegalArgumentException("Component type needs to be from: ButtonComponentType.");
+      }
       LogUi.step("Performing table insertion in cell element");
-      buttonComponent((ButtonComponentType) componentType).clickElementInCell(cellElement);
+      buttonComponent(buttonType).clickElementInCell(cellElement);
    }
 
 }

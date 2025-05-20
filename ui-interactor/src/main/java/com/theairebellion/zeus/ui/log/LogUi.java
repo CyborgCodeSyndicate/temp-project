@@ -99,9 +99,9 @@ public final class LogUi extends LogCore {
    }
 
    /**
-    * Retrieves the singleton instance of {@code LogUI}.
+    * Retrieves the singleton instance of {@code LogUi}.
     *
-    * @return The singleton instance of {@code LogUI}.
+    * @return The singleton instance of {@code LogUi}.
     */
    private static LogUi getInstance() {
       if (INSTANCE == null) {

@@ -31,6 +31,21 @@ public interface AccordionService {
    AccordionComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default accordion component type.
+    *
+    * @return The default accordion component type.
+    */
+   private static AccordionComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(AccordionComponentType.class,
+               getUiConfig().accordionDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Expands specified panels inside the accordion, using the default accordion component type.
     *
     * @param container     The accordion container.
@@ -160,7 +175,6 @@ public interface AccordionService {
     * @param accordionText The text of the panels to collapse.
     */
    void collapse(AccordionComponentType componentType, String... accordionText);
-
 
    /**
     * Collapses specified panels inside the accordion, identified by locators, using the default accordion
@@ -333,20 +347,5 @@ public interface AccordionService {
     * @return The text content of the panel.
     */
    String getText(AccordionComponentType componentType, By accordionLocator);
-
-   /**
-    * Retrieves the default accordion component type.
-    *
-    * @return The default accordion component type.
-    */
-   private static AccordionComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(AccordionComponentType.class,
-               getUiConfig().accordionDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }
 

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Mock {
+public class TableFieldTestRow {
 
    private String value;
 }
