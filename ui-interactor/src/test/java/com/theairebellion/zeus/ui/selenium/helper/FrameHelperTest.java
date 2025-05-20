@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.selenium.helper;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
