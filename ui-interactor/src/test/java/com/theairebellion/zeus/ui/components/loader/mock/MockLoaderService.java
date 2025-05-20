@@ -7,14 +7,29 @@ import org.openqa.selenium.By;
 
 public class MockLoaderService implements LoaderService {
 
-   public LoaderComponentType lastComponentType;
+   public LoaderComponentType lastComponentTypeUsed;
+   public LoaderComponentType explicitComponentType;
    public SmartWebElement lastContainer;
    public By lastLocator;
    public int lastSeconds;
    public boolean returnVisible = false;
 
+   public MockLoaderService() {
+      reset();
+   }
+
+   private void setLastType(LoaderComponentType type) {
+      this.explicitComponentType = type;
+      if (MockLoaderComponentType.DUMMY_LOADER.equals(type)) {
+         this.lastComponentTypeUsed = MockLoaderComponentType.DUMMY_LOADER;
+      } else {
+         this.lastComponentTypeUsed = null;
+      }
+   }
+
    public void reset() {
-      lastComponentType = null;
+      lastComponentTypeUsed = null;
+      explicitComponentType = MockLoaderComponentType.DUMMY_LOADER;
       lastContainer = null;
       lastLocator = null;
       lastSeconds = 0;
@@ -23,55 +38,61 @@ public class MockLoaderService implements LoaderService {
 
    @Override
    public boolean isVisible(LoaderComponentType componentType, SmartWebElement container) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       return returnVisible;
    }
 
    @Override
    public boolean isVisible(LoaderComponentType componentType, By loaderLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastLocator = loaderLocator;
       return returnVisible;
    }
 
    @Override
    public void waitToBeShown(LoaderComponentType componentType, SmartWebElement container, int secondsShown) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastSeconds = secondsShown;
    }
 
    @Override
    public void waitToBeShown(LoaderComponentType componentType, int secondsShown) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastSeconds = secondsShown;
+      lastContainer = null;
+      lastLocator = null;
    }
 
    @Override
    public void waitToBeShown(LoaderComponentType componentType, By loaderLocator, int secondsShown) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastLocator = loaderLocator;
       lastSeconds = secondsShown;
+      lastContainer = null;
    }
 
    @Override
    public void waitToBeRemoved(LoaderComponentType componentType, SmartWebElement container, int secondsRemoved) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastSeconds = secondsRemoved;
    }
 
    @Override
    public void waitToBeRemoved(LoaderComponentType componentType, int secondsRemoved) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastSeconds = secondsRemoved;
+      lastContainer = null;
+      lastLocator = null;
    }
 
    @Override
    public void waitToBeRemoved(LoaderComponentType componentType, By loaderLocator, int secondsRemoved) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastLocator = loaderLocator;
       lastSeconds = secondsRemoved;
+      lastContainer = null;
    }
 }

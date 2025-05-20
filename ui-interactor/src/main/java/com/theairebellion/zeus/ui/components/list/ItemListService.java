@@ -22,6 +22,21 @@ public interface ItemListService extends Insertion {
    ItemListComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default list component type from the configuration.
+    *
+    * @return The default ItemListComponentType.
+    */
+   private static ItemListComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(ItemListComponentType.class,
+               getUiConfig().listDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Selects items with the specified text within the given container
     * using the default item list component type.
     *
@@ -843,19 +858,4 @@ public interface ItemListService extends Insertion {
     * @return A list of text of all items.
     */
    List<String> getAll(ItemListComponentType componentType, By containerLocator);
-
-   /**
-    * Retrieves the default list component type from the configuration.
-    *
-    * @return The default ItemListComponentType.
-    */
-   private static ItemListComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(ItemListComponentType.class,
-               getUiConfig().listDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

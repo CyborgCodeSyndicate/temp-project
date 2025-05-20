@@ -73,7 +73,7 @@
                 <version>3.5.2</version>  <!-- match your parent’s -->
                 <configuration>
                     <!-- force this module’s tests to be skipped -->
-                    <skipTests>true</skipTests>
+                    <skipTests>false</skipTests>
                 </configuration>
             </plugin>
         </plugins>

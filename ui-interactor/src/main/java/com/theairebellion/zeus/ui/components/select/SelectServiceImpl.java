@@ -291,11 +291,14 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     */
    @Override
    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+      if (!(componentType instanceof SelectComponentType selectType)) {
+         throw new IllegalArgumentException("Component type needs to be from: SelectComponentType.");
+      }
       LogUi.step(String.format(INSERT_SELECT_VALUES_LOCATOR, Arrays.toString(values), componentType, locator));
       String[] stringValues = Arrays.stream(values)
             .map(String::valueOf)
             .toArray(String[]::new);
-      selectOptions((SelectComponentType) componentType, locator, stringValues);
+      selectOptions(selectType, locator, stringValues);
    }
 
    /**

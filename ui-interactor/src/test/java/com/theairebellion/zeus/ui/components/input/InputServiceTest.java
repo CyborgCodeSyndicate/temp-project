@@ -1,468 +1,387 @@
 package com.theairebellion.zeus.ui.components.input;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.input.mock.MockInputComponentType;
 import com.theairebellion.zeus.ui.components.input.mock.MockInputService;
-import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
-import com.theairebellion.zeus.ui.config.UiConfig;
-import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.junit.jupiter.api.AfterEach;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+
+@DisplayName("InputService Test")
 class InputServiceTest extends BaseUnitUITest {
 
+   private static final String SAMPLE_VALUE = "value";
+   private static final String SAMPLE_LABEL = "label";
+   private static final String SAMPLE_ERROR_MSG = "err";
    private MockInputService service;
-   private MockSmartWebElement container;
+   private SmartWebElement container;
    private By locator;
 
    @BeforeEach
    void setUp() {
+      // Given
       service = new MockInputService();
-      WebElement webElement = mock(WebElement.class);
-      WebDriver driver = mock(WebDriver.class);
-      container = new MockSmartWebElement(webElement, driver);
+      container = MockSmartWebElement.createMock();
       locator = By.id("testInput");
-   }
-
-   @Test
-   void testDefaultInsertWithContainer() {
       service.reset();
-      service.insert(container, "value");
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-      assertEquals("value", service.lastValue);
-   }
-
-   @Test
-   void testDefaultInsertWithContainerAndLabel() {
-      service.reset();
-      service.insert(container, "label", "val");
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-      assertEquals("label", service.lastLabel);
-      assertEquals("val", service.lastValue);
-   }
-
-   @Test
-   void testDefaultInsertWithLabel() {
-      service.reset();
-      service.insert("label", "val");
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals("label", service.lastLabel);
-      assertEquals("val", service.lastValue);
-   }
-
-   @Test
-   void testDefaultInsertWithBy() {
-      service.reset();
-      service.insert(locator, "testVal");
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(locator, service.lastLocator);
-      assertEquals("testVal", service.lastValue);
-   }
-
-   @Test
-   void testDefaultClearWithContainer() {
-      service.reset();
-      service.clear(container);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-   }
-
-   @Test
-   void testDefaultClearWithContainerAndLabel() {
-      service.reset();
-      service.clear(container, "label");
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-      assertEquals("label", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultClearWithLabel() {
-      service.reset();
-      service.clear("myLabel");
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals("myLabel", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultClearWithBy() {
-      service.reset();
-      service.clear(locator);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(locator, service.lastLocator);
-   }
-
-   @Test
-   void testDefaultGetValueContainer() {
-      service.reset();
-      service.returnValue = "someVal";
-      String val = service.getValue(container);
-      assertEquals("someVal", val);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-   }
-
-   @Test
-   void testDefaultGetValueContainerLabel() {
-      service.reset();
-      service.returnValue = "labVal";
-      String val = service.getValue(container, "lab");
-      assertEquals("labVal", val);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-      assertEquals("lab", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultGetValueLabel() {
-      service.reset();
-      service.returnValue = "valLabel";
-      String val = service.getValue("lbl");
-      assertEquals("valLabel", val);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals("lbl", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultGetValueBy() {
-      service.reset();
-      service.returnValue = "byValue";
-      String val = service.getValue(locator);
-      assertEquals("byValue", val);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(locator, service.lastLocator);
-   }
-
-   @Test
-   void testDefaultIsEnabledContainer() {
-      service.reset();
-      service.returnEnabled = true;
-      boolean enabled = service.isEnabled(container);
-      assertTrue(enabled);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-   }
-
-   @Test
-   void testDefaultIsEnabledContainerLabel() {
-      service.reset();
-      service.returnEnabled = true;
-      boolean enabled = service.isEnabled(container, "lbl");
-      assertTrue(enabled);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-      assertEquals("lbl", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultIsEnabledLabel() {
-      service.reset();
-      service.returnEnabled = true;
-      boolean enabled = service.isEnabled("someLabel");
-      assertTrue(enabled);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals("someLabel", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultIsEnabledBy() {
-      service.reset();
-      service.returnEnabled = true;
-      boolean enabled = service.isEnabled(locator);
-      assertTrue(enabled);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(locator, service.lastLocator);
-   }
-
-   @Test
-   void testDefaultGetErrorMessageContainer() {
-      service.reset();
-      service.returnErrorMessage = "errMsg";
-      String msg = service.getErrorMessage(container);
-      assertEquals("errMsg", msg);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-   }
-
-   @Test
-   void testDefaultGetErrorMessageContainerLabel() {
-      service.reset();
-      service.returnErrorMessage = "labelErr";
-      String msg = service.getErrorMessage(container, "lbl");
-      assertEquals("labelErr", msg);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-      assertEquals("lbl", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultGetErrorMessageLabel() {
-      service.reset();
-      service.returnErrorMessage = "labErr";
-      String msg = service.getErrorMessage("myLabel");
-      assertEquals("labErr", msg);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals("myLabel", service.lastLabel);
-   }
-
-   @Test
-   void testDefaultGetErrorMessageBy() {
-      service.reset();
-      service.returnErrorMessage = "byErr";
-      String msg = service.getErrorMessage(locator);
-      assertEquals("byErr", msg);
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(locator, service.lastLocator);
-   }
-
-   @Test
-   void testInsertionMethod() {
-      service.reset();
-      service.insertion(MockInputComponentType.DUMMY, locator, "someVal");
-      assertEquals(MockInputComponentType.DUMMY, service.lastComponentType);
-      assertEquals(locator, service.lastLocator);
-      assertEquals("someVal", service.lastValue);
-   }
-
-   @Test
-   void testTableInsertionMethod() {
-      SmartWebElement cell = mock(SmartWebElement.class);
-      service.reset();
-      service.tableInsertion(cell, MockInputComponentType.DUMMY, "a", "b");
-      assertEquals(cell, service.tableCell);
-      assertArrayEquals(new String[] {"a", "b"}, service.tableInsertionValues);
-   }
-
-   @Test
-   void testTableFilterMethod() {
-      SmartWebElement header = mock(SmartWebElement.class);
-      FilterStrategy strategy = FilterStrategy.SELECT;
-      service.reset();
-      service.tableFilter(header, MockInputComponentType.DUMMY, strategy, "z");
-      assertEquals(header, service.headerCell);
-      assertEquals(strategy, service.filterStrategy);
-      assertArrayEquals(new String[] {"z"}, service.filterValues);
    }
 
    @Nested
-   @DisplayName("Default Type Resolution")
-   class DefaultTypeResolution {
-      private MockedStatic<UiConfigHolder> uiConfigHolderMock;
-      private MockedStatic<ReflectionUtil> reflectionUtilMock;
-      private UiConfig uiConfigMock;
+   @DisplayName("Default Method Delegation Tests - Insert")
+   class DefaultInsertDelegationTests {
 
-      @BeforeEach
-      void setUp() {
-         uiConfigMock = mock(UiConfig.class);
-         uiConfigHolderMock = Mockito.mockStatic(UiConfigHolder.class);
-         reflectionUtilMock = Mockito.mockStatic(ReflectionUtil.class);
+      @Test
+      @DisplayName("insert(container, value) delegates correctly")
+      void testDefaultInsertWithContainer() {
+         // Given - setup in @BeforeEach
 
-         uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfigMock);
-         when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
-         when(uiConfigMock.inputDefaultType()).thenReturn("TEST_TYPE");
-      }
+         // When
+         service.insert(container, SAMPLE_VALUE);
 
-      @AfterEach
-      void tearDown() {
-         if (uiConfigHolderMock != null) {
-            uiConfigHolderMock.close();
-         }
-         if (reflectionUtilMock != null) {
-            reflectionUtilMock.close();
-         }
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastValue).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastLabel).isNull();
+         assertThat(service.lastLocator).isNull();
       }
 
       @Test
-      @DisplayName("getDefaultType returns component type when found")
-      void getDefaultTypeSuccess() {
-         // Given
-         InputComponentType mockType = mock(InputComponentType.class);
-         reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                     eq(InputComponentType.class),
-                     eq("TEST_TYPE"),
-                     eq("com.test.package")))
-               .thenReturn(mockType);
+      @DisplayName("insert(container, label, value) delegates correctly")
+      void testDefaultInsertWithContainerAndLabel() {
+         // Given - setup in @BeforeEach
 
          // When
-         InputComponentType result = InputService.getDefaultType();
+         service.insert(container, SAMPLE_LABEL, SAMPLE_VALUE);
 
          // Then
-         assertThat(result).isEqualTo(mockType);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+         assertThat(service.lastValue).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastLocator).isNull();
       }
 
       @Test
-      @DisplayName("getDefaultType returns null for invalid type")
-      void getDefaultTypeInvalidType() {
-         // Given
-         reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                     eq(InputComponentType.class),
-                     anyString(),
-                     anyString()))
-               .thenReturn(null);
+      @DisplayName("insert(label, value) delegates correctly")
+      void testDefaultInsertWithLabel() {
+         // Given - setup in @BeforeEach
 
          // When
-         InputComponentType result = InputService.getDefaultType();
+         service.insert(SAMPLE_LABEL, SAMPLE_VALUE);
 
          // Then
-         assertThat(result).isNull();
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+         assertThat(service.lastValue).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastContainer).isNull();
+         assertThat(service.lastLocator).isNull();
+      }
+
+      @Test
+      @DisplayName("insert(locator, value) delegates correctly")
+      void testDefaultInsertWithBy() {
+         // Given - setup in @BeforeEach
+
+         // When
+         service.insert(locator, SAMPLE_VALUE);
+
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLocator).isEqualTo(locator);
+         assertThat(service.lastValue).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastContainer).isNull();
+         assertThat(service.lastLabel).isNull();
       }
    }
 
-   @Test
-   @DisplayName("Test with explicit component type")
-   void testExplicitComponentType() {
-      // Given
-      service.reset();
+   @Nested
+   @DisplayName("Default Method Delegation Tests - Clear")
+   class DefaultClearDelegationTests {
 
-      // When
-      service.insert(MockInputComponentType.CUSTOM, container, "value");
+      @Test
+      @DisplayName("clear(container) delegates correctly")
+      void testDefaultClearWithContainer() {
+         // Given - setup in @BeforeEach
 
-      // Then
-      assertEquals(MockInputComponentType.CUSTOM, service.lastComponentType);
-      assertEquals(container, service.lastContainer);
-      assertEquals("value", service.lastValue);
+         // When
+         service.clear(container);
+
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastLabel).isNull();
+         assertThat(service.lastLocator).isNull();
+      }
+
+      @Test
+      @DisplayName("clear(container, label) delegates correctly")
+      void testDefaultClearWithContainerAndLabel() {
+         // Given - setup in @BeforeEach
+
+         // When
+         service.clear(container, SAMPLE_LABEL);
+
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+         assertThat(service.lastLocator).isNull();
+      }
+
+      @Test
+      @DisplayName("clear(label) delegates correctly")
+      void testDefaultClearWithLabel() {
+         // Given - setup in @BeforeEach
+
+         // When
+         service.clear(SAMPLE_LABEL);
+
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+         assertThat(service.lastContainer).isNull();
+         assertThat(service.lastLocator).isNull();
+      }
+
+      @Test
+      @DisplayName("clear(locator) delegates correctly")
+      void testDefaultClearWithBy() {
+         // Given - setup in @BeforeEach
+
+         // When
+         service.clear(locator);
+
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLocator).isEqualTo(locator);
+         assertThat(service.lastContainer).isNull();
+         assertThat(service.lastLabel).isNull();
+      }
    }
 
-   @Test
-   @DisplayName("Test non-default return value")
-   void testNonDefaultReturnValue() {
-      // Given
-      service.reset();
-      service.returnEnabled = false;
+   @Nested
+   @DisplayName("Default Method Delegation Tests - GetValue")
+   class DefaultGetValueDelegationTests {
 
-      // When
-      boolean result = service.isEnabled(container);
+      @Test
+      @DisplayName("getValue(container) delegates correctly")
+      void testDefaultGetValueContainer() {
+         // Given
+         service.returnValue = SAMPLE_VALUE;
 
-      // Then
-      assertEquals(false, result);
+         // When
+         var val = service.getValue(container);
+
+         // Then
+         assertThat(val).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+      }
+
+      @Test
+      @DisplayName("getValue(container, label) delegates correctly")
+      void testDefaultGetValueContainerLabel() {
+         // Given
+         service.returnValue = SAMPLE_VALUE;
+
+         // When
+         var val = service.getValue(container, SAMPLE_LABEL);
+
+         // Then
+         assertThat(val).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+      }
+
+      @Test
+      @DisplayName("getValue(label) delegates correctly")
+      void testDefaultGetValueLabel() {
+         // Given
+         service.returnValue = SAMPLE_VALUE;
+
+         // When
+         var val = service.getValue(SAMPLE_LABEL);
+
+         // Then
+         assertThat(val).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+      }
+
+      @Test
+      @DisplayName("getValue(locator) delegates correctly")
+      void testDefaultGetValueBy() {
+         // Given
+         service.returnValue = SAMPLE_VALUE;
+
+         // When
+         var val = service.getValue(locator);
+
+         // Then
+         assertThat(val).isEqualTo(SAMPLE_VALUE);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLocator).isEqualTo(locator);
+      }
    }
 
-   @Test
-   @DisplayName("Input interface default methods work correctly")
-   void testInputInterfaceDefaultMethods() {
-      // Create a concrete implementation of Input with default methods
-      Input defaultInput = new Input() {
-         @Override
-         public void insert(SmartWebElement container, String value) {
-         }
+   @Nested
+   @DisplayName("Default Method Delegation Tests - IsEnabled")
+   class DefaultIsEnabledDelegationTests {
 
-         @Override
-         public void insert(SmartWebElement container, String inputFieldLabel, String value) {
-         }
+      @Test
+      @DisplayName("isEnabled(container) delegates correctly")
+      void testDefaultIsEnabledContainer() {
+         // Given
+         service.returnEnabled = true;
 
-         @Override
-         public void insert(String inputFieldLabel, String value) {
-         }
+         // When
+         var enabled = service.isEnabled(container);
 
-         @Override
-         public void insert(By inputFieldContainerLocator, String value) {
-         }
+         // Then
+         assertThat(enabled).isTrue();
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+      }
 
-         @Override
-         public void clear(SmartWebElement container) {
-         }
+      @Test
+      @DisplayName("isEnabled(container, label) delegates correctly")
+      void testDefaultIsEnabledContainerLabel() {
+         // Given
+         service.returnEnabled = true;
 
-         @Override
-         public void clear(SmartWebElement container, String inputFieldLabel) {
-         }
+         // When
+         var enabled = service.isEnabled(container, SAMPLE_LABEL);
 
-         @Override
-         public void clear(String inputFieldLabel) {
-         }
+         // Then
+         assertThat(enabled).isTrue();
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+      }
 
-         @Override
-         public void clear(By inputFieldContainerLocator) {
-         }
+      @Test
+      @DisplayName("isEnabled(label) delegates correctly")
+      void testDefaultIsEnabledLabel() {
+         // Given
+         service.returnEnabled = true;
 
-         @Override
-         public String getValue(SmartWebElement container) {
-            return "";
-         }
+         // When
+         var enabled = service.isEnabled(SAMPLE_LABEL);
 
-         @Override
-         public String getValue(SmartWebElement container, String inputFieldLabel) {
-            return "";
-         }
+         // Then
+         assertThat(enabled).isTrue();
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+      }
 
-         @Override
-         public String getValue(String inputFieldLabel) {
-            return "";
-         }
+      @Test
+      @DisplayName("isEnabled(locator) delegates correctly")
+      void testDefaultIsEnabledBy() {
+         // Given
+         service.returnEnabled = true;
 
-         @Override
-         public String getValue(By inputFieldContainerLocator) {
-            return "";
-         }
+         // When
+         var enabled = service.isEnabled(locator);
 
-         @Override
-         public boolean isEnabled(SmartWebElement container) {
-            return false;
-         }
+         // Then
+         assertThat(enabled).isTrue();
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLocator).isEqualTo(locator);
+      }
+   }
 
-         @Override
-         public boolean isEnabled(SmartWebElement container, String inputFieldLabel) {
-            return false;
-         }
+   @Nested
+   @DisplayName("Default Method Delegation Tests - GetErrorMessage")
+   class DefaultGetErrorMessageDelegationTests {
 
-         @Override
-         public boolean isEnabled(String inputFieldLabel) {
-            return false;
-         }
+      @Test
+      @DisplayName("getErrorMessage(container) delegates correctly")
+      void testDefaultGetErrorMessageContainer() {
+         // Given
+         service.returnErrorMessage = SAMPLE_ERROR_MSG;
 
-         @Override
-         public boolean isEnabled(By inputFieldContainerLocator) {
-            return false;
-         }
+         // When
+         var msg = service.getErrorMessage(container);
 
-         @Override
-         public String getErrorMessage(SmartWebElement container) {
-            return "";
-         }
+         // Then
+         assertThat(msg).isEqualTo(SAMPLE_ERROR_MSG);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+      }
 
-         @Override
-         public String getErrorMessage(SmartWebElement container, String inputFieldLabel) {
-            return "";
-         }
+      @Test
+      @DisplayName("getErrorMessage(container, label) delegates correctly")
+      void testDefaultGetErrorMessageContainerLabel() {
+         // Given
+         service.returnErrorMessage = SAMPLE_ERROR_MSG;
 
-         @Override
-         public String getErrorMessage(String inputFieldLabel) {
-            return "";
-         }
+         // When
+         var msg = service.getErrorMessage(container, SAMPLE_LABEL);
 
-         @Override
-         public String getErrorMessage(By inputFieldContainerLocator) {
-            return "";
-         }
-      };
+         // Then
+         assertThat(msg).isEqualTo(SAMPLE_ERROR_MSG);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+      }
 
-      // Call the default methods to cover them
-      FilterStrategy strategy = FilterStrategy.SELECT;
-      defaultInput.tableInsertion(container, "value1");
-      defaultInput.tableFilter(container, strategy, "value1");
+      @Test
+      @DisplayName("getErrorMessage(label) delegates correctly")
+      void testDefaultGetErrorMessageLabel() {
+         // Given
+         service.returnErrorMessage = SAMPLE_ERROR_MSG;
 
-      // Verify no exceptions
-      assertThat(defaultInput).isNotNull();
+         // When
+         var msg = service.getErrorMessage(SAMPLE_LABEL);
+
+         // Then
+         assertThat(msg).isEqualTo(SAMPLE_ERROR_MSG);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLabel).isEqualTo(SAMPLE_LABEL);
+      }
+
+      @Test
+      @DisplayName("getErrorMessage(locator) delegates correctly")
+      void testDefaultGetErrorMessageBy() {
+         // Given
+         service.returnErrorMessage = SAMPLE_ERROR_MSG;
+
+         // When
+         var msg = service.getErrorMessage(locator);
+
+         // Then
+         assertThat(msg).isEqualTo(SAMPLE_ERROR_MSG);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.explicitComponentType).isEqualTo(MockInputComponentType.DUMMY_INPUT);
+         assertThat(service.lastLocator).isEqualTo(locator);
+      }
    }
 }

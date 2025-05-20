@@ -26,6 +26,21 @@ public interface TabService extends ButtonService {
    TabComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default tab component type from the configuration.
+    *
+    * @return The default TabComponentType.
+    */
+   private static TabComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(TabComponentType.class,
+               getUiConfig().tabDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Checks if a tab with the specified text inside a container is selected, using the default tab component type.
     *
     * @param container The SmartWebElement container that contains the tab.
@@ -102,20 +117,4 @@ public interface TabService extends ButtonService {
     * @return true if the tab is selected, false otherwise.
     */
    boolean isSelected(TabComponentType componentType, By tabLocator);
-
-
-   /**
-    * Retrieves the default tab component type from the configuration.
-    *
-    * @return The default TabComponentType.
-    */
-   private static TabComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(TabComponentType.class,
-               getUiConfig().tabDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

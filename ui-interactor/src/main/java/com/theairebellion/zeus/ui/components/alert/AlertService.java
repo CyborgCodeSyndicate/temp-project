@@ -24,6 +24,21 @@ public interface AlertService {
    AlertComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default alert component type from the configuration.
+    *
+    * @return The default AlertComponentType.
+    */
+   private static AlertComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(AlertComponentType.class,
+               getUiConfig().alertDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Retrieves the value of an alert within the specified container, using the default alert component type.
     *
     * @param container The SmartWebElement container that contains the alert.
@@ -98,19 +113,4 @@ public interface AlertService {
     * @return true if the alert is visible, false otherwise.
     */
    boolean isVisible(AlertComponentType componentType, By containerLocator);
-
-   /**
-    * Retrieves the default alert component type from the configuration.
-    *
-    * @return The default AlertComponentType.
-    */
-   private static AlertComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(AlertComponentType.class,
-               getUiConfig().alertDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

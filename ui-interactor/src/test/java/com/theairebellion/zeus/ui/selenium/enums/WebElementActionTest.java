@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.selenium.enums;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

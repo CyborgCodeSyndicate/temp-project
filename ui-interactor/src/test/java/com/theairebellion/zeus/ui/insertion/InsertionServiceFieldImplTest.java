@@ -319,7 +319,7 @@ public class InsertionServiceFieldImplTest {
    @DisplayName("Logging Tests")
    class LoggingTests {
       @Test
-      @DisplayName("After successful insertion, LogUI.info(...) is called")
+      @DisplayName("After successful insertion, LogUi.info(...) is called")
       void testLogIsCalled() {
          ExampleDTOUI dto = new ExampleDTOUI();
          // We only need to mock reflection for the fields that have non-null values

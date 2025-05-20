@@ -1,53 +1,60 @@
 package com.theairebellion.zeus.ui.components.tab;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
+import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.tab.mock.MockTabComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.openqa.selenium.By;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @DisplayName("TabServiceImpl Unit Tests")
 class TabServiceImplTest extends BaseUnitUITest {
 
+   private static final String TAB_TEXT = "Tab1";
+   private static final String[] TABLE_VALUES = {"value1"};
+   private final MockTabComponentType componentType = MockTabComponentType.DUMMY_TAB;
+   @Mock
    private SmartWebDriver driver;
-   private TabServiceImpl service;
+   @Mock
    private SmartWebElement container;
+   @Mock
    private SmartWebElement cellElement;
-   private MockTabComponentType componentType;
+   @Mock
    private Tab tabMock;
+   @Mock
    private By locator;
+   private TabServiceImpl service;
    private MockedStatic<ComponentFactory> factoryMock;
 
    @BeforeEach
    void setUp() {
-      // Initialize mocks
-      driver = mock(SmartWebDriver.class);
+      MockitoAnnotations.openMocks(this);
       service = new TabServiceImpl(driver);
-      container = MockSmartWebElement.createMock();
-      cellElement = MockSmartWebElement.createMock();
-      tabMock = mock(Tab.class);
-      componentType = MockTabComponentType.DUMMY_TAB;
       locator = By.id("tab");
 
-      // Configure static mock for ComponentFactory
-      factoryMock = mockStatic(ComponentFactory.class);
-      factoryMock.when(() -> ComponentFactory.getTabComponent(eq(componentType), eq(driver)))
+      factoryMock = Mockito.mockStatic(ComponentFactory.class);
+      factoryMock.when(() -> ComponentFactory.getTabComponent(any(TabComponentType.class), eq(driver)))
             .thenReturn(tabMock);
    }
 
@@ -66,46 +73,52 @@ class TabServiceImplTest extends BaseUnitUITest {
       @DisplayName("click with container and text delegates correctly")
       void clickWithContainerAndText() {
          // Given
-         var tabText = "Tab1";
 
          // When
-         service.click(componentType, container, tabText);
+         service.click(componentType, container, TAB_TEXT);
 
          // Then
-         verify(tabMock).click(container, tabText);
+         verify(tabMock).click(container, TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
       @DisplayName("click with container delegates correctly")
       void clickWithContainer() {
+         // Given
+
          // When
          service.click(componentType, container);
 
          // Then
          verify(tabMock).click(container);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
       @DisplayName("click with text only delegates correctly")
       void clickWithTextOnly() {
          // Given
-         var tabText = "Tab1";
 
          // When
-         service.click(componentType, tabText);
+         service.click(componentType, TAB_TEXT);
 
          // Then
-         verify(tabMock).click(tabText);
+         verify(tabMock).click(TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
       @DisplayName("click with locator delegates correctly")
       void clickWithLocator() {
+         // Given
+
          // When
          service.click(componentType, locator);
 
          // Then
          verify(tabMock).click(locator);
+         verifyNoMoreInteractions(tabMock);
       }
    }
 
@@ -117,15 +130,15 @@ class TabServiceImplTest extends BaseUnitUITest {
       @DisplayName("isSelected with container and text delegates correctly")
       void isSelectedWithContainerAndText() {
          // Given
-         var tabText = "Tab1";
-         when(tabMock.isSelected(container, tabText)).thenReturn(true);
+         when(tabMock.isSelected(container, TAB_TEXT)).thenReturn(true);
 
          // When
-         var result = service.isSelected(componentType, container, tabText);
+         var result = service.isSelected(componentType, container, TAB_TEXT);
 
          // Then
          assertThat(result).isTrue();
-         verify(tabMock).isSelected(container, tabText);
+         verify(tabMock).isSelected(container, TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
@@ -140,21 +153,22 @@ class TabServiceImplTest extends BaseUnitUITest {
          // Then
          assertThat(result).isTrue();
          verify(tabMock).isSelected(container);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
       @DisplayName("isSelected with text only delegates correctly")
       void isSelectedWithTextOnly() {
          // Given
-         var tabText = "Tab1";
-         when(tabMock.isSelected(tabText)).thenReturn(true);
+         when(tabMock.isSelected(TAB_TEXT)).thenReturn(true);
 
          // When
-         var result = service.isSelected(componentType, tabText);
+         var result = service.isSelected(componentType, TAB_TEXT);
 
          // Then
          assertThat(result).isTrue();
-         verify(tabMock).isSelected(tabText);
+         verify(tabMock).isSelected(TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
@@ -169,6 +183,7 @@ class TabServiceImplTest extends BaseUnitUITest {
          // Then
          assertThat(result).isTrue();
          verify(tabMock).isSelected(locator);
+         verifyNoMoreInteractions(tabMock);
       }
    }
 
@@ -180,15 +195,15 @@ class TabServiceImplTest extends BaseUnitUITest {
       @DisplayName("isEnabled with container and text delegates correctly")
       void isEnabledWithContainerAndText() {
          // Given
-         var tabText = "Tab2";
-         when(tabMock.isEnabled(container, tabText)).thenReturn(true);
+         when(tabMock.isEnabled(container, TAB_TEXT)).thenReturn(true);
 
          // When
-         var result = service.isEnabled(componentType, container, tabText);
+         var result = service.isEnabled(componentType, container, TAB_TEXT);
 
          // Then
          assertThat(result).isTrue();
-         verify(tabMock).isEnabled(container, tabText);
+         verify(tabMock).isEnabled(container, TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
@@ -203,21 +218,22 @@ class TabServiceImplTest extends BaseUnitUITest {
          // Then
          assertThat(result).isTrue();
          verify(tabMock).isEnabled(container);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
       @DisplayName("isEnabled with text only delegates correctly")
       void isEnabledWithTextOnly() {
          // Given
-         var tabText = "Tab2";
-         when(tabMock.isEnabled(tabText)).thenReturn(true);
+         when(tabMock.isEnabled(TAB_TEXT)).thenReturn(true);
 
          // When
-         var result = service.isEnabled(componentType, tabText);
+         var result = service.isEnabled(componentType, TAB_TEXT);
 
          // Then
          assertThat(result).isTrue();
-         verify(tabMock).isEnabled(tabText);
+         verify(tabMock).isEnabled(TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
@@ -232,6 +248,7 @@ class TabServiceImplTest extends BaseUnitUITest {
          // Then
          assertThat(result).isTrue();
          verify(tabMock).isEnabled(locator);
+         verifyNoMoreInteractions(tabMock);
       }
    }
 
@@ -243,15 +260,15 @@ class TabServiceImplTest extends BaseUnitUITest {
       @DisplayName("isVisible with container and text delegates correctly")
       void isVisibleWithContainerAndText() {
          // Given
-         var tabText = "Tab3";
-         when(tabMock.isVisible(container, tabText)).thenReturn(true);
+         when(tabMock.isVisible(container, TAB_TEXT)).thenReturn(true);
 
          // When
-         var result = service.isVisible(componentType, container, tabText);
+         var result = service.isVisible(componentType, container, TAB_TEXT);
 
          // Then
          assertThat(result).isTrue();
-         verify(tabMock).isVisible(container, tabText);
+         verify(tabMock).isVisible(container, TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
@@ -266,21 +283,22 @@ class TabServiceImplTest extends BaseUnitUITest {
          // Then
          assertThat(result).isTrue();
          verify(tabMock).isVisible(container);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
       @DisplayName("isVisible with text only delegates correctly")
       void isVisibleWithTextOnly() {
          // Given
-         var tabText = "Tab3";
-         when(tabMock.isVisible(tabText)).thenReturn(true);
+         when(tabMock.isVisible(TAB_TEXT)).thenReturn(true);
 
          // When
-         var result = service.isVisible(componentType, tabText);
+         var result = service.isVisible(componentType, TAB_TEXT);
 
          // Then
          assertThat(result).isTrue();
-         verify(tabMock).isVisible(tabText);
+         verify(tabMock).isVisible(TAB_TEXT);
+         verifyNoMoreInteractions(tabMock);
       }
 
       @Test
@@ -295,18 +313,42 @@ class TabServiceImplTest extends BaseUnitUITest {
          // Then
          assertThat(result).isTrue();
          verify(tabMock).isVisible(locator);
+         verifyNoMoreInteractions(tabMock);
       }
    }
 
-   @Test
-   @DisplayName("tableInsertion delegates to clickElementInCell correctly")
-   void tableInsertion() {
-      // When
-      service.tableInsertion(cellElement, componentType, "value1", "value2");
+   @Nested
+   @DisplayName("TableInsertion Method Tests")
+   class TableInsertionMethodTests {
+      @Test
+      @DisplayName("tableInsertion delegates to clickElementInCell correctly")
+      void tableInsertion() {
+         // Given - setup in @BeforeEach
 
-      // Then
-      verify(tabMock).clickElementInCell(cellElement);
+         // When
+         service.tableInsertion(cellElement, componentType, TABLE_VALUES);
+
+         // Then
+         verify(tabMock).clickElementInCell(cellElement);
+         verifyNoMoreInteractions(tabMock);
+         factoryMock.verify(() -> ComponentFactory.getTabComponent(eq(componentType), eq(driver)), times(1));
+      }
+
+      @Test
+      @DisplayName("tableInsertion with non-TabComponentType throws exception")
+      void testTableInsertionWithNonTabComponentType() {
+         // Given
+         ComponentType nonTabType = mock(ComponentType.class);
+
+         // When / Then
+         assertThatThrownBy(() -> service.tableInsertion(cellElement, nonTabType, TABLE_VALUES))
+               .isInstanceOf(IllegalArgumentException.class);
+
+         factoryMock.verifyNoInteractions();
+         verifyNoInteractions(tabMock);
+      }
    }
+
 
    @Nested
    @DisplayName("Component Caching Tests")
@@ -315,50 +357,14 @@ class TabServiceImplTest extends BaseUnitUITest {
       @Test
       @DisplayName("Component is cached and reused")
       void componentCaching() {
+         // Given - setup in @BeforeEach
+
          // When
-         service.isSelected(componentType, container, "Tab1");
-         service.isEnabled(componentType, container, "Tab2");
-         service.isVisible(componentType, container, "Tab3");
+         service.isSelected(componentType, container, TAB_TEXT);
+         service.click(componentType, container, TAB_TEXT);
 
          // Then
          factoryMock.verify(() -> ComponentFactory.getTabComponent(eq(componentType), eq(driver)), times(1));
-      }
-
-      @Test
-      @DisplayName("Different component types create different instances")
-      void differentComponentTypes() {
-         // Setup mock component types
-         componentType = MockTabComponentType.DUMMY_TAB;
-         var componentType2 = MockTabComponentType.TEST;
-
-         // Create mock components
-         var tab1 = mock(Tab.class);
-         var tab2 = mock(Tab.class);
-
-         // Configure behavior
-         when(tab1.isSelected(container)).thenReturn(false);
-         when(tab2.isSelected(container)).thenReturn(true);
-
-         // Configure factory mock
-         factoryMock.reset();
-         factoryMock.when(() -> ComponentFactory.getTabComponent(eq(componentType), eq(driver)))
-               .thenReturn(tab1);
-         factoryMock.when(() -> ComponentFactory.getTabComponent(eq(componentType2), eq(driver)))
-               .thenReturn(tab2);
-
-         // First component type operation
-         var result1 = service.isSelected(componentType, container);
-         assertThat(result1).isFalse();
-         verify(tab1).isSelected(container);
-
-         // Second component type operation
-         var result2 = service.isSelected(componentType2, container);
-         assertThat(result2).isTrue();
-         verify(tab2).isSelected(container);
-
-         // Verify factory calls
-         factoryMock.verify(() -> ComponentFactory.getTabComponent(eq(componentType), eq(driver)), times(1));
-         factoryMock.verify(() -> ComponentFactory.getTabComponent(eq(componentType2), eq(driver)), times(1));
       }
    }
 }

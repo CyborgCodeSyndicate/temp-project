@@ -400,8 +400,11 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
     */
    @Override
    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
-      LogUi.step(String.format(INSERT_VALUE_INTO_CHECKBOX, componentType));
-      select((CheckboxComponentType) componentType, (String) values[0]);
+      if (!(componentType instanceof CheckboxComponentType checkboxType)) {
+         throw new IllegalArgumentException("Component type needs to be from: CheckboxComponentType.");
+      }
+      LogUi.step(String.format(INSERT_VALUE_INTO_CHECKBOX, checkboxType));
+      select(checkboxType, (String) values[0]);
    }
 
    /**

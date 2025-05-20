@@ -270,8 +270,11 @@ public class LinkServiceImpl extends AbstractComponentService<LinkComponentType,
    @Override
    public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
                               final String... values) {
+      if (!(componentType instanceof LinkComponentType linkType)) {
+         throw new IllegalArgumentException("Component type needs to be from: LinkComponentType.");
+      }
       LogUi.step(String.format(INSERT_VALUES_IN_CELL, String.join(", ", values), componentType));
-      linkComponent((LinkComponentType) componentType).clickElementInCell(cellElement);
+      linkComponent(linkType).clickElementInCell(cellElement);
    }
 
    /**
