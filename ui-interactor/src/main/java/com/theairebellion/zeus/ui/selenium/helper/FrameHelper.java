@@ -11,6 +11,7 @@ import org.openqa.selenium.WebElement;
  * Utility class for handling iframe-related operations within a Selenium WebDriver instance.
  *
  * <p>This class provides methods to search for elements inside iframes when they are not found in the main DOM.
+ * </p>
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -50,7 +51,7 @@ public class FrameHelper {
     * @param by     The locator of the target element.
     * @return A {@link SmartWebElement} if found, otherwise {@code null}.
     */
-   public static SmartWebElement searchElementInIframes(WebDriver driver, By by) {
+   private static SmartWebElement searchElementInIframes(WebDriver driver, By by) {
       List<WebElement> elements = driver.findElements(by);
       if (!elements.isEmpty()) {
          return new SmartWebElement(elements.get(0), driver);
@@ -65,6 +66,26 @@ public class FrameHelper {
          } else {
             driver.switchTo().defaultContent();
          }
+      }
+
+      return null;
+   }
+
+   /**
+    * Searches for an iframe that contains a WebElement matching the given locator.
+    *
+    * @param driver  The WebDriver instance.
+    * @param locator The locator of the target element to find within iframes.
+    * @return The containing {@link WebElement} (iframe) if found, otherwise {@code null}.
+    */
+   public static WebElement findContainerIframe(WebDriver driver, By locator) {
+      List<WebElement> frames = getAllIframes(driver);
+      for (WebElement frame : frames) {
+         driver.switchTo().frame(frame);
+         if (!driver.findElements(locator).isEmpty()) {
+            return frame;
+         }
+         driver.switchTo().defaultContent();
       }
 
       return null;

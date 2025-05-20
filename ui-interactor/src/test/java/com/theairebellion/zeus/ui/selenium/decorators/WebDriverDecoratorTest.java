@@ -1,8 +1,7 @@
 package com.theairebellion.zeus.ui.selenium.decorators;
 
-import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -11,199 +10,215 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WebDriverDecoratorTest {
 
-   @Mock
-   private WebDriver mockWebDriver;
+    @Mock
+    private WebDriver mockWebDriver;
 
-   @Mock
-   private WebElement mockWebElement;
+    @Mock
+    private WebElement mockWebElement;
 
-   private TestWebDriverDecorator decorator;
+    private TestWebDriverDecorator decorator;
 
-   // Create a concrete implementation of the abstract class for testing
-   private static class TestWebDriverDecorator extends WebDriverDecorator {
-      public TestWebDriverDecorator(WebDriver original) {
-         super(original);
-      }
-   }
+    // Create a concrete implementation of the abstract class for testing
+    private static class TestWebDriverDecorator extends WebDriverDecorator {
+        public TestWebDriverDecorator(WebDriver original) {
+            super(original);
+        }
+    }
 
-   @BeforeEach
-   void setUp() {
-      decorator = new TestWebDriverDecorator(mockWebDriver);
-   }
+    @BeforeEach
+    void setUp() {
+        decorator = new TestWebDriverDecorator(mockWebDriver);
+    }
 
-   @Test
-   void shouldReturnOriginalWebDriver() {
-      // When getting the original WebDriver
-      WebDriver result = decorator.getOriginal();
+    @Test
+    @DisplayName("getOriginal() should return the wrapped WebDriver instance")
+    void shouldReturnOriginalWebDriver() {
+        // When getting the original WebDriver
+        WebDriver result = decorator.getOriginal();
 
-      // Then it should return the same instance
-      assertSame(mockWebDriver, result);
-   }
+        // Then it should return the same instance
+        assertSame(mockWebDriver, result);
+    }
 
 
-   @Test
-   void shouldDelegateGetMethod() {
-      // Given
-      String url = "https://example.com";
+    @Test
+    @DisplayName("get() should delegate to the original WebDriver")
+    void shouldDelegateGetMethod() {
+        // Given
+        String url = "https://example.com";
 
-      // When
-      decorator.get(url);
+        // When
+        decorator.get(url);
 
-      // Then
-      verify(mockWebDriver).get(url);
-   }
+        // Then
+        verify(mockWebDriver).get(url);
+    }
 
-   @Test
-   void shouldDelegateFindElementMethod() {
-      // Given
-      By by = By.id("testId");
-      when(mockWebDriver.findElement(by)).thenReturn(mockWebElement);
+    @Test
+    @DisplayName("findElement() should delegate to original WebDriver and return the element")
+    void shouldDelegateFindElementMethod() {
+        // Given
+        By by = By.id("testId");
+        when(mockWebDriver.findElement(by)).thenReturn(mockWebElement);
 
-      // When
-      WebElement result = decorator.findElement(by);
+        // When
+        WebElement result = decorator.findElement(by);
 
-      // Then
-      assertEquals(mockWebElement, result);
-      verify(mockWebDriver).findElement(by);
-   }
+        // Then
+        assertEquals(mockWebElement, result);
+        verify(mockWebDriver).findElement(by);
+    }
 
-   @Test
-   void shouldDelegateFindElementsMethod() {
-      // Given
-      By by = By.className("testClass");
-      List<WebElement> elements = List.of(mockWebElement);
-      when(mockWebDriver.findElements(by)).thenReturn(elements);
+    @Test
+    @DisplayName("findElements() should delegate to original WebDriver and return element list")
+    void shouldDelegateFindElementsMethod() {
+        // Given
+        By by = By.className("testClass");
+        List<WebElement> elements = List.of(mockWebElement);
+        when(mockWebDriver.findElements(by)).thenReturn(elements);
 
-      // When
-      List<WebElement> result = decorator.findElements(by);
+        // When
+        List<WebElement> result = decorator.findElements(by);
 
-      // Then
-      assertEquals(elements, result);
-      verify(mockWebDriver).findElements(by);
-   }
+        // Then
+        assertEquals(elements, result);
+        verify(mockWebDriver).findElements(by);
+    }
 
-   @Test
-   void shouldDelegateGetCurrentUrlMethod() {
-      // Given
-      String expectedUrl = "https://example.com/page";
-      when(mockWebDriver.getCurrentUrl()).thenReturn(expectedUrl);
+    @Test
+    @DisplayName("getCurrentUrl() should delegate to original WebDriver and return URL")
+    void shouldDelegateGetCurrentUrlMethod() {
+        // Given
+        String expectedUrl = "https://example.com/page";
+        when(mockWebDriver.getCurrentUrl()).thenReturn(expectedUrl);
 
-      // When
-      String result = decorator.getCurrentUrl();
+        // When
+        String result = decorator.getCurrentUrl();
 
-      // Then
-      assertEquals(expectedUrl, result);
-      verify(mockWebDriver).getCurrentUrl();
-   }
+        // Then
+        assertEquals(expectedUrl, result);
+        verify(mockWebDriver).getCurrentUrl();
+    }
 
-   @Test
-   void shouldDelegateGetTitleMethod() {
-      // Given
-      String expectedTitle = "Example Page";
-      when(mockWebDriver.getTitle()).thenReturn(expectedTitle);
+    @Test
+    @DisplayName("getTitle() should delegate to original WebDriver and return page title")
+    void shouldDelegateGetTitleMethod() {
+        // Given
+        String expectedTitle = "Example Page";
+        when(mockWebDriver.getTitle()).thenReturn(expectedTitle);
 
-      // When
-      String result = decorator.getTitle();
+        // When
+        String result = decorator.getTitle();
 
-      // Then
-      assertEquals(expectedTitle, result);
-      verify(mockWebDriver).getTitle();
-   }
+        // Then
+        assertEquals(expectedTitle, result);
+        verify(mockWebDriver).getTitle();
+    }
 
-   @Test
-   void shouldDelegateGetWindowHandleMethod() {
-      // Given
-      String expectedHandle = "window1";
-      when(mockWebDriver.getWindowHandle()).thenReturn(expectedHandle);
+    @Test
+    @DisplayName("getWindowHandle() should delegate to original WebDriver and return window handle")
+    void shouldDelegateGetWindowHandleMethod() {
+        // Given
+        String expectedHandle = "window1";
+        when(mockWebDriver.getWindowHandle()).thenReturn(expectedHandle);
 
-      // When
-      String result = decorator.getWindowHandle();
+        // When
+        String result = decorator.getWindowHandle();
 
-      // Then
-      assertEquals(expectedHandle, result);
-      verify(mockWebDriver).getWindowHandle();
-   }
+        // Then
+        assertEquals(expectedHandle, result);
+        verify(mockWebDriver).getWindowHandle();
+    }
 
-   @Test
-   void shouldDelegateGetWindowHandlesMethod() {
-      // Given
-      Set<String> expectedHandles = Set.of("window1", "window2");
-      when(mockWebDriver.getWindowHandles()).thenReturn(expectedHandles);
+    @Test
+    @DisplayName("getWindowHandles() should delegate to original WebDriver and return all window handles")
+    void shouldDelegateGetWindowHandlesMethod() {
+        // Given
+        Set<String> expectedHandles = Set.of("window1", "window2");
+        when(mockWebDriver.getWindowHandles()).thenReturn(expectedHandles);
 
-      // When
-      Set<String> result = decorator.getWindowHandles();
+        // When
+        Set<String> result = decorator.getWindowHandles();
 
-      // Then
-      assertEquals(expectedHandles, result);
-      verify(mockWebDriver).getWindowHandles();
-   }
+        // Then
+        assertEquals(expectedHandles, result);
+        verify(mockWebDriver).getWindowHandles();
+    }
 
-   @Test
-   void shouldDelegateCloseMethod() {
-      // When
-      decorator.close();
+    @Test
+    @DisplayName("close() should delegate window close operation to original WebDriver")
+    void shouldDelegateCloseMethod() {
+        // When
+        decorator.close();
 
-      // Then
-      verify(mockWebDriver).close();
-   }
+        // Then
+        verify(mockWebDriver).close();
+    }
 
-   @Test
-   void shouldDelegateQuitMethod() {
-      // When
-      decorator.quit();
+    @Test
+    @DisplayName("quit() should delegate browser quit operation to original WebDriver")
+    void shouldDelegateQuitMethod() {
+        // When
+        decorator.quit();
 
-      // Then
-      verify(mockWebDriver).quit();
-   }
+        // Then
+        verify(mockWebDriver).quit();
+    }
 
-   @Test
-   void shouldDelegateSwitchToMethod() {
-      // Given
-      WebDriver.TargetLocator targetLocator = mock(WebDriver.TargetLocator.class);
-      when(mockWebDriver.switchTo()).thenReturn(targetLocator);
+    @Test
+    @DisplayName("switchTo() should delegate to original WebDriver and return TargetLocator")
+    void shouldDelegateSwitchToMethod() {
+        // Given
+        WebDriver.TargetLocator targetLocator = mock(WebDriver.TargetLocator.class);
+        when(mockWebDriver.switchTo()).thenReturn(targetLocator);
 
-      // When
-      WebDriver.TargetLocator result = decorator.switchTo();
+        // When
+        WebDriver.TargetLocator result = decorator.switchTo();
 
-      // Then
-      assertEquals(targetLocator, result);
-      verify(mockWebDriver).switchTo();
-   }
+        // Then
+        assertEquals(targetLocator, result);
+        verify(mockWebDriver).switchTo();
+    }
 
-   @Test
-   void shouldDelegateNavigateMethod() {
-      // Given
-      WebDriver.Navigation navigation = mock(WebDriver.Navigation.class);
-      when(mockWebDriver.navigate()).thenReturn(navigation);
+    @Test
+    @DisplayName("navigate() should delegate to original WebDriver and return Navigation object")
+    void shouldDelegateNavigateMethod() {
+        // Given
+        WebDriver.Navigation navigation = mock(WebDriver.Navigation.class);
+        when(mockWebDriver.navigate()).thenReturn(navigation);
 
-      // When
-      WebDriver.Navigation result = decorator.navigate();
+        // When
+        WebDriver.Navigation result = decorator.navigate();
 
-      // Then
-      assertEquals(navigation, result);
-      verify(mockWebDriver).navigate();
-   }
+        // Then
+        assertEquals(navigation, result);
+        verify(mockWebDriver).navigate();
+    }
 
-   @Test
-   void shouldDelegateManageMethod() {
-      // Given
-      WebDriver.Options options = mock(WebDriver.Options.class);
-      when(mockWebDriver.manage()).thenReturn(options);
+    @Test
+    @DisplayName("manage() should delegate to original WebDriver and return Options object")
+    void shouldDelegateManageMethod() {
+        // Given
+        WebDriver.Options options = mock(WebDriver.Options.class);
+        when(mockWebDriver.manage()).thenReturn(options);
 
-      // When
-      WebDriver.Options result = decorator.manage();
+        // When
+        WebDriver.Options result = decorator.manage();
 
-      // Then
-      assertEquals(options, result);
-      verify(mockWebDriver).manage();
-   }
+        // Then
+        assertEquals(options, result);
+        verify(mockWebDriver).manage();
+    }
 }

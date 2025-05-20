@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -56,7 +57,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.theairebellion.zeus.framework.allure.StepType.TEAR_DOWN;
-import static com.theairebellion.zeus.framework.allure.StepType.TEST_EXECUTION;
 import static com.theairebellion.zeus.framework.config.FrameworkConfigHolder.getFrameworkConfig;
 import static com.theairebellion.zeus.framework.util.TestContextManager.getSuperQuest;
 import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
@@ -80,6 +80,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.USERNAME;
  *
  * <p>It integrates with {@link SmartWebDriver} for Selenium interactions and works
  * with {@link Quest} for structured test execution.
+ * </p>
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -371,7 +372,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             ReflectionUtil.findImplementationsOfInterface(UiServiceFluent.class, getUiConfig().projectPackage());
       if (customUiServices.size() > 1) {
          throw new IllegalStateException(
-               "There is more than one UI services that extends from UIServiceFluent. Only 1 is allowed");
+               "There is more than one UI services that extends from UiServiceFluent. Only 1 is allowed");
       }
       if (!customUiServices.isEmpty()) {
          Class<? extends UiServiceFluent> customUiServiceFluentClass = customUiServices.get(0);
@@ -423,9 +424,9 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
 
 
    private static void takeScreenshot(WebDriver driver, String testName) {
-      if (CustomAllureListener.isParentStepActive(TEST_EXECUTION)) {
-         CustomAllureListener.stopParentStep();
-         CustomAllureListener.startParentStep(TEAR_DOWN);
+      if (!Objects.equals(CustomAllureListener.getActiveStepName(), TEAR_DOWN.getDisplayName())) {
+         CustomAllureListener.stopStep();
+         CustomAllureListener.startStep(TEAR_DOWN);
       }
       try {
          TakesScreenshot screenshot = (TakesScreenshot) driver;

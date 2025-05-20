@@ -7,8 +7,9 @@ import io.qameta.allure.internal.shadowed.jackson.databind.SerializationFeature;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * <p>Provides methods to format object fields, collections, arrays, generate HTML content from data,
  * format annotations, process responses, and format journey data.
+ * </p>
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -88,10 +90,25 @@ public final class ObjectFormatter {
       }
       visited.add(obj);
 
-      StringBuilder result = new StringBuilder();
+      Class<?> objClass = obj.getClass();
+      if (objClass.getPackageName().startsWith("java.") || objClass.isEnum()) {
+         visited.remove(obj);
+         return obj.toString();
+      }
+
+      StringBuilder result = new StringBuilder(objClass.getSimpleName()).append(" {\n");
       try {
-         for (Field field : FIELDS_CACHE.computeIfAbsent(obj.getClass(), Class::getDeclaredFields)) {
-            field.setAccessible(true);
+         for (Field field : FIELDS_CACHE.computeIfAbsent(objClass, Class::getDeclaredFields)) {
+            boolean isStatic = Modifier.isStatic(field.getModifiers());
+            Object target = isStatic ? null : obj;
+            if (!field.canAccess(target)) {
+               try {
+                  field.setAccessible(true);
+               } catch (InaccessibleObjectException e) {
+                  result.append(field.getName()).append(": [Inaccessible Field]\n");
+                  continue;
+               }
+            }
             result.append(field.getName()).append(": ")
                   .append(formatArgumentValue(field.get(obj), visited))
                   .append("\n");
@@ -99,6 +116,7 @@ public final class ObjectFormatter {
       } catch (IllegalAccessException e) {
          result.append("[Error accessing fields]");
       }
+      result.append("}");
       visited.remove(obj);
       return result.toString();
    }
@@ -258,53 +276,9 @@ public final class ObjectFormatter {
     */
    private static String formatAnnotation(Annotation annotation) {
       String annotationName = annotation.annotationType().getSimpleName();
-      String args = Arrays.stream(annotation.annotationType().getDeclaredMethods())
-            .filter(method -> method.getParameterCount() == 0)
-            .map(method -> getAnnotationArgument(annotation, method))
-            .collect(Collectors.joining(", "));
+      String arguments = formatAnnotationArguments(annotation);
 
-      return "@" + annotationName + (args.isEmpty() ? "" : "(" + args + ")");
-   }
-
-
-   /**
-    * Retrieves the value of an annotation's method as a string, handling arrays appropriately.
-    *
-    * @param annotation the annotation instance
-    * @param method     the annotation method to invoke
-    * @return a string representing the method name and its value
-    */
-   private static String getAnnotationArgument(Annotation annotation, Method method) {
-      try {
-         Object value = method.invoke(annotation);
-         return value.getClass().isArray() ? method.getName() + "=" + arrayToString(value) :
-               method.getName() + "=" + value;
-      } catch (IllegalAccessException | InvocationTargetException e) {
-         return method.getName() + "=error";
-      }
-   }
-
-
-   /**
-    * Converts an array to a string representation.
-    *
-    * @param array the array to convert
-    * @return a string representing the array contents
-    */
-   private static String arrayToString(Object array) {
-      if (array.getClass().isArray()) {
-         int length = Array.getLength(array);
-         StringBuilder sb = new StringBuilder("[");
-         for (int i = 0; i < length; i++) {
-            if (i > 0) {
-               sb.append(", ");
-            }
-            sb.append(Array.get(array, i));
-         }
-         sb.append("]");
-         return sb.toString();
-      }
-      return array.toString();
+      return "@" + annotationName + (arguments.isEmpty() ? "" : arguments);
    }
 
 
@@ -316,7 +290,17 @@ public final class ObjectFormatter {
     */
    private static boolean annotationHasArguments(Annotation annotation) {
       return Arrays.stream(annotation.annotationType().getDeclaredMethods())
-            .anyMatch(method -> method.getParameterCount() > 0);
+            .anyMatch(method -> {
+               try {
+                  Object defaultValue = method.getDefaultValue();
+                  Object actualValue = method.invoke(annotation);
+                  return defaultValue == null || !defaultValue.equals(actualValue);
+               } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
+                  return false;
+               } catch (Exception e) {
+                  throw new RuntimeException("Unexpected exception occurred while processing annotation", e);
+               }
+            });
    }
 
 
@@ -327,16 +311,30 @@ public final class ObjectFormatter {
     * @return a string representation of the annotation's arguments
     */
    private static String formatAnnotationArguments(Annotation annotation) {
-      return Arrays.stream(annotation.annotationType().getDeclaredMethods())
-            .filter(method -> method.getParameterCount() == 0)
+      List<String> args = Arrays.stream(annotation.annotationType().getDeclaredMethods())
             .map(method -> {
                try {
-                  return method.getName() + "=" + method.invoke(annotation);
-               } catch (Exception e) {
+                  Object value = method.invoke(annotation);
+                  if (value.getClass().isArray()) {
+                     value = Arrays.toString((Object[]) value)
+                           .replace("[", "")
+                           .replace("]", "")
+                           .replace(",", "");
+                  }
+                  if (value.equals(method.getDefaultValue())) {
+                     return "";
+                  }
+                  return method.getName() + "=" + value;
+               } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
                   return method.getName() + "=error";
+               } catch (Exception e) {
+                  throw new RuntimeException("Unexpected exception occurred while formatting annotation arguments", e);
                }
             })
-            .collect(Collectors.joining(", ", "(", ")"));
+            .filter(arg -> !arg.isEmpty())
+            .toList();
+
+      return args.isEmpty() ? "" : args.stream().collect(Collectors.joining(", ", "(", ")"));
    }
 
 
@@ -397,8 +395,9 @@ public final class ObjectFormatter {
 
 
    /**
-    * Applies indentation to the provided text based on the base indent level, formatting braces and commas
-    * appropriately.
+
+    * Applies indentation to the provided text based on the base indent level,
+    * formatting braces and commas appropriately.
     *
     * @param text            the text to format
     * @param baseIndentLevel the base level of indentation

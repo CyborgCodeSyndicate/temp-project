@@ -6,34 +6,37 @@ import com.theairebellion.zeus.framework.quest.QuestHolder;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.DataExtractor;
 import com.theairebellion.zeus.framework.storage.Storage;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("all")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("BaseTest Unit Tests")
 class BaseTestUnitTest {
 
-   private static final String DUMMY_PROP = "dummy.prop";
-   private static final String DUMMY_VALUE = "dummyValue";
-   private static final String TEST_VALUE = "testValue";
    private static final String DEFAULT_VALUE = "defaultValue";
 
    @Mock
@@ -51,144 +54,170 @@ class BaseTestUnitTest {
    private MockedStatic<LogTest> logTestMock;
 
    @BeforeEach
-   void setUp() {
-      // First, setup mocks that will be accessed during test
+   void setUpBaseTest() {
       lenient().when(superQuest.getStorage()).thenReturn(storage);
-
-      // Then setup static mocks
       questHolderMock = mockStatic(QuestHolder.class);
       questHolderMock.when(QuestHolder::get).thenReturn(superQuest);
-
-      // Setup LogTest mock
       logTestMock = mockStatic(LogTest.class);
-
-      // Finally create test object
       baseTest = new BaseTest();
    }
 
    @AfterEach
-   void tearDown() {
-      if (questHolderMock != null) {
-         questHolderMock.close();
-      }
-      if (logTestMock != null) {
-         logTestMock.close();
-      }
-      System.clearProperty(DUMMY_PROP);
+   void tearDownBaseTest() {
+      questHolderMock.close();
+      logTestMock.close();
+      System.clearProperty("dummy.prop");
    }
 
-   @Test
-   @DisplayName("retrieve(Enum, Class) should return data from storage")
-   void retrievesDataByEnumAndClass() {
+   @ParameterizedTest
+   @MethodSource("provideBasicRetrieveScenarios")
+   @DisplayName("retrieve(Enum, Class) returns correct value from storage")
+   <T> void testRetrieve_ShouldReturnCorrectValueFromStorage(MockEnum key, Class<T> clazz, T expected) {
       // Given
-      MockEnum key = MockEnum.KEY1;
-      Class<String> clazz = String.class;
-      when(storage.get(key, clazz)).thenReturn(TEST_VALUE);
+      when(storage.get(key, clazz)).thenReturn(expected);
 
       // When
-      String result = baseTest.retrieve(key, clazz);
+      T result = baseTest.retrieve(key, clazz);
 
       // Then
-      assertEquals(TEST_VALUE, result);
+      assertEquals(expected, result);
       verify(storage).get(key, clazz);
-      // Verify the log method was called with matchers for all parameters
       logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
    }
 
    @Test
-   @DisplayName("retrieve(Enum, Enum, Class) should return data from sub-storage")
-   void retrievesDataBySubKeyEnumAndKeyEnumAndClass() {
+   @DisplayName("retrieve(Enum, Enum, Class) returns correct value from sub-storage")
+   void testRetrieve_ShouldReturnCorrectValueFromSubStorage() {
       // Given
-      MockEnum subKey = MockEnum.KEY2;
-      MockEnum key = MockEnum.KEY1;
-      Class<Integer> clazz = Integer.class;
-      when(storage.sub(subKey)).thenReturn(subStorage);
-      when(subStorage.get(key, clazz)).thenReturn(42);
+      when(storage.sub(MockEnum.KEY2)).thenReturn(subStorage);
+      when(subStorage.get(MockEnum.KEY1, Integer.class)).thenReturn(42);
 
       // When
-      Integer result = baseTest.retrieve(subKey, key, clazz);
+      Integer result = baseTest.retrieve(MockEnum.KEY2, MockEnum.KEY1, Integer.class);
 
       // Then
       assertEquals(42, result);
-      verify(storage).sub(subKey);
-      verify(subStorage).get(key, clazz);
-      // Verify the log method was called with matchers for all parameters
+      verify(storage).sub(MockEnum.KEY2);
+      verify(subStorage).get(MockEnum.KEY1, Integer.class);
       logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
    }
 
    @Test
-   @DisplayName("retrieve(DataExtractor, Class) should return data from storage using extractor")
-   void retrievesDataByDataExtractorAndClass() {
+   @DisplayName("retrieve(DataExtractor, Class) returns correct value")
+   void testRetrieve_ShouldReturnCorrectBooleanValueFromStorage() {
       // Given
-      Class<Boolean> clazz = Boolean.class;
       DataExtractor<Boolean> extractor = mock(DataExtractor.class);
       doReturn(MockEnum.KEY1).when(extractor).getKey();
-      when(storage.get(extractor, clazz)).thenReturn(true);
+      when(storage.get(extractor, Boolean.class)).thenReturn(true);
 
-      // When
-      Boolean result = baseTest.retrieve(extractor, clazz);
+      // Given
+      Boolean result = baseTest.retrieve(extractor, Boolean.class);
 
       // Then
       assertTrue(result);
-      verify(storage).get(extractor, clazz);
-      // Verify the log method was called with matchers for all parameters
+      verify(storage).get(extractor, Boolean.class);
       logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
    }
 
    @Test
-   @DisplayName("retrieve(DataExtractor, int, Class) should return indexed data from storage using extractor")
-   void retrievesDataByDataExtractorIndexAndClass() {
+   @DisplayName("retrieve(DataExtractor, int, Class) returns indexed data")
+   void testRetrieve_ShouldReturnCorrectDoubleValueFromStorage() {
       // Given
-      Class<Double> clazz = Double.class;
       DataExtractor<Double> extractor = mock(DataExtractor.class);
       doReturn(MockEnum.KEY1).when(extractor).getKey();
-      when(storage.get(extractor, clazz, 1)).thenReturn(9.99);
+      when(storage.get(extractor, Double.class, 1)).thenReturn(9.99);
 
       // When
-      Double result = baseTest.retrieve(extractor, 1, clazz);
+      Double result = baseTest.retrieve(extractor, 1, Double.class);
 
       // Then
       assertEquals(9.99, result);
-      verify(storage).get(extractor, clazz, 1);
-      // Verify the log method was called with matchers for all parameters
+      verify(storage).get(extractor, Double.class, 1);
       logTestMock.verify(() -> LogTest.extended(anyString(), any(), any()));
    }
 
    @Test
-   @DisplayName("DefaultStorage.retrieve(Enum, Class) should return data from default sub-storage")
-   void defaultStorageRetrievesDataByEnumAndClass() {
+   @DisplayName("DefaultStorage.retrieve(Enum, Class) returns correct value")
+   void testRetrieve_ShouldReturnCorrectValueFromDefaultStorage() {
       // Given
-      MockEnum key = MockEnum.KEY1;
-      Class<String> clazz = String.class;
       when(storage.sub()).thenReturn(subStorage);
-      when(subStorage.get(key, clazz)).thenReturn(DEFAULT_VALUE);
+      when(subStorage.get(MockEnum.KEY1, String.class)).thenReturn(DEFAULT_VALUE);
 
       // When
-      String result = BaseTest.DefaultStorage.retrieve(key, clazz);
+      String result = BaseTest.DefaultStorage.retrieve(MockEnum.KEY1, String.class);
 
       // Then
       assertEquals(DEFAULT_VALUE, result);
       verify(storage).sub();
-      verify(subStorage).get(key, clazz);
+      verify(subStorage).get(MockEnum.KEY1, String.class);
    }
 
    @Test
-   @DisplayName("DefaultStorage.retrieve(DataExtractor, Class) should return data from default sub-storage using extractor")
-   void defaultStorageRetrievesDataByDataExtractorAndClass() {
+   @DisplayName("DefaultStorage.retrieve(DataExtractor, Class) returns correct value")
+   void testRetrieve_ShouldReturnCorrectDataExtractorValueFromStorage() {
       // Given
-      Class<Integer> clazz = Integer.class;
       DataExtractor<Integer> extractor = mock(DataExtractor.class);
       when(storage.sub()).thenReturn(subStorage);
-      when(subStorage.get(extractor, clazz)).thenReturn(123);
+      when(subStorage.get(extractor, Integer.class)).thenReturn(123);
 
       // When
-      Integer result = BaseTest.DefaultStorage.retrieve(extractor, clazz);
+      Integer result = BaseTest.DefaultStorage.retrieve(extractor, Integer.class);
 
       // Then
       assertEquals(123, result);
       verify(storage).sub();
-      verify(subStorage).get(extractor, clazz);
+      verify(subStorage).get(extractor, Integer.class);
    }
 
+   @Test
+   @DisplayName("retrieve returns null if storage returns null")
+   void testRetrieve_ShouldReturnNullWhenStorageReturnsNull() {
+      // Given
+      when(storage.get(MockEnum.KEY1, String.class)).thenReturn(null);
 
+      // When
+      String result = baseTest.retrieve(MockEnum.KEY1, String.class);
+
+      // Then
+      assertNull(result);
+   }
+
+   @Test
+   @DisplayName("retrieve throws exception if QuestHolder.get() is null")
+   void testRetrieve_ShouldThrowExceptionIfQuestHolderIsNull() {
+      // Given
+      questHolderMock.close();
+      questHolderMock = mockStatic(QuestHolder.class);
+
+      // When
+      questHolderMock.when(QuestHolder::get).thenReturn(null);
+
+      // Then
+      assertThrows(NullPointerException.class, () -> new BaseTest().retrieve(MockEnum.KEY1, String.class));
+   }
+
+   @Test
+   @DisplayName("hookData logs and retrieves hook data correctly")
+   void testHookData_ShouldReturnCorrectHookData() {
+      // Given
+      String input = "hookKey";
+      Class<Integer> clazz = Integer.class;
+
+      // When
+      when(storage.getHookData(input, clazz)).thenReturn(99);
+      Integer result = baseTest.hookData(input, clazz);
+
+      // Then
+      assertEquals(99, result);
+      verify(storage).getHookData(input, clazz);
+      logTestMock.verify(() -> LogTest.extended(anyString(), eq(input), eq(clazz.getName())));
+   }
+
+   private static Stream<Arguments> provideBasicRetrieveScenarios() {
+      return Stream.of(
+            Arguments.of(MockEnum.KEY1, String.class, "value"),
+            Arguments.of(MockEnum.KEY2, Integer.class, 10),
+            Arguments.of(MockEnum.KEY1, Boolean.class, true)
+      );
+   }
 }

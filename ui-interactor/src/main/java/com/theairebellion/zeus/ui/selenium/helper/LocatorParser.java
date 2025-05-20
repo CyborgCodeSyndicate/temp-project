@@ -19,6 +19,7 @@ import org.openqa.selenium.support.pagefactory.ByChained;
  *
  * <p>This class provides methods for extracting locators from exception messages,
  * updating WebElement references, and converting locator strings into By objects.
+ * </p>
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -39,12 +40,8 @@ public class LocatorParser {
     */
    public static SmartWebElement updateWebElement(WebDriver driver, SmartWebElement element) {
       LogUi.extended("Element: '{}' is being relocated.", element.toString());
-      List<By> locatorsList = new ArrayList<>();
-      try {
-         locatorsList = parseLocators(element.toString());
-      } catch (Exception ignore) {
-         // Parsing failed; fallback behavior will attempt updateWebElement with empty locator list.
-      }
+      List<By> locatorsList;
+      locatorsList = parseLocators(element.toString());
       if (locatorsList.isEmpty()) {
          throw new UiInteractionException("Element can't be auto updated");
       }

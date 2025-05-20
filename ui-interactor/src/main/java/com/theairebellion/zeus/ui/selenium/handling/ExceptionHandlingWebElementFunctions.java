@@ -18,9 +18,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * Provides utility functions for handling WebElement exceptions.
  *
- * <p>This class defines methods to recover from common Selenium exceptions such as {@link NoSuchElementException},
- * {@link TimeoutException}, and {@link org.openqa.selenium.StaleElementReferenceException}. It aims to improve test
- * stability by implementing fallback strategies for locating and interacting with elements.
+ * <p>This class defines methods to recover from common Selenium exceptions
+ * such as {@link NoSuchElementException}, {@link TimeoutException}, and
+ * {@link org.openqa.selenium.StaleElementReferenceException}. It aims to
+ * improve test stability by implementing fallback strategies for locating and
+ * interacting with elements.
+ * </p>
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -67,12 +70,19 @@ public class ExceptionHandlingWebElementFunctions {
                                             WebElementAction webElementAction, Object... args) {
       if (args.length == 0 || !(args[0] instanceof By)) {
          LogUi.error("Invalid or missing locator argument for FIND_ELEMENT.");
-         throw new IllegalArgumentException("FIND_ELEMENT action requires a By locator.");
+         throw new IllegalArgumentException("Action requires a By locator.");
       }
 
-      WebElement foundElement = FrameHelper.findElementInIframes(driver, element.getOriginal());
-      if (foundElement != null) {
-         return webElementAction.performActionWebElement(driver, foundElement, args);
+      if (webElementAction == WebElementAction.FIND_ELEMENTS) {
+         WebElement container = FrameHelper.findContainerIframe(driver, (By) args[0]);
+         if (container != null) {
+            return webElementAction.performActionWebDriver(driver, args);
+         }
+      } else {
+         WebElement foundElement = FrameHelper.findElementInIframes(driver, element.getOriginal());
+         if (foundElement != null) {
+            return webElementAction.performActionWebElement(driver, foundElement, args);
+         }
       }
 
       String errorMessage = String.format(
