@@ -652,26 +652,26 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
       return itemListComponent(componentType).getAll(containerLocator);
    }
 
-    /**
-     * Inserts items into the list by converting the provided values to strings and selecting them
-     * within the specified locator.
-     *
-     * @param componentType the type of the component.
-     * @param locator       the locator indicating where to insert/select items.
-     * @param values        one or more values to be converted to strings and selected.
-     */
-    @Override
-    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
-        if (!(componentType instanceof ItemListComponentType listType)) {
-            throw new IllegalArgumentException("Component type needs to be from: ItemListComponentType.");
-        }
-        String[] stringValues = Arrays.stream(values)
-                .map(String::valueOf)
-                .toArray(String[]::new);
-        LogUi.step(String.format(INSERT_VALUES_INTO_COMPONENT_LOCATOR, Arrays.toString(stringValues), componentType,
-                locator));
-        select(listType, locator, stringValues);
-    }
+   /**
+    * Inserts items into the list by converting the provided values to strings and selecting them
+    * within the specified locator.
+    *
+    * @param componentType the type of the component.
+    * @param locator       the locator indicating where to insert/select items.
+    * @param values        one or more values to be converted to strings and selected.
+    */
+   @Override
+   public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+      if (!(componentType instanceof ItemListComponentType listType)) {
+         throw new IllegalArgumentException("Component type needs to be from: ItemListComponentType.");
+      }
+      String[] stringValues = Arrays.stream(values)
+            .map(String::valueOf)
+            .toArray(String[]::new);
+      LogUi.step(String.format(INSERT_VALUES_INTO_COMPONENT_LOCATOR, Arrays.toString(stringValues), componentType,
+            locator));
+      select(listType, locator, stringValues);
+   }
 
    /**
     * Retrieves or creates an {@link ItemList} for the specified component type.

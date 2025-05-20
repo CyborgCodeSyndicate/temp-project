@@ -207,21 +207,21 @@ public class ButtonServiceImpl extends AbstractComponentService<ButtonComponentT
       return getOrCreateComponent(componentType);
    }
 
-    /**
-     * Performs a table insertion action on a cell element using the button component.
-     *
-     * @param cellElement   the cell element where the button is located.
-     * @param componentType the button component type.
-     * @param values        optional values for the insertion action.
-     */
-    @Override
-    public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
-                               final String... values) {
-        if (!(componentType instanceof ButtonComponentType buttonType)) {
-            throw new IllegalArgumentException("Component type needs to be from: ButtonComponentType.");
-        }
-        LogUi.step("Performing table insertion in cell element");
-        buttonComponent(buttonType).clickElementInCell(cellElement);
-    }
+   /**
+    * Performs a table insertion action on a cell element using the button component.
+    *
+    * @param cellElement   the cell element where the button is located.
+    * @param componentType the button component type.
+    * @param values        optional values for the insertion action.
+    */
+   @Override
+   public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
+                              final String... values) {
+      if (!(componentType instanceof ButtonComponentType buttonType)) {
+         throw new IllegalArgumentException("Component type needs to be from: ButtonComponentType.");
+      }
+      LogUi.step("Performing table insertion in cell element");
+      buttonComponent(buttonType).clickElementInCell(cellElement);
+   }
 
 }

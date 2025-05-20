@@ -23,6 +23,21 @@ public interface InputService extends Insertion, TableInsertion, TableFilter {
    InputComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default input component type from the configuration.
+    *
+    * @return The default InputComponentType.
+    */
+   public static InputComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
+               getUiConfig().inputDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Inserts a given value into a specified container element using the default input component type.
     *
     * @param container The SmartWebElement container where the value will be inserted.
@@ -434,20 +449,4 @@ public interface InputService extends Insertion, TableInsertion, TableFilter {
     * @return The error message from the specified input field container.
     */
    String getErrorMessage(InputComponentType componentType, By inputFieldContainerLocator);
-
-
-   /**
-    * Retrieves the default input component type from the configuration.
-    *
-    * @return The default InputComponentType.
-    */
-   public static InputComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(InputComponentType.class,
-               getUiConfig().inputDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

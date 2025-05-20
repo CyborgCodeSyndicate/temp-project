@@ -321,22 +321,22 @@ public class RadioServiceImpl extends AbstractComponentService<RadioComponentTyp
       return radioComponent(componentType).getAll(containerLocator);
    }
 
-    /**
-     * Inserts (selects) a radio button based on the first passed value. Used by the
-     * {@link com.theairebellion.zeus.ui.insertion.Insertion} interface.
-     *
-     * @param componentType the {@link ComponentType} identifying the radio component.
-     * @param locator       the locator for the container or element.
-     * @param values        an array of objects, expected to contain at least one string representing the radio text.
-     */
-    @Override
-    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
-        if (!(componentType instanceof RadioComponentType radioType)) {
-            throw new IllegalArgumentException("Component type needs to be from: RadioComponentType.");
-        }
-        LogUi.step(String.format(INSERT_RADIO_VALUES_LOCATOR, Arrays.toString(values), componentType, locator));
-        select(radioType, String.valueOf(values[0]));
-    }
+   /**
+    * Inserts (selects) a radio button based on the first passed value. Used by the
+    * {@link com.theairebellion.zeus.ui.insertion.Insertion} interface.
+    *
+    * @param componentType the {@link ComponentType} identifying the radio component.
+    * @param locator       the locator for the container or element.
+    * @param values        an array of objects, expected to contain at least one string representing the radio text.
+    */
+   @Override
+   public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+      if (!(componentType instanceof RadioComponentType radioType)) {
+         throw new IllegalArgumentException("Component type needs to be from: RadioComponentType.");
+      }
+      LogUi.step(String.format(INSERT_RADIO_VALUES_LOCATOR, Arrays.toString(values), componentType, locator));
+      select(radioType, String.valueOf(values[0]));
+   }
 
    /**
     * Retrieves or creates the {@link Radio} instance for the specified component type.

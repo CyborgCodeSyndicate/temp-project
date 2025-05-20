@@ -23,6 +23,21 @@ public interface ToggleService {
    ToggleComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default toggle component type from the configuration.
+    *
+    * @return The default ToggleComponentType.
+    */
+   private static ToggleComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(ToggleComponentType.class,
+               getUiConfig().toggleDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Activates the toggle with the specified text inside a container, using the default toggle component type.
     *
     * @param container  The SmartWebElement container that contains the toggle.
@@ -248,19 +263,4 @@ public interface ToggleService {
     * @return true if the toggle is activated, false otherwise.
     */
    boolean isActivated(ToggleComponentType componentType, By toggleLocator);
-
-   /**
-    * Retrieves the default toggle component type from the configuration.
-    *
-    * @return The default ToggleComponentType.
-    */
-   private static ToggleComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(ToggleComponentType.class,
-               getUiConfig().toggleDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

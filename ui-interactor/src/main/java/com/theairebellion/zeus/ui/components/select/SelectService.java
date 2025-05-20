@@ -31,6 +31,21 @@ public interface SelectService extends Insertion {
    SelectComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default select component type from the configuration.
+    *
+    * @return The default SelectComponentType.
+    */
+   private static SelectComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(SelectComponentType.class,
+               getUiConfig().selectDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Selects one or more options in a select component based on the given values. Uses the default select
     * component type.
     *
@@ -325,19 +340,4 @@ public interface SelectService extends Insertion {
     * @return true if the option is enabled, false otherwise.
     */
    boolean isOptionEnabled(SelectComponentType componentType, By containerLocator, String value);
-
-   /**
-    * Retrieves the default select component type from the configuration.
-    *
-    * @return The default SelectComponentType.
-    */
-   private static SelectComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(SelectComponentType.class,
-               getUiConfig().selectDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

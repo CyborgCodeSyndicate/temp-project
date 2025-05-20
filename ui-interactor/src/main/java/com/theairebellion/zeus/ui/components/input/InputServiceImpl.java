@@ -163,21 +163,21 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
       return inputComponent(componentType).getValue(container);
    }
 
-    /**
-     * Retrieves the value from an input field identified by a label within a specified container.
-     *
-     * @param componentType   the input component type.
-     * @param container       the container holding the input field.
-     * @param inputFieldLabel the label of the input field.
-     * @return the current value of the input field.
-     */
-    @Override
-    public String getValue(final InputComponentType componentType, final SmartWebElement container,
-                           final String inputFieldLabel) {
-        LogUi.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
-                componentType.getType().name());
-        return inputComponent(componentType).getValue(container, inputFieldLabel);
-    }
+   /**
+    * Retrieves the value from an input field identified by a label within a specified container.
+    *
+    * @param componentType   the input component type.
+    * @param container       the container holding the input field.
+    * @param inputFieldLabel the label of the input field.
+    * @return the current value of the input field.
+    */
+   @Override
+   public String getValue(final InputComponentType componentType, final SmartWebElement container,
+                          final String inputFieldLabel) {
+      LogUi.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
+            componentType.getType().name());
+      return inputComponent(componentType).getValue(container, inputFieldLabel);
+   }
 
    /**
     * Retrieves the value from an input field identified by a label.

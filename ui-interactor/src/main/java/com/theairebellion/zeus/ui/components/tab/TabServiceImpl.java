@@ -249,21 +249,21 @@ public class TabServiceImpl extends AbstractComponentService<TabComponentType, T
       return tabComponent(componentType).isSelected(tabLocator);
    }
 
-    /**
-     * Performs a table insertion action by clicking a tab within a cell element.
-     *
-     * @param cellElement   the table cell element containing the tab.
-     * @param componentType the component type, expected to be a {@link TabComponentType}.
-     * @param values        additional values (currently unused).
-     */
-    @Override
-    public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
-                               final String... values) {
-        if (!(componentType instanceof TabComponentType tabType)) {
-            throw new IllegalArgumentException("Component type needs to be from: TabComponentType.");
-        }
-        tabComponent(tabType).clickElementInCell(cellElement);
-    }
+   /**
+    * Performs a table insertion action by clicking a tab within a cell element.
+    *
+    * @param cellElement   the table cell element containing the tab.
+    * @param componentType the component type, expected to be a {@link TabComponentType}.
+    * @param values        additional values (currently unused).
+    */
+   @Override
+   public void tableInsertion(final SmartWebElement cellElement, final ComponentType componentType,
+                              final String... values) {
+      if (!(componentType instanceof TabComponentType tabType)) {
+         throw new IllegalArgumentException("Component type needs to be from: TabComponentType.");
+      }
+      tabComponent(tabType).clickElementInCell(cellElement);
+   }
 
    /**
     * Retrieves the {@link Tab} component for the specified {@link TabComponentType}.

@@ -391,21 +391,21 @@ public class CheckboxServiceImpl extends AbstractComponentService<CheckboxCompon
       return checkboxComponent(componentType).getAll(containerLocator);
    }
 
-    /**
-     * Performs an insertion action on a checkbox component.
-     *
-     * @param componentType the checkbox component type.
-     * @param locator       the locator for the checkbox.
-     * @param values        optional values for the insertion action.
-     */
-    @Override
-    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
-        if (!(componentType instanceof CheckboxComponentType checkboxType)) {
-            throw new IllegalArgumentException("Component type needs to be from: CheckboxComponentType.");
-        }
-        LogUi.step(String.format(INSERT_VALUE_INTO_CHECKBOX, checkboxType));
-        select(checkboxType, (String) values[0]);
-    }
+   /**
+    * Performs an insertion action on a checkbox component.
+    *
+    * @param componentType the checkbox component type.
+    * @param locator       the locator for the checkbox.
+    * @param values        optional values for the insertion action.
+    */
+   @Override
+   public void insertion(final ComponentType componentType, final By locator, final Object... values) {
+      if (!(componentType instanceof CheckboxComponentType checkboxType)) {
+         throw new IllegalArgumentException("Component type needs to be from: CheckboxComponentType.");
+      }
+      LogUi.step(String.format(INSERT_VALUE_INTO_CHECKBOX, checkboxType));
+      select(checkboxType, (String) values[0]);
+   }
 
    /**
     * Retrieves the Checkbox instance for the given component type.

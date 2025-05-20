@@ -28,6 +28,21 @@ public interface LoaderService {
    LoaderComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default loader component type from the configuration.
+    *
+    * @return The default LoaderComponentType.
+    */
+   private static LoaderComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(LoaderComponentType.class,
+               getUiConfig().loaderDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Checks if a loader is visible within the specified container using the default loader component type.
     *
     * @param container The SmartWebElement container to check for the presence of the loader.
@@ -223,20 +238,5 @@ public interface LoaderService {
                                         int secondsRemoved) {
       waitToBeShown(componentType, loaderLocator, secondsShown);
       waitToBeRemoved(componentType, loaderLocator, secondsRemoved);
-   }
-
-   /**
-    * Retrieves the default loader component type from the configuration.
-    *
-    * @return The default LoaderComponentType.
-    */
-   private static LoaderComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(LoaderComponentType.class,
-               getUiConfig().loaderDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
    }
 }

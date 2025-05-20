@@ -257,7 +257,7 @@ public class ComponentFactory {
     * Checks whether the provided class is annotated with {@link ImplementationOfType}
     * matching the given component type enum name.
     *
-    * @param implClass        The class to check.
+    * @param implClass     The class to check.
     * @param componentType The component type (enum value).
     * @param <T>           The component interface type.
     * @return {@code true} if the class annotation value matches the enum's name; {@code false} otherwise.
@@ -272,7 +272,7 @@ public class ComponentFactory {
    /**
     * Instantiates a component class by invoking its constructor that accepts a {@link SmartWebDriver}.
     *
-    * @param implClass         The concrete implementation class.
+    * @param implClass      The concrete implementation class.
     * @param smartWebDriver The WebDriver for UI interactions.
     * @param <T>            The component interface type.
     * @return A new instance of the specified class.

@@ -23,6 +23,21 @@ public interface CheckboxService extends Insertion {
    CheckboxComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default checkbox component type from the configuration.
+    *
+    * @return The default CheckboxComponentType.
+    */
+   private static CheckboxComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(CheckboxComponentType.class,
+               getUiConfig().checkboxDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Selects checkboxes with their specified text inside a container, using the default checkbox component type.
     *
     * @param container    The SmartWebElement container that contains the checkboxes.
@@ -233,7 +248,6 @@ public interface CheckboxService extends Insertion {
     */
    boolean areSelected(CheckboxComponentType componentType, By... checkBoxLocator);
 
-
    /**
     * Checks if the checkbox with the specified text inside a container is selected, using the default checkbox
     * component type.
@@ -294,7 +308,6 @@ public interface CheckboxService extends Insertion {
     * @return true if the checkbox is selected, false otherwise.
     */
    boolean isSelected(CheckboxComponentType componentType, By checkBoxLocator);
-
 
    /**
     * Checks if the checkboxes with the specified text inside a container are enabled, using the default checkbox
@@ -501,19 +514,4 @@ public interface CheckboxService extends Insertion {
     * @return A list of strings representing the text of all checkboxes.
     */
    List<String> getAll(CheckboxComponentType componentType, By containerLocator);
-
-   /**
-    * Retrieves the default checkbox component type from the configuration.
-    *
-    * @return The default CheckboxComponentType.
-    */
-   private static CheckboxComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(CheckboxComponentType.class,
-               getUiConfig().checkboxDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }
