@@ -20,7 +20,7 @@ import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
@@ -1582,7 +1582,7 @@ class TableImplTest extends BaseUnitUITest {
          extractMethod.setAccessible(true);
 
          // When / Then
-         try (var logMock = mockStatic(LogUI.class)) {
+         try (var logMock = mockStatic(LogUi.class)) {
             var thrown =
                   catchThrowable(() -> extractMethod.invoke(tableImpl, InvalidRow.class, Collections.emptyList()));
 
@@ -1592,7 +1592,7 @@ class TableImplTest extends BaseUnitUITest {
                   .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
                   .hasMessageContaining("Invalid field type for table cell usage");
 
-            logMock.verify(() -> LogUI.error(contains("Some fields are not TableCell")));
+            logMock.verify(() -> LogUi.error(contains("Some fields are not TableCell")));
          }
       }
 
@@ -1875,8 +1875,8 @@ class TableImplTest extends BaseUnitUITest {
                "invokeSetter", Object.class, String.class, Object.class);
          invokeSetterMethod.setAccessible(true);
 
-         try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class)) {
-            logUIMock.when(() -> LogUI.error(contains("Setter not found"), any(NoSuchMethodException.class)))
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
+            LogUiMock.when(() -> LogUi.error(contains("Setter not found"), any(NoSuchMethodException.class)))
                   .thenAnswer(invocation -> null);
 
             TableImplTest.DummyRow row = new TableImplTest.DummyRow();
@@ -1885,7 +1885,7 @@ class TableImplTest extends BaseUnitUITest {
             invokeSetterMethod.invoke(tableImpl, row, "nonExistentField", "value");
 
             // Verify error was logged
-            logUIMock.verify(() -> LogUI.error(contains("Setter not found"), any(NoSuchMethodException.class)));
+            LogUiMock.verify(() -> LogUi.error(contains("Setter not found"), any(NoSuchMethodException.class)));
          }
       }
 
@@ -1897,15 +1897,15 @@ class TableImplTest extends BaseUnitUITest {
                "invokeSetter", Object.class, String.class, Object.class);
          invokeSetterMethod.setAccessible(true);
 
-         try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class)) {
-            logUIMock.when(() -> LogUI.error(contains("Failed to invoke setter"), any(Exception.class)))
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
+            LogUiMock.when(() -> LogUi.error(contains("Failed to invoke setter"), any(Exception.class)))
                   .thenAnswer(invocation -> null);
 
             // Execute with problematic setter
             invokeSetterMethod.invoke(tableImpl, new BadSetter(), "field", "value");
 
             // Verify error was logged
-            logUIMock.verify(() -> LogUI.error(contains("Failed to invoke setter"), any(Exception.class)));
+            LogUiMock.verify(() -> LogUi.error(contains("Failed to invoke setter"), any(Exception.class)));
          }
       }
 
@@ -1937,7 +1937,7 @@ class TableImplTest extends BaseUnitUITest {
          invokeSetterMethod.setAccessible(true);
          BadSetterTableCell badSetter = new BadSetterTableCell();
 
-         try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class)) {
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
             try {
                invokeSetterMethod.invoke(tableImpl, badSetter, "dummyField", new TableCell(null, "test")); // Pass a TableCell
             } catch (InvocationTargetException e) {
@@ -1945,7 +1945,7 @@ class TableImplTest extends BaseUnitUITest {
             }
 
             // Verify error was logged
-            logUIMock.verify(() -> LogUI.error(anyString(), any(InvocationTargetException.class)));
+            LogUiMock.verify(() -> LogUi.error(anyString(), any(InvocationTargetException.class)));
          }
       }
 
@@ -2092,8 +2092,8 @@ class TableImplTest extends BaseUnitUITest {
          }
 
          // Should throw exception
-         try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class)) {
-            logUIMock.when(() -> LogUI.error(anyString(), any(ReflectiveOperationException.class)))
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
+            LogUiMock.when(() -> LogUi.error(anyString(), any(ReflectiveOperationException.class)))
                   .thenAnswer(invocation -> null);
 
             Exception ex = assertThrows(InvocationTargetException.class,
@@ -2102,9 +2102,9 @@ class TableImplTest extends BaseUnitUITest {
             assertTrue(ex.getCause() instanceof IllegalStateException);
             assertTrue(ex.getCause().getMessage().contains("Could not create a new instance"));
 
-            // Verify LogUI.error was called
-            logUIMock.verify(() ->
-                  LogUI.error(anyString(), any(ReflectiveOperationException.class)));
+            // Verify LogUi.error was called
+            LogUiMock.verify(() ->
+                  LogUi.error(anyString(), any(ReflectiveOperationException.class)));
          }
       }
    }
