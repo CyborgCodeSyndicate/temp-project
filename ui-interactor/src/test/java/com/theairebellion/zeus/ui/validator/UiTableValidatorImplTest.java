@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.validator;
 import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.ui.util.table.TableReflectionUtil;
 import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import com.theairebellion.zeus.validator.util.AssertionUtil;
@@ -14,12 +15,12 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -58,33 +59,6 @@ class UiTableValidatorImplTest {
 
          // Then
          logUIMock.verify(() -> LogUi.extended(eq("Validation target: [{}]"), eq(data.toString())));
-      }
-   }
-
-   @Test
-   void validateTable_WithRowValues_ShouldReturnAssertionResults() {
-      // Given
-      TestTableRow testRow = new TestTableRow();
-      TableCell cellMock = mock(TableCell.class);
-      when(cellMock.getText()).thenReturn("test text");
-      testRow.cell = cellMock;
-
-      when(assertionMock.getTarget()).thenReturn(UiTablesAssertionTarget.ROW_VALUES);
-      List<AssertionResult<Object>> expectedResults = Collections.singletonList(mock(AssertionResult.class));
-
-      try (MockedStatic<LogUi> logUIMock = mockStatic(LogUi.class);
-           MockedStatic<AssertionUtil> assertionUtilMock = mockStatic(AssertionUtil.class)) {
-
-         assertionUtilMock.when(() -> AssertionUtil.validate(any(), any()))
-               .thenReturn(expectedResults);
-
-         // When
-         List<AssertionResult<Object>> results = validator.validateTable(testRow, assertionMock);
-
-         // Then
-         assertEquals(expectedResults, results);
-         verify(assertionMock).setKey("rowValues");
-         logUIMock.verify(() -> LogUi.info(anyString(), anyInt()));
       }
    }
 
@@ -186,13 +160,40 @@ class UiTableValidatorImplTest {
    }
 
    @Test
-   void printAssertionTarget_IllegalAccessExceptionTest() {
-      // Just a sample check to ensure we handle IllegalAccessException as expected
-      IllegalAccessException illegalAccessException = new IllegalAccessException("Test exception");
-      RuntimeException runtimeException = new RuntimeException("Failed to access field value", illegalAccessException);
+   void validateTable_WithRowValues_ShouldReturnAssertionResults() {
 
-      assertEquals("Failed to access field value", runtimeException.getMessage());
-      assertSame(illegalAccessException, runtimeException.getCause());
+      // Given
+      TestTableRow testRow = new TestTableRow();
+      TableCell cellMock = mock(TableCell.class);
+      testRow.cell = cellMock;
+
+      when(assertionMock.getTarget()).thenReturn(UiTablesAssertionTarget.ROW_VALUES);
+      List<AssertionResult<Object>> expectedResults = Collections.singletonList(mock(AssertionResult.class));
+
+      List<String> expectedExtractedTexts =
+            List.of("extracted_text_from_row");
+
+      try (MockedStatic<LogUi> logUIMock = mockStatic(LogUi.class);
+           MockedStatic<AssertionUtil> assertionUtilMock = mockStatic(AssertionUtil.class);
+           MockedStatic<TableReflectionUtil> tableReflectionUtilMock = mockStatic(TableReflectionUtil.class)) {
+
+         tableReflectionUtilMock.when(() -> TableReflectionUtil.extractTextsFromRow(eq(testRow)))
+               .thenReturn(expectedExtractedTexts);
+
+         assertionUtilMock.when(() -> AssertionUtil.validate(any(), any()))
+               .thenReturn(expectedResults);
+
+         // When
+         List<AssertionResult<Object>> results = validator.validateTable(testRow, assertionMock);
+
+         // Then
+         assertEquals(expectedResults, results);
+         verify(assertionMock).setKey("rowValues");
+         ArgumentCaptor<Map> dataCaptor = ArgumentCaptor.forClass(Map.class);
+         assertionUtilMock.verify(() -> AssertionUtil.validate(dataCaptor.capture(), any()));
+         assertEquals(expectedExtractedTexts, dataCaptor.getValue().get("rowValues"));
+         logUIMock.verify(() -> LogUi.info(anyString(), anyInt()));
+      }
    }
 
    // Test data classes
