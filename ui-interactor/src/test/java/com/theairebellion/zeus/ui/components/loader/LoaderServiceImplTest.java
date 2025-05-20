@@ -5,7 +5,11 @@ import com.theairebellion.zeus.ui.components.loader.mock.MockLoaderComponentType
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -14,168 +18,174 @@ import org.openqa.selenium.By;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @DisplayName("LoaderServiceImpl Unit Tests")
 class LoaderServiceImplTest extends BaseUnitUITest {
 
-    @Mock private SmartWebDriver driver;
-    @Mock private SmartWebElement container;
-    @Mock private By locator;
-    @Mock private Loader loaderMock;
+   private static final int DEFAULT_WAIT_SECONDS = 5;
+   private final MockLoaderComponentType componentType = MockLoaderComponentType.DUMMY_LOADER;
+   @Mock
+   private SmartWebDriver driver;
+   @Mock
+   private SmartWebElement container;
+   @Mock
+   private By locator;
+   @Mock
+   private Loader loaderMock;
+   private LoaderServiceImpl service;
+   private MockedStatic<ComponentFactory> factoryMock;
 
-    private LoaderServiceImpl service;
-    private MockedStatic<ComponentFactory> factoryMock;
-    private final MockLoaderComponentType componentType = MockLoaderComponentType.DUMMY_LOADER;
+   @BeforeEach
+   void setUp() {
+      MockitoAnnotations.openMocks(this);
+      service = new LoaderServiceImpl(driver);
+      locator = By.id("loader");
 
-    private static final int DEFAULT_WAIT_SECONDS = 5;
+      factoryMock = Mockito.mockStatic(ComponentFactory.class);
+      factoryMock.when(() -> ComponentFactory.getLoaderComponent(any(LoaderComponentType.class), eq(driver)))
+            .thenReturn(loaderMock);
+   }
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        service = new LoaderServiceImpl(driver);
-        locator = By.id("loader");
+   @AfterEach
+   void tearDown() {
+      if (factoryMock != null) {
+         factoryMock.close();
+      }
+   }
 
-        factoryMock = Mockito.mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getLoaderComponent(any(LoaderComponentType.class), eq(driver)))
-                .thenReturn(loaderMock);
-    }
+   @Nested
+   @DisplayName("Method Delegation Tests")
+   class MethodDelegationTests {
 
-    @AfterEach
-    void tearDown() {
-        if (factoryMock != null) {
-            factoryMock.close();
-        }
-    }
+      @Test
+      @DisplayName("isVisible with container delegates correctly")
+      void isVisibleWithContainerDelegates() {
+         // Given
+         when(loaderMock.isVisible(container)).thenReturn(true);
 
-    @Nested
-    @DisplayName("Method Delegation Tests")
-    class MethodDelegationTests {
+         // When
+         var result = service.isVisible(componentType, container);
 
-        @Test
-        @DisplayName("isVisible with container delegates correctly")
-        void isVisibleWithContainerDelegates() {
-            // Given
-            when(loaderMock.isVisible(container)).thenReturn(true);
+         // Then
+         assertThat(result).isTrue();
+         verify(loaderMock).isVisible(container);
+         verifyNoMoreInteractions(loaderMock);
+      }
 
-            // When
-            var result = service.isVisible(componentType, container);
+      @Test
+      @DisplayName("isVisible with locator delegates correctly")
+      void isVisibleWithLocatorDelegates() {
+         // Given
+         when(loaderMock.isVisible(locator)).thenReturn(true);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(loaderMock).isVisible(container);
-            verifyNoMoreInteractions(loaderMock);
-        }
+         // When
+         var result = service.isVisible(componentType, locator);
 
-        @Test
-        @DisplayName("isVisible with locator delegates correctly")
-        void isVisibleWithLocatorDelegates() {
-            // Given
-            when(loaderMock.isVisible(locator)).thenReturn(true);
+         // Then
+         assertThat(result).isTrue();
+         verify(loaderMock).isVisible(locator);
+         verifyNoMoreInteractions(loaderMock);
+      }
 
-            // When
-            var result = service.isVisible(componentType, locator);
+      @Test
+      @DisplayName("waitToBeShown with container delegates correctly")
+      void waitToBeShownWithContainerDelegates() {
+         // Given - setup in @BeforeEach
 
-            // Then
-            assertThat(result).isTrue();
-            verify(loaderMock).isVisible(locator);
-            verifyNoMoreInteractions(loaderMock);
-        }
+         // When
+         service.waitToBeShown(componentType, container, DEFAULT_WAIT_SECONDS);
 
-        @Test
-        @DisplayName("waitToBeShown with container delegates correctly")
-        void waitToBeShownWithContainerDelegates() {
-            // Given - setup in @BeforeEach
+         // Then
+         verify(loaderMock).waitToBeShown(container, DEFAULT_WAIT_SECONDS);
+         verifyNoMoreInteractions(loaderMock);
+      }
 
-            // When
-            service.waitToBeShown(componentType, container, DEFAULT_WAIT_SECONDS);
+      @Test
+      @DisplayName("waitToBeShown with seconds only delegates correctly")
+      void waitToBeShownWithSecondsOnlyDelegates() {
+         // Given - setup in @BeforeEach
 
-            // Then
-            verify(loaderMock).waitToBeShown(container, DEFAULT_WAIT_SECONDS);
-            verifyNoMoreInteractions(loaderMock);
-        }
+         // When
+         service.waitToBeShown(componentType, DEFAULT_WAIT_SECONDS);
 
-        @Test
-        @DisplayName("waitToBeShown with seconds only delegates correctly")
-        void waitToBeShownWithSecondsOnlyDelegates() {
-            // Given - setup in @BeforeEach
+         // Then
+         verify(loaderMock).waitToBeShown(DEFAULT_WAIT_SECONDS);
+         verifyNoMoreInteractions(loaderMock);
+      }
 
-            // When
-            service.waitToBeShown(componentType, DEFAULT_WAIT_SECONDS);
+      @Test
+      @DisplayName("waitToBeShown with locator delegates correctly")
+      void waitToBeShownWithLocatorDelegates() {
+         // Given - setup in @BeforeEach
 
-            // Then
-            verify(loaderMock).waitToBeShown(DEFAULT_WAIT_SECONDS);
-            verifyNoMoreInteractions(loaderMock);
-        }
+         // When
+         service.waitToBeShown(componentType, locator, DEFAULT_WAIT_SECONDS);
 
-        @Test
-        @DisplayName("waitToBeShown with locator delegates correctly")
-        void waitToBeShownWithLocatorDelegates() {
-            // Given - setup in @BeforeEach
+         // Then
+         verify(loaderMock).waitToBeShown(locator, DEFAULT_WAIT_SECONDS);
+         verifyNoMoreInteractions(loaderMock);
+      }
 
-            // When
-            service.waitToBeShown(componentType, locator, DEFAULT_WAIT_SECONDS);
+      @Test
+      @DisplayName("waitToBeRemoved with container delegates correctly")
+      void waitToBeRemovedWithContainerDelegates() {
+         // Given - setup in @BeforeEach
 
-            // Then
-            verify(loaderMock).waitToBeShown(locator, DEFAULT_WAIT_SECONDS);
-            verifyNoMoreInteractions(loaderMock);
-        }
+         // When
+         service.waitToBeRemoved(componentType, container, DEFAULT_WAIT_SECONDS);
 
-        @Test
-        @DisplayName("waitToBeRemoved with container delegates correctly")
-        void waitToBeRemovedWithContainerDelegates() {
-            // Given - setup in @BeforeEach
+         // Then
+         verify(loaderMock).waitToBeRemoved(container, DEFAULT_WAIT_SECONDS);
+         verifyNoMoreInteractions(loaderMock);
+      }
 
-            // When
-            service.waitToBeRemoved(componentType, container, DEFAULT_WAIT_SECONDS);
+      @Test
+      @DisplayName("waitToBeRemoved with seconds only delegates correctly")
+      void waitToBeRemovedWithSecondsOnlyDelegates() {
+         // Given - setup in @BeforeEach
 
-            // Then
-            verify(loaderMock).waitToBeRemoved(container, DEFAULT_WAIT_SECONDS);
-            verifyNoMoreInteractions(loaderMock);
-        }
+         // When
+         service.waitToBeRemoved(componentType, DEFAULT_WAIT_SECONDS);
 
-        @Test
-        @DisplayName("waitToBeRemoved with seconds only delegates correctly")
-        void waitToBeRemovedWithSecondsOnlyDelegates() {
-            // Given - setup in @BeforeEach
+         // Then
+         verify(loaderMock).waitToBeRemoved(DEFAULT_WAIT_SECONDS);
+         verifyNoMoreInteractions(loaderMock);
+      }
 
-            // When
-            service.waitToBeRemoved(componentType, DEFAULT_WAIT_SECONDS);
+      @Test
+      @DisplayName("waitToBeRemoved with locator delegates correctly")
+      void waitToBeRemovedWithLocatorDelegates() {
+         // Given - setup in @BeforeEach
 
-            // Then
-            verify(loaderMock).waitToBeRemoved(DEFAULT_WAIT_SECONDS);
-            verifyNoMoreInteractions(loaderMock);
-        }
+         // When
+         service.waitToBeRemoved(componentType, locator, DEFAULT_WAIT_SECONDS);
 
-        @Test
-        @DisplayName("waitToBeRemoved with locator delegates correctly")
-        void waitToBeRemovedWithLocatorDelegates() {
-            // Given - setup in @BeforeEach
+         // Then
+         verify(loaderMock).waitToBeRemoved(locator, DEFAULT_WAIT_SECONDS);
+         verifyNoMoreInteractions(loaderMock);
+      }
+   }
 
-            // When
-            service.waitToBeRemoved(componentType, locator, DEFAULT_WAIT_SECONDS);
+   @Nested
+   @DisplayName("Component Caching Tests")
+   class ComponentCachingTests {
 
-            // Then
-            verify(loaderMock).waitToBeRemoved(locator, DEFAULT_WAIT_SECONDS);
-            verifyNoMoreInteractions(loaderMock);
-        }
-    }
+      @Test
+      @DisplayName("Component is cached and reused")
+      void componentCaching() {
+         // Given - setup in @BeforeEach
 
-    @Nested
-    @DisplayName("Component Caching Tests")
-    class ComponentCachingTests {
+         // When
+         service.isVisible(componentType, container);
+         service.waitToBeShown(componentType, DEFAULT_WAIT_SECONDS);
 
-        @Test
-        @DisplayName("Component is cached and reused")
-        void componentCaching() {
-            // Given - setup in @BeforeEach
-
-            // When
-            service.isVisible(componentType, container);
-            service.waitToBeShown(componentType, DEFAULT_WAIT_SECONDS);
-
-            // Then
-            factoryMock.verify(() -> ComponentFactory.getLoaderComponent(eq(componentType), eq(driver)), times(1));
-        }
-    }
+         // Then
+         factoryMock.verify(() -> ComponentFactory.getLoaderComponent(eq(componentType), eq(driver)), times(1));
+      }
+   }
 }
