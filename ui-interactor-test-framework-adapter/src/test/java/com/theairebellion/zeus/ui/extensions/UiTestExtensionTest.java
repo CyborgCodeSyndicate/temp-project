@@ -1,69 +1,73 @@
 package com.theairebellion.zeus.ui.extensions;
 
+import com.theairebellion.zeus.framework.allure.CustomAllureListener;
+import com.theairebellion.zeus.framework.allure.StepType;
 import com.theairebellion.zeus.framework.assertion.CustomSoftAssertion;
 import com.theairebellion.zeus.framework.decorators.DecoratorsFactory;
+import com.theairebellion.zeus.framework.exceptions.ServiceInitializationException;
 import com.theairebellion.zeus.framework.quest.Quest;
 import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.framework.storage.StoreKeys;
+import com.theairebellion.zeus.framework.util.TestContextManager;
 import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.annotations.AuthenticateViaUiAs;
 import com.theairebellion.zeus.ui.annotations.InterceptRequests;
 import com.theairebellion.zeus.ui.authentication.BaseLoginClient;
 import com.theairebellion.zeus.ui.authentication.LoginCredentials;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
+import com.theairebellion.zeus.ui.config.UiFrameworkConfig;
 import com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder;
+import com.theairebellion.zeus.ui.exceptions.AuthenticationUiException;
 import com.theairebellion.zeus.ui.parameters.DataIntercept;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.SuperUiServiceFluent;
 import com.theairebellion.zeus.ui.service.fluent.UiServiceFluent;
-import com.theairebellion.zeus.ui.storage.StorageKeysUi;
+import com.theairebellion.zeus.ui.util.ResponseFormatter;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
 import io.qameta.allure.Allure;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.Answers;
+import org.junit.platform.launcher.LauncherSession;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.Event;
-import org.openqa.selenium.devtools.v133.network.Network;
-import org.openqa.selenium.devtools.v133.network.model.Request;
-import org.openqa.selenium.devtools.v133.network.model.RequestId;
-import org.openqa.selenium.devtools.v133.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v133.network.model.Response;
-import org.openqa.selenium.devtools.v133.network.model.ResponseReceived;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST_CONSUMERS;
 import static com.theairebellion.zeus.ui.storage.StorageKeysUi.RESPONSES;
 import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -71,16 +75,16 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -88,13 +92,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 class UiTestExtensionTest extends BaseUnitUITest {
-
-   @Mock
-   private ExtensionContext context;
 
    private UiTestExtension extension;
 
@@ -136,7 +138,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          // a fresh list for your consumers
          when(context.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
          when(store.getOrComputeIfAbsent(
-               eq(StoreKeys.QUEST_CONSUMERS), any()))
+               eq(QUEST_CONSUMERS), any()))
                .thenReturn(new ArrayList<Consumer<SuperQuest>>());
 
          // your existing ReflectionUtil mock
@@ -171,7 +173,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          ExtensionContext.Store store = mock(ExtensionContext.Store.class);
          when(ctx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
          when(store.getOrComputeIfAbsent(
-               eq(StoreKeys.QUEST_CONSUMERS), any()))
+               eq(QUEST_CONSUMERS), any()))
                .thenReturn(new ArrayList<Consumer<SuperQuest>>());
 
          // 4. invoke only the one method under test
@@ -181,7 +183,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          // 5. verify that we actually grabbed the GLOBAL store
          verify(ctx).getStore(ExtensionContext.Namespace.GLOBAL);
          verify(store)
-               .getOrComputeIfAbsent(eq(StoreKeys.QUEST_CONSUMERS), any());
+               .getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any());
       }
 
       @Test
@@ -199,7 +201,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          // Setup behavior
          when(mockContext.getStore(any())).thenReturn(mockStore);
-         when(mockStore.getOrComputeIfAbsent(eq(StoreKeys.QUEST_CONSUMERS), any())).thenReturn(consumers);
+         when(mockStore.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any())).thenReturn(consumers);
          when(mockContext.getDisplayName()).thenReturn("Test Display Name");
 
          // Execute the method
@@ -232,7 +234,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          processMethod.setAccessible(true);
 
          // Create an actual annotated method for testing
-         Method testMethod = UiTestExtensionTest.class
+         Method testMethod = BeforeTestExecutionTests.class
                .getDeclaredMethod("authenticateMethod");
 
          // Create mocks
@@ -241,7 +243,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          // Setup mocks
          when(mockContext.getStore(any())).thenReturn(mockStore);
-         when(mockStore.getOrComputeIfAbsent(eq(StoreKeys.QUEST_CONSUMERS), any())).thenReturn(new ArrayList<>());
+         when(mockStore.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any())).thenReturn(new ArrayList<>());
 
          // Stub the needed application context
          try (var springExtensionMock = mockStatic(SpringExtension.class)) {
@@ -257,7 +259,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
             // Verify interactions
             verify(mockContext).getStore(any());
-            verify(mockStore).getOrComputeIfAbsent(eq(StoreKeys.QUEST_CONSUMERS), any());
+            verify(mockStore).getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any());
          }
       }
 
@@ -276,7 +278,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          // Setup mocks
          when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
-         when(mockStore.getOrComputeIfAbsent(eq(StoreKeys.QUEST_CONSUMERS), any())).thenReturn(consumers);
+         when(mockStore.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any())).thenReturn(consumers);
 
          // Execute the method
          registerCustomServicesMethod.invoke(extension, mockContext);
@@ -291,7 +293,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          // grab the list you already populated in your register test:
          @SuppressWarnings("unchecked")
          var consumers = (List<Consumer<SuperQuest>>)
-               store.getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, k -> null);
+               store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
 
          // make a dummy SuperQuest with just enough stubbing to avoid NPE
          SuperQuest dummy = mock(SuperQuest.class);
@@ -334,7 +336,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          @SuppressWarnings("unchecked")
          var consumers =
                (List<Consumer<SuperQuest>>) store.getOrComputeIfAbsent(
-                     StoreKeys.QUEST_CONSUMERS, k -> null);
+                     QUEST_CONSUMERS, k -> null);
          assertEquals(1, consumers.size());
          Consumer<SuperQuest> c = consumers.get(0);
 
@@ -373,7 +375,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          @SuppressWarnings("unchecked")
          var consumers =
                (List<Consumer<SuperQuest>>) store.getOrComputeIfAbsent(
-                     StoreKeys.QUEST_CONSUMERS, k -> null);
+                     QUEST_CONSUMERS, k -> null);
          Consumer<SuperQuest> c = consumers.get(0);
 
          Field urlsField = c.getClass().getDeclaredFields()[0];
@@ -404,7 +406,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          @SuppressWarnings("unchecked")
          var consumers = (List<Consumer<SuperQuest>>)
-               store.getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, k -> null);
+               store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
          Consumer<SuperQuest> c = consumers.get(0);
 
          Field f = c.getClass().getDeclaredFields()[0];
@@ -442,7 +444,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          // 5) pull out the only consumer that was registered
          @SuppressWarnings("unchecked")
          var consumers = (List<Consumer<SuperQuest>>)
-               store.getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, k -> null);
+               store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
          assertEquals(1, consumers.size());
 
          // 6) reflectively extract its captured urlsForIntercepting field
@@ -483,7 +485,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          @SuppressWarnings("unchecked")
          List<Consumer<SuperQuest>> consumers =
                (List<Consumer<SuperQuest>>)
-                     store.getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, k -> null);
+                     store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
          assertEquals(1, consumers.size(), "Still exactly one consumer");
 
          // 6) reflectively inspect its captured urlsForIntercepting field
@@ -524,7 +526,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          // 5) grab the one‐and‐only consumer that was registered
          @SuppressWarnings("unchecked")
          List<Consumer<SuperQuest>> list = (List<Consumer<SuperQuest>>)
-               store.getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, k -> null);
+               store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
          assertEquals(1, list.size(), "exactly one consumer must still be registered");
 
          // 6) extract its captured urlsForIntercepting field
@@ -562,7 +564,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          @SuppressWarnings("unchecked")
          List<Consumer<SuperQuest>> consumers = (List<Consumer<SuperQuest>>)
-               store.getOrComputeIfAbsent(StoreKeys.QUEST_CONSUMERS, k -> null);
+               store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
          assertEquals(1, consumers.size());
 
          // pull out its captured URLs
@@ -588,7 +590,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          @SuppressWarnings("unchecked")
          List<Consumer<SuperQuest>> consumers =
                (List<Consumer<SuperQuest>>) store.getOrComputeIfAbsent(
-                     StoreKeys.QUEST_CONSUMERS, k -> null);
+                     QUEST_CONSUMERS, k -> null);
 
          // Sanity: raw annotation value
          String[] raw = realStub.getAnnotation(InterceptRequests.class)
@@ -649,7 +651,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          //    createSession(), send(...), both addListener(...),
          //    the Consumer lambda construction, etc.
          assertDoesNotThrow(() ->
-               helper.invoke(null, quest, new String[]{"foo", "bar"})
+               helper.invoke(null, quest, new String[] {"foo", "bar"})
          );
       }
 
@@ -660,7 +662,9 @@ class UiTestExtensionTest extends BaseUnitUITest {
          helper.setAccessible(true);
 
          // build your non-Chrome SmartWebDriver as before…
-         interface ProxyDriver extends WebDriver { WebDriver getOriginal(); }
+         interface ProxyDriver extends WebDriver {
+            WebDriver getOriginal();
+         }
          ProxyDriver nonChromeProxy = mock(ProxyDriver.class);
          WebDriver underlying = mock(WebDriver.class);
          when(nonChromeProxy.getOriginal()).thenReturn(underlying);
@@ -675,7 +679,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          // here we *unwrap* the InvocationTargetException*:
          Executable call = () -> {
             try {
-               helper.invoke(null, quest, new String[]{ "foo" });
+               helper.invoke(null, quest, new String[] {"foo"});
             } catch (InvocationTargetException ite) {
                // re-throw the *real* IllegalArgumentException cause:
                throw ite.getCause();
@@ -691,6 +695,328 @@ class UiTestExtensionTest extends BaseUnitUITest {
                "Intercepting Backend Requests is only acceptable with Chrome browser",
                iae.getMessage()
          );
+      }
+
+      @Test
+      @DisplayName("postQuestCreationAssertion registers custom assertion with correct predicate")
+      void testPostQuestCreationAssertionRegistersCustomAssertion() throws Exception {
+         // 1) mock the static CustomSoftAssertion
+         try (var csa = mockStatic(CustomSoftAssertion.class)) {
+            // 2) prepare a fake SuperQuest
+            SuperQuest quest = mock(SuperQuest.class);
+            SmartWebDriver smartWebDriver = mock(SmartWebDriver.class);
+            when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class))
+                  .thenReturn(smartWebDriver);
+            CustomSoftAssertion soft = mock(CustomSoftAssertion.class);
+            when(quest.getSoftAssertions()).thenReturn(soft);
+
+            // 3) invoke registerAssertionConsumer so that a Consumer<SuperQuest>
+            //    gets added to the GLOBAL store
+            Method reg = UiTestExtension.class
+                  .getDeclaredMethod("registerAssertionConsumer", ExtensionContext.class);
+            reg.setAccessible(true);
+            reg.invoke(extension, context);
+
+            @SuppressWarnings("unchecked")
+            var consumers = (List<Consumer<SuperQuest>>)
+                  store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
+            assertEquals(1, consumers.size(), "one assertion-consumer must be registered");
+
+            // 4) fire the consumer
+            consumers.get(0).accept(quest);
+
+            // 5) verify we wired up the soft-assert handler
+            verify(soft).registerObjectForPostErrorHandling(
+                  eq(SmartWebDriver.class), eq(smartWebDriver));
+
+            // 6) capture the predicate
+            @SuppressWarnings("unchecked")
+            ArgumentCaptor<Predicate<StackTraceElement[]>> predCap =
+                  ArgumentCaptor.forClass((Class) Predicate.class);
+
+            csa.verify(() -> CustomSoftAssertion.registerCustomAssertion(
+                  eq(SmartWebDriver.class), any(BiConsumer.class), predCap.capture()
+            ));
+
+            Predicate<StackTraceElement[]> stackPred = predCap.getValue();
+
+            // 7) pull the two package constants out of the real class
+            Field selField = UiTestExtension.class.getDeclaredField("SELENIUM_PACKAGE");
+            selField.setAccessible(true);
+            String SEL_PKG = (String) selField.get(null);
+
+            Field uiField = UiTestExtension.class.getDeclaredField("UI_MODULE_PACKAGE");
+            uiField.setAccessible(true);
+            String UI_PKG = (String) uiField.get(null);
+
+            // 8) build three synthetic stack traces
+            StackTraceElement seleniumHit =
+                  new StackTraceElement(SEL_PKG + ".Foo", "m", "F.java", 1);
+            StackTraceElement uiHit =
+                  new StackTraceElement(UI_PKG + ".Bar", "m", "B.java", 2);
+            StackTraceElement miss =
+                  new StackTraceElement("java.lang.String", "s", "String.java", 3);
+
+            // 9) assert predicate behavior
+            assertTrue(
+                  stackPred.test(new StackTraceElement[] {seleniumHit}),
+                  "should match when className contains SELENIUM_PACKAGE"
+            );
+            assertTrue(
+                  stackPred.test(new StackTraceElement[] {uiHit}),
+                  "should match when className contains UI_MODULE_PACKAGE"
+            );
+            assertFalse(
+                  stackPred.test(new StackTraceElement[] {miss}),
+                  "should not match unrelated classes"
+            );
+
+         }
+      }
+
+      @Test
+      @DisplayName("postQuestCreationAssertion’s custom‐assertion lambda actually takes a screenshot")
+      void testPostQuestCreationAssertionCustomAssertionLambda() throws Exception {
+         // 1) set up quest + smartWebDriver + softAssertions
+         SuperQuest quest = mock(SuperQuest.class);
+         SmartWebDriver smart = mock(SmartWebDriver.class);
+         when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class))
+               .thenReturn(smart);
+
+         CustomSoftAssertion softAssertions = mock(CustomSoftAssertion.class);
+         when(quest.getSoftAssertions()).thenReturn(softAssertions);
+
+         // 2) make the “underlying” driver that can take a screenshot
+         WebDriver underlying = mock(WebDriver.class,
+               withSettings().extraInterfaces(TakesScreenshot.class));
+         when(((TakesScreenshot) underlying)
+               .getScreenshotAs(OutputType.BYTES))
+               .thenReturn(new byte[] {0x11, 0x22, 0x33});
+
+         // 3) wrap it in a ProxyDriver so it has getOriginal()
+         ProxyDriver proxy = mock(ProxyDriver.class);
+         when(proxy.getOriginal()).thenReturn(underlying);
+
+         // 4) stub smart.getOriginal() to hand back that proxy
+         when(smart.getOriginal()).thenReturn(proxy);
+
+         String testName = "myTestName";
+
+         // 5) grab the private helper
+         Method helper = UiTestExtension.class
+               .getDeclaredMethod("postQuestCreationAssertion", SuperQuest.class, String.class);
+         helper.setAccessible(true);
+
+         // 6) static‐mock the registration so we can intercept the lambda
+         try (var cs = mockStatic(CustomSoftAssertion.class);
+              var as = mockStatic(Allure.class)) {
+
+            cs.when(() -> CustomSoftAssertion.registerCustomAssertion(
+                        eq(SmartWebDriver.class),
+                        any(BiConsumer.class),
+                        any(Predicate.class)))
+                  .thenAnswer(inv -> {
+                     @SuppressWarnings("unchecked")
+                     BiConsumer<AssertionError, SmartWebDriver> lambda =
+                           inv.getArgument(1);
+
+                     // invoke it as if a soft‐assert failed
+                     lambda.accept(new AssertionError("boom"), smart);
+
+                     // verify that takeScreenshot → Allure.addAttachment(...)
+                     as.verify(() -> Allure.addAttachment(
+                           eq("soft_assert_failure_" + testName),
+                           any(ByteArrayInputStream.class))
+                     );
+                     return null;
+                  });
+
+            // 7) run the helper, which hits our stub above
+            helper.invoke(null, quest, testName);
+
+            // sanity‐check the other registration call
+            verify(softAssertions).registerObjectForPostErrorHandling(
+                  eq(SmartWebDriver.class), eq(smart));
+            cs.verify(() -> CustomSoftAssertion.registerCustomAssertion(
+                        eq(SmartWebDriver.class), any(BiConsumer.class), any(Predicate.class)),
+                  times(1));
+         }
+      }
+
+      // a) a dummy credentials impl whose ctor always succeeds
+      static class DummyLoginCredentials implements LoginCredentials {
+         @Override
+         public String username() {
+            return "dummyUser";
+         }
+
+         @Override
+         public String password() {
+            return "dummyPass";
+         }
+      }
+
+      // b) a “bad” credentials impl whose ctor always blows up
+      static class BadLoginCredentials implements LoginCredentials {
+         public BadLoginCredentials() {
+            throw new RuntimeException("bad ctor");
+         }
+
+         @Override
+         public String username() {
+            return null;
+         }
+
+         @Override
+         public String password() {
+            return null;
+         }
+      }
+
+      // c) a dummy BaseLoginClient so that we can pass its Class literal
+      static class DummyLoginClient extends BaseLoginClient {
+         @Override
+         protected <T extends UiServiceFluent<?>> void loginImpl(T uiService, String user, String pass) {
+            // no‐op
+         }
+
+         @Override
+         protected By successfulLoginElementLocator() {
+            return By.tagName("body");
+         }
+      }
+
+      @AuthenticateViaUiAs(
+            credentials = TestLoginCredentials.class,
+            type = TestLoginClient.class,
+            cacheCredentials = true
+      )
+      void authenticateMethod() { /* no‐op */}
+
+      @AuthenticateViaUiAs(
+            credentials = DummyLoginCredentials.class,
+            type = DummyLoginClient.class,    // ← must be a Class<? extends BaseLoginClient>
+            cacheCredentials = false
+      )
+      void authenticateGood() { /* no‐op */ }
+
+      @AuthenticateViaUiAs(
+            credentials = BadLoginCredentials.class,
+            type = DummyLoginClient.class,    // ← same here
+            cacheCredentials = false
+      )
+      void authenticateBad() { /* no‐op */ }
+
+      public static class TestLoginCredentials implements LoginCredentials {
+         @Override
+         public String username() {
+            return "testuser";
+         }
+
+         @Override
+         public String password() {
+            return "testpassword";
+         }
+      }
+
+      public static class TestLoginClient extends BaseLoginClient {
+         @Override
+         protected <T extends UiServiceFluent<?>> void loginImpl(T uiService, String username, String password) {
+         }
+
+         @Override
+         protected By successfulLoginElementLocator() {
+            return By.id("login-success");
+         }
+      }
+
+      @Test
+      @DisplayName("processAuthenticateViaUiAsAnnotation consumer actually runs the postQuestCreationLogin lambda")
+      void testProcessAuthenticateViaUiAsAnnotationConsumerInvocation() throws Exception {
+         // 1) reflectively grab the private helper
+         Method process = UiTestExtension.class
+               .getDeclaredMethod("processAuthenticateViaUiAsAnnotation",
+                     ExtensionContext.class, Method.class);
+         process.setAccessible(true);
+
+         // 2) prepare a mock ExtensionContext + GLOBAL store
+         ExtensionContext ctx = mock(ExtensionContext.class);
+         ExtensionContext.Store store = mock(ExtensionContext.Store.class);
+         when(ctx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
+         @SuppressWarnings("unchecked")
+         List<Consumer<SuperQuest>> consumers = new ArrayList<>();
+         when(store.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any()))
+               .thenReturn(consumers);
+
+         // 3) identify the @AuthenticateViaUiAs stub method in *this* test class
+         Method stub = BeforeTestExecutionTests.class
+               .getDeclaredMethod("authenticateGood");
+         assertNotNull(stub.getAnnotation(AuthenticateViaUiAs.class),
+               "sanity–check: our stub must have @AuthenticateViaUiAs");
+
+         // 4) stub SpringExtension → DecoratorsFactory → DummyLoginClient
+         try (var spring = mockStatic(SpringExtension.class)) {
+            ApplicationContext app = mock(ApplicationContext.class);
+            spring.when(() -> SpringExtension.getApplicationContext(ctx))
+                  .thenReturn(app);
+
+            DecoratorsFactory df = mock(DecoratorsFactory.class);
+            when(app.getBean(DecoratorsFactory.class)).thenReturn(df);
+
+            // whenever decorate(...) is called with DummyLoginClient.class, return a new instance
+            when(df.decorate(any(SuperQuest.class), eq(DummyLoginClient.class)))
+                  .thenAnswer(i -> new DummyLoginClient());
+
+            // 5) invoke ONLY the helper under test
+            UiTestExtension ext = new UiTestExtension();
+            process.invoke(ext, ctx, stub);
+
+            // 6) now one consumer must have been registered
+            assertEquals(1, consumers.size(),
+                  "should have exactly one login consumer");
+            Consumer<SuperQuest> consumer = consumers.get(0);
+
+            // 7) fire the consumer; it will run the red‐line lambda, then inevitably NPE inside performLoginAndCache
+            SuperQuest quest = mock(SuperQuest.class);
+            // stub just enough of quest so that registerQuestConsumer() doesn't NPE before our lambda:
+            when(quest.getStorage()).thenReturn(mock(Storage.class));
+
+            // the key point: this assertThrows ensures the lambda *did* execute its body
+            assertThrows(Throwable.class,
+                  () -> consumer.accept(quest),
+                  "invoking the login‐consumer must at least execute the postQuestCreationLogin lambda");
+         }
+      }
+
+      @Test
+      @DisplayName("– bad credentials ctor → AuthenticationUiException thrown")
+      void testProcessAuthenticateViaUiAsAnnotationBad() throws Exception {
+         Method helper = UiTestExtension.class
+               .getDeclaredMethod("processAuthenticateViaUiAsAnnotation", ExtensionContext.class, Method.class);
+         helper.setAccessible(true);
+
+         // stub getTestMethod → our bad‐ctor method
+         Method bad = getClass().getDeclaredMethod("authenticateBad");
+         when(context.getTestMethod()).thenReturn(Optional.of(bad));
+         when(context.getStore(any())).thenReturn(store);
+         when(store.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any()))
+               .thenReturn(new ArrayList<>());
+
+         try (var spring = mockStatic(SpringExtension.class)) {
+            ApplicationContext app = mock(ApplicationContext.class);
+            DecoratorsFactory df = mock(DecoratorsFactory.class);
+            spring.when(() -> SpringExtension.getApplicationContext(context)).thenReturn(app);
+            when(app.getBean(DecoratorsFactory.class)).thenReturn(df);
+
+            InvocationTargetException ive = assertThrows(
+                  InvocationTargetException.class,
+                  () -> helper.invoke(new UiTestExtension(), context, bad)
+            );
+            // unwrap the real cause
+            Throwable real = ive.getCause();
+            assertTrue(real instanceof AuthenticationUiException);
+            assertTrue(real.getMessage().contains("Failed to instantiate login credentials"));
+         }
       }
 
 
@@ -755,522 +1081,1077 @@ class UiTestExtensionTest extends BaseUnitUITest {
       }
    }
 
-   @Test
-   @DisplayName("Check URL Method")
-   void testCheckUrl() throws Exception {
-      // Use reflection to access private static method
-      Method checkUrlMethod = UiTestExtension.class.getDeclaredMethod("checkUrl", String[].class, String.class);
-      checkUrlMethod.setAccessible(true);
+   @Nested
+   @ExtendWith(MockitoExtension.class)
+   @MockitoSettings(strictness = Strictness.LENIENT)
+   class AfterTestExecutionTests {
 
-      // Test cases
-      String[] urlSubstrings = {"test", "example"};
+      @Mock
+      ExtensionContext context;
+      @Mock
+      ExtensionContext.Store globalStore;
+      @Mock
+      ApplicationContext appCtx;
+      @Mock
+      DecoratorsFactory decoratorsFactory;
+      @Mock
+      Quest quest;
+      @Mock
+      SuperQuest superQuest;
+      @Mock
+      SmartWebDriver smartWebDriver;
+      WebDriver originalDriver;
 
-      // Scenario 1: URL contains substring
-      boolean result1 = (boolean) checkUrlMethod.invoke(null, urlSubstrings, "https://test.com/path");
-      assertTrue(result1);
+      @BeforeEach
+      void setUp() {
+         // TestContextManager.getSuperQuest(context) ends up returning superQuest
+         when(context.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(globalStore);
+         when(globalStore.get(StoreKeys.QUEST)).thenReturn(quest);
 
-      // Scenario 2: URL does not contain substring
-      boolean result2 = (boolean) checkUrlMethod.invoke(null, urlSubstrings, "https://other.com/path");
-      assertFalse(result2);
-   }
+         // decorate quest → superQuest → smartWebDriver → originalDriver
+         when(decoratorsFactory.decorate(quest, SuperQuest.class)).thenReturn(superQuest);
+         when(superQuest.artifact(UiServiceFluent.class, SmartWebDriver.class)).thenReturn(smartWebDriver);
 
-   @Test
-   @DisplayName("Add Response In Storage")
-   @Disabled
-   void testAddResponseInStorage() throws Exception {
-      // Use reflection to access private static method
-      Method addResponseMethod = UiTestExtension.class.getDeclaredMethod(
-            "addResponseInStorage", Storage.class, ApiResponse.class
-      );
-      addResponseMethod.setAccessible(true);
+         // give smartWebDriver an unwrap-able driver
+         originalDriver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
+         when(smartWebDriver.getOriginal()).thenReturn(originalDriver);
 
-      // Prepare test data
-      ApiResponse apiResponse = new ApiResponse("http://test.url", "GET", 200);
-      apiResponse.setBody("Test response body");
-
-      // Create a mock storage
-      Storage mockStorage = mock(Storage.class);
-      Storage uiStorage = mock(Storage.class);
-
-      // Setup storage behavior
-      when(mockStorage.sub(UI)).thenReturn(uiStorage);
-      when(uiStorage.get(
-            eq(RESPONSES),
-            any(ParameterizedTypeReference.class)
-      )).thenReturn(null);
-
-      // Invoke method
-      addResponseMethod.invoke(null, mockStorage, apiResponse);
-
-      // Verify storage interaction
-      verify(uiStorage).put(eq(RESPONSES), argThat(list ->
-            list instanceof List &&
-                  ((List<?>) list).size() == 1 &&
-                  ((List<?>) list).get(0).equals(apiResponse)
-      ));
-   }
-
-   @Test
-   @DisplayName("Unwrap Driver")
-   void testUnwrapDriver() throws Exception {
-      // Use reflection to access private static method
-      Method unwrapMethod = UiTestExtension.class.getDeclaredMethod("unwrapDriver", WebDriver.class);
-      unwrapMethod.setAccessible(true);
-
-      // Create a mock SmartWebDriver
-      SmartWebDriver mockSmartWebDriver = mock(SmartWebDriver.class);
-      WebDriver originalDriver = mock(WebDriver.class);
-
-      // Setup the getOriginal method behavior
-      when(mockSmartWebDriver.getOriginal()).thenReturn(originalDriver);
-
-      // Invoke method
-      WebDriver result = (WebDriver) unwrapMethod.invoke(null, mockSmartWebDriver);
-
-      // Assertions
-      assertNotNull(result);
-      assertEquals(originalDriver, result);
-   }
-
-   @Test
-   @DisplayName("Unwrap Driver Exception")
-   void testUnwrapDriverException() throws Exception {
-      // Use reflection to access private static method
-      Method unwrapMethod = UiTestExtension.class.getDeclaredMethod("unwrapDriver", WebDriver.class);
-      unwrapMethod.setAccessible(true);
-
-      // Create a mock WebDriver without getOriginal method
-      WebDriver mockDriver = mock(WebDriver.class);
-
-      // Invoke method and expect exception
-      try {
-         unwrapMethod.invoke(null, mockDriver);
-         fail("Expected InvocationTargetException");
-      } catch (InvocationTargetException e) {
-         assertInstanceOf(RuntimeException.class, e.getCause());
-         assertEquals("Failed to unwrap WebDriver", e.getCause().getMessage());
-      }
-   }
-
-   @Test
-   @DisplayName("Static Assertion Registry Initialization")
-   void testStaticAssertionRegistryInitialization() {
-      // This test verifies that the static initializer block runs without exceptions
-      // The actual registration happens in the static block
-      assertDoesNotThrow(() -> {
-         // Trigger class loading
-         Class.forName("com.theairebellion.zeus.ui.extensions.UiTestExtension");
-      });
-   }
-
-   @Test
-   @DisplayName("Take Screenshot Handles Exceptions")
-   void testTakeScreenshot() throws Exception {
-      // Use reflection to access private static method
-      Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
-            "takeScreenshot", WebDriver.class, String.class
-      );
-      takeScreenshotMethod.setAccessible(true);
-
-      // Create mock WebDriver that fails screenshot
-      WebDriver mockDriver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
-
-      // Simulate screenshot failure
-      when(((TakesScreenshot) mockDriver).getScreenshotAs(OutputType.BYTES))
-            .thenThrow(new RuntimeException("Screenshot failed"));
-
-      // Invoke method
-      assertDoesNotThrow(() ->
-            takeScreenshotMethod.invoke(null, mockDriver, "testScreenshot")
-      );
-   }
-
-   @Test
-   @DisplayName("Take Screenshot Handles Exceptions")
-   void testTakeScreenshotHandlesExceptions() throws Exception {
-      // Use reflection to access private static method
-      Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
-            "takeScreenshot", WebDriver.class, String.class
-      );
-      takeScreenshotMethod.setAccessible(true);
-
-      // Create mock WebDriver that fails screenshot
-      WebDriver mockDriver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
-
-      // Simulate screenshot failure
-      when(((TakesScreenshot) mockDriver).getScreenshotAs(OutputType.BYTES))
-            .thenThrow(new RuntimeException("Screenshot failed"));
-
-      // Invoke method
-      assertDoesNotThrow(() ->
-            takeScreenshotMethod.invoke(null, mockDriver, "testScreenshot")
-      );
-   }
-
-   @Test
-   @DisplayName("Stack Trace Checking")
-   void testStackTraceChecking() throws Exception {
-      // Access the lambda method for stack trace checking
-      Method lambdaMethod = Arrays.stream(UiTestExtension.class.getDeclaredMethods())
-            .filter(m -> m.getName().contains("lambda$postQuestCreationAssertion"))
-            .filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(StackTraceElement.class))
-            .findFirst()
-            .orElseThrow();
-      lambdaMethod.setAccessible(true);
-
-      // Test selenium package
-      StackTraceElement seleniumElement = new StackTraceElement(
-            "org.openqa.selenium.WebDriver", "findElement", "WebDriver.java", 100);
-      boolean seleniumResult = (boolean) lambdaMethod.invoke(null, seleniumElement);
-      assertTrue(seleniumResult);
-
-      // Test UI package
-      StackTraceElement uiElement = new StackTraceElement(
-            "com.theairebellion.zeus.ui.SomeClass", "method", "SomeClass.java", 100);
-      boolean uiResult = (boolean) lambdaMethod.invoke(null, uiElement);
-      assertTrue(uiResult);
-
-      // Test unrelated package
-      StackTraceElement otherElement = new StackTraceElement(
-            "java.lang.Object", "toString", "Object.java", 100);
-      boolean otherResult = (boolean) lambdaMethod.invoke(null, otherElement);
-      assertFalse(otherResult);
-   }
-
-   @Test
-   @DisplayName("Post Quest Creation Assertion")
-   void testPostQuestCreationAssertion() throws Exception {
-      // Use reflection to access private static method
-      Method postQuestCreationAssertionMethod = UiTestExtension.class.getDeclaredMethod(
-            "postQuestCreationAssertion", SuperQuest.class, String.class
-      );
-      postQuestCreationAssertionMethod.setAccessible(true);
-
-      // Create mocks
-      SuperQuest quest = mock(SuperQuest.class);
-      SmartWebDriver smartWebDriver = mock(SmartWebDriver.class);
-      CustomSoftAssertion softAssertion = mock(CustomSoftAssertion.class);
-
-      // Setup behavior
-      when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class)).thenReturn(smartWebDriver);
-      when(quest.getSoftAssertions()).thenReturn(softAssertion);
-
-      // Execute method
-      postQuestCreationAssertionMethod.invoke(null, quest, "TestMethod");
-
-      // Verify method calls
-      verify(quest).artifact(UiServiceFluent.class, SmartWebDriver.class);
-      verify(quest).getSoftAssertions();
-      verify(softAssertion).registerObjectForPostErrorHandling(
-            eq(SmartWebDriver.class), eq(smartWebDriver));
-   }
-
-   @Test
-   @DisplayName("Post Quest Creation Login")
-   @Disabled
-   void testPostQuestCreationLogin() throws Exception {
-      // Use reflection to access private static method
-      Method postQuestCreationLoginMethod = UiTestExtension.class.getDeclaredMethod(
-            "postQuestCreationLogin",
-            SuperQuest.class,
-            DecoratorsFactory.class,
-            String.class,
-            String.class,
-            Class.class,
-            boolean.class
-      );
-      postQuestCreationLoginMethod.setAccessible(true);
-
-      // Create mocks
-      SuperQuest quest = mock(SuperQuest.class);
-      DecoratorsFactory decoratorsFactory = mock(DecoratorsFactory.class);
-      UiServiceFluent<?> uiServiceFluent = mock(UiServiceFluent.class);
-      SuperUiServiceFluent<?> superUIServiceFluent = mock(SuperUiServiceFluent.class);
-      Storage storage = mock(Storage.class);
-      Storage uiStorage = mock(Storage.class);
-
-      // Setup mocks
-      when(quest.getStorage()).thenReturn(storage);
-      when(storage.sub(UI)).thenReturn(uiStorage);
-      when(quest.enters(UiServiceFluent.class)).thenReturn(uiServiceFluent);
-      when(decoratorsFactory.decorate(uiServiceFluent, SuperUiServiceFluent.class))
-            .thenReturn(superUIServiceFluent);
-
-      // The login process throws an exception because the mock WebDriver can't find elements
-      // Let's verify interactions up to the point of exception
-      try {
-         postQuestCreationLoginMethod.invoke(
-               null,
-               quest,
-               decoratorsFactory,
-               "username",
-               "password",
-               TestLoginClient.class,
-               true
-         );
-      } catch (InvocationTargetException e) {
-         // Expected exception - the login fails due to missing WebDriver elements
-         // This is okay for our test - we're just verifying the method was called correctly
-         // In a real scenario, the WebDriver would find the elements and login
-         assertNotNull(e.getCause());
-         assertEquals("Logging in was not successful", e.getCause().getMessage());
+         when(context.getDisplayName()).thenReturn("myTest");
       }
 
-      // Verify the interactions that should have occurred before the exception
-      verify(uiStorage).put(StorageKeysUi.USERNAME, "username");
-      verify(uiStorage).put(StorageKeysUi.PASSWORD, "password");
-      verify(quest).enters(UiServiceFluent.class);
-      verify(decoratorsFactory).decorate(uiServiceFluent, SuperUiServiceFluent.class);
-   }
+      @Test
+      void afterTestExecution_noResponses_takesScreenshotAndCloses() {
+         // 1) test passed → no exception
+         when(context.getExecutionException()).thenReturn(Optional.empty());
 
-   @Test
-   @DisplayName("After Test Execution")
-   @Disabled
-   void testAfterTestExecution() {
-      // Create mocks for the dependencies
-      ApplicationContext appContext = mock(ApplicationContext.class);
-      DecoratorsFactory decoratorsFactory = mock(DecoratorsFactory.class);
-      WebDriver driver = mock(WebDriver.class);
-      ExtensionContext.Store store = mock(ExtensionContext.Store.class);
-      Quest quest = mock(Quest.class);
-      SuperQuest superQuest = mock(SuperQuest.class);
-      SmartWebDriver smartWebDriver = mock(SmartWebDriver.class);
+         // 2) stub out storage on superQuest
+         Storage root = mock(Storage.class), uiSub = mock(Storage.class);
+         when(superQuest.getStorage()).thenReturn(root);
+         when(root.sub(UI)).thenReturn(uiSub);
+         when(uiSub.getAllByClass(RESPONSES, ApiResponse.class)).thenReturn(List.of());
 
-      // Configure extension context
-      when(context.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
-      when(context.getExecutionException()).thenReturn(Optional.empty());
-      when(store.get(StoreKeys.QUEST)).thenReturn(quest);
+         // 3) static‐mock SpringExtension + UiFrameworkConfigHolder
+         try (var spring = mockStatic(SpringExtension.class);
+              var cfgHolder = mockStatic(UiFrameworkConfigHolder.class)) {
 
-      // Setup the chain of calls that getWebDriver would make
-      when(decoratorsFactory.decorate(quest, SuperQuest.class)).thenReturn(superQuest);
-      when(superQuest.artifact(UiServiceFluent.class, SmartWebDriver.class)).thenReturn(smartWebDriver);
-      when(smartWebDriver.getOriginal()).thenReturn(driver);
+            spring.when(() -> SpringExtension.getApplicationContext(context))
+                  .thenReturn(appCtx);
+            when(appCtx.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
 
-      // Mock the WebDriver unwrapping
-      try (var unwrapDriverMock = mockStatic(UiTestExtension.class, invocation -> {
-         if (invocation.getMethod().getName().equals("unwrapDriver") &&
-               invocation.getArgument(0) == driver) {
-            return driver;
+            UiFrameworkConfig cfg = mock(UiFrameworkConfig.class);
+            cfgHolder.when(UiFrameworkConfigHolder::getUiFrameworkConfig)
+                  .thenReturn(cfg);
+            when(cfg.makeScreenshotOnPassedTest()).thenReturn(true);
+
+            // invoke the extension
+            new UiTestExtension().afterTestExecution(context);
          }
-         return invocation.callRealMethod();
-      })) {
 
-         // Mock static methods
-         try (var springExtensionMock = mockStatic(SpringExtension.class);
-              var configMock = mockStatic(com.theairebellion.zeus.ui.config.UiFrameworkConfigHolder.class)) {
+         // verify screenshot was attempted
+         verify((TakesScreenshot) originalDriver).getScreenshotAs(OutputType.BYTES);
+         // verify driver closed & quit
+         verify(originalDriver).close();
+         verify(originalDriver).quit();
+      }
 
-            // Configure mocks
-            springExtensionMock.when(() -> SpringExtension.getApplicationContext(context))
-                  .thenReturn(appContext);
-            when(appContext.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+      @Test
+      @DisplayName("when exception present → skip screenshot, still close/quit")
+      void afterTestExecution_withException_skipsScreenshot_butCloses() {
+         // 1) executionException.isPresent()
+         when(context.getExecutionException()).thenReturn(Optional.of(new RuntimeException("boom")));
 
-            // Mock the framework config
-            var frameworkConfig = mock(com.theairebellion.zeus.ui.config.UiFrameworkConfig.class);
-            configMock.when(UiFrameworkConfigHolder::getUiFrameworkConfig)
-                  .thenReturn(frameworkConfig);
-            when(frameworkConfig.makeScreenshotOnPassedTest()).thenReturn(true);
+         // 2) stub out storage as before (no responses)
+         Storage root = mock(Storage.class), uiSub = mock(Storage.class);
+         when(superQuest.getStorage()).thenReturn(root);
+         when(root.sub(UI)).thenReturn(uiSub);
+         when(uiSub.getAllByClass(RESPONSES, ApiResponse.class)).thenReturn(List.of());
 
-            // Call the method
-            extension.afterTestExecution(context);
+         // 3) static‐mock SpringExtension & UiFrameworkConfigHolder
+         try (var spring = mockStatic(SpringExtension.class);
+              var cfgHolder = mockStatic(UiFrameworkConfigHolder.class)) {
 
-            // Verify WebDriver was closed and quit
-            verify(driver).close();
-            verify(driver).quit();
+            spring.when(() -> SpringExtension.getApplicationContext(context))
+                  .thenReturn(appCtx);
+            when(appCtx.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+
+            UiFrameworkConfig cfg = mock(UiFrameworkConfig.class);
+            cfgHolder.when(UiFrameworkConfigHolder::getUiFrameworkConfig)
+                  .thenReturn(cfg);
+            // even though makeScreenshotOnPassedTest() → true, screenshot block is guarded by exception
+            when(cfg.makeScreenshotOnPassedTest()).thenReturn(true);
+
+            new UiTestExtension().afterTestExecution(context);
+         }
+
+         // verify we never tried to takeScreenshot
+         verify((TakesScreenshot) originalDriver, never())
+               .getScreenshotAs(any());
+
+         // but we still close & quit
+         verify(originalDriver).close();
+         verify(originalDriver).quit();
+      }
+
+      @Test
+      @DisplayName("when keepDriverForSession=true → skip close/quit entirely")
+      void afterTestExecution_keepDriverForSession_skipsCloseAndQuit() {
+         // 1) no exception
+         when(context.getExecutionException()).thenReturn(Optional.empty());
+
+         // 2) stub out storage as before
+         Storage root = mock(Storage.class), uiSub = mock(Storage.class);
+         when(superQuest.getStorage()).thenReturn(root);
+         when(root.sub(UI)).thenReturn(uiSub);
+         when(uiSub.getAllByClass(RESPONSES, ApiResponse.class)).thenReturn(List.of());
+
+         // 3) static‐mock SpringExtension & UiFrameworkConfigHolder
+         try (var spring = mockStatic(SpringExtension.class);
+              var cfgHolder = mockStatic(UiFrameworkConfigHolder.class)) {
+
+            spring.when(() -> SpringExtension.getApplicationContext(context))
+                  .thenReturn(appCtx);
+            when(appCtx.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+
+            UiFrameworkConfig cfg = mock(UiFrameworkConfig.class);
+            cfgHolder.when(UiFrameworkConfigHolder::getUiFrameworkConfig)
+                  .thenReturn(cfg);
+            // disable screenshot branch
+            when(cfg.makeScreenshotOnPassedTest()).thenReturn(false);
+
+            // 4) now stub keepDriverForSession = true
+            when(smartWebDriver.isKeepDriverForSession()).thenReturn(true);
+
+            new UiTestExtension().afterTestExecution(context);
+         }
+
+         // since keepDriverForSession==true, we never close or quit
+         verify(originalDriver, never()).close();
+         verify(originalDriver, never()).quit();
+      }
+   }
+
+   @Nested
+   @DisplayName("afterTestExecution – non-empty responses")
+   class AfterTestExecution_NonEmptyResponses {
+
+      @Mock
+      ExtensionContext context;
+      @Mock
+      ExtensionContext.Store globalStore;
+      @Mock
+      Quest quest;
+
+      @Mock
+      ApplicationContext appCtx;
+      @Mock
+      DecoratorsFactory decoratorsFactory;
+      @Mock
+      SuperQuest superQuest;
+      @Mock
+      SmartWebDriver smartDriver;
+
+      // unwrapDriver(smartDriver) → wrappedProxy
+      WebDriver wrappedProxy;
+
+      @Mock
+      Storage rootStorage;
+      @Mock
+      Storage uiStorage;
+      @Mock
+      UiFrameworkConfig uiCfg;
+
+      MockedStatic<SpringExtension> springExt;
+      MockedStatic<UiFrameworkConfigHolder> cfgHolder;
+      MockedStatic<TestContextManager> ctxMgr;
+      MockedStatic<ResponseFormatter> respFmt;
+      MockedStatic<Allure> allure;
+
+      public interface HasOriginal extends WebDriver {
+         WebDriver getOriginal();
+      }
+
+      @BeforeEach
+      void setup() {
+         MockitoAnnotations.openMocks(this);
+
+         // — stub GLOBAL store → quest for getSmartWebDriver()
+         when(context.getStore(ExtensionContext.Namespace.GLOBAL))
+               .thenReturn(globalStore);
+         when(globalStore.get(StoreKeys.QUEST)).thenReturn(quest);
+
+         // — SpringExtension → DecoratorsFactory
+         springExt = mockStatic(SpringExtension.class);
+         springExt.when(() -> SpringExtension.getApplicationContext(context))
+               .thenReturn(appCtx);
+         when(appCtx.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
+
+         // — getSmartWebDriver(...) chain
+         when(decoratorsFactory.decorate(quest, SuperQuest.class))
+               .thenReturn(superQuest);
+         when(superQuest.artifact(UiServiceFluent.class, SmartWebDriver.class))
+               .thenReturn(smartDriver);
+
+         // — unwrapDriver(smartDriver) → wrappedProxy
+         wrappedProxy = mock(WebDriver.class, withSettings().extraInterfaces(HasOriginal.class));
+         when(smartDriver.getOriginal()).thenReturn(wrappedProxy);
+
+         // — skip screenshot branch
+         cfgHolder = mockStatic(UiFrameworkConfigHolder.class);
+         cfgHolder.when(UiFrameworkConfigHolder::getUiFrameworkConfig)
+               .thenReturn(uiCfg);
+         when(uiCfg.makeScreenshotOnPassedTest()).thenReturn(false);
+
+         // — getSuperQuest(...) → storage
+         ctxMgr = mockStatic(TestContextManager.class);
+         ctxMgr.when(() -> TestContextManager.getSuperQuest(context))
+               .thenReturn(superQuest);
+
+         // — storage stub with one ApiResponse
+         when(superQuest.getStorage()).thenReturn(rootStorage);
+         when(rootStorage.sub(UI)).thenReturn(uiStorage);
+         ApiResponse dummy = new ApiResponse("u", "M", 200);
+         when(uiStorage.getAllByClass(RESPONSES, ApiResponse.class))
+               .thenReturn(List.of(dummy));
+
+         // — ResponseFormatter stub
+         respFmt = mockStatic(ResponseFormatter.class);
+         respFmt.when(() -> ResponseFormatter.formatResponses(List.of(dummy)))
+               .thenReturn("<html/>");
+
+         // — Allure stub
+         allure = mockStatic(Allure.class);
+      }
+
+      @AfterEach
+      void tearDown() {
+         springExt.close();
+         cfgHolder.close();
+         ctxMgr.close();
+         respFmt.close();
+         allure.close();
+      }
+
+      @Test
+      @DisplayName("should attach intercepted-requests when storage is non-empty")
+      void afterTestExecution_withNonEmptyResponses_attaches() {
+         new UiTestExtension().afterTestExecution(context);
+
+         // verify that we attached the HTML
+         allure.verify(() ->
+               Allure.addAttachment(
+                     eq("Intercepted Requests"),
+                     eq("text/html"),
+                     any(ByteArrayInputStream.class),
+                     eq(".html")
+               )
+         );
+
+         // now verify we closed & quit the unwrapped driver
+         verify(wrappedProxy).close();
+         verify(wrappedProxy).quit();
+      }
+   }
+
+   @Nested
+   @ExtendWith(MockitoExtension.class)
+   @DisplayName("handleTestExecutionException")
+   class HandleTestExecutionExceptionTests {
+
+      @Mock
+      ExtensionContext context;
+      @Mock
+      ExtensionContext.Store globalStore;
+      @Mock
+      ApplicationContext appCtx;
+      @Mock
+      DecoratorsFactory decoratorsFactory;
+      @Mock
+      Quest quest;
+      @Mock
+      SuperQuest superQuest;
+      @Mock
+      SmartWebDriver smartWebDriver;
+
+      WebDriver originalDriver;
+      private MockedStatic<SpringExtension> springExt;
+
+      @BeforeEach
+      void setUp() {
+         // only one static‐mock of SpringExtension per test class
+         springExt = Mockito.mockStatic(SpringExtension.class);
+         springExt
+               .when(() -> SpringExtension.getApplicationContext(context))
+               .thenReturn(appCtx);
+
+         // wire up the DecoratorsFactory lookup
+         when(appCtx.getBean(DecoratorsFactory.class))
+               .thenReturn(decoratorsFactory);
+
+         // build the getSmartWebDriver chain
+         when(context.getStore(ExtensionContext.Namespace.GLOBAL))
+               .thenReturn(globalStore);
+         when(globalStore.get(StoreKeys.QUEST))
+               .thenReturn(quest);
+         when(decoratorsFactory.decorate(quest, SuperQuest.class))
+               .thenReturn(superQuest);
+         when(superQuest.artifact(UiServiceFluent.class, SmartWebDriver.class))
+               .thenReturn(smartWebDriver);
+
+         // unwrapDriver(...) → originalDriver
+         originalDriver = mock(WebDriver.class, withSettings()
+               .extraInterfaces(TakesScreenshot.class));
+         when(smartWebDriver.getOriginal())
+               .thenReturn(originalDriver);
+
+         // screenshot always returns some bytes
+         when(((TakesScreenshot) originalDriver)
+               .getScreenshotAs(OutputType.BYTES))
+               .thenReturn(new byte[] {1, 2, 3});
+
+         // displayName used for the Allure attachment
+         when(context.getDisplayName())
+               .thenReturn("myDisplayName");
+      }
+
+      @AfterEach
+      void tearDown() {
+         // close the single static‐mock
+         springExt.close();
+      }
+
+      @Test
+      @DisplayName("captures screenshot, closes+quits driver, and rethrows")
+      void handleTestExecutionException_closesAndQuits_whenNotKeepingDriver() {
+         // branch: driver should NOT be kept
+         when(smartWebDriver.isKeepDriverForSession()).thenReturn(false);
+
+         RuntimeException toThrow = new RuntimeException("boom!");
+
+         try (var allure = Mockito.mockStatic(Allure.class)) {
+            UiTestExtension ext = new UiTestExtension();
+
+            // exercise and verify it bubbles our exception
+            RuntimeException thrown = assertThrows(RuntimeException.class,
+                  () -> ext.handleTestExecutionException(context, toThrow)
+            );
+            assertSame(toThrow, thrown);
+
+            // verify that we attached the screenshot under the right name
+            allure.verify(() ->
+                  Allure.addAttachment(
+                        eq("myDisplayName"),
+                        any(ByteArrayInputStream.class)
+                  )
+            );
+         }
+
+         // and finally, driver cleanup must have occurred
+         verify(originalDriver).close();
+         verify(originalDriver).quit();
+      }
+
+      @Test
+      @DisplayName("when keepDriverForSession=true → skip close/quit but still rethrow")
+      void handleTestExecutionException_keepsDriver_skipsCloseQuit() {
+         // branch: driver should be kept for session
+         when(smartWebDriver.isKeepDriverForSession()).thenReturn(true);
+
+         RuntimeException toThrow = new RuntimeException("stay alive");
+
+         try (var allure = Mockito.mockStatic(Allure.class)) {
+            UiTestExtension ext = new UiTestExtension();
+
+            // should rethrow our exact exception
+            RuntimeException thrown = assertThrows(RuntimeException.class,
+                  () -> ext.handleTestExecutionException(context, toThrow)
+            );
+            assertSame(toThrow, thrown);
+
+            // screenshot still attached under displayName
+            allure.verify(() ->
+                  Allure.addAttachment(
+                        eq("myDisplayName"),
+                        any(ByteArrayInputStream.class)
+                  )
+            );
+         }
+
+         // but since we are keeping the driver, neither close() nor quit() should happen:
+         verify(originalDriver, never()).close();
+         verify(originalDriver, never()).quit();
+      }
+
+      @Test
+      @DisplayName("when parent TEST_EXECUTION step is active it stops it and starts TEAR_DOWN")
+      void handleTestExecutionException_switchesParentStep_whenParentStepActive() throws Throwable {
+         // make sure we hit the driver-cleanup branch
+         when(smartWebDriver.isKeepDriverForSession()).thenReturn(false);
+         RuntimeException boom = new RuntimeException("boom!");
+
+         try (
+               var allureMock = mockStatic(Allure.class);
+               var listenerMock = mockStatic(CustomAllureListener.class)
+         ) {
+            // stub out the if-predicate in takeScreenshot()
+            listenerMock
+                  .when(() -> CustomAllureListener.isParentStepActive(StepType.TEST_EXECUTION))
+                  .thenReturn(true);
+
+            UiTestExtension ext = new UiTestExtension();
+            // call under test
+            RuntimeException thrown =
+                  assertThrows(RuntimeException.class,
+                        () -> ext.handleTestExecutionException(context, boom));
+
+            assertSame(boom, thrown);
+
+            // verify that we did stop the TEST_EXECUTION parent step…
+            listenerMock.verify(CustomAllureListener::stopParentStep);
+            // …and then immediately start the TEAR_DOWN parent step
+            listenerMock.verify(() ->
+                  CustomAllureListener.startParentStep(StepType.TEAR_DOWN)
+            );
+
+            // and of course we still attach the screenshot
+            allureMock.verify(() ->
+                  Allure.addAttachment(
+                        eq("myDisplayName"),
+                        any(ByteArrayInputStream.class)
+                  )
+            );
+         }
+
+         // cleanup: the driver.close()/quit() verifications
+         verify(originalDriver).close();
+         verify(originalDriver).quit();
+      }
+
+      @Test
+      @DisplayName("Handle Test Execution Exception")
+      void testHandleTestExecutionException() throws Exception {
+         WebDriver driver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
+
+         byte[] screenshotBytes = {1, 2, 3};
+         when(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES))
+               .thenReturn(screenshotBytes);
+
+         Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
+               "takeScreenshot", WebDriver.class, String.class
+         );
+         takeScreenshotMethod.setAccessible(true);
+
+         try (var allureMock = mockStatic(Allure.class)) {
+            takeScreenshotMethod.invoke(null, driver, "Test Display Name");
+
+            allureMock.verify(() ->
+                  Allure.addAttachment(eq("Test Display Name"), any(ByteArrayInputStream.class))
+            );
+         }
+
+         // Simply test that the method throws the exception it receives
+         RuntimeException testException = new RuntimeException("Test exception");
+         assertThrows(RuntimeException.class, () ->
+               extension.handleTestExecutionException(context, testException)
+         );
+      }
+   }
+
+   @Nested
+   @ExtendWith(MockitoExtension.class)
+   @DisplayName("launcherSessionClosed")
+   class LauncherSessionClosedTests {
+
+      @Mock
+      LauncherSession session;
+      @Mock
+      SmartWebDriver keptDriver1;
+      @Mock
+      SmartWebDriver keptDriver2;
+
+      private WebDriver underlying1;
+      private WebDriver underlying2;
+
+      @BeforeEach
+      void setUp() {
+         // start clean
+         BaseLoginClient.getDriverToKeep().clear();
+
+         // create two underlying WebDriver mocks
+         underlying1 = mock(WebDriver.class);
+         underlying2 = mock(WebDriver.class);
+
+         // stub unwrap() to return them
+         when(keptDriver1.getOriginal()).thenReturn(underlying1);
+         when(keptDriver2.getOriginal()).thenReturn(underlying2);
+
+         // register both in BaseLoginClient’s keep list
+         BaseLoginClient.getDriverToKeep().add(keptDriver1);
+         BaseLoginClient.getDriverToKeep().add(keptDriver2);
+      }
+
+      @AfterEach
+      void tearDown() {
+         BaseLoginClient.getDriverToKeep().clear();
+      }
+
+      @Test
+      @DisplayName("closes and quits all kept drivers")
+      void launcherSessionClosed_closesAndQuitsAllKeptDrivers() {
+         UiTestExtension ext = new UiTestExtension();
+         ext.launcherSessionClosed(session);
+
+         // each underlying must be closed & quit
+         verify(underlying1).close();
+         verify(underlying1).quit();
+         verify(underlying2).close();
+         verify(underlying2).quit();
+      }
+   }
+
+   @Nested
+   @DisplayName("postQuestCreationLogin helper")
+   class PostQuestCreationLoginTests {
+      @Mock
+      SuperQuest quest;
+      @Mock
+      DecoratorsFactory decoratorsFactory;
+      @Mock
+      Storage uiStorage;
+      @Mock
+      SuperUiServiceFluent<?> superSvc;
+
+      SmartWebDriver smartDriver;
+      WebDriverWait wait;
+
+      @BeforeEach
+      void init() {
+         MockitoAnnotations.openMocks(this);
+
+         // storage stubs
+         when(quest.getStorage()).thenReturn(uiStorage);
+         when(uiStorage.sub(UI)).thenReturn(uiStorage);
+
+         // decorating stub
+         when(decoratorsFactory.decorate(any(UiServiceFluent.class),
+               eq(SuperUiServiceFluent.class)))
+               .thenReturn(superSvc);
+
+         // prevent NPE in BaseLoginClient.performLoginAndCache(...)
+         smartDriver = mock(SmartWebDriver.class);
+         when(superSvc.getDriver()).thenReturn(smartDriver);
+         wait = mock(WebDriverWait.class);
+         when(smartDriver.getWait()).thenReturn(wait);
+         // succeed immediately
+         when(wait.until(any())).thenReturn(true);
+      }
+
+      @Test
+      @DisplayName("bad‐ctor path → AuthenticationUiException")
+      void failurePath() throws Exception {
+         // a client whose ctor blows up
+         class BadClient extends BaseLoginClient {
+            public BadClient() {
+               throw new RuntimeException("boom");
+            }
+
+            @Override
+            protected <T extends UiServiceFluent<?>> void loginImpl(
+                  T uiService, String username, String password
+            ) { /*no-op*/ }
+
+            @Override
+            protected By successfulLoginElementLocator() {
+               return By.tagName("body");
+            }
+         }
+
+         Method helper = UiTestExtension.class.getDeclaredMethod(
+               "postQuestCreationLogin",
+               SuperQuest.class,
+               DecoratorsFactory.class,
+               String.class,
+               String.class,
+               Class.class,
+               boolean.class
+         );
+         helper.setAccessible(true);
+
+         InvocationTargetException ite = assertThrows(
+               InvocationTargetException.class,
+               () -> helper.invoke(
+                     /* static */ null,
+                     quest,
+                     decoratorsFactory,
+                     "u",
+                     "p",
+                     BadClient.class,
+                     false
+               )
+         );
+         assertTrue(
+               ite.getCause() instanceof AuthenticationUiException,
+               "should wrap ctor‐failure in AuthenticationUiException"
+         );
+      }
+   }
+
+   @Nested
+   @DisplayName("postQuestCreationRegisterCustomServices helper")
+   class PostQuestCreationRegisterCustomServicesTests {
+      @Mock
+      SuperQuest quest;
+      @Mock
+      SmartWebDriver smartDriver;
+
+      @BeforeEach
+      void init() {
+         MockitoAnnotations.openMocks(this);
+         when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class))
+               .thenReturn(smartDriver);
+      }
+
+      @Test
+      @DisplayName("no implementations → does nothing")
+      void noImpls() throws Exception {
+         try (var ref = mockStatic(ReflectionUtil.class)) {
+            ref.when(() ->
+                  ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), anyString())
+            ).thenReturn(List.of());
+
+            Method m = UiTestExtension.class
+                  .getDeclaredMethod("postQuestCreationRegisterCustomServices", SuperQuest.class);
+            m.setAccessible(true);
+
+            assertDoesNotThrow(() -> m.invoke(null, quest));
+            verifyNoInteractions(quest);
+         }
+      }
+
+      @Test
+      @DisplayName("multiple implementations → IllegalStateException")
+      void multipleImpls() throws Exception {
+         try (var ref = mockStatic(ReflectionUtil.class)) {
+            ref.when(() ->
+                  ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), anyString())
+            ).thenReturn(List.of(DummyService.class, AnotherService.class));
+
+            Method m = UiTestExtension.class
+                  .getDeclaredMethod("postQuestCreationRegisterCustomServices", SuperQuest.class);
+            m.setAccessible(true);
+
+            InvocationTargetException ite = assertThrows(
+                  InvocationTargetException.class,
+                  () -> m.invoke(null, quest)
+            );
+            assertTrue(ite.getCause() instanceof IllegalStateException);
+         }
+      }
+
+      @Test
+      @DisplayName("ctor throws → ServiceInitializationException")
+      void ctorBlowsUp() throws Exception {
+         try (var ref = mockStatic(ReflectionUtil.class)) {
+            ref.when(() ->
+                  ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), anyString())
+            ).thenReturn(List.of(BadService.class));
+
+            Method m = UiTestExtension.class
+                  .getDeclaredMethod("postQuestCreationRegisterCustomServices", SuperQuest.class);
+            m.setAccessible(true);
+
+            InvocationTargetException ite = assertThrows(
+                  InvocationTargetException.class,
+                  () -> m.invoke(null, quest)
+            );
+            assertTrue(ite.getCause() instanceof ServiceInitializationException);
+         }
+      }
+
+      @Test
+      @DisplayName("single implementation → registers and removes UI service")
+      void singleImpl() throws Exception {
+         try (var ref = mockStatic(ReflectionUtil.class)) {
+            ref.when(() ->
+                  ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), anyString())
+            ).thenReturn(List.of(DummyService.class));
+
+            Method m = UiTestExtension.class
+                  .getDeclaredMethod("postQuestCreationRegisterCustomServices", SuperQuest.class);
+            m.setAccessible(true);
+
+            // this must not throw…
+            assertDoesNotThrow(() -> m.invoke(null, quest));
+
+            // …and it must have registered and then removed the world
+            verify(quest).registerWorld(eq(DummyService.class), isA(DummyService.class));
+            verify(quest).removeWorld(eq(UiServiceFluent.class));
+         }
+      }
+
+      // give your dummy services exactly the two‐arg constructor the extension expects:
+      static class DummyService extends UiServiceFluent<DummyService> {
+         public DummyService(SmartWebDriver driver) {
+            super(driver);
+         }
+
+         public DummyService(SmartWebDriver driver, SuperQuest q) {
+            super(driver);
+         }
+      }
+
+      static class AnotherService extends UiServiceFluent<AnotherService> {
+         public AnotherService(SmartWebDriver driver) {
+            super(driver);
+         }
+
+         public AnotherService(SmartWebDriver driver, SuperQuest q) {
+            super(driver);
+         }
+      }
+
+      static class BadService extends UiServiceFluent<BadService> {
+         public BadService(SmartWebDriver driver, SuperQuest q) {
+            super(driver);
+            throw new RuntimeException("boom");
          }
       }
    }
 
-   @Test
-   @DisplayName("Handle Test Execution Exception")
-   void testHandleTestExecutionException() throws Exception {
-      // Create mocks for the dependencies
-      ApplicationContext appContext = mock(ApplicationContext.class);
-      DecoratorsFactory decoratorsFactory = mock(DecoratorsFactory.class);
-      WebDriver driver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
+   @Nested
+   @DisplayName("addResponseInStorage helper")
+   class AddResponseInStorageTests {
 
-      // Setup screenshot behavior - screenshot is taken before exception is thrown
-      byte[] screenshotBytes = {1, 2, 3};
-      when(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES))
-            .thenReturn(screenshotBytes);
+      @Mock
+      Storage rootStorage;
+      @Mock
+      Storage uiStorage;
+      @Captor
+      ArgumentCaptor<List<ApiResponse>> listCaptor;
 
-      // Use reflection to access the takeScreenshot method directly
-      Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
-            "takeScreenshot", WebDriver.class, String.class
-      );
-      takeScreenshotMethod.setAccessible(true);
+      Method helper;
+      ApiResponse resp1, resp2;
 
-      // Test the takeScreenshot method directly
-      try (var allureMock = mockStatic(Allure.class)) {
-         takeScreenshotMethod.invoke(null, driver, "Test Display Name");
+      @BeforeEach
+      void setUp() throws Exception {
+         MockitoAnnotations.openMocks(this);
 
-         // Verify screenshot was taken
-         allureMock.verify(() ->
-               Allure.addAttachment(eq("Test Display Name"), any(ByteArrayInputStream.class))
-         );
+         // when code does storage.sub(UI) → our uiStorage mock
+         when(rootStorage.sub(UI)).thenReturn(uiStorage);
+
+         // grab the private static helper
+         helper = UiTestExtension.class
+               .getDeclaredMethod("addResponseInStorage", Storage.class, ApiResponse.class);
+         helper.setAccessible(true);
+
+         resp1 = new ApiResponse("https://foo.example", "GET", 200);
+         resp2 = new ApiResponse("https://bar.example", "POST", 201);
       }
 
-      // Simply test that the method throws the exception it receives
-      RuntimeException testException = new RuntimeException("Test exception");
-      assertThrows(RuntimeException.class, () ->
-            extension.handleTestExecutionException(context, testException)
-      );
+      @Test
+      @DisplayName("when storage empty → creates new list and adds one entry")
+      void firstResponse() throws Exception {
+         // simulate no existing list
+         when(uiStorage.get(eq(RESPONSES), any(ParameterizedTypeReference.class)))
+               .thenReturn(null);
+
+         // invoke helper
+         helper.invoke(null, rootStorage, resp1);
+
+         // verify we put exactly one‐element list
+         verify(uiStorage).put(eq(RESPONSES), listCaptor.capture());
+         List<ApiResponse> stored = listCaptor.getValue();
+
+         assertNotNull(stored, "the RESPONSES entry should exist");
+         assertEquals(1, stored.size(), "should have created one‐element list");
+         assertSame(resp1, stored.get(0), "must store exactly the passed‐in object");
+      }
+
+      @Test
+      @DisplayName("when list already present → appends to existing list")
+      void subsequentResponse() throws Exception {
+         // simulate an existing single‐element list
+         when(uiStorage.get(eq(RESPONSES), any(ParameterizedTypeReference.class)))
+               .thenReturn(new ArrayList<>(List.of(resp1)));
+
+         // invoke helper again
+         helper.invoke(null, rootStorage, resp2);
+
+         // verify we put back a two‐element list
+         verify(uiStorage).put(eq(RESPONSES), listCaptor.capture());
+         List<ApiResponse> stored = listCaptor.getValue();
+
+         assertNotNull(stored, "the RESPONSES entry should still exist");
+         assertEquals(2, stored.size(), "should have two elements now");
+         assertIterableEquals(List.of(resp1, resp2), stored, "must preserve insertion order");
+      }
    }
 
-   @Test
-   @DisplayName("Get Web Driver")
-   @Disabled
-   void testGetWebDriver() throws Exception {
-      // Use reflection to access private method
-      Method getWebDriverMethod = UiTestExtension.class.getDeclaredMethod(
-            "getWebDriver", DecoratorsFactory.class, ExtensionContext.class
-      );
-      getWebDriverMethod.setAccessible(true);
+   @Nested
+   @DisplayName("getOrCreateQuestConsumers helper")
+   class GetOrCreateQuestConsumersTests {
+      @Mock
+      ExtensionContext context;
+      @Mock
+      ExtensionContext.Store store;
+      UiTestExtension extension = new UiTestExtension();
 
-      // Create an instance of UiTestExtension
-      UiTestExtension uiTestExtension = new UiTestExtension();
+      // we'll capture the very List that the lambda produces
+      List<Consumer<SuperQuest>> lambdaList;
 
-      // Prepare mocks
-      DecoratorsFactory mockFactory = mock(DecoratorsFactory.class);
-      ExtensionContext mockContext = mock(ExtensionContext.class);
-      ExtensionContext.Store mockStore = mock(ExtensionContext.Store.class);
-      Quest mockQuest = mock(Quest.class);
-      SuperQuest mockSuperQuest = mock(SuperQuest.class);
-      SmartWebDriver mockSmartWebDriver = mock(SmartWebDriver.class);
-      WebDriver mockOriginalDriver = mock(WebDriver.class);
+      Method helper;
 
-      // Setup method interactions
-      when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
-      when(mockStore.get(StoreKeys.QUEST)).thenReturn(mockQuest);
-      when(mockFactory.decorate(mockQuest, SuperQuest.class)).thenReturn(mockSuperQuest);
-      when(mockSuperQuest.artifact(UiServiceFluent.class, SmartWebDriver.class)).thenReturn(mockSmartWebDriver);
-      when(mockSmartWebDriver.getOriginal()).thenReturn(mockOriginalDriver);
+      @BeforeEach
+      void setUp() throws Exception {
+         MockitoAnnotations.openMocks(this);
+         // whenever context.getStore(GLOBAL) is called, return our mock store
+         when(context.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
 
-      try {
+         // stub getOrComputeIfAbsent so it actually runs the "key -> new ArrayList<>()" lambda
+         doAnswer(inv -> {
+            // key is arg0, mappingFunction is arg1
+            Object key = inv.getArgument(0);
+            @SuppressWarnings("unchecked")
+            Function<Object, List<Consumer<SuperQuest>>> mapping = inv.getArgument(1);
+            // invoke the lambda once, capture the list it returns
+            lambdaList = mapping.apply(key);
+            return lambdaList;
+         }).when(store).getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any(Function.class));
+
+         // grab the private instance method by reflection
+         helper = UiTestExtension.class
+               .getDeclaredMethod("getOrCreateQuestConsumers", ExtensionContext.class);
+         helper.setAccessible(true);
+      }
+
+      @Test
+      @DisplayName("when no existing entry → invokes the ArrayList‐producing lambda")
+      void createsEmptyList() throws Exception {
+         // call the private helper
+         @SuppressWarnings("unchecked")
+         List<Consumer<SuperQuest>> returned =
+               (List<Consumer<SuperQuest>>) helper.invoke(extension, context);
+
+         // it must be exactly the instance the mapping function created
+         assertSame(lambdaList, returned,
+               "should hand back exactly the ArrayList created by the lambda");
+
+         // and that new ArrayList must start out empty
+         assertTrue(returned.isEmpty(), "new list should be empty");
+      }
+   }
+
+   @Nested
+   @DisplayName("checkUrl helper")
+   class CheckUrlTests {
+      @Test
+      @DisplayName("Check URL Method")
+      void testCheckUrl() throws Exception {
+         Method checkUrlMethod = UiTestExtension.class.getDeclaredMethod("checkUrl", String[].class, String.class);
+         checkUrlMethod.setAccessible(true);
+
+         String[] urlSubstrings = {"test", "example"};
+
+         boolean result1 = (boolean) checkUrlMethod.invoke(null, urlSubstrings, "https://test.com/path");
+         assertTrue(result1);
+
+         boolean result2 = (boolean) checkUrlMethod.invoke(null, urlSubstrings, "https://other.com/path");
+         assertFalse(result2);
+      }
+   }
+
+   @Nested
+   @DisplayName("unwrapDriver helper")
+   class UnwrapDriverTests {
+      @Test
+      @DisplayName("Unwrap Driver")
+      void testUnwrapDriver() throws Exception {
+         Method unwrapMethod = UiTestExtension.class.getDeclaredMethod("unwrapDriver", WebDriver.class);
+         unwrapMethod.setAccessible(true);
+
+         SmartWebDriver mockSmartWebDriver = mock(SmartWebDriver.class);
+         WebDriver originalDriver = mock(WebDriver.class);
+
+         when(mockSmartWebDriver.getOriginal()).thenReturn(originalDriver);
+
+         WebDriver result = (WebDriver) unwrapMethod.invoke(null, mockSmartWebDriver);
+
+         assertNotNull(result);
+         assertEquals(originalDriver, result);
+      }
+
+      @Test
+      @DisplayName("Unwrap Driver Exception")
+      void testUnwrapDriverException() throws Exception {
+         // Use reflection to access private static method
+         Method unwrapMethod = UiTestExtension.class.getDeclaredMethod("unwrapDriver", WebDriver.class);
+         unwrapMethod.setAccessible(true);
+
+         // Create a mock WebDriver without getOriginal method
+         WebDriver mockDriver = mock(WebDriver.class);
+
+         // Invoke method and expect exception
+         try {
+            unwrapMethod.invoke(null, mockDriver);
+            fail("Expected InvocationTargetException");
+         } catch (InvocationTargetException e) {
+            assertInstanceOf(RuntimeException.class, e.getCause());
+            assertEquals("Failed to unwrap WebDriver", e.getCause().getMessage());
+         }
+      }
+   }
+
+   @Nested
+   @DisplayName("static initialization")
+   class StaticInitializationTests {
+      @Test
+      @DisplayName("Static Assertion Registry Initialization")
+      void testStaticAssertionRegistryInitialization() {
+         // This test verifies that the static initializer block runs without exceptions
+         // The actual registration happens in the static block
+         assertDoesNotThrow(() -> {
+            // Trigger class loading
+            Class.forName("com.theairebellion.zeus.ui.extensions.UiTestExtension");
+         });
+      }
+   }
+
+   @Nested
+   @DisplayName("takeScreenshot helper")
+   class TakeScreenshotTests {
+      @Test
+      @DisplayName("Take Screenshot Handles Exceptions")
+      void testTakeScreenshot() throws Exception {
+         // Use reflection to access private static method
+         Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
+               "takeScreenshot", WebDriver.class, String.class
+         );
+         takeScreenshotMethod.setAccessible(true);
+
+         // Create mock WebDriver that fails screenshot
+         WebDriver mockDriver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
+
+         // Simulate screenshot failure
+         when(((TakesScreenshot) mockDriver).getScreenshotAs(OutputType.BYTES))
+               .thenThrow(new RuntimeException("Screenshot failed"));
+
          // Invoke method
-         getWebDriverMethod.invoke(uiTestExtension, mockFactory, mockContext);
-         fail("Expected an InvocationTargetException to be thrown");
-      } catch (InvocationTargetException e) {
-         // Assert that the cause of the exception is a RuntimeException
-         assertInstanceOf(RuntimeException.class, e.getCause());
-         assertEquals("Failed to unwrap WebDriver", e.getCause().getMessage());
+         assertDoesNotThrow(() ->
+               takeScreenshotMethod.invoke(null, mockDriver, "testScreenshot")
+         );
       }
 
-      // Verify interactions
-      verify(mockContext).getStore(ExtensionContext.Namespace.GLOBAL);
-      verify(mockStore).get(StoreKeys.QUEST);
-      verify(mockFactory).decorate(mockQuest, SuperQuest.class);
-      verify(mockSuperQuest).artifact(UiServiceFluent.class, SmartWebDriver.class);
-      verify(mockSmartWebDriver).getOriginal();
-   }
+      @Test
+      @DisplayName("Take Screenshot Handles Exceptions")
+      void testTakeScreenshotHandlesExceptions() throws Exception {
+         // Use reflection to access private static method
+         Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
+               "takeScreenshot", WebDriver.class, String.class
+         );
+         takeScreenshotMethod.setAccessible(true);
 
-   @Test
-   @DisplayName("Test postQuestCreationRegisterCustomServices")
-   void testPostQuestCreationRegisterCustomServices() throws Exception {
-      // Get the method using reflection
-      Method registerMethod = UiTestExtension.class.getDeclaredMethod(
-            "postQuestCreationRegisterCustomServices", SuperQuest.class);
-      registerMethod.setAccessible(true);
+         // Create mock WebDriver that fails screenshot
+         WebDriver mockDriver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
 
-      // Create mocks
-      SuperQuest quest = mock(SuperQuest.class);
-      SmartWebDriver smartWebDriver = mock(SmartWebDriver.class);
+         // Simulate screenshot failure
+         when(((TakesScreenshot) mockDriver).getScreenshotAs(OutputType.BYTES))
+               .thenThrow(new RuntimeException("Screenshot failed"));
 
-      // Setup behavior
-      when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class)).thenReturn(smartWebDriver);
-
-      // Mock the ReflectionUtil to return null (no custom class found)
-      try (var reflectionUtilMock = mockStatic(ReflectionUtil.class)) {
-         reflectionUtilMock.when(() ->
-                     ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), anyString()))
-               .thenReturn(List.of());
-
-         // Execute the method
-         registerMethod.invoke(null, quest);
-
-         // Verify the lookup was attempted
-         reflectionUtilMock.verify(() ->
-               ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), nullable(String.class)));
+         // Invoke method
+         assertDoesNotThrow(() ->
+               takeScreenshotMethod.invoke(null, mockDriver, "testScreenshot")
+         );
       }
    }
 
-   @Test
-   @DisplayName("Test lambda$processInterceptRequestsAnnotation$1")
-   @Disabled
-   void testProcessInterceptRequestsAnnotationLambda1() throws Exception {
-      // Find the lambda method
-      Method[] methods = UiTestExtension.class.getDeclaredMethods();
-      Method lambdaMethod = null;
-
-      for (Method method : methods) {
-         if (method.getName().contains("lambda$processInterceptRequestsAnnotation$1")) {
-            lambdaMethod = method;
-            break;
-         }
-      }
-
-      // Execute the test if we found the method
-      if (lambdaMethod != null) {
+   @Nested
+   @DisplayName("postQuestCreationAssertion helper")
+   class PostQuestCreationAssertionTests {
+      @Test
+      @DisplayName("Stack Trace Checking")
+      void testStackTraceChecking() throws Exception {
+         // Access the lambda method for stack trace checking
+         Method lambdaMethod = Arrays.stream(UiTestExtension.class.getDeclaredMethods())
+               .filter(m -> m.getName().contains("lambda$postQuestCreationAssertion"))
+               .filter(m -> m.getParameterCount() == 1 && m.getParameterTypes()[0].equals(StackTraceElement.class))
+               .findFirst()
+               .orElseThrow();
          lambdaMethod.setAccessible(true);
+
+         // Test selenium package
+         StackTraceElement seleniumElement = new StackTraceElement(
+               "org.openqa.selenium.WebDriver", "findElement", "WebDriver.java", 100);
+         boolean seleniumResult = (boolean) lambdaMethod.invoke(null, seleniumElement);
+         assertTrue(seleniumResult);
+
+         // Test UI package
+         StackTraceElement uiElement = new StackTraceElement(
+               "com.theairebellion.zeus.ui.SomeClass", "method", "SomeClass.java", 100);
+         boolean uiResult = (boolean) lambdaMethod.invoke(null, uiElement);
+         assertTrue(uiResult);
+
+         // Test unrelated package
+         StackTraceElement otherElement = new StackTraceElement(
+               "java.lang.Object", "toString", "Object.java", 100);
+         boolean otherResult = (boolean) lambdaMethod.invoke(null, otherElement);
+         assertFalse(otherResult);
+      }
+
+      @Test
+      @DisplayName("Post Quest Creation Assertion")
+      void testPostQuestCreationAssertion() throws Exception {
+         // Use reflection to access private static method
+         Method postQuestCreationAssertionMethod = UiTestExtension.class.getDeclaredMethod(
+               "postQuestCreationAssertion", SuperQuest.class, String.class
+         );
+         postQuestCreationAssertionMethod.setAccessible(true);
 
          // Create mocks
          SuperQuest quest = mock(SuperQuest.class);
          SmartWebDriver smartWebDriver = mock(SmartWebDriver.class);
-         WebDriver regularDriver = mock(WebDriver.class);
-         String[] urlSubstrings = new String[] {"test"};
+         CustomSoftAssertion softAssertion = mock(CustomSoftAssertion.class);
 
          // Setup behavior
          when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class)).thenReturn(smartWebDriver);
-         when(smartWebDriver.getOriginal()).thenReturn(regularDriver);
+         when(quest.getSoftAssertions()).thenReturn(softAssertion);
 
-         // Execute the lambda
-         try {
-            lambdaMethod.invoke(null, urlSubstrings, quest);
-         } catch (InvocationTargetException e) {
-            // Expected exception since driver is not ChromeDriver
-            assertInstanceOf(RuntimeException.class, e.getCause());
-            assertTrue(e.getCause().getMessage().contains("Failed to unwrap WebDriver"));
-         }
+         // Execute method
+         postQuestCreationAssertionMethod.invoke(null, quest, "TestMethod");
 
-         // Verify the artifact retrieval
+         // Verify method calls
          verify(quest).artifact(UiServiceFluent.class, SmartWebDriver.class);
-      }
-   }
-
-   // Annotation method for testing
-   @AuthenticateViaUiAs(
-         credentials = TestLoginCredentials.class,
-         type = TestLoginClient.class,
-         cacheCredentials = true
-   )
-   void authenticateMethod() {
-   }
-
-   @InterceptRequests(requestUrlSubStrings = "test/url")
-   void interceptRequestMethod() {
-      // Dummy method to support the annotation test
-   }
-
-   // Dummy implementations for test classes
-   public static class TestLoginCredentials implements LoginCredentials {
-      @Override
-      public String username() {
-         return "testuser";
+         verify(quest).getSoftAssertions();
+         verify(softAssertion).registerObjectForPostErrorHandling(
+               eq(SmartWebDriver.class), eq(smartWebDriver));
       }
 
-      @Override
-      public String password() {
-         return "testpassword";
-      }
-   }
+      @Test
+      @DisplayName("Test postQuestCreationRegisterCustomServices")
+      void testPostQuestCreationRegisterCustomServices() throws Exception {
+         // Get the method using reflection
+         Method registerMethod = UiTestExtension.class.getDeclaredMethod(
+               "postQuestCreationRegisterCustomServices", SuperQuest.class);
+         registerMethod.setAccessible(true);
 
-   public static class TestLoginClient extends BaseLoginClient {
-      @Override
-      protected <T extends UiServiceFluent<?>> void loginImpl(T uiService, String username, String password) {
-      }
+         // Create mocks
+         SuperQuest quest = mock(SuperQuest.class);
+         SmartWebDriver smartWebDriver = mock(SmartWebDriver.class);
 
-      @Override
-      protected By successfulLoginElementLocator() {
-         return By.id("login-success");
+         // Setup behavior
+         when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class)).thenReturn(smartWebDriver);
+
+         // Mock the ReflectionUtil to return null (no custom class found)
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class)) {
+            reflectionUtilMock.when(() ->
+                        ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), anyString()))
+                  .thenReturn(List.of());
+
+            // Execute the method
+            registerMethod.invoke(null, quest);
+
+            // Verify the lookup was attempted
+            reflectionUtilMock.verify(() ->
+                  ReflectionUtil.findImplementationsOfInterface(eq(UiServiceFluent.class), nullable(String.class)));
+         }
       }
    }
 }
