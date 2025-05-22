@@ -49,6 +49,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.platform.launcher.LauncherSession;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -62,6 +63,10 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.v85.network.Network;
+import org.openqa.selenium.devtools.v85.network.model.RequestId;
+import org.openqa.selenium.devtools.v85.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v85.network.model.ResponseReceived;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
@@ -77,15 +82,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -116,9 +124,6 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
       Method interceptStub;
       MockedStatic<ReflectionUtil> reflectionMock;
-
-      @InterceptRequests(requestUrlSubStrings = "foo")
-      void interceptRequestMethod() { /* no-op */ }
 
       @BeforeEach
       void setup() throws NoSuchMethodException {
@@ -168,11 +173,11 @@ class UiTestExtensionTest extends BaseUnitUITest {
          assertNotNull(stub.getAnnotation(InterceptRequests.class),
                "sanity-check: our stub must be annotated!");
 
-         // 3. mock context & store so that addQuestConsumer will find a List
+         // 3. mockStore context & mockStore so that addQuestConsumer will find a List
          ExtensionContext ctx = mock(ExtensionContext.class);
-         ExtensionContext.Store store = mock(ExtensionContext.Store.class);
-         when(ctx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
-         when(store.getOrComputeIfAbsent(
+         ExtensionContext.Store mockStore = mock(ExtensionContext.Store.class);
+         when(ctx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
+         when(mockStore.getOrComputeIfAbsent(
                eq(QUEST_CONSUMERS), any()))
                .thenReturn(new ArrayList<Consumer<SuperQuest>>());
 
@@ -180,9 +185,9 @@ class UiTestExtensionTest extends BaseUnitUITest {
          UiTestExtension ext = new UiTestExtension();
          m.invoke(ext, ctx, stub);
 
-         // 5. verify that we actually grabbed the GLOBAL store
+         // 5. verify that we actually grabbed the GLOBAL mockStore
          verify(ctx).getStore(ExtensionContext.Namespace.GLOBAL);
-         verify(store)
+         verify(mockStore)
                .getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any());
       }
 
@@ -222,7 +227,10 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          verify(quest).artifact(UiServiceFluent.class, SmartWebDriver.class);
          verify(quest).getSoftAssertions();
-         verify(softAssertion).registerObjectForPostErrorHandling(eq(SmartWebDriver.class), eq(smartWebDriver));
+         verify(softAssertion)
+               .registerObjectForPostErrorHandling(
+                     SmartWebDriver.class,
+                     smartWebDriver);
       }
 
       @Test
@@ -291,7 +299,6 @@ class UiTestExtensionTest extends BaseUnitUITest {
       @DisplayName("each registered consumer actually runs")
       void eachConsumerExecutes() {
          // grab the list you already populated in your register test:
-         @SuppressWarnings("unchecked")
          var consumers = (List<Consumer<SuperQuest>>)
                store.getOrComputeIfAbsent(QUEST_CONSUMERS, k -> null);
 
@@ -727,7 +734,9 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
             // 5) verify we wired up the soft-assert handler
             verify(soft).registerObjectForPostErrorHandling(
-                  eq(SmartWebDriver.class), eq(smartWebDriver));
+                  SmartWebDriver.class,
+                  smartWebDriver
+            );
 
             // 6) capture the predicate
             @SuppressWarnings("unchecked")
@@ -743,17 +752,17 @@ class UiTestExtensionTest extends BaseUnitUITest {
             // 7) pull the two package constants out of the real class
             Field selField = UiTestExtension.class.getDeclaredField("SELENIUM_PACKAGE");
             selField.setAccessible(true);
-            String SEL_PKG = (String) selField.get(null);
+            String selPkg = (String) selField.get(null);
 
             Field uiField = UiTestExtension.class.getDeclaredField("UI_MODULE_PACKAGE");
             uiField.setAccessible(true);
-            String UI_PKG = (String) uiField.get(null);
+            String uiPkg = (String) uiField.get(null);
 
             // 8) build three synthetic stack traces
             StackTraceElement seleniumHit =
-                  new StackTraceElement(SEL_PKG + ".Foo", "m", "F.java", 1);
+                  new StackTraceElement(selPkg + ".Foo", "m", "F.java", 1);
             StackTraceElement uiHit =
-                  new StackTraceElement(UI_PKG + ".Bar", "m", "B.java", 2);
+                  new StackTraceElement(uiPkg + ".Bar", "m", "B.java", 2);
             StackTraceElement miss =
                   new StackTraceElement("java.lang.String", "s", "String.java", 3);
 
@@ -836,11 +845,161 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
             // sanity‐check the other registration call
             verify(softAssertions).registerObjectForPostErrorHandling(
-                  eq(SmartWebDriver.class), eq(smart));
+                  SmartWebDriver.class,
+                  smart
+            );
             cs.verify(() -> CustomSoftAssertion.registerCustomAssertion(
                         eq(SmartWebDriver.class), any(BiConsumer.class), any(Predicate.class)),
                   times(1));
          }
+      }
+
+      @Test
+      @DisplayName("processAuthenticateViaUiAsAnnotation consumer actually runs the postQuestCreationLogin lambda")
+      void testProcessAuthenticateViaUiAsAnnotationConsumerInvocation() throws Exception {
+         // 1) reflectively grab the private helper
+         Method process = UiTestExtension.class
+               .getDeclaredMethod("processAuthenticateViaUiAsAnnotation",
+                     ExtensionContext.class, Method.class);
+         process.setAccessible(true);
+
+         // 2) prepare a mock ExtensionContext + GLOBAL mockStore
+         ExtensionContext ctx = mock(ExtensionContext.class);
+         ExtensionContext.Store mockStore = mock(ExtensionContext.Store.class);
+         when(ctx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
+         @SuppressWarnings("unchecked")
+         List<Consumer<SuperQuest>> consumers = new ArrayList<>();
+         when(mockStore.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any()))
+               .thenReturn(consumers);
+
+         // 3) identify the @AuthenticateViaUiAs stub method in *this* test class
+         Method stub = BeforeTestExecutionTests.class
+               .getDeclaredMethod("authenticateGood");
+         assertNotNull(stub.getAnnotation(AuthenticateViaUiAs.class),
+               "sanity–check: our stub must have @AuthenticateViaUiAs");
+
+         // 4) stub SpringExtension → DecoratorsFactory → DummyLoginClient
+         try (var spring = mockStatic(SpringExtension.class)) {
+            ApplicationContext app = mock(ApplicationContext.class);
+            spring.when(() -> SpringExtension.getApplicationContext(ctx))
+                  .thenReturn(app);
+
+            DecoratorsFactory df = mock(DecoratorsFactory.class);
+            when(app.getBean(DecoratorsFactory.class)).thenReturn(df);
+
+            // whenever decorate(...) is called with DummyLoginClient.class, return a new instance
+            when(df.decorate(any(SuperQuest.class), eq(DummyLoginClient.class)))
+                  .thenAnswer(i -> new DummyLoginClient());
+
+            // 5) invoke ONLY the helper under test
+            UiTestExtension ext = new UiTestExtension();
+            process.invoke(ext, ctx, stub);
+
+            // 6) now one consumer must have been registered
+            assertEquals(1, consumers.size(),
+                  "should have exactly one login consumer");
+            Consumer<SuperQuest> consumer = consumers.get(0);
+
+            // 7) fire the consumer; it will run the red‐line lambda, then inevitably NPE inside performLoginAndCache
+            SuperQuest quest = mock(SuperQuest.class);
+            // stub just enough of quest so that registerQuestConsumer() doesn't NPE before our lambda:
+            when(quest.getStorage()).thenReturn(mock(Storage.class));
+
+            // the key point: this assertThrows ensures the lambda *did* execute its body
+            assertThrows(Throwable.class,
+                  () -> consumer.accept(quest),
+                  "invoking the login‐consumer must at least execute the postQuestCreationLogin lambda");
+         }
+      }
+
+      @Test
+      @DisplayName("– bad credentials ctor → AuthenticationUiException thrown")
+      void testProcessAuthenticateViaUiAsAnnotationBad() throws Exception {
+         Method helper = UiTestExtension.class
+               .getDeclaredMethod("processAuthenticateViaUiAsAnnotation", ExtensionContext.class, Method.class);
+         helper.setAccessible(true);
+
+         // stub getTestMethod → our bad‐ctor method
+         Method bad = getClass().getDeclaredMethod("authenticateBad");
+         when(context.getTestMethod()).thenReturn(Optional.of(bad));
+         when(context.getStore(any())).thenReturn(store);
+         when(store.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any()))
+               .thenReturn(new ArrayList<>());
+
+         try (var spring = mockStatic(SpringExtension.class)) {
+            ApplicationContext app = mock(ApplicationContext.class);
+            DecoratorsFactory df = mock(DecoratorsFactory.class);
+            spring.when(() -> SpringExtension.getApplicationContext(context)).thenReturn(app);
+            when(app.getBean(DecoratorsFactory.class)).thenReturn(df);
+
+            InvocationTargetException ive = assertThrows(
+                  InvocationTargetException.class,
+                  () -> helper.invoke(new UiTestExtension(), context, bad)
+            );
+            // unwrap the real cause
+            Throwable real = ive.getCause();
+            assertTrue(real instanceof AuthenticationUiException);
+            assertTrue(real.getMessage().contains("Failed to instantiate login credentials"));
+         }
+      }
+
+      public enum AnotherInterceptEnum implements DataIntercept<AnotherInterceptEnum> {
+         X;
+
+         @Override
+         public String getEndpointSubString() {
+            return "/x";
+         }
+
+         @Override
+         public AnotherInterceptEnum enumImpl() {
+            return X;
+         }
+      }
+
+      public enum TestInterceptEnum implements DataIntercept<TestInterceptEnum> {
+         ONE;
+
+         @Override
+         public String getEndpointSubString() {
+            return "/bar";
+         }
+
+         @Override
+         public TestInterceptEnum enumImpl() {
+            return ONE;
+         }
+      }
+
+      public enum AnotherTestInterceptEnum implements DataIntercept<AnotherTestInterceptEnum> {
+         ALPHA;
+
+         @Override
+         public String getEndpointSubString() {
+            return "/alpha";
+         }
+
+         @Override
+         public AnotherTestInterceptEnum enumImpl() {
+            return ALPHA;
+         }
+      }
+
+      @InterceptRequests(requestUrlSubStrings = "ONE")
+      void interceptRequestOneEnumMatch() { /* no-op */ }
+
+      @InterceptRequests(requestUrlSubStrings = {})
+      void interceptRequestEmpty() { /* no-op */ }
+
+      @InterceptRequests(requestUrlSubStrings = "foo")
+      void interceptRequestMethod() { /* no-op */ }
+
+      interface HasOriginal extends WebDriver {
+         ChromeDriver getOriginal();
+      }
+
+      interface ProxyDriver extends WebDriver {
+         WebDriver getOriginal();
       }
 
       // a) a dummy credentials impl whose ctor always succeeds
@@ -922,6 +1081,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
       public static class TestLoginClient extends BaseLoginClient {
          @Override
          protected <T extends UiServiceFluent<?>> void loginImpl(T uiService, String username, String password) {
+            // no-op stub: we don't perform a real UI login in this test client
          }
 
          @Override
@@ -929,155 +1089,361 @@ class UiTestExtensionTest extends BaseUnitUITest {
             return By.id("login-success");
          }
       }
+   }
 
-      @Test
-      @DisplayName("processAuthenticateViaUiAsAnnotation consumer actually runs the postQuestCreationLogin lambda")
-      void testProcessAuthenticateViaUiAsAnnotationConsumerInvocation() throws Exception {
-         // 1) reflectively grab the private helper
-         Method process = UiTestExtension.class
-               .getDeclaredMethod("processAuthenticateViaUiAsAnnotation",
-                     ExtensionContext.class, Method.class);
-         process.setAccessible(true);
+   @Nested
+   @DisplayName("postQuestCreationIntercept helper")
+   class PostQuestCreationInterceptTests {
+      @Mock
+      SuperQuest quest;
+      @Mock
+      SmartWebDriver smartWebDriver;
+      @Mock
+      ChromeDriver chromeDriver;
+      @Mock
+      DevTools devTools;
+      @Mock
+      Storage rootStorage;
+      @Mock
+      Storage uiStorage;
 
-         // 2) prepare a mock ExtensionContext + GLOBAL store
-         ExtensionContext ctx = mock(ExtensionContext.class);
-         ExtensionContext.Store store = mock(ExtensionContext.Store.class);
-         when(ctx.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(store);
-         @SuppressWarnings("unchecked")
-         List<Consumer<SuperQuest>> consumers = new ArrayList<>();
-         when(store.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any()))
-               .thenReturn(consumers);
+      private Method helper;
 
-         // 3) identify the @AuthenticateViaUiAs stub method in *this* test class
-         Method stub = BeforeTestExecutionTests.class
-               .getDeclaredMethod("authenticateGood");
-         assertNotNull(stub.getAnnotation(AuthenticateViaUiAs.class),
-               "sanity–check: our stub must have @AuthenticateViaUiAs");
+      @BeforeEach
+      void setUp() throws Exception {
+         MockitoAnnotations.openMocks(this);
 
-         // 4) stub SpringExtension → DecoratorsFactory → DummyLoginClient
-         try (var spring = mockStatic(SpringExtension.class)) {
-            ApplicationContext app = mock(ApplicationContext.class);
-            spring.when(() -> SpringExtension.getApplicationContext(ctx))
-                  .thenReturn(app);
-
-            DecoratorsFactory df = mock(DecoratorsFactory.class);
-            when(app.getBean(DecoratorsFactory.class)).thenReturn(df);
-
-            // whenever decorate(...) is called with DummyLoginClient.class, return a new instance
-            when(df.decorate(any(SuperQuest.class), eq(DummyLoginClient.class)))
-                  .thenAnswer(i -> new DummyLoginClient());
-
-            // 5) invoke ONLY the helper under test
-            UiTestExtension ext = new UiTestExtension();
-            process.invoke(ext, ctx, stub);
-
-            // 6) now one consumer must have been registered
-            assertEquals(1, consumers.size(),
-                  "should have exactly one login consumer");
-            Consumer<SuperQuest> consumer = consumers.get(0);
-
-            // 7) fire the consumer; it will run the red‐line lambda, then inevitably NPE inside performLoginAndCache
-            SuperQuest quest = mock(SuperQuest.class);
-            // stub just enough of quest so that registerQuestConsumer() doesn't NPE before our lambda:
-            when(quest.getStorage()).thenReturn(mock(Storage.class));
-
-            // the key point: this assertThrows ensures the lambda *did* execute its body
-            assertThrows(Throwable.class,
-                  () -> consumer.accept(quest),
-                  "invoking the login‐consumer must at least execute the postQuestCreationLogin lambda");
-         }
-      }
-
-      @Test
-      @DisplayName("– bad credentials ctor → AuthenticationUiException thrown")
-      void testProcessAuthenticateViaUiAsAnnotationBad() throws Exception {
-         Method helper = UiTestExtension.class
-               .getDeclaredMethod("processAuthenticateViaUiAsAnnotation", ExtensionContext.class, Method.class);
+         // 1) grab the private static helper
+         helper = UiTestExtension.class
+               .getDeclaredMethod("postQuestCreationIntercept",
+                     SuperQuest.class, String[].class);
          helper.setAccessible(true);
 
-         // stub getTestMethod → our bad‐ctor method
-         Method bad = getClass().getDeclaredMethod("authenticateBad");
-         when(context.getTestMethod()).thenReturn(Optional.of(bad));
-         when(context.getStore(any())).thenReturn(store);
-         when(store.getOrComputeIfAbsent(eq(QUEST_CONSUMERS), any()))
-               .thenReturn(new ArrayList<>());
-
-         try (var spring = mockStatic(SpringExtension.class)) {
-            ApplicationContext app = mock(ApplicationContext.class);
-            DecoratorsFactory df = mock(DecoratorsFactory.class);
-            spring.when(() -> SpringExtension.getApplicationContext(context)).thenReturn(app);
-            when(app.getBean(DecoratorsFactory.class)).thenReturn(df);
-
-            InvocationTargetException ive = assertThrows(
-                  InvocationTargetException.class,
-                  () -> helper.invoke(new UiTestExtension(), context, bad)
-            );
-            // unwrap the real cause
-            Throwable real = ive.getCause();
-            assertTrue(real instanceof AuthenticationUiException);
-            assertTrue(real.getMessage().contains("Failed to instantiate login credentials"));
+         // 2a) create a little proxy that _does_ have getOriginal()
+         interface ProxyDriver extends WebDriver {
+            ChromeDriver getOriginal();
          }
+         ProxyDriver proxy = mock(ProxyDriver.class);
+
+         // 2b) chain them: quest→smart→proxy→chrome→devTools
+         when(quest.artifact(UiServiceFluent.class, SmartWebDriver.class))
+               .thenReturn(smartWebDriver);
+         when(smartWebDriver.getOriginal()).thenReturn(proxy);
+         when(proxy.getOriginal()).thenReturn(chromeDriver);
+         when(chromeDriver.getDevTools()).thenReturn(devTools);
+
+         // 3) wire storage
+         when(quest.getStorage()).thenReturn(rootStorage);
+         when(rootStorage.sub(UI)).thenReturn(uiStorage);
+         // first get(...) returns null so that addResponseInStorage will create a new list
+         when(uiStorage.get(eq(RESPONSES), any(ParameterizedTypeReference.class)))
+               .thenReturn(null);
       }
 
+      @Test
+      @DisplayName("normal body under 10k → stored verbatim")
+      void normalBodyGetsStored() throws Exception {
+         // arrange: capture what ends up in storage
+         List<ApiResponse> captured = new ArrayList<>();
+         doAnswer(inv -> {
+            @SuppressWarnings("unchecked")
+            List<ApiResponse> list = (List<ApiResponse>) inv.getArgument(1);
+            captured.addAll(list);
+            return null;
+         }).when(uiStorage).put(eq(RESPONSES), anyList());
 
-      // helper second enum to simulate "size()>1"
-      public enum AnotherInterceptEnum implements DataIntercept<AnotherInterceptEnum> {
-         X;
+         // act: run the helper
+         helper.invoke(null, quest, new String[] {"foo"});
 
-         @Override
-         public String getEndpointSubString() {
-            return "/x";
-         }
+         // now verify that addListener was called exactly twice,
+         // and capture the two Consumers in order:
+         @SuppressWarnings("unchecked")
+         ArgumentCaptor<Consumer<?>> listenerCaptor =
+               ArgumentCaptor.forClass((Class) Consumer.class);
 
-         @Override
-         public AnotherInterceptEnum enumImpl() {
-            return X;
-         }
+         verify(devTools, times(2)).addListener(any(), listenerCaptor.capture());
+
+         // the first listener is the RequestWillBeSent consumer:
+         @SuppressWarnings("unchecked")
+         Consumer<RequestWillBeSent> reqListener =
+               (Consumer<RequestWillBeSent>) listenerCaptor.getAllValues().get(0);
+
+         // the second is the ResponseReceived consumer:
+         @SuppressWarnings("unchecked")
+         Consumer<ResponseReceived> resListener =
+               (Consumer<ResponseReceived>) listenerCaptor.getAllValues().get(1);
+
+         // now simulate a request event
+         var fakeReqEvent = mock(RequestWillBeSent.class);
+         var fakeReq      = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
+         when(fakeReq.getMethod()).thenReturn("GET");
+         when(fakeReqEvent.getRequest()).thenReturn(fakeReq);
+         RequestId rid = new RequestId("rid-1");
+         when(fakeReqEvent.getRequestId()).thenReturn(rid);
+
+         reqListener.accept(fakeReqEvent);
+
+         // simulate a matching response event
+         var fakeRespEvent = mock(ResponseReceived.class);
+         var fakeResp = mock(org.openqa.selenium.devtools.v85.network.model.Response.class);
+         when(fakeResp.getStatus()).thenReturn(200);
+         when(fakeResp.getUrl()).thenReturn("https://example.com/foo");
+         when(fakeRespEvent.getResponse()).thenReturn(fakeResp);
+         when(fakeRespEvent.getRequestId()).thenReturn(rid);
+
+         // stub the body to “hello”
+         var bodyResponse = mock(Network.GetResponseBodyResponse.class);
+         when(bodyResponse.getBody()).thenReturn("hello");
+         when(devTools.send(any())).thenReturn(bodyResponse);
+
+         resListener.accept(fakeRespEvent);
+
+         // assert that exactly one ApiResponse landed in storage
+         assertEquals(1, captured.size());
+         ApiResponse r = captured.get(0);
+         assertEquals("GET",            r.getMethod());
+         assertEquals(200,              r.getStatus());
+         assertEquals("https://example.com/foo", r.getUrl());
+         assertEquals("hello",          r.getBody());
       }
 
-      // -----------------------------------------------------------------
-      // helper enum used in the two “one enum” tests:
-      public enum TestInterceptEnum implements DataIntercept<TestInterceptEnum> {
-         ONE;
+      @Test
+      @DisplayName("body >10k → truncated message")
+      void longBodyGetsTruncated() throws Exception {
+         // arrange: capture whatever ends up in storage
+         List<ApiResponse> captured = new ArrayList<>();
+         doAnswer(inv -> {
+            @SuppressWarnings("unchecked")
+            List<ApiResponse> list = (List<ApiResponse>) inv.getArgument(1);
+            captured.addAll(list);
+            return null;
+         }).when(uiStorage).put(eq(RESPONSES), anyList());
 
-         @Override
-         public String getEndpointSubString() {
-            return "/bar";
-         }
+         // act: invoke the helper with "foo" as our intercept substring
+         helper.invoke(null, quest, new String[] {"foo"});
 
-         @Override
-         public TestInterceptEnum enumImpl() {
-            return ONE;
-         }
+         // capture both addListener calls (request & response)
+         @SuppressWarnings("unchecked")
+         ArgumentCaptor<Consumer<?>> listenerCaptor =
+               ArgumentCaptor.forClass((Class) Consumer.class);
+         verify(devTools, times(2)).addListener(any(), listenerCaptor.capture());
+
+         // first listener is the RequestWillBeSent consumer
+         @SuppressWarnings("unchecked")
+         Consumer<RequestWillBeSent> reqListener =
+               (Consumer<RequestWillBeSent>) listenerCaptor.getAllValues().get(0);
+
+         // second listener is the ResponseReceived consumer
+         @SuppressWarnings("unchecked")
+         Consumer<ResponseReceived> resListener =
+               (Consumer<ResponseReceived>) listenerCaptor.getAllValues().get(1);
+
+         // fire a fake request event so we record the rid→method mapping
+         var fakeReqEvent = mock(RequestWillBeSent.class);
+         var fakeReq     = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
+         when(fakeReq.getMethod()).thenReturn("POST");
+         when(fakeReqEvent.getRequest()).thenReturn(fakeReq);
+         RequestId rid = new RequestId("rid-2");
+         when(fakeReqEvent.getRequestId()).thenReturn(rid);
+         reqListener.accept(fakeReqEvent);
+
+         // now fire a fake response event whose URL contains "foo"
+         var fakeRespEvent = mock(ResponseReceived.class);
+         var fakeResp      = mock(org.openqa.selenium.devtools.v85.network.model.Response.class);
+         when(fakeResp.getStatus()).thenReturn(201);
+         when(fakeResp.getUrl()).thenReturn("https://big/foo");   // <-- ensure it matches "foo"
+         when(fakeRespEvent.getResponse()).thenReturn(fakeResp);
+         when(fakeRespEvent.getRequestId()).thenReturn(rid);
+
+         // stub a huge body (>10k chars)
+         String big = "x".repeat(10_001);
+         var bigBodyResp = mock(Network.GetResponseBodyResponse.class);
+         when(bigBodyResp.getBody()).thenReturn(big);
+         when(devTools.send(any())).thenReturn(bigBodyResp);
+
+         // fire the response listener
+         resListener.accept(fakeRespEvent);
+
+         // assert that exactly one ApiResponse was stored and that its body was truncated
+         assertEquals(1, captured.size(), "should have stored exactly one truncated response");
+         String body = captured.get(0).getBody();
+         assertTrue(
+               body.startsWith("Response body truncated. Original length: 10001 characters."),
+               "truncation prefix"
+         );
+         assertTrue(
+               body.contains(big.substring(0, 100)),
+               "should include the first 100 chars of the original body"
+         );
       }
 
-      public enum AnotherTestInterceptEnum implements DataIntercept<AnotherTestInterceptEnum> {
-         ALPHA;
+      @Test
+      @DisplayName("exception fetching body → error stored")
+      void exceptionFetchingBody() throws Exception {
+         // arrange: capture whatever ends up in storage
+         List<ApiResponse> captured = new ArrayList<>();
+         doAnswer(inv -> {
+            @SuppressWarnings("unchecked")
+            List<ApiResponse> list = (List<ApiResponse>) inv.getArgument(1);
+            captured.addAll(list);
+            return null;
+         }).when(uiStorage).put(eq(RESPONSES), anyList());
 
-         @Override
-         public String getEndpointSubString() {
-            return "/alpha";
-         }
+         // act: invoke the helper
+         helper.invoke(null, quest, new String[] {"foo"});
 
-         @Override
-         public AnotherTestInterceptEnum enumImpl() {
-            return ALPHA;
-         }
+         // capture both addListener calls (request & response)
+         @SuppressWarnings("unchecked")
+         ArgumentCaptor<Consumer<?>> listenerCaptor =
+               ArgumentCaptor.forClass((Class) Consumer.class);
+         verify(devTools, times(2)).addListener(any(), listenerCaptor.capture());
+
+         // extract the two listeners
+         @SuppressWarnings("unchecked")
+         Consumer<RequestWillBeSent> reqListener =
+               (Consumer<RequestWillBeSent>) listenerCaptor.getAllValues().get(0);
+         @SuppressWarnings("unchecked")
+         Consumer<ResponseReceived> resListener =
+               (Consumer<ResponseReceived>) listenerCaptor.getAllValues().get(1);
+
+         // fire a fake request so we map rid → method
+         var fakeReq = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
+         when(fakeReq.getMethod()).thenReturn("DELETE");
+         var fakeReqEvent = mock(RequestWillBeSent.class);
+         when(fakeReqEvent.getRequest()).thenReturn(fakeReq);
+         RequestId rid = new RequestId("rid-3");
+         when(fakeReqEvent.getRequestId()).thenReturn(rid);
+         reqListener.accept(fakeReqEvent);
+
+         // now fire a fake response whose URL contains "foo"
+         var fakeResp = mock(org.openqa.selenium.devtools.v85.network.model.Response.class);
+         when(fakeResp.getStatus()).thenReturn(500);
+         when(fakeResp.getUrl()).thenReturn("https://error/foo");
+         var fakeRespEvent = mock(ResponseReceived.class);
+         when(fakeRespEvent.getResponse()).thenReturn(fakeResp);
+         when(fakeRespEvent.getRequestId()).thenReturn(rid);
+
+         // stub send(...) to throw
+         when(devTools.send(any()))
+               .thenThrow(new RuntimeException("boom!"));
+
+         // invoke the response listener
+         resListener.accept(fakeRespEvent);
+
+         // assert we recorded exactly one response, with the error message
+         assertEquals(1, captured.size(), "should have recorded exactly one ApiResponse");
+         assertEquals(
+               "Error retrieving response body: boom!",
+               captured.get(0).getBody(),
+               "body should contain the caught exception message"
+         );
       }
 
-      // dummy stub method with a single name that matches ONE
-      @InterceptRequests(requestUrlSubStrings = "ONE")
-      void interceptRequestOneEnumMatch() { /* no-op */ }
+      @Test
+      @DisplayName("non-matching URL → skips body retrieval and leaves body null")
+      void nonMatchingUrlSkipsBodyRetrieval() throws Exception {
+         // arrange: capture whatever ends up in storage
+         List<ApiResponse> captured = new ArrayList<>();
+         doAnswer(inv -> {
+            @SuppressWarnings("unchecked")
+            List<ApiResponse> list = (List<ApiResponse>) inv.getArgument(1);
+            captured.addAll(list);
+            return null;
+         }).when(uiStorage).put(eq(RESPONSES), anyList());
 
-      @InterceptRequests(requestUrlSubStrings = {})
-      void interceptRequestEmpty() { /* no-op */ }
+         // act: invoke with a pattern that will NOT match the response URL
+         helper.invoke(null, quest, new String[]{"nomatch"});
 
-      interface HasOriginal extends WebDriver {
-         ChromeDriver getOriginal();
+         // grab both listeners at once
+         @SuppressWarnings("unchecked")
+         ArgumentCaptor<Consumer<?>> cap = ArgumentCaptor.forClass((Class) Consumer.class);
+         verify(devTools, times(2)).addListener(any(), cap.capture());
+
+         // unpack them
+         @SuppressWarnings("unchecked")
+         Consumer<RequestWillBeSent> onReq = (Consumer<RequestWillBeSent>) cap.getAllValues().get(0);
+         @SuppressWarnings("unchecked")
+         Consumer<ResponseReceived> onRes = (Consumer<ResponseReceived>) cap.getAllValues().get(1);
+
+         // simulate the request
+         var reqEvent = mock(RequestWillBeSent.class);
+         var req = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
+         when(req.getMethod()).thenReturn("PATCH");
+         when(reqEvent.getRequest()).thenReturn(req);
+         RequestId rid = new RequestId("x");
+         when(reqEvent.getRequestId()).thenReturn(rid);
+         onReq.accept(reqEvent);
+
+         // simulate a response whose URL does *not* contain "nomatch"
+         var resEvent = mock(ResponseReceived.class);
+         var res = mock(org.openqa.selenium.devtools.v85.network.model.Response.class);
+         when(res.getStatus()).thenReturn(418);
+         when(res.getUrl()).thenReturn("https://example.com/foo");
+         when(resEvent.getResponse()).thenReturn(res);
+         when(resEvent.getRequestId()).thenReturn(rid);
+         onRes.accept(resEvent);
+
+         // assert we got one entry, with method & status, but body stayed null
+         assertEquals(1, captured.size());
+         ApiResponse out = captured.get(0);
+         assertEquals("PATCH", out.getMethod());
+         assertEquals(418, out.getStatus());
+         assertEquals("https://example.com/foo", out.getUrl());
+         assertNull(out.getBody(), "body should remain null when URL doesn’t match");
       }
 
-      interface ProxyDriver extends WebDriver {
-         WebDriver getOriginal();
+      @Test
+      @DisplayName("matching URL with null body → stored as null")
+      void matchingUrlWithNullBodyRecorded() throws Exception {
+         // arrange: capture storage
+         List<ApiResponse> captured = new ArrayList<>();
+         doAnswer(inv -> {
+            @SuppressWarnings("unchecked")
+            List<ApiResponse> list = (List<ApiResponse>) inv.getArgument(1);
+            captured.addAll(list);
+            return null;
+         }).when(uiStorage).put(eq(RESPONSES), anyList());
+
+         // act: invoke with pattern “example” so we match the URL
+         helper.invoke(null, quest, new String[]{"example"});
+
+         // grab both listeners
+         @SuppressWarnings("unchecked")
+         ArgumentCaptor<Consumer<?>> cap = ArgumentCaptor.forClass((Class) Consumer.class);
+         verify(devTools, times(2)).addListener(any(), cap.capture());
+
+         @SuppressWarnings("unchecked")
+         Consumer<RequestWillBeSent> onReq = (Consumer<RequestWillBeSent>) cap.getAllValues().get(0);
+         @SuppressWarnings("unchecked")
+         Consumer<ResponseReceived> onRes = (Consumer<ResponseReceived>) cap.getAllValues().get(1);
+
+         // fire the request → method mapping
+         var reqEvent = mock(RequestWillBeSent.class);
+         var req = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
+         when(req.getMethod()).thenReturn("HEAD");
+         when(reqEvent.getRequest()).thenReturn(req);
+         RequestId rid = new RequestId("y");
+         when(reqEvent.getRequestId()).thenReturn(rid);
+         onReq.accept(reqEvent);
+
+         // fire a matching response
+         var resEvent = mock(ResponseReceived.class);
+         var res = mock(org.openqa.selenium.devtools.v85.network.model.Response.class);
+         when(res.getStatus()).thenReturn(307);
+         when(res.getUrl()).thenReturn("https://example.com/null");
+         when(resEvent.getResponse()).thenReturn(res);
+         when(resEvent.getRequestId()).thenReturn(rid);
+
+         // stub send(...) to return a body‐response whose getBody() is null
+         var bodyResp = mock(Network.GetResponseBodyResponse.class);
+         when(bodyResp.getBody()).thenReturn(null);
+         when(devTools.send(any())).thenReturn(bodyResp);
+
+         onRes.accept(resEvent);
+
+         // assert that we still recorded one response, but its body is null
+         assertEquals(1, captured.size());
+         assertNull(captured.get(0).getBody(), "body should be recorded as null when getBody() returns null");
       }
    }
 
@@ -1803,14 +2169,10 @@ class UiTestExtensionTest extends BaseUnitUITest {
          public AnotherService(SmartWebDriver driver) {
             super(driver);
          }
-
-         public AnotherService(SmartWebDriver driver, SuperQuest q) {
-            super(driver);
-         }
       }
 
       static class BadService extends UiServiceFluent<BadService> {
-         public BadService(SmartWebDriver driver, SuperQuest q) {
+         public BadService(SmartWebDriver driver) {
             super(driver);
             throw new RuntimeException("boom");
          }
@@ -1889,6 +2251,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
    @Nested
    @DisplayName("getOrCreateQuestConsumers helper")
    class GetOrCreateQuestConsumersTests {
+
       @Mock
       ExtensionContext context;
       @Mock
@@ -1943,6 +2306,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
    @Nested
    @DisplayName("checkUrl helper")
    class CheckUrlTests {
+
       @Test
       @DisplayName("Check URL Method")
       void testCheckUrl() throws Exception {
@@ -1962,6 +2326,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
    @Nested
    @DisplayName("unwrapDriver helper")
    class UnwrapDriverTests {
+
       @Test
       @DisplayName("Unwrap Driver")
       void testUnwrapDriver() throws Exception {
@@ -2003,6 +2368,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
    @Nested
    @DisplayName("static initialization")
    class StaticInitializationTests {
+
       @Test
       @DisplayName("Static Assertion Registry Initialization")
       void testStaticAssertionRegistryInitialization() {
@@ -2018,31 +2384,10 @@ class UiTestExtensionTest extends BaseUnitUITest {
    @Nested
    @DisplayName("takeScreenshot helper")
    class TakeScreenshotTests {
+
       @Test
       @DisplayName("Take Screenshot Handles Exceptions")
       void testTakeScreenshot() throws Exception {
-         // Use reflection to access private static method
-         Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
-               "takeScreenshot", WebDriver.class, String.class
-         );
-         takeScreenshotMethod.setAccessible(true);
-
-         // Create mock WebDriver that fails screenshot
-         WebDriver mockDriver = mock(WebDriver.class, withSettings().extraInterfaces(TakesScreenshot.class));
-
-         // Simulate screenshot failure
-         when(((TakesScreenshot) mockDriver).getScreenshotAs(OutputType.BYTES))
-               .thenThrow(new RuntimeException("Screenshot failed"));
-
-         // Invoke method
-         assertDoesNotThrow(() ->
-               takeScreenshotMethod.invoke(null, mockDriver, "testScreenshot")
-         );
-      }
-
-      @Test
-      @DisplayName("Take Screenshot Handles Exceptions")
-      void testTakeScreenshotHandlesExceptions() throws Exception {
          // Use reflection to access private static method
          Method takeScreenshotMethod = UiTestExtension.class.getDeclaredMethod(
                "takeScreenshot", WebDriver.class, String.class
@@ -2066,6 +2411,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
    @Nested
    @DisplayName("postQuestCreationAssertion helper")
    class PostQuestCreationAssertionTests {
+
       @Test
       @DisplayName("Stack Trace Checking")
       void testStackTraceChecking() throws Exception {
@@ -2121,7 +2467,9 @@ class UiTestExtensionTest extends BaseUnitUITest {
          verify(quest).artifact(UiServiceFluent.class, SmartWebDriver.class);
          verify(quest).getSoftAssertions();
          verify(softAssertion).registerObjectForPostErrorHandling(
-               eq(SmartWebDriver.class), eq(smartWebDriver));
+               SmartWebDriver.class,
+               smartWebDriver
+         );
       }
 
       @Test
