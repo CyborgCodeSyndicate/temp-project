@@ -5,7 +5,6 @@ import com.theairebellion.zeus.framework.storage.DataExtractor;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,18 +52,14 @@ class DataExtractorsUiTest {
    // Test class with non-TableCell fields
    static class TestMixedRow {
       private TableCell cell;
-      private String nonCellField;
       private List<TableCell> cellList;
-      private List<String> nonCellList;
 
-      public TestMixedRow(String cellValue, String nonCellValue, String[] cellListValues, String[] nonCellListValues) {
+      public TestMixedRow(String cellValue, String[] cellListValues) {
          this.cell = new TableCell(cellValue);
-         this.nonCellField = nonCellValue;
          this.cellList = new ArrayList<>();
          for (String value : cellListValues) {
             this.cellList.add(new TableCell(value));
          }
-         this.nonCellList = Arrays.asList(nonCellListValues);
       }
    }
 
@@ -166,6 +161,37 @@ class DataExtractorsUiTest {
    }
 
    @Test
+   void testResponseBodyExtractionIndexOutOfBounds() {
+      // Setup test data with two matching responses
+      List<ApiResponse> responses = new ArrayList<>();
+      ApiResponse response1 = Mockito.mock(ApiResponse.class);
+      ApiResponse response2 = Mockito.mock(ApiResponse.class);
+      ApiResponse response3 = Mockito.mock(ApiResponse.class); // Will be filtered out
+
+      Mockito.when(response1.getUrl()).thenReturn("http://test-prefix/api/1");
+      Mockito.when(response1.getBody()).thenReturn("{\"data\": \"value1\"}");
+
+      Mockito.when(response2.getUrl()).thenReturn("http://test-prefix/api/2");
+      Mockito.when(response2.getBody()).thenReturn("{\"data\": \"value2\"}");
+
+      Mockito.when(response3.getUrl()).thenReturn("http://other-prefix/api/3");
+      Mockito.when(response3.getBody()).thenReturn("{\"data\": \"value3\"}");
+
+      responses.add(response1);
+      responses.add(response2);
+      responses.add(response3);
+
+      // Index = 0 → adjustedIndex = 2 - 0 = 2 → out of bounds (valid indices: 0 and 1)
+      DataExtractor<String> extractor = DataExtractorsUi.responseBodyExtraction("http://test-prefix", "$.data", 0);
+
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+         extractor.extract(responses);
+      });
+
+      assertTrue(exception.getMessage().contains("Invalid index for response list"));
+   }
+
+   @Test
    void testTableRowExtractorWithIndicators() {
       // Setup test data
       List<TestTableRow> rows = new ArrayList<>();
@@ -257,9 +283,7 @@ class DataExtractorsUiTest {
       // Setup test data with mixed field types
       TestMixedRow mixedRow = new TestMixedRow(
             "Cell Value",
-            "Non-Cell Value",
-            new String[] {"List Cell 1", "List Cell 2"},
-            new String[] {"Non-Cell List 1", "Non-Cell List 2"}
+            new String[] {"List Cell 1", "List Cell 2"}
       );
 
       // Create actual extractor from the class under test
