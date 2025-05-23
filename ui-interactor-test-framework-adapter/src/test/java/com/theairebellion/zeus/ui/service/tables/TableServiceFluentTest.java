@@ -16,6 +16,7 @@ import com.theairebellion.zeus.validator.core.Assertion;
 import com.theairebellion.zeus.validator.core.AssertionResult;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,6 +60,11 @@ class TableServiceFluentTest extends BaseUnitUITest {
                   anyString()
             )
       ).thenReturn(DefaultTableTypes.DEFAULT);
+   }
+
+   @AfterAll
+   static void afterAll() {
+      reflectionUtilMock.close();
    }
 
    @BeforeEach
