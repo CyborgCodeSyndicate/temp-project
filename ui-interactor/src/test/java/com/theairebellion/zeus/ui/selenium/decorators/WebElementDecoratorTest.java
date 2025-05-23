@@ -1,276 +1,309 @@
 package com.theairebellion.zeus.ui.selenium.decorators;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.Rectangle;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WebElementDecoratorTest {
 
-   @Mock
-   private WebElement mockWebElement;
+    @Mock
+    private WebElement mockWebElement;
 
-   private TestWebElementDecorator decorator;
+    private TestWebElementDecorator decorator;
 
-   // Create a concrete implementation of the abstract class for testing
-   private static class TestWebElementDecorator extends WebElementDecorator {
-      public TestWebElementDecorator(WebElement original) {
-         super(original);
-      }
-   }
+    // Create a concrete implementation of the abstract class for testing
+    private static class TestWebElementDecorator extends WebElementDecorator {
+        public TestWebElementDecorator(WebElement original) {
+            super(original);
+        }
+    }
 
-   @BeforeEach
-   void setUp() {
-      decorator = new TestWebElementDecorator(mockWebElement);
-   }
+    @BeforeEach
+    void setUp() {
+        decorator = new TestWebElementDecorator(mockWebElement);
+    }
 
-   @Test
-   void shouldReturnOriginalWebElement() {
-      // When getting the original WebElement
-      WebElement result = decorator.getOriginal();
+    @Test
+    @DisplayName("getOriginal() should return the exact same WebElement instance that was wrapped")
+    void shouldReturnOriginalWebElement() {
+        // When getting the original WebElement
+        WebElement result = decorator.getOriginal();
 
-      // Then it should return the same instance
-      assertSame(mockWebElement, result);
-   }
+        // Then it should return the same instance
+        assertSame(mockWebElement, result);
+    }
 
-   @Test
-   void shouldDelegateClickMethod() {
-      // When
-      decorator.click();
+    @Test
+    @DisplayName("click() should delegate to the original WebElement's click method")
+    void shouldDelegateClickMethod() {
+        // When
+        decorator.click();
 
-      // Then
-      verify(mockWebElement).click();
-   }
+        // Then
+        verify(mockWebElement).click();
+    }
 
-   @Test
-   void shouldDelegateSubmitMethod() {
-      // When
-      decorator.submit();
+    @Test
+    @DisplayName("submit() should delegate to the original WebElement's submit method")
+    void shouldDelegateSubmitMethod() {
+        // When
+        decorator.submit();
 
-      // Then
-      verify(mockWebElement).submit();
-   }
+        // Then
+        verify(mockWebElement).submit();
+    }
 
-   @Test
-   void shouldDelegateSendKeysMethod() {
-      // Given
-      CharSequence[] keysToSend = new CharSequence[] {"test input"};
+    @Test
+    @DisplayName("sendKeys() should delegate to the original WebElement's sendKeys method with provided input")
+    void shouldDelegateSendKeysMethod() {
+        // Given
+        CharSequence[] keysToSend = new CharSequence[]{"test input"};
 
-      // When
-      decorator.sendKeys(keysToSend);
+        // When
+        decorator.sendKeys(keysToSend);
 
-      // Then
-      verify(mockWebElement).sendKeys(keysToSend);
-   }
+        // Then
+        verify(mockWebElement).sendKeys(keysToSend);
+    }
 
-   @Test
-   void shouldDelegateClearMethod() {
-      // When
-      decorator.clear();
+    @Test
+    @DisplayName("clear() should delegate to the original WebElement's clear method")
+    void shouldDelegateClearMethod() {
+        // When
+        decorator.clear();
 
-      // Then
-      verify(mockWebElement).clear();
-   }
+        // Then
+        verify(mockWebElement).clear();
+    }
 
-   @Test
-   void shouldDelegateGetTagNameMethod() {
-      // Given
-      String expectedTagName = "div";
-      when(mockWebElement.getTagName()).thenReturn(expectedTagName);
+    @Test
+    @DisplayName("getTagName() should delegate to original WebElement and return its tag name")
+    void shouldDelegateGetTagNameMethod() {
+        // Given
+        String expectedTagName = "div";
+        when(mockWebElement.getTagName()).thenReturn(expectedTagName);
 
-      // When
-      String result = decorator.getTagName();
+        // When
+        String result = decorator.getTagName();
 
-      // Then
-      assertEquals(expectedTagName, result);
-      verify(mockWebElement).getTagName();
-   }
+        // Then
+        assertEquals(expectedTagName, result);
+        verify(mockWebElement).getTagName();
+    }
 
-   @Test
-   void shouldDelegateGetAttributeMethod() {
-      // Given
-      String attributeName = "id";
-      String expectedValue = "element-id";
-      when(mockWebElement.getAttribute(attributeName)).thenReturn(expectedValue);
+    @Test
+    @DisplayName("getAttribute() should delegate to original WebElement and return the requested attribute value")
+    void shouldDelegateGetAttributeMethod() {
+        // Given
+        String attributeName = "id";
+        String expectedValue = "element-id";
+        when(mockWebElement.getAttribute(attributeName)).thenReturn(expectedValue);
 
-      // When
-      String result = decorator.getAttribute(attributeName);
+        // When
+        String result = decorator.getAttribute(attributeName);
 
-      // Then
-      assertEquals(expectedValue, result);
-      verify(mockWebElement).getAttribute(attributeName);
-   }
+        // Then
+        assertEquals(expectedValue, result);
+        verify(mockWebElement).getAttribute(attributeName);
+    }
 
-   @Test
-   void shouldDelegateIsSelectedMethod() {
-      // Given
-      when(mockWebElement.isSelected()).thenReturn(true);
+    @Test
+    @DisplayName("isSelected() should delegate to original WebElement and return its selected state")
+    void shouldDelegateIsSelectedMethod() {
+        // Given
+        when(mockWebElement.isSelected()).thenReturn(true);
 
-      // When
-      boolean result = decorator.isSelected();
+        // When
+        boolean result = decorator.isSelected();
 
-      // Then
-      assertTrue(result);
-      verify(mockWebElement).isSelected();
-   }
+        // Then
+        assertTrue(result);
+        verify(mockWebElement).isSelected();
+    }
 
-   @Test
-   void shouldDelegateIsEnabledMethod() {
-      // Given
-      when(mockWebElement.isEnabled()).thenReturn(true);
+    @Test
+    @DisplayName("isEnabled() should delegate to original WebElement and return its enabled state")
+    void shouldDelegateIsEnabledMethod() {
+        // Given
+        when(mockWebElement.isEnabled()).thenReturn(true);
 
-      // When
-      boolean result = decorator.isEnabled();
+        // When
+        boolean result = decorator.isEnabled();
 
-      // Then
-      assertTrue(result);
-      verify(mockWebElement).isEnabled();
-   }
+        // Then
+        assertTrue(result);
+        verify(mockWebElement).isEnabled();
+    }
 
-   @Test
-   void shouldDelegateGetTextMethod() {
-      // Given
-      String expectedText = "Element text";
-      when(mockWebElement.getText()).thenReturn(expectedText);
+    @Test
+    @DisplayName("getText() should delegate to original WebElement and return its text content")
+    void shouldDelegateGetTextMethod() {
+        // Given
+        String expectedText = "Element text";
+        when(mockWebElement.getText()).thenReturn(expectedText);
 
-      // When
-      String result = decorator.getText();
+        // When
+        String result = decorator.getText();
 
-      // Then
-      assertEquals(expectedText, result);
-      verify(mockWebElement).getText();
-   }
+        // Then
+        assertEquals(expectedText, result);
+        verify(mockWebElement).getText();
+    }
 
-   @Test
-   void shouldDelegateFindElementsMethod() {
-      // Given
-      By by = By.className("child");
-      WebElement childElement = mock(WebElement.class);
-      List<WebElement> expectedElements = List.of(childElement);
-      when(mockWebElement.findElements(by)).thenReturn(expectedElements);
+    @Test
+    @DisplayName("findElements() should delegate to original WebElement and return list of child elements")
+    void shouldDelegateFindElementsMethod() {
+        // Given
+        By by = By.className("child");
+        WebElement childElement = mock(WebElement.class);
+        List<WebElement> expectedElements = List.of(childElement);
+        when(mockWebElement.findElements(by)).thenReturn(expectedElements);
 
-      // When
-      List<WebElement> result = decorator.findElements(by);
+        // When
+        List<WebElement> result = decorator.findElements(by);
 
-      // Then
-      assertEquals(expectedElements, result);
-      verify(mockWebElement).findElements(by);
-   }
+        // Then
+        assertEquals(expectedElements, result);
+        verify(mockWebElement).findElements(by);
+    }
 
-   @Test
-   void shouldDelegateFindElementMethod() {
-      // Given
-      By by = By.id("childId");
-      WebElement expectedElement = mock(WebElement.class);
-      when(mockWebElement.findElement(by)).thenReturn(expectedElement);
+    @Test
+    @DisplayName("findElement() should delegate to original WebElement and return the first matching child element")
+    void shouldDelegateFindElementMethod() {
+        // Given
+        By by = By.id("childId");
+        WebElement expectedElement = mock(WebElement.class);
+        when(mockWebElement.findElement(by)).thenReturn(expectedElement);
 
-      // When
-      WebElement result = decorator.findElement(by);
+        // When
+        WebElement result = decorator.findElement(by);
 
-      // Then
-      assertEquals(expectedElement, result);
-      verify(mockWebElement).findElement(by);
-   }
+        // Then
+        assertEquals(expectedElement, result);
+        verify(mockWebElement).findElement(by);
+    }
 
-   @Test
-   void shouldDelegateIsDisplayedMethod() {
-      // Given
-      when(mockWebElement.isDisplayed()).thenReturn(false);
+    @Test
+    @DisplayName("isDisplayed() should delegate to original WebElement and return its visibility state")
+    void shouldDelegateIsDisplayedMethod() {
+        // Given
+        when(mockWebElement.isDisplayed()).thenReturn(false);
 
-      // When
-      boolean result = decorator.isDisplayed();
+        // When
+        boolean result = decorator.isDisplayed();
 
-      // Then
-      assertFalse(result);
-      verify(mockWebElement).isDisplayed();
-   }
+        // Then
+        assertFalse(result);
+        verify(mockWebElement).isDisplayed();
+    }
 
-   @Test
-   void shouldDelegateGetLocationMethod() {
-      // Given
-      Point expectedLocation = new Point(10, 20);
-      when(mockWebElement.getLocation()).thenReturn(expectedLocation);
+    @Test
+    @DisplayName("getLocation() should delegate to original WebElement and return its position coordinates")
+    void shouldDelegateGetLocationMethod() {
+        // Given
+        Point expectedLocation = new Point(10, 20);
+        when(mockWebElement.getLocation()).thenReturn(expectedLocation);
 
-      // When
-      Point result = decorator.getLocation();
+        // When
+        Point result = decorator.getLocation();
 
-      // Then
-      assertEquals(expectedLocation, result);
-      verify(mockWebElement).getLocation();
-   }
+        // Then
+        assertEquals(expectedLocation, result);
+        verify(mockWebElement).getLocation();
+    }
 
-   @Test
-   void shouldDelegateGetSizeMethod() {
-      // Given
-      Dimension expectedSize = new Dimension(100, 200);
-      when(mockWebElement.getSize()).thenReturn(expectedSize);
+    @Test
+    @DisplayName("getSize() should delegate to original WebElement and return its dimension")
+    void shouldDelegateGetSizeMethod() {
+        // Given
+        Dimension expectedSize = new Dimension(100, 200);
+        when(mockWebElement.getSize()).thenReturn(expectedSize);
 
-      // When
-      Dimension result = decorator.getSize();
+        // When
+        Dimension result = decorator.getSize();
 
-      // Then
-      assertEquals(expectedSize, result);
-      verify(mockWebElement).getSize();
-   }
+        // Then
+        assertEquals(expectedSize, result);
+        verify(mockWebElement).getSize();
+    }
 
-   @Test
-   void shouldDelegateGetCssValueMethod() {
-      // Given
-      String propertyName = "color";
-      String expectedValue = "rgb(255, 0, 0)";
-      when(mockWebElement.getCssValue(propertyName)).thenReturn(expectedValue);
+    @Test
+    @DisplayName("getCssValue() should delegate to original WebElement and return the CSS property value")
+    void shouldDelegateGetCssValueMethod() {
+        // Given
+        String propertyName = "color";
+        String expectedValue = "rgb(255, 0, 0)";
+        when(mockWebElement.getCssValue(propertyName)).thenReturn(expectedValue);
 
-      // When
-      String result = decorator.getCssValue(propertyName);
+        // When
+        String result = decorator.getCssValue(propertyName);
 
-      // Then
-      assertEquals(expectedValue, result);
-      verify(mockWebElement).getCssValue(propertyName);
-   }
+        // Then
+        assertEquals(expectedValue, result);
+        verify(mockWebElement).getCssValue(propertyName);
+    }
 
-   @Test
-   void shouldDelegateGetRectMethod() {
-      // Given
-      Rectangle expectedRect = new Rectangle(10, 20, 100, 200);
-      when(mockWebElement.getRect()).thenReturn(expectedRect);
+    @Test
+    @DisplayName("getRect() should delegate to original WebElement and return its rectangle dimensions")
+    void shouldDelegateGetRectMethod() {
+        // Given
+        Rectangle expectedRect = new Rectangle(10, 20, 100, 200);
+        when(mockWebElement.getRect()).thenReturn(expectedRect);
 
-      // When
-      Rectangle result = decorator.getRect();
+        // When
+        Rectangle result = decorator.getRect();
 
-      // Then
-      assertEquals(expectedRect, result);
-      verify(mockWebElement).getRect();
-   }
+        // Then
+        assertEquals(expectedRect, result);
+        verify(mockWebElement).getRect();
+    }
 
-   @Test
-   void shouldDelegateGetScreenshotAsMethod() {
-      // Given
-      OutputType<String> outputType = OutputType.BASE64;
-      String expectedScreenshot = "base64screenshot";
-      when(mockWebElement.getScreenshotAs(outputType)).thenReturn(expectedScreenshot);
+    @Test
+    @DisplayName("getScreenshotAs() should delegate to original WebElement and return screenshot in specified format")
+    void shouldDelegateGetScreenshotAsMethod() {
+        // Given
+        OutputType<String> outputType = OutputType.BASE64;
+        String expectedScreenshot = "base64screenshot";
+        when(mockWebElement.getScreenshotAs(outputType)).thenReturn(expectedScreenshot);
 
-      // When
-      String result = decorator.getScreenshotAs(outputType);
+        // When
+        String result = decorator.getScreenshotAs(outputType);
 
-      // Then
-      assertEquals(expectedScreenshot, result);
-      verify(mockWebElement).getScreenshotAs(outputType);
-   }
+        // Then
+        assertEquals(expectedScreenshot, result);
+        verify(mockWebElement).getScreenshotAs(outputType);
+    }
+
+    @Test
+    @DisplayName("Constructor should throw IllegalArgumentException when original WebElement is null")
+    void shouldThrowExceptionWhenOriginalIsNull() {
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new TestWebElementDecorator(null));
+        assertEquals("original WebElement must not be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("sendKeys() should handle empty input array")
+    void shouldHandleEmptySendKeys() {
+        decorator.sendKeys();
+        verify(mockWebElement).sendKeys();
+    }
+
+    @Test
+    @DisplayName("getAttribute() should handle null return value")
+    void shouldHandleNullAttribute() {
+        when(mockWebElement.getAttribute("missing")).thenReturn(null);
+        assertNull(decorator.getAttribute("missing"));
+    }
 }

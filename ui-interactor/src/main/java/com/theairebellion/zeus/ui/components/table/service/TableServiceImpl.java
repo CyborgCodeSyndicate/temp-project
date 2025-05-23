@@ -191,7 +191,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of table component being used.
     * @param row                The index of the row where the value should be inserted (1-based index).
-    * @param clazz             The class type representing the table row.
+    * @param clazz              The class type representing the table row.
     * @param data               The data to be inserted into the row.
     * @param <T>                The type of the row representation.
     */
@@ -206,7 +206,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of the table component.
     * @param row                The row index (1-based index).
-    * @param clazz             The class type representing the row.
+    * @param clazz              The class type representing the row.
     * @param field              The field to update.
     * @param index              The cell index within the row (1-based index).
     * @param value              The value to insert.
@@ -224,7 +224,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of table component being used.
     * @param searchCriteria     A list of string values used to locate the row.
-    * @param clazz             The class type representing the table row.
+    * @param clazz              The class type representing the table row.
     * @param field              The field where the value should be inserted.
     * @param index              The index within the field where the value should be inserted (1-based index).
     * @param values             The values to be inserted into the specified cell.
@@ -242,7 +242,7 @@ public class TableServiceImpl extends AbstractComponentService<TableComponentTyp
     *
     * @param tableComponentType The type of table component being used.
     * @param searchCriteria     A list of string values used to locate the row.
-    * @param clazz             The class type representing the table row.
+    * @param clazz              The class type representing the table row.
     * @param data               The data object containing values to be inserted into the row.
     * @param <T>                The type of the row representation.
     */

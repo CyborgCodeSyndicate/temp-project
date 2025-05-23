@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.selenium.smart;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.log.LogUi;
@@ -10,6 +10,7 @@ import com.theairebellion.zeus.ui.selenium.handling.ExceptionHandlingWebElementF
 import com.theairebellion.zeus.ui.selenium.locating.SmartFinder;
 import com.theairebellion.zeus.ui.util.FourFunction;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +32,6 @@ import org.mockito.quality.Strictness;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -41,16 +41,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -81,27 +78,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       when(uiConfig.waitDuration()).thenReturn(10);
       when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
       when(uiConfig.useShadowRoot()).thenReturn(false);
-
-      // Create SmartWebElement with WebElement mock
-      try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
-         uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-         smartElement = spy(new SmartWebElement(webElement, driver));
-      }
-   }
-
-   @Nested
-   @DisplayName("Constructor tests")
-   class ConstructorTests {
-
-      @Test
-      @DisplayName("Constructor should initialize with WebDriverWait and original element")
-      void constructorShouldInitializeCorrectly() {
-         // Act - SmartWebElement already created in setUp()
-
-         // Assert
-         assertNotNull(smartElement.getDriver());
-         assertEquals(driver, smartElement.getDriver());
-      }
+      smartElement = spy(new SmartWebElement(webElement, driver));
    }
 
    @Nested
@@ -111,7 +88,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElements should use findElementsNoWrap when not using wrapped functions")
       void findSmartElementsShouldUseFindElementsNoWrapWhenNotUsingWrappedFunctions() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
 
@@ -124,10 +101,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             smartFinderMock.when(() -> SmartFinder.findElementsNoWrap(smartElement, locator))
                   .thenReturn(expectedElements);
 
-            // Act
+            // When
             List<SmartWebElement> result = smartElement.findSmartElements(locator);
 
-            // Assert
+            // Then
             assertEquals(expectedElements, result);
             smartFinderMock.verify(() -> SmartFinder.findElementsNoWrap(smartElement, locator));
          }
@@ -136,7 +113,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElements should use normal find when not using shadow root")
       void findSmartElementsShouldUseNormalFindWhenNotUsingShadowRoot() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
 
@@ -145,16 +122,14 @@ class SmartWebElementTest extends BaseUnitUITest {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-            when(uiConfig.useShadowRoot()).thenReturn(false);
             smartFinderMock.when(() -> SmartFinder.findElementsNormally(
                         eq(smartElement), eq(locator), any(Consumer.class)))
                   .thenReturn(expectedElements);
 
-            // Act
+            // When
             List<SmartWebElement> result = smartElement.findSmartElements(locator);
 
-            // Assert
+            // Then
             assertEquals(expectedElements, result);
             smartFinderMock.verify(() -> SmartFinder.findElementsNormally(
                   eq(smartElement), eq(locator), any(Consumer.class)));
@@ -164,7 +139,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElements should use shadow root find when enabled")
       void findSmartElementsShouldUseShadowRootFindWhenEnabled() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
 
@@ -173,16 +148,15 @@ class SmartWebElementTest extends BaseUnitUITest {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
             when(uiConfig.useShadowRoot()).thenReturn(true);
             smartFinderMock.when(() -> SmartFinder.findElementsWithShadowRootElement(
                         eq(smartElement), eq(locator), any(Consumer.class)))
                   .thenReturn(expectedElements);
 
-            // Act
+            // When
             List<SmartWebElement> result = smartElement.findSmartElements(locator);
 
-            // Assert
+            // Then
             assertEquals(expectedElements, result);
             smartFinderMock.verify(() -> SmartFinder.findElementsWithShadowRootElement(
                   eq(smartElement), eq(locator), any(Consumer.class)));
@@ -192,17 +166,15 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElements should handle exceptions")
       void findSmartElementsShouldHandleExceptions() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          List<SmartWebElement> expectedElements = Collections.singletonList(mock(SmartWebElement.class));
          NoSuchElementException exception = new NoSuchElementException("Element not found");
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
-                    ExceptionHandlingWebElement.class);
-              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(
-                    ExceptionHandlingWebElementFunctions.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class);
+              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
@@ -240,10 +212,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             exceptionHandlingMock.when(ExceptionHandlingWebElement::values)
                   .thenReturn(new ExceptionHandlingWebElement[] {mockEnum});
 
-            // Act
+            // When
             List<SmartWebElement> result = smartElement.findSmartElements(locator);
 
-            // Assert
+            // Then
             assertEquals(expectedElements, result);
             verify(mockFunction).apply(eq(driver), eq(smartElement), eq(exception), any());
          }
@@ -257,7 +229,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElement should use findElementNoWrap when not using wrapped functions")
       void findSmartElementShouldUseFindElementNoWrapWhenNotUsingWrappedFunctions() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -270,10 +242,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             smartFinderMock.when(() -> SmartFinder.findElementNoWrap(smartElement, locator))
                   .thenReturn(expectedElement);
 
-            // Act
+            // When
             SmartWebElement result = smartElement.findSmartElement(locator);
 
-            // Assert
+            // Then
             assertSame(expectedElement, result);
             smartFinderMock.verify(() -> SmartFinder.findElementNoWrap(smartElement, locator));
          }
@@ -282,7 +254,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElement should use normal find when not using shadow root")
       void findSmartElementShouldUseNormalFindWhenNotUsingShadowRoot() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -291,16 +263,14 @@ class SmartWebElementTest extends BaseUnitUITest {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-            when(uiConfig.useShadowRoot()).thenReturn(false);
             smartFinderMock.when(() -> SmartFinder.findElementNormally(
                         eq(smartElement), eq(locator), any(Consumer.class)))
                   .thenReturn(expectedElement);
 
-            // Act
+            // When
             SmartWebElement result = smartElement.findSmartElement(locator);
 
-            // Assert
+            // Then
             assertSame(expectedElement, result);
             smartFinderMock.verify(() -> SmartFinder.findElementNormally(
                   eq(smartElement), eq(locator), any(Consumer.class)));
@@ -310,7 +280,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElement should use shadow root find when enabled")
       void findSmartElementShouldUseShadowRootFindWhenEnabled() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          SmartWebElement expectedElement = mock(SmartWebElement.class);
 
@@ -319,16 +289,15 @@ class SmartWebElementTest extends BaseUnitUITest {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
             when(uiConfig.useShadowRoot()).thenReturn(true);
             smartFinderMock.when(() -> SmartFinder.findElementWithShadowRootElement(
                         eq(smartElement), eq(locator), any(Consumer.class)))
                   .thenReturn(expectedElement);
 
-            // Act
+            // When
             SmartWebElement result = smartElement.findSmartElement(locator);
 
-            // Assert
+            // Then
             assertSame(expectedElement, result);
             smartFinderMock.verify(() -> SmartFinder.findElementWithShadowRootElement(
                   eq(smartElement), eq(locator), any(Consumer.class)));
@@ -338,22 +307,18 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("findSmartElement should handle exceptions")
       void findSmartElementShouldHandleExceptions() {
-         // Arrange
+         // Given
          By locator = By.id("testId");
          SmartWebElement expectedElement = mock(SmartWebElement.class);
          NoSuchElementException exception = new NoSuchElementException("Element not found");
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<SmartFinder> smartFinderMock = mockStatic(SmartFinder.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
-                    ExceptionHandlingWebElement.class);
-              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(
-                    ExceptionHandlingWebElementFunctions.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class);
+              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(ExceptionHandlingWebElementFunctions.class)) {
 
             // Setup mocks
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
-            when(uiConfig.useShadowRoot()).thenReturn(false);
             smartFinderMock.when(() -> SmartFinder.findElementNormally(
                         eq(smartElement), eq(locator), any(Consumer.class)))
                   .thenThrow(exception);
@@ -386,10 +351,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             exceptionHandlingMock.when(ExceptionHandlingWebElement::values)
                   .thenReturn(new ExceptionHandlingWebElement[] {mockEnum});
 
-            // Act
+            // When
             SmartWebElement result = smartElement.findSmartElement(locator);
 
-            // Assert
+            // Then
             assertSame(expectedElement, result);
             verify(mockFunction).apply(eq(driver), eq(smartElement), eq(exception), any());
          }
@@ -403,7 +368,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("click should use super.click when not using wrapped functions")
       void clickShouldUseSuperClickWhenNotUsingWrappedFunctions() {
-         // Arrange - create a separate test with completely separate objects
+         // Given - create a separate test with completely separate objects
          WebElement testElement = mock(WebElement.class);
          UiConfig testConfig = mock(UiConfig.class);
          when(testConfig.useWrappedSeleniumFunctions()).thenReturn(false);
@@ -418,10 +383,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             // Create element with our specially prepared mock
             SmartWebElement element = new SmartWebElement(testElement, driver);
 
-            // Act
+            // When
             element.click();
 
-            // Assert - just verify the config was checked
+            // Then - just verify the config was checked
             verify(testConfig).useWrappedSeleniumFunctions();
          }
       }
@@ -429,22 +394,21 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("click should use performActionWithWait when using wrapped functions")
       void clickShouldUsePerformActionWithWaitWhenUsingWrappedFunctions() {
-         // Arrange
+         // Given
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class)) {
 
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
             expectedConditionsMock.when(() -> ExpectedConditions.elementToBeClickable(any(WebElement.class)))
                   .thenReturn(clickableCondition);
 
-            // Act
+            // When
             smartElement.click();
 
-            // Verify the original element was clicked
+            // Then
             verify(webElement).click();
          }
       }
@@ -452,7 +416,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("clear should use super.clear when not using wrapped functions")
       void clearShouldUseSuperClearWhenNotUsingWrappedFunctions() {
-         // Arrange
+         // Given
          WebElement testElement = mock(WebElement.class);
          UiConfig testConfig = mock(UiConfig.class);
          when(testConfig.useWrappedSeleniumFunctions()).thenReturn(false);
@@ -467,10 +431,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             // Create element with our specially prepared mock
             SmartWebElement element = new SmartWebElement(testElement, driver);
 
-            // Act
+            // When
             element.clear();
 
-            // Assert - just verify the config was checked
+            // Then - just verify the config was checked
             verify(testConfig).useWrappedSeleniumFunctions();
          }
       }
@@ -478,22 +442,21 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("clear should use performActionWithWait when using wrapped functions")
       void clearShouldUsePerformActionWithWaitWhenUsingWrappedFunctions() {
-         // Arrange
+         // Given
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class)) {
 
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
             expectedConditionsMock.when(() -> ExpectedConditions.elementToBeClickable(any(WebElement.class)))
                   .thenReturn(clickableCondition);
 
-            // Act
+            // When
             smartElement.clear();
 
-            // Verify the original element was cleared
+            // Then
             verify(webElement).clear();
          }
       }
@@ -501,7 +464,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("sendKeys should use super.sendKeys when not using wrapped functions")
       void sendKeysShouldUseSuperSendKeysWhenNotUsingWrappedFunctions() {
-         // Arrange
+         // Given
          String textToSend = "test text";
          WebElement testElement = mock(WebElement.class);
          UiConfig testConfig = mock(UiConfig.class);
@@ -511,13 +474,13 @@ class SmartWebElementTest extends BaseUnitUITest {
          try (MockedStatic<UiConfigHolder> configHolderMock = mockStatic(UiConfigHolder.class)) {
             configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(testConfig);
 
-            // Act
+            // When
             doNothing().when(testElement).sendKeys(textToSend);
 
             // Create element with our specially prepared mock
             SmartWebElement element = new SmartWebElement(testElement, driver);
 
-            // Act
+            // Then
             element.sendKeys(textToSend);
 
             // Verify the original element received sendKeys directly
@@ -528,23 +491,22 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("sendKeys should use performActionWithWait when using wrapped functions")
       void sendKeysShouldUsePerformActionWithWaitWhenUsingWrappedFunctions() {
-         // Arrange
+         // Given
          String textToSend = "test text";
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class)) {
 
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
             expectedConditionsMock.when(() -> ExpectedConditions.elementToBeClickable(any(WebElement.class)))
                   .thenReturn(clickableCondition);
 
-            // Act
+            // When
             smartElement.sendKeys(textToSend);
 
-            // Verify the original element received sendKeys
+            // Then
             verify(webElement).sendKeys(textToSend);
          }
       }
@@ -552,7 +514,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("submit should use super.submit when not using wrapped functions")
       void submitShouldUseSuperSubmitWhenNotUsingWrappedFunctions() {
-         // Arrange
+         // Given
          WebElement testElement = mock(WebElement.class);
          UiConfig testConfig = mock(UiConfig.class);
          when(testConfig.useWrappedSeleniumFunctions()).thenReturn(false);
@@ -567,10 +529,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             // Create element with our specially prepared mock
             SmartWebElement element = new SmartWebElement(testElement, driver);
 
-            // Act
+            // When
             element.submit();
 
-            // Assert - just verify the config was checked
+            // Then - just verify the config was checked
             verify(testConfig).useWrappedSeleniumFunctions();
          }
       }
@@ -578,22 +540,21 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("submit should use performActionWithWait when using wrapped functions")
       void submitShouldUsePerformActionWithWaitWhenUsingWrappedFunctions() {
-         // Arrange
+         // Given
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class)) {
 
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
             expectedConditionsMock.when(() -> ExpectedConditions.elementToBeClickable(any(WebElement.class)))
                   .thenReturn(clickableCondition);
 
-            // Act
+            // When
             smartElement.submit();
 
-            // Verify the original element was submitted
+            // Then
             verify(webElement).submit();
          }
       }
@@ -601,7 +562,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("clearAndSendKeys should call clear and sendKeys")
       void clearAndSendKeysShouldCallClearAndSendKeys() {
-         // Arrange
+         // Given
          String textToSend = "test text";
          WebElement originalElement = mock(WebElement.class);
          UiConfig mockConfig = mock(UiConfig.class);
@@ -615,10 +576,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             SmartWebElement testElement = new SmartWebElement(originalElement, driver);
 
 
-            // Act
+            // When
             testElement.clearAndSendKeys(textToSend);
 
-            // Verify
+            // Then
             verify(originalElement, times(1)).clear();
             verify(originalElement, times(1)).sendKeys(textToSend);
          }
@@ -627,7 +588,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("doubleClick should use Actions directly when not using wrapped functions")
       void doubleClickShouldUseActionsDirectlyWhenNotUsingWrappedFunctions() {
-         // Arrange
+         // Given
          WebDriver mockDriver = mock(WebDriver.class);
          WebElement testElement = mock(WebElement.class);
          UiConfig testConfig = mock(UiConfig.class);
@@ -644,10 +605,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             // Create element with our specially prepared mock
             SmartWebElement element = new SmartWebElement(testElement, mockDriver);
 
-            // Act
+            // When
             element.doubleClick();
 
-            // Verify
+            // Then
             assertFalse(actionsMock.constructed().isEmpty(), "Actions should have been constructed");
             verify(testConfig).useWrappedSeleniumFunctions();
          }
@@ -656,24 +617,23 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("doubleClick should use wait and Actions when using wrapped functions")
       void doubleClickShouldUseWaitAndActionsWhenUsingWrappedFunctions() {
-         // Arrange
+         // Given
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class);
               MockedConstruction<Actions> actionsMock = mockConstruction(Actions.class,
                     (mock, context) -> when(mock.doubleClick()).thenReturn(mock))) {
 
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
             expectedConditionsMock.when(() -> ExpectedConditions.elementToBeClickable(any(WebElement.class)))
                   .thenReturn(clickableCondition);
 
-            // Act
+            // When
             smartElement.doubleClick();
 
-            // Verify actions was used
+            // Then
             assertFalse(actionsMock.constructed().isEmpty());
             verify(actionsMock.constructed().get(0)).doubleClick();
          }
@@ -682,21 +642,18 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("doubleClick should handle exceptions")
       void doubleClickShouldHandleExceptions() {
-         // Arrange
+         // Given
          ElementNotInteractableException exception = new ElementNotInteractableException("Element not interactable");
          Object expectedResult = new Object(); // Can be anything, just for verification
 
          try (MockedStatic<UiConfigHolder> uiConfigHolderMock = mockStatic(UiConfigHolder.class);
               MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
-                    ExceptionHandlingWebElement.class);
-              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(
-                    ExceptionHandlingWebElementFunctions.class);
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class);
+              MockedStatic<ExceptionHandlingWebElementFunctions> exceptionHandlingFnMock = mockStatic(ExceptionHandlingWebElementFunctions.class);
               MockedConstruction<Actions> actionsMock = mockConstruction(Actions.class,
                     (mock, context) -> when(mock.doubleClick()).thenThrow(exception))) {
 
             uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-            when(uiConfig.useWrappedSeleniumFunctions()).thenReturn(true);
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
@@ -726,10 +683,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             exceptionHandlingMock.when(ExceptionHandlingWebElement::values)
                   .thenReturn(new ExceptionHandlingWebElement[] {mockEnum});
 
-            // Act
+            // When
             smartElement.doubleClick();
 
-            // Verify exception handler was used
+            // Then
             verify(mockFunction).apply(eq(driver), eq(smartElement), eq(exception), any());
          }
       }
@@ -737,7 +694,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("isEnabledAndVisible should return true after waiting")
       void isEnabledAndVisibleShouldReturnTrueAfterWaiting() {
-         // Arrange
+         // Given
          try (MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class)) {
             // Mock ExpectedConditions.and and the visibility/clickable conditions
             ExpectedCondition<WebElement> visibilityCondition = driver -> webElement;
@@ -751,10 +708,10 @@ class SmartWebElementTest extends BaseUnitUITest {
             expectedConditionsMock.when(() -> ExpectedConditions.and(any(), any()))
                   .thenReturn(combinedCondition);
 
-            // Act
+            // When
             boolean result = smartElement.isEnabledAndVisible();
 
-            // Assert
+            // Then
             assertTrue(result);
          }
       }
@@ -762,10 +719,8 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("performActionWithWait should handle exceptions")
       void performActionWithWaitShouldHandleExceptions() throws Exception {
-         // Arrange
+         // Given
          ElementNotInteractableException exception = new ElementNotInteractableException("Element not interactable");
-
-         // Use the actual method name that would be used in the real scenario
          String actionName = "click";
 
          Consumer<SmartWebElement> action = element -> {
@@ -773,8 +728,7 @@ class SmartWebElementTest extends BaseUnitUITest {
          };
 
          try (MockedStatic<ExpectedConditions> expectedConditionsMock = mockStatic(ExpectedConditions.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
-                    ExceptionHandlingWebElement.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class)) {
 
             // Mock ExpectedConditions.elementToBeClickable
             ExpectedCondition<WebElement> clickableCondition = driver -> webElement;
@@ -811,21 +765,21 @@ class SmartWebElementTest extends BaseUnitUITest {
                   "performActionWithWait", Consumer.class, String.class);
             performActionWithWaitMethod.setAccessible(true);
 
-            // Act & Assert
-            try {
-               performActionWithWaitMethod.invoke(smartElement, action, actionName);
-               fail("Expected exception to be handled");
-            } catch (Exception e) {
-               // Verify the root cause is the original exception
-               assertEquals(exception, e.getCause());
-            }
+            // When & Then
+            InvocationTargetException thrownException = assertThrows(
+                  InvocationTargetException.class,
+                  () -> performActionWithWaitMethod.invoke(smartElement, action, actionName)
+            );
+
+            // Verify the root cause is the original exception
+            assertEquals(exception, thrownException.getCause());
          }
       }
 
       @Test
       @DisplayName("waitUntilAttributeValueIsChanged should wait for attribute value to change")
       void waitUntilAttributeValueIsChangedShouldWaitForAttributeValueToChange() {
-         // Arrange
+         // Given
          String attributeName = "value";
          String initialValue = "initial";
 
@@ -834,10 +788,10 @@ class SmartWebElementTest extends BaseUnitUITest {
                   // Return nothing for the .until() call
                })) {
 
-            // Act
+            // When
             smartElement.waitUntilAttributeValueIsChanged(attributeName, initialValue);
 
-            // Verify WebDriverWait was constructed with correct parameters
+            // Then
             assertFalse(waitMock.constructed().isEmpty());
             WebDriverWait constructedWait = waitMock.constructed().get(0);
             verify(constructedWait).until(any(ExpectedCondition.class));
@@ -847,7 +801,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("attributeValueChanged should return expected condition checking attribute value")
       void attributeValueChangedShouldReturnExpectedConditionCheckingAttributeValue() throws Exception {
-         // Arrange
+         // Given
          String attributeName = "value";
          String initialValue = "initial";
          String changedValue = "changed";
@@ -864,10 +818,10 @@ class SmartWebElementTest extends BaseUnitUITest {
          // Mock the getAttribute method to return changed value
          when(webElement.getAttribute(attributeName)).thenReturn(changedValue);
 
-         // Act - apply the condition
+         // When - apply the condition
          Boolean result = condition.apply(driver);
 
-         // Assert - should return true since values are different
+         // Then - should return true since values are different
          assertTrue(result);
          verify(webElement).getAttribute(attributeName);
       }
@@ -875,7 +829,7 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("attributeValueChanged should return false when value hasn't changed")
       void attributeValueChangedShouldReturnFalseWhenValueHasntChanged() throws Exception {
-         // Arrange
+         // Given
          String attributeName = "value";
          String initialValue = "initial";
 
@@ -891,23 +845,12 @@ class SmartWebElementTest extends BaseUnitUITest {
          // Mock the getAttribute method to return the same value
          when(webElement.getAttribute(attributeName)).thenReturn(initialValue);
 
-         // Act - apply the condition
+         // When - apply the condition
          Boolean result = condition.apply(driver);
 
-         // Assert - should return false since values are the same
+         // Then - should return false since values are the same
          assertFalse(result);
          verify(webElement).getAttribute(attributeName);
-      }
-
-      @Test
-      @DisplayName("toString should delegate to original element")
-      void toStringShouldDelegateToOriginalElement() {
-         // This test isn't needed as toString() behavior is
-         // automatically handled by the @Delegate annotation
-         // and can't easily be verified with Mockito
-
-         // We can just test the delegation works at all
-         assertNotNull(smartElement.toString());
       }
    }
 
@@ -916,37 +859,9 @@ class SmartWebElementTest extends BaseUnitUITest {
    class WaitWithoutFailureTest {
 
       @Test
-      @DisplayName("waitWithoutFailure should handle exceptions")
-      void waitWithoutFailureShouldHandleExceptions() throws Exception {
-         // Arrange
-         Function<WebDriver, Boolean> condition = driver -> {
-            throw new TimeoutException("Timeout waiting for condition");
-         };
-
-         WebDriverWait mockWait = mock(WebDriverWait.class);
-         doThrow(new TimeoutException("Timeout")).when(mockWait).until(any(Function.class));
-
-         // Use reflection to set the wait field
-         Field waitField = SmartWebElement.class.getDeclaredField("wait");
-         waitField.setAccessible(true);
-         waitField.set(smartElement, mockWait);
-
-         // Use reflection to access the private method
-         Method waitWithoutFailureMethod = SmartWebElement.class.getDeclaredMethod(
-               "waitWithoutFailure", Function.class);
-         waitWithoutFailureMethod.setAccessible(true);
-
-         // Act - should not throw exception
-         waitWithoutFailureMethod.invoke(smartElement, condition);
-
-         // Assert - verify wait was called
-         verify(mockWait).until(condition);
-      }
-
-      @Test
       @DisplayName("waitWithoutFailure should complete successfully when no exception")
       void waitWithoutFailureShouldCompleteSuccessfullyWhenNoException() throws Exception {
-         // Arrange
+         // Given
          Function<WebDriver, Boolean> condition = driver -> true;
 
          WebDriverWait mockWait = mock(WebDriverWait.class);
@@ -962,10 +877,10 @@ class SmartWebElementTest extends BaseUnitUITest {
                "waitWithoutFailure", Function.class);
          waitWithoutFailureMethod.setAccessible(true);
 
-         // Act
+         // When
          waitWithoutFailureMethod.invoke(smartElement, condition);
 
-         // Assert
+         // Then
          verify(mockWait).until(condition);
       }
    }
@@ -977,15 +892,14 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("handleException should use cause instead of exception if available")
       void handleExceptionShouldUseCauseIfAvailable() throws Exception {
-         // Arrange
+         // Given
          Object expectedResult = new Object(); // Just for verification
 
          // Create a nested exception with a cause
          NoSuchElementException cause = new NoSuchElementException("Element not found");
          RuntimeException wrappedException = new RuntimeException("Wrapper exception", cause);
 
-         try (MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
-               ExceptionHandlingWebElement.class)) {
+         try (MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class)) {
             // Create mock enum for exception handling
             ExceptionHandlingWebElement mockEnum = mock(ExceptionHandlingWebElement.class);
             when(mockEnum.getMethodName()).thenReturn("testMethod");
@@ -1014,10 +928,10 @@ class SmartWebElementTest extends BaseUnitUITest {
                   "handleException", String.class, Exception.class, Object[].class);
             handleExceptionMethod.setAccessible(true);
 
-            // Act
+            // When
             Object result = handleExceptionMethod.invoke(smartElement, "testMethod", wrappedException, new Object[] {});
 
-            // Assert
+            // Then
             assertSame(expectedResult, result);
             verify(mockFunction).apply(eq(driver), eq(smartElement), eq(wrappedException), any());
          }
@@ -1026,12 +940,11 @@ class SmartWebElementTest extends BaseUnitUITest {
       @Test
       @DisplayName("handleException should throw when no handler found")
       void handleExceptionShouldThrowWhenNoHandlerFound() throws Exception {
-         // Arrange
+         // Given
          IllegalArgumentException exception = new IllegalArgumentException("Unsupported element operation");
 
          try (MockedStatic<LogUi> logUIMock = mockStatic(LogUi.class);
-              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(
-                    ExceptionHandlingWebElement.class)) {
+              MockedStatic<ExceptionHandlingWebElement> exceptionHandlingMock = mockStatic(ExceptionHandlingWebElement.class)) {
 
             // Create mock enum for exception handling with no matching handler
             ExceptionHandlingWebElement mockEnum = mock(ExceptionHandlingWebElement.class);
@@ -1053,7 +966,7 @@ class SmartWebElementTest extends BaseUnitUITest {
                   "handleException", String.class, Exception.class, Object[].class);
             handleExceptionMethod.setAccessible(true);
 
-            // Act & Assert
+            // When // Then
             Exception thrownException = assertThrows(
                   java.lang.reflect.InvocationTargetException.class,
                   () -> handleExceptionMethod.invoke(smartElement, "testMethod", exception, new Object[] {})

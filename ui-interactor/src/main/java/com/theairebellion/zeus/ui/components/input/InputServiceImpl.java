@@ -176,7 +176,7 @@ public class InputServiceImpl extends AbstractComponentService<InputComponentTyp
                           final String inputFieldLabel) {
       LogUi.step("Fetching value from input field labeled: '{}' of type: '{}'.", inputFieldLabel,
             componentType.getType().name());
-      return inputComponent(componentType).getValue(container);
+      return inputComponent(componentType).getValue(container, inputFieldLabel);
    }
 
    /**

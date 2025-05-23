@@ -12,7 +12,10 @@ import org.openqa.selenium.By;
 
 public class MockCheckboxService implements CheckboxService {
 
-   public CheckboxComponentType lastComponentType;
+   private static final String SELECT_STRATEGY_MOCK_RESULT = "selectStrategyMock";
+   private static final String DESELECT_STRATEGY_MOCK_RESULT = "deSelectStrategyMock";
+   public CheckboxComponentType lastComponentTypeUsed;
+   public CheckboxComponentType explicitComponentType;
    public SmartWebElement lastContainer;
    public String[] lastCheckboxText;
    public By[] lastCheckboxLocators;
@@ -22,8 +25,23 @@ public class MockCheckboxService implements CheckboxService {
    public List<String> returnSelectedList = Collections.emptyList();
    public List<String> returnAllList = Collections.emptyList();
 
+
+   public MockCheckboxService() {
+      reset();
+   }
+
+   private void setLastType(CheckboxComponentType type) {
+      this.explicitComponentType = type;
+      if (MockCheckboxComponentType.DUMMY_CHECKBOX.equals(type)) {
+         this.lastComponentTypeUsed = MockCheckboxComponentType.DUMMY_CHECKBOX;
+      } else {
+         this.lastComponentTypeUsed = null;
+      }
+   }
+
    public void reset() {
-      lastComponentType = null;
+      lastComponentTypeUsed = null;
+      explicitComponentType = MockCheckboxComponentType.DUMMY_CHECKBOX;
       lastContainer = null;
       lastCheckboxText = null;
       lastCheckboxLocators = null;
@@ -36,61 +54,61 @@ public class MockCheckboxService implements CheckboxService {
 
    @Override
    public void select(CheckboxComponentType componentType, SmartWebElement container, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastCheckboxText = checkBoxText;
    }
 
    @Override
    public String select(CheckboxComponentType componentType, SmartWebElement container, Strategy strategy) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastStrategy = strategy;
-      return "selectStrategyMock";
+      return SELECT_STRATEGY_MOCK_RESULT;
    }
 
    @Override
    public void select(CheckboxComponentType componentType, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxText = checkBoxText;
    }
 
    @Override
    public void select(CheckboxComponentType componentType, By... checkBoxLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = checkBoxLocator;
    }
 
    @Override
    public void deSelect(CheckboxComponentType componentType, SmartWebElement container, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastCheckboxText = checkBoxText;
    }
 
    @Override
    public String deSelect(CheckboxComponentType componentType, SmartWebElement container, Strategy strategy) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastStrategy = strategy;
-      return "deSelectStrategyMock";
+      return DESELECT_STRATEGY_MOCK_RESULT;
    }
 
    @Override
    public void deSelect(CheckboxComponentType componentType, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxText = checkBoxText;
    }
 
    @Override
    public void deSelect(CheckboxComponentType componentType, By... checkBoxLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = checkBoxLocator;
    }
 
    @Override
    public boolean areSelected(CheckboxComponentType componentType, SmartWebElement container, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastCheckboxText = checkBoxText;
       return returnSelected;
@@ -98,21 +116,21 @@ public class MockCheckboxService implements CheckboxService {
 
    @Override
    public boolean areSelected(CheckboxComponentType componentType, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxText = checkBoxText;
       return returnSelected;
    }
 
    @Override
    public boolean areSelected(CheckboxComponentType componentType, By... checkBoxLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = checkBoxLocator;
       return returnSelected;
    }
 
    @Override
    public boolean isSelected(CheckboxComponentType componentType, SmartWebElement container, String checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastCheckboxText = new String[] {checkBoxText};
       return returnSelected;
@@ -120,21 +138,21 @@ public class MockCheckboxService implements CheckboxService {
 
    @Override
    public boolean isSelected(CheckboxComponentType componentType, String checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxText = new String[] {checkBoxText};
       return returnSelected;
    }
 
    @Override
    public boolean isSelected(CheckboxComponentType componentType, By checkBoxLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = new By[] {checkBoxLocator};
       return returnSelected;
    }
 
    @Override
    public boolean areEnabled(CheckboxComponentType componentType, SmartWebElement container, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastCheckboxText = checkBoxText;
       return returnEnabled;
@@ -142,21 +160,21 @@ public class MockCheckboxService implements CheckboxService {
 
    @Override
    public boolean areEnabled(CheckboxComponentType componentType, String... checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxText = checkBoxText;
       return returnEnabled;
    }
 
    @Override
    public boolean areEnabled(CheckboxComponentType componentType, By... checkBoxLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = checkBoxLocator;
       return returnEnabled;
    }
 
    @Override
    public boolean isEnabled(CheckboxComponentType componentType, SmartWebElement container, String checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       lastCheckboxText = new String[] {checkBoxText};
       return returnEnabled;
@@ -164,49 +182,49 @@ public class MockCheckboxService implements CheckboxService {
 
    @Override
    public boolean isEnabled(CheckboxComponentType componentType, String checkBoxText) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxText = new String[] {checkBoxText};
       return returnEnabled;
    }
 
    @Override
    public boolean isEnabled(CheckboxComponentType componentType, By checkBoxLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = new By[] {checkBoxLocator};
       return returnEnabled;
    }
 
    @Override
    public List<String> getSelected(CheckboxComponentType componentType, SmartWebElement container) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       return returnSelectedList;
    }
 
    @Override
    public List<String> getSelected(CheckboxComponentType componentType, By containerLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = new By[] {containerLocator};
       return returnSelectedList;
    }
 
    @Override
    public List<String> getAll(CheckboxComponentType componentType, SmartWebElement container) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastContainer = container;
       return returnAllList;
    }
 
    @Override
    public List<String> getAll(CheckboxComponentType componentType, By containerLocator) {
-      lastComponentType = componentType;
+      setLastType(componentType);
       lastCheckboxLocators = new By[] {containerLocator};
       return returnAllList;
    }
 
    @Override
    public void insertion(ComponentType componentType, By locator, Object... values) {
-      lastComponentType = (CheckboxComponentType) componentType;
+      setLastType((CheckboxComponentType) componentType);
       lastCheckboxLocators = new By[] {locator};
       lastCheckboxText = Arrays.stream(values)
             .map(String::valueOf)

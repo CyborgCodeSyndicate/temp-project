@@ -7,6 +7,7 @@ import com.theairebellion.zeus.framework.util.ObjectFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
@@ -26,9 +27,11 @@ import static com.theairebellion.zeus.framework.util.TestContextManager.getSuper
  *
  * <p>This extension executes after each test method, logging the test result (success or failure),
  * calculating execution duration, and appending filtered logs to the Allure report.
+ * </p>
  *
  * <p>Logs are filtered based on the test name and extracted from the system log file.
  * If logs cannot be retrieved, a fallback message is added to Allure.
+ * </p>
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
@@ -42,6 +45,9 @@ public class Epilogue implements AfterTestExecutionCallback {
     */
    @Override
    public void afterTestExecution(final ExtensionContext context) {
+      if (!Objects.equals(CustomAllureListener.getActiveStepName(), TEAR_DOWN.getDisplayName())) {
+         CustomAllureListener.stopStep();
+      }
       setUpTestMetadata(context);
       SuperQuest superQuest = getSuperQuest(context);
       Map<Enum<?>, List<Object>> arguments = superQuest.getStorage().sub(StorageKeysTest.ARGUMENTS).getData();
@@ -57,13 +63,15 @@ public class Epilogue implements AfterTestExecutionCallback {
       long startTime = context.getStore(ExtensionContext.Namespace.GLOBAL).get(START_TIME, long.class);
       long durationInSeconds = (System.currentTimeMillis() - startTime) / 1000;
       logTestOutcome(context.getDisplayName(), status, durationInSeconds, throwable);
-      if (!CustomAllureListener.isParentStepActive(TEAR_DOWN)) {
-         CustomAllureListener.stopParentStep();
-         CustomAllureListener.startParentStep(TEAR_DOWN);
+      if (!CustomAllureListener.isStepActive(TEAR_DOWN.getDisplayName())) {
+         CustomAllureListener.stopStep();
+         CustomAllureListener.startStep(TEAR_DOWN);
       }
       attachFilteredLogsToAllure(ThreadContext.get("testName"));
       ThreadContext.remove("testName");
       setDescription(context);
-      CustomAllureListener.stopParentStep();
+      if (CustomAllureListener.isStepActive(TEAR_DOWN.getDisplayName())) {
+         CustomAllureListener.stopStep();
+      }
    }
 }

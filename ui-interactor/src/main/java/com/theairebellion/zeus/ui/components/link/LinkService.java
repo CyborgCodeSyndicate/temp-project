@@ -21,6 +21,21 @@ public interface LinkService extends ButtonService {
    LinkComponentType DEFAULT_TYPE = getDefaultType();
 
    /**
+    * Retrieves the default link component type from the configuration.
+    *
+    * @return The default LinkComponentType.
+    */
+   private static LinkComponentType getDefaultType() {
+      try {
+         return ReflectionUtil.findEnumImplementationsOfInterface(LinkComponentType.class,
+               getUiConfig().linkDefaultType(),
+               getUiConfig().projectPackage());
+      } catch (Exception ignored) {
+         return null;
+      }
+   }
+
+   /**
     * Double-clicks a link with the specified text inside a container, using the default link component type.
     *
     * @param container The SmartWebElement container that contains the link.
@@ -89,20 +104,4 @@ public interface LinkService extends ButtonService {
     * @param linkLocator   The By locator for the link to click.
     */
    void doubleClick(LinkComponentType componentType, By linkLocator);
-
-
-   /**
-    * Retrieves the default link component type from the configuration.
-    *
-    * @return The default LinkComponentType.
-    */
-   private static LinkComponentType getDefaultType() {
-      try {
-         return ReflectionUtil.findEnumImplementationsOfInterface(LinkComponentType.class,
-               getUiConfig().linkDefaultType(),
-               getUiConfig().projectPackage());
-      } catch (Exception ignored) {
-         return null;
-      }
-   }
 }

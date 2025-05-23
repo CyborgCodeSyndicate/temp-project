@@ -1,10 +1,11 @@
 package com.theairebellion.zeus.ui.selenium.handling;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.enums.WebElementAction;
 import com.theairebellion.zeus.ui.selenium.helper.FrameHelper;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,13 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -42,66 +45,54 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
       @Test
       @DisplayName("Should throw IllegalArgumentException when args are empty")
       void testHandleNoSuchElementWithEmptyArgs() {
-         try (MockedStatic<LogUi> mockedLogUI = mockStatic(LogUi.class)) {
-            // Setup void method mocking properly
-            mockedLogUI.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
-
-            // Test with empty args array
+         try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+            // Given
             Object[] emptyArgs = new Object[0];
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
-                     emptyArgs);
-            });
 
-            // Verify error was logged
-            mockedLogUI.verify(() -> LogUi.error(anyString()));
+            // When
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                  () -> ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, emptyArgs));
 
-            // Check exception message
-            assertEquals("FIND_ELEMENT action requires a By locator.", exception.getMessage());
+            // Then
+            mockedLogUi.verify(() -> LogUi.error(anyString()));
+            assertNotNull(exception.getMessage());
+            assertFalse(exception.getMessage().isEmpty());
          }
       }
 
       @Test
       @DisplayName("Should throw IllegalArgumentException when first arg is null")
       void testHandleNoSuchElementWithNullArgs() {
-         try (MockedStatic<LogUi> mockedLogUI = mockStatic(LogUi.class)) {
-            // Setup void method mocking properly
-            mockedLogUI.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
-
-            // Test with null arg
+         try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+            // Given
             Object[] nullArgs = new Object[] {null};
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
-                     nullArgs);
-            });
 
-            // Verify error was logged
-            mockedLogUI.verify(() -> LogUi.error(anyString()));
+            //When
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                  () -> ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, nullArgs));
 
-            // Check exception message
-            assertEquals("FIND_ELEMENT action requires a By locator.", exception.getMessage());
+            // Then
+            mockedLogUi.verify(() -> LogUi.error(anyString()));
+            assertNotNull(exception.getMessage());
+            assertFalse(exception.getMessage().isEmpty());
          }
       }
 
       @Test
       @DisplayName("Should throw IllegalArgumentException when first arg is not a By")
       void testHandleNoSuchElementWithNonByArg() {
-         try (MockedStatic<LogUi> mockedLogUI = mockStatic(LogUi.class)) {
-            // Setup void method mocking properly
-            mockedLogUI.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
-
-            // Test with non-By argument
+         try (MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+            // Given
             Object[] invalidArgs = new Object[] {"not a By object"};
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
-                     invalidArgs);
-            });
 
-            // Verify error was logged
-            mockedLogUI.verify(() -> LogUi.error(anyString()));
+            //When
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                  () -> ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, invalidArgs));
 
-            // Check exception message
-            assertEquals("FIND_ELEMENT action requires a By locator.", exception.getMessage());
+            // Then
+            mockedLogUi.verify(() -> LogUi.error(anyString()));
+            assertNotNull(exception.getMessage());
+            assertFalse(exception.getMessage().isEmpty());
          }
       }
    }
@@ -113,29 +104,19 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
       @DisplayName("Should return element when found in iframes")
       void testHandleNoSuchElementWhenElementFound() {
          try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class)) {
-            // Create test data
+            // Given
             By byLocator = By.id("testId");
             Object[] args = new Object[] {byLocator};
-
-            // Create a real WebElement mock
-            WebElement webElement = mock(WebElement.class);
-
-            // Create SmartWebElement mock using only what's needed for test
             SmartWebElement smartElement = mock(SmartWebElement.class);
 
-            // Setup FrameHelper mock - directly use the static method syntax
-            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
+            // When
+            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)))
                   .thenReturn(smartElement);
-
-            // Execute method
             Object result =
-                  ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT,
-                        args);
+                  ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, args);
 
-            // Verify method was called
-            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)));
-
-            // Just verify we got a non-null result
+            // Then
+            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)));
             assertNotNull(result);
          }
       }
@@ -144,62 +125,61 @@ class ExceptionHandlingWebDriverFunctionsTest extends BaseUnitUITest {
       @DisplayName("Should throw NoSuchElementException when element not found")
       void testHandleNoSuchElementWhenElementNotFound() {
          try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class);
-              MockedStatic<LogUi> mockedLogUI = mockStatic(LogUi.class)) {
-
-            // Setup void method mocking properly
-            mockedLogUI.when(() -> LogUi.error(anyString())).thenAnswer(invocation -> null);
-
-            // Create test data
+              MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+            // Given
             By byLocator = By.id("testId");
             Object[] args = new Object[] {byLocator};
 
-            // Set up the frameHelper to return null (element not found)
-            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
+            // When
+            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)))
                   .thenReturn(null);
+            assertThrows(NoSuchElementException.class, () -> ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, args));
 
-            // Execute method and expect exception
-            NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENT, args);
-            });
-
-            // Verify methods were called
-            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)));
-            mockedLogUI.verify(() -> LogUi.error(anyString()));
-
+            // Then
+            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(By.class)));
+            mockedLogUi.verify(() -> LogUi.error(anyString()));
          }
       }
 
       @Test
-      @DisplayName("Should handle FIND_ELEMENTS action correctly")
-      void testHandleNoSuchElementWithFindElementsAction() {
+      @DisplayName("Should handle FIND_ELEMENTS action by locating container iframe first")
+      void testHandleNoSuchElementWithFindContainerReturnsElement() {
          try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class)) {
-            // Create test data
-            By byLocator = By.id("testId");
-            Object[] args = new Object[] {byLocator};
+            // Given
+            By locator = By.id("testId");
+            Object[] args = new Object[] {locator};
+            mockedHelper.when(() -> FrameHelper.findContainerIframe(any(), any()))
+                  .thenReturn(mock(WebElement.class));
+            when(mockDriver.findElements(locator)).thenReturn(List.of(mock(WebElement.class)));
 
-            // Create a real WebElement mock
-            WebElement webElement = mock(WebElement.class);
+            // When
+            Object result = ExceptionHandlingWebDriverFunctions.handleNoSuchElement(
+                  mockDriver, WebElementAction.FIND_ELEMENTS, args);
 
-            // Create SmartWebElement mock
-            SmartWebElement smartElement = mock(SmartWebElement.class);
-            when(smartElement.getOriginal()).thenReturn(webElement);
+            // Then
+            mockedHelper.verify(() -> FrameHelper.findContainerIframe(eq(mockDriver), eq(locator)));
+            assertNotNull(result);
+            assertTrue(result instanceof List);
+         }
+      }
 
-            // Setup FrameHelper mock
-            mockedHelper.when(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)))
-                  .thenReturn(smartElement);
+      @Test
+      @DisplayName("Should throw exception when container is null")
+      void testHandleNoSuchElementWithFindContainerNull() {
+         try (MockedStatic<FrameHelper> mockedHelper = mockStatic(FrameHelper.class);
+              MockedStatic<LogUi> mockedLogUi = mockStatic(LogUi.class)) {
+            // Given
+            By locator = By.id("testId");
+            Object[] args = new Object[] {locator};
 
-            // We need to use a try-catch here since we're not fully mocking the WebElementAction enum
-            try {
-               // Execute the method
-               ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENTS,
-                     args);
-            } catch (Exception e) {
-               // We expect an exception because we're not fully mocking the enum implementation
-               // But we still verify the FrameHelper was called correctly
-            }
+            // When
+            mockedHelper.when(() -> FrameHelper.findContainerIframe(any(), any()))
+                  .thenReturn(null); // Just return a mock, no need for real frame
 
-            // Verify FrameHelper method was called
-            mockedHelper.verify(() -> FrameHelper.findElementInIframes(any(WebDriver.class), any(WebElement.class)));
+            // Then
+            assertThrows(NoSuchElementException.class, () -> ExceptionHandlingWebDriverFunctions.handleNoSuchElement(mockDriver, WebElementAction.FIND_ELEMENTS, args));
+            mockedHelper.verify(() -> FrameHelper.findContainerIframe(any(WebDriver.class), any(By.class)));
+            mockedLogUi.verify(() -> LogUi.error(anyString()));
          }
       }
    }

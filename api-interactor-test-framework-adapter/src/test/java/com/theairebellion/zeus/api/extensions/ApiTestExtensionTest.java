@@ -232,22 +232,6 @@ class ApiTestExtensionTest {
    }
 
    @Nested
-   @DisplayName("AfterTestExecution Tests")
-   class AfterTestExecutionTests {
-      @Test
-      @DisplayName("afterTestExecution should stop the Allure parent step")
-      void afterTestExecutionShouldStopParentStep() {
-         try (MockedStatic<CustomAllureListener> mockedAllure = mockStatic(CustomAllureListener.class)) {
-            // Act
-            extension.afterTestExecution(context);
-
-            // Assert
-            mockedAllure.verify(CustomAllureListener::stopParentStep, times(1));
-         }
-      }
-   }
-
-   @Nested
    @DisplayName("Authentication Instantiation Failure Tests")
    class AuthenticationInstantiationFailureTests {
 

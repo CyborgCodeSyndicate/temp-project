@@ -1,4 +1,3 @@
-
 package com.theairebellion.zeus.ui.components.table.service;
 
 import com.theairebellion.zeus.ui.components.base.BaseComponent;
@@ -66,6 +65,7 @@ import static com.theairebellion.zeus.ui.config.UiConfigHolder.getUiConfig;
 @SuppressWarnings("java:S3011")
 public abstract class TableImpl extends BaseComponent implements Table {
 
+   public static final String NO_LOCATOR_FOR_FIELD_EXCEPTION = "No locator found for the provided field.";
    private static final String READING_CLASS = "Reading entire table as class '%s'";
    private static final String READING_CLASS_WITH_FIELDS = "Reading table as class '%s' with fields %s";
    private static final String READING_RANGE = "Reading table rows from %d to %d as class '%s'";
@@ -91,11 +91,9 @@ public abstract class TableImpl extends BaseComponent implements Table {
          "Filtering table for class '%s' on column '%s' using strategy '%s' with values %s";
    private static final String SORTING = "Sorting table for class '%s' on column '%s' using sorting strategy '%s'";
    private static final String INVALID_FIELD_TYPE = "Some fields are not TableCell or List<TableCell>.";
-   public static final String NO_LOCATOR_FOR_FIELD_EXCEPTION = "No locator found for the provided field.";
-
+   private final List<Object> acceptedValues;
    @Setter
    protected TableServiceRegistry serviceRegistry;
-   private final List<Object> acceptedValues;
 
    /**
     * Constructs a {@code TableImpl} instance with the specified {@link SmartWebDriver}.
@@ -309,7 +307,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     * into multiple fields of that row by iterating over the fields of the provided data object.
     *
     * @param searchCriteria A list of strings used to identify the target row.
-    * @param clazz         The class type representing the table row structure.
+    * @param clazz          The class type representing the table row structure.
     * @param data           The object containing the values to be inserted into the corresponding row fields.
     * @param <T>            The type representing the table row.
     * @throws NotFoundException if no row matches the search criteria.
@@ -335,7 +333,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     * into the specified field of that row.
     *
     * @param searchCriteria A list of strings used to identify the target row.
-    * @param clazz         The class type representing the table row structure.
+    * @param clazz          The class type representing the table row structure.
     * @param field          The specific field within the row where the values should be inserted.
     * @param values         The values to be inserted into the specified field.
     * @param <T>            The type representing the table row.
@@ -355,7 +353,7 @@ public abstract class TableImpl extends BaseComponent implements Table {
     * and inserts values into the specified field of that row.
     *
     * @param row    The row index where the values should be inserted (1-based index).
-    * @param clazz The class type representing the table row structure.
+    * @param clazz  The class type representing the table row structure.
     * @param field  The specific field within the row where the values should be inserted.
     * @param values The values to be inserted into the specified field.
     * @param <T>    The type representing the table row.
@@ -374,10 +372,10 @@ public abstract class TableImpl extends BaseComponent implements Table {
     * <p>This method finds the row in the table based on the provided row index (1-based)
     * and inserts values into multiple fields of that row by iterating over the fields of the provided data object.
     *
-    * @param row    The row index where the values should be inserted (1-based index).
+    * @param row   The row index where the values should be inserted (1-based index).
     * @param clazz The class type representing the table row structure.
-    * @param data   The object containing the values to be inserted into the corresponding row fields.
-    * @param <T>    The type representing the table row.
+    * @param data  The object containing the values to be inserted into the corresponding row fields.
+    * @param <T>   The type representing the table row.
     * @throws IndexOutOfBoundsException if the row index is out of range.
     */
    @Override
@@ -1116,6 +1114,18 @@ public abstract class TableImpl extends BaseComponent implements Table {
       return new String[0];
    }
 
+   private TableLocators getTableLocators(Class<?> clazz) {
+      TableInfo annotation = clazz.getAnnotation(TableInfo.class);
+      if (annotation == null) {
+         throw new IllegalArgumentException(
+               "Your class: " + clazz.getSimpleName() + "is missing @TableInfo annotation for the table container");
+      }
+      final FindBy.FindByBuilder builder = new FindBy.FindByBuilder();
+      By tableContainerLocator = builder.buildIt(annotation.tableContainerLocator(), null);
+      By tableRowsLocator = builder.buildIt(annotation.rowsLocator(), null);
+      By headerRowLocator = builder.buildIt(annotation.headerRowLocator(), null);
+      return new TableLocators(tableContainerLocator, tableRowsLocator, headerRowLocator);
+   }
 
    private record OrderedFieldInvokerAndValues<T>(
          TableField<T> fieldInvoker,
@@ -1150,20 +1160,6 @@ public abstract class TableImpl extends BaseComponent implements Table {
                + ", stringValues=" + Arrays.toString(stringValues)
                + ']';
       }
-   }
-
-
-   private TableLocators getTableLocators(Class<?> clazz) {
-      TableInfo annotation = clazz.getAnnotation(TableInfo.class);
-      if (annotation == null) {
-         throw new IllegalArgumentException(
-               "Your class: " + clazz.getSimpleName() + "is missing @TableInfo annotation for the table container");
-      }
-      final FindBy.FindByBuilder builder = new FindBy.FindByBuilder();
-      By tableContainerLocator = builder.buildIt(annotation.tableContainerLocator(), null);
-      By tableRowsLocator = builder.buildIt(annotation.rowsLocator(), null);
-      By headerRowLocator = builder.buildIt(annotation.headerRowLocator(), null);
-      return new TableLocators(tableContainerLocator, tableRowsLocator, headerRowLocator);
    }
 
 
