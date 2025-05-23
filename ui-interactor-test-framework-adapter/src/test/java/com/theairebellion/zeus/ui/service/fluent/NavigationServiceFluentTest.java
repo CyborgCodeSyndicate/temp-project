@@ -4,8 +4,8 @@ import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import java.util.HashSet;
 import java.util.Set;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,19 +14,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-@Disabled
 @DisplayName("NavigationServiceFluent Tests")
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -134,6 +136,28 @@ class NavigationServiceFluentTest extends BaseUnitUITest {
    }
 
    @Test
+   @DisplayName("switchToNewTab should not switch if no new window handle exists")
+   void switchToNewTabShouldNotSwitchWhenNoNewHandleExists() {
+      // Given
+      String currentHandle = "same-handle";
+      Set<String> handles = new HashSet<>();
+      handles.add(currentHandle); // No other handle
+
+      when(driver.getWindowHandle()).thenReturn(currentHandle);
+      when(driver.getWindowHandles()).thenReturn(handles);
+
+      // When
+      UiServiceFluent<?> result = sut.switchToNewTab();
+
+      // Then
+      // Verify that no switchTo().window(...) was called
+      verify(targetLocator, times(0)).window(any());
+
+      // Still returns fluent instance
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
    @DisplayName("switchToWindow should switch to window with matching title")
    void switchToWindowShouldSwitchToWindowWithMatchingTitle() {
       // Given
@@ -195,6 +219,23 @@ class NavigationServiceFluentTest extends BaseUnitUITest {
       // Then
       verify(driver).close();
       verify(targetLocator).window("handle1"); // Only one handle left
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
+   @DisplayName("closeCurrentTab should do nothing if there is no Window opened")
+   void closeCurrentTabShouldDoNothingIfThereIsNoWindowOpened() {
+      // Given
+      Set<String> handles = new HashSet<>();
+
+      // Mock behavior using a real set with predetermined content
+      when(driver.getWindowHandles()).thenReturn(handles);
+
+      // When
+      UiServiceFluent<?> result = sut.closeCurrentTab();
+
+      // Then
+      verify(driver).close();
       assertThat(result).isSameAs(uiServiceFluent);
    }
 
@@ -274,6 +315,83 @@ class NavigationServiceFluentTest extends BaseUnitUITest {
       // Verify JavaScript execution
       verify(jsExecutor).executeScript("window.open();");
       verify(jsTargetLocator).window("new-handle");
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
+   @DisplayName("acceptAlert should accept the browser alert")
+   void acceptAlertShouldAcceptAlert() {
+      // Arrange
+      Alert alert = mock(Alert.class);
+      when(targetLocator.alert()).thenReturn(alert);
+
+      // Act
+      UiServiceFluent<?> result = sut.acceptAlert();
+
+      // Assert
+      verify(alert).accept();
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
+   @DisplayName("dismissAlert should dismiss the browser alert")
+   void dismissAlertShouldDismissAlert() {
+      // Arrange
+      Alert alert = mock(Alert.class);
+      when(targetLocator.alert()).thenReturn(alert);
+
+      // Act
+      UiServiceFluent<?> result = sut.dismissAlert();
+
+      // Assert
+      verify(alert).dismiss();
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
+   @DisplayName("validateAlertText should validate alert text with hard assertion")
+   void validateAlertTextShouldUseHardAssertion() {
+      // Arrange
+      Alert alert = mock(Alert.class);
+      when(targetLocator.alert()).thenReturn(alert);
+      when(alert.getText()).thenReturn("Expected");
+
+      // Use lambda execution
+      doAnswer(invocation -> {
+         Runnable runnable = invocation.getArgument(0);
+         runnable.run();
+         return uiServiceFluent;
+      }).when(uiServiceFluent).validate(any(Runnable.class));
+
+      // Act
+      UiServiceFluent<?> result = sut.validateAlertText("Expected");
+
+      // Assert
+      verify(alert).getText();
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
+
+   @Test
+   @DisplayName("validateAlertText with soft should validate alert text softly")
+   void validateAlertTextWithSoftShouldUseSoftAssertion() {
+      // Arrange
+      Alert alert = mock(Alert.class);
+      when(targetLocator.alert()).thenReturn(alert);
+      when(alert.getText()).thenReturn("Expected");
+
+      // Use consumer for soft assertions
+      doAnswer(invocation -> {
+         java.util.function.Consumer<SoftAssertions> consumer = invocation.getArgument(0);
+         SoftAssertions softly = new SoftAssertions();
+         consumer.accept(softly);
+         return uiServiceFluent;
+      }).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+
+      // Act
+      UiServiceFluent<?> result = sut.validateAlertText("Expected", true);
+
+      // Assert
+      verify(alert).getText();
       assertThat(result).isSameAs(uiServiceFluent);
    }
 }

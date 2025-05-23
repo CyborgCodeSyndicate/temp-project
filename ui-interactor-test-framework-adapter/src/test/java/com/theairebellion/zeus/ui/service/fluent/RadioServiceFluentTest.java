@@ -428,6 +428,54 @@ class RadioServiceFluentTest extends BaseUnitUITest {
    }
 
    @Test
+   @DisplayName("validateIsVisible with Soft Assertion")
+   void validateIsVisibleWithSoftAssertion() {
+      // Given
+      mockService.reset();
+      mockService.returnBool = true;
+
+      // Configure uiServiceFluent.validate to actually execute the lambda
+      doAnswer(invocation -> {
+         java.util.function.Consumer<org.assertj.core.api.SoftAssertions> assertionConsumer = invocation.getArgument(0);
+         org.assertj.core.api.SoftAssertions softAssertions = new org.assertj.core.api.SoftAssertions();
+         assertionConsumer.accept(softAssertions);
+         return uiServiceFluent;
+      }).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+
+      // When
+      sut.validateIsVisible(element, true);
+
+      // Then
+      assertThat(mockService.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+      assertThat(mockService.lastLocator).isEqualTo(By.id("testRadio"));
+      verify(storageUI).put(element.enumImpl(), true);
+   }
+
+   @Test
+   @DisplayName("validateIsVisible with Soft Assertion")
+   void validateIsHiddenWithSoftAssertion() {
+      // Given
+      mockService.reset();
+      mockService.returnBool = true;
+
+      // Configure uiServiceFluent.validate to actually execute the lambda
+      doAnswer(invocation -> {
+         java.util.function.Consumer<org.assertj.core.api.SoftAssertions> assertionConsumer = invocation.getArgument(0);
+         org.assertj.core.api.SoftAssertions softAssertions = new org.assertj.core.api.SoftAssertions();
+         assertionConsumer.accept(softAssertions);
+         return uiServiceFluent;
+      }).when(uiServiceFluent).validate(any(java.util.function.Consumer.class));
+
+      // When
+      sut.validateIsHidden(element, true);
+
+      // Then
+      assertThat(mockService.lastComponentType).isEqualTo(MockRadioComponentType.DUMMY);
+      assertThat(mockService.lastLocator).isEqualTo(By.id("testRadio"));
+      verify(storageUI).put(element.enumImpl(), true);
+   }
+
+   @Test
    @DisplayName("validateIsHidden should call validateIsVisible with correct parameters")
    void validateIsHiddenShouldCallValidateIsVisibleWithCorrectParameters() {
       // Given
