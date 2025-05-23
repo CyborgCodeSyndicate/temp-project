@@ -49,7 +49,6 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.platform.launcher.LauncherSession;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -93,7 +92,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -1175,7 +1173,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          // now simulate a request event
          var fakeReqEvent = mock(RequestWillBeSent.class);
-         var fakeReq      = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
+         var fakeReq = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
          when(fakeReq.getMethod()).thenReturn("GET");
          when(fakeReqEvent.getRequest()).thenReturn(fakeReq);
          RequestId rid = new RequestId("rid-1");
@@ -1201,10 +1199,10 @@ class UiTestExtensionTest extends BaseUnitUITest {
          // assert that exactly one ApiResponse landed in storage
          assertEquals(1, captured.size());
          ApiResponse r = captured.get(0);
-         assertEquals("GET",            r.getMethod());
-         assertEquals(200,              r.getStatus());
+         assertEquals("GET", r.getMethod());
+         assertEquals(200, r.getStatus());
          assertEquals("https://example.com/foo", r.getUrl());
-         assertEquals("hello",          r.getBody());
+         assertEquals("hello", r.getBody());
       }
 
       @Test
@@ -1240,7 +1238,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          // fire a fake request event so we record the rid→method mapping
          var fakeReqEvent = mock(RequestWillBeSent.class);
-         var fakeReq     = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
+         var fakeReq = mock(org.openqa.selenium.devtools.v85.network.model.Request.class);
          when(fakeReq.getMethod()).thenReturn("POST");
          when(fakeReqEvent.getRequest()).thenReturn(fakeReq);
          RequestId rid = new RequestId("rid-2");
@@ -1249,7 +1247,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
 
          // now fire a fake response event whose URL contains "foo"
          var fakeRespEvent = mock(ResponseReceived.class);
-         var fakeResp      = mock(org.openqa.selenium.devtools.v85.network.model.Response.class);
+         var fakeResp = mock(org.openqa.selenium.devtools.v85.network.model.Response.class);
          when(fakeResp.getStatus()).thenReturn(201);
          when(fakeResp.getUrl()).thenReturn("https://big/foo");   // <-- ensure it matches "foo"
          when(fakeRespEvent.getResponse()).thenReturn(fakeResp);
@@ -1352,7 +1350,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          }).when(uiStorage).put(eq(RESPONSES), anyList());
 
          // act: invoke with a pattern that will NOT match the response URL
-         helper.invoke(null, quest, new String[]{"nomatch"});
+         helper.invoke(null, quest, new String[] {"nomatch"});
 
          // grab both listeners at once
          @SuppressWarnings("unchecked")
@@ -1405,7 +1403,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          }).when(uiStorage).put(eq(RESPONSES), anyList());
 
          // act: invoke with pattern “example” so we match the URL
-         helper.invoke(null, quest, new String[]{"example"});
+         helper.invoke(null, quest, new String[] {"example"});
 
          // grab both listeners
          @SuppressWarnings("unchecked")
@@ -1854,7 +1852,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
          RuntimeException boom = new RuntimeException("boom!");
 
          try (
-               var allureMock   = mockStatic(Allure.class);
+               var allureMock = mockStatic(Allure.class);
                var listenerMock = mockStatic(CustomAllureListener.class)
          ) {
             // stub the new predicate
