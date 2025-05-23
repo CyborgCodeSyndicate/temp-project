@@ -1850,35 +1850,33 @@ class UiTestExtensionTest extends BaseUnitUITest {
       @Test
       @DisplayName("when parent TEST_EXECUTION step is active it stops it and starts TEAR_DOWN")
       void handleTestExecutionException_switchesParentStep_whenParentStepActive() throws Throwable {
-         // make sure we hit the driver-cleanup branch
          when(smartWebDriver.isKeepDriverForSession()).thenReturn(false);
          RuntimeException boom = new RuntimeException("boom!");
 
          try (
-               var allureMock = mockStatic(Allure.class);
+               var allureMock   = mockStatic(Allure.class);
                var listenerMock = mockStatic(CustomAllureListener.class)
          ) {
-            // stub out the if-predicate in takeScreenshot()
+            // stub the new predicate
             listenerMock
-                  .when(() -> CustomAllureListener.isParentStepActive(StepType.TEST_EXECUTION))
+                  .when(() -> CustomAllureListener.isStepActive(
+                        StepType.TEST_EXECUTION.getDisplayName()))
                   .thenReturn(true);
 
             UiTestExtension ext = new UiTestExtension();
-            // call under test
-            RuntimeException thrown =
-                  assertThrows(RuntimeException.class,
-                        () -> ext.handleTestExecutionException(context, boom));
 
+            RuntimeException thrown = assertThrows(RuntimeException.class,
+                  () -> ext.handleTestExecutionException(context, boom)
+            );
             assertSame(boom, thrown);
 
-            // verify that we did stop the TEST_EXECUTION parent step…
-            listenerMock.verify(CustomAllureListener::stopParentStep);
-            // …and then immediately start the TEAR_DOWN parent step
+            // now verify the NEW methods
+            listenerMock.verify(CustomAllureListener::stopStep);
             listenerMock.verify(() ->
-                  CustomAllureListener.startParentStep(StepType.TEAR_DOWN)
+                  CustomAllureListener.startStep(StepType.TEAR_DOWN)
             );
 
-            // and of course we still attach the screenshot
+            // screenshot still gets attached
             allureMock.verify(() ->
                   Allure.addAttachment(
                         eq("myDisplayName"),
@@ -1887,7 +1885,7 @@ class UiTestExtensionTest extends BaseUnitUITest {
             );
          }
 
-         // cleanup: the driver.close()/quit() verifications
+         // and driver cleanup still runs
          verify(originalDriver).close();
          verify(originalDriver).quit();
       }
