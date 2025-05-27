@@ -45,19 +45,33 @@ public class InsertionServiceElementImpl extends BaseInsertionService<InsertionE
       this.webDriver = webDriver;
    }
 
-   //todo: javaDocs
+   /**
+    * Returns the annotation class handled by this insertion service.
+    *
+    * @return {@code InsertionElement.class}.
+    */
    @Override
    protected Class<InsertionElement> getAnnotationClass() {
       return InsertionElement.class;
    }
 
-   //todo: javaDocs
+   /**
+    * Extracts the insertion order defined in the {@link InsertionElement} annotation.
+    *
+    * @param annotation The annotation instance attached to the field.
+    * @return The insertion order declared by the annotation.
+    */
    @Override
    protected int getOrder(final InsertionElement annotation) {
       return annotation.order();
    }
 
-   //todo: javaDocs
+   /**
+    * Resolves the {@link ComponentType} enum class for the UI element described by the annotation.
+    *
+    * @param annotation The annotation instance attached to the field.
+    * @return The enum class representing the component type.
+    */
    @Override
    protected Class<? extends ComponentType> getComponentTypeEnumClass(final InsertionElement annotation) {
       final UiElement uiElement = (UiElement) Enum.valueOf(
@@ -67,7 +81,12 @@ public class InsertionServiceElementImpl extends BaseInsertionService<InsertionE
       return uiElement.componentType().getClass();
    }
 
-   //todo: javaDocs
+   /**
+    * Builds a Selenium {@link By} locator for the UI element specified by the annotation.
+    *
+    * @param annotation The annotation instance attached to the field.
+    * @return A Selenium locator targeting the element.
+    */
    @Override
    protected By buildLocator(final InsertionElement annotation) {
       final UiElement uiElement = (UiElement) Enum.valueOf(
@@ -77,7 +96,12 @@ public class InsertionServiceElementImpl extends BaseInsertionService<InsertionE
       return uiElement.locator();
    }
 
-   //todo: javaDocs
+   /**
+    * Retrieves the {@link ComponentType} of the UI element specified by the annotation.
+    *
+    * @param annotation The annotation instance attached to the field.
+    * @return The component type for the element.
+    */
    @Override
    protected ComponentType getType(final InsertionElement annotation) {
       final UiElement uiElement = (UiElement) Enum.valueOf(
@@ -87,7 +111,11 @@ public class InsertionServiceElementImpl extends BaseInsertionService<InsertionE
       return uiElement.componentType();
    }
 
-   //todo: javaDocs
+   /**
+    * Executes any pre-insertion action defined by the {@link UiElement#before()} consumer.
+    *
+    * @param annotation The annotation instance attached to the field.
+    */
    @Override
    protected void beforeInsertion(final InsertionElement annotation) {
       final UiElement uiElement = (UiElement) Enum.valueOf(
@@ -97,7 +125,11 @@ public class InsertionServiceElementImpl extends BaseInsertionService<InsertionE
       uiElement.before().accept(webDriver);
    }
 
-   //todo: javaDocs
+   /**
+    * Executes any post-insertion action defined by the {@link UiElement#after()} consumer.
+    *
+    * @param annotation The annotation instance attached to the field.
+    */
    @Override
    protected void afterInsertion(final InsertionElement annotation) {
       final UiElement uiElement = (UiElement) Enum.valueOf(

@@ -122,7 +122,15 @@ public class Oracle implements ParameterResolver {
       return new HashMap<>();
    }
 
-   //todo: javaDocs
+   /**
+    * Copies test-level hook parameters from the JUnit {@code ExtensionContext} store into the framework's {@code Storage}.
+    *
+    * <p>This method is used to propagate test-specific hook data (such as setup/teardown metadata)
+    * from the JUnit context into the test execution context, allowing it to be accessed during the test run.
+    *
+    * @param storage The test storage object where hook data should be inserted.
+    * @param context The JUnit extension context containing the stored hook parameters.
+    */
    private static void addHooksDataInTestStorage(Storage storage, ExtensionContext context) {
       Map<Object, Object> hooksStorage = context.getStore(GLOBAL).get(StoreKeys.HOOKS_PARAMS, Map.class);
       if (hooksStorage != null) {

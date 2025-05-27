@@ -28,9 +28,15 @@ public enum StoreKeys {
     */
    START_TIME,
 
+   /**
+    * Key for storing the rendered HTML output or fragments for use in reporting or visualization.
+    */
    HTML,
 
-   //todo: JavaDocs
+   /**
+    * Key for storing hook-related parameters, such as setup and teardown data,
+    * to be shared between extensions and test logic.
+    */
    HOOKS_PARAMS;
 
 }
