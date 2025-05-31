@@ -2,18 +2,27 @@ package com.theairebellion.zeus.ui.components.list;
 
 import com.theairebellion.zeus.ui.components.list.mock.MockItemListComponentType;
 import com.theairebellion.zeus.ui.components.list.mock.MockItemListService;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import java.lang.reflect.Method;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.openqa.selenium.By;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 
 @DisplayName("ItemListService Interface Tests")
@@ -37,6 +46,34 @@ class ItemListServiceTest extends BaseUnitUITest {
       locator = By.id("testList");
       strategy = Strategy.FIRST;
       service.reset();
+   }
+
+   @Test
+   void testGetDefaultTypeShouldReturnNullWhenExceptionIsThrown() throws Exception {
+      UiConfig mockConfig = mock(UiConfig.class);
+      when(mockConfig.listDefaultType()).thenReturn("SomeType");
+      when(mockConfig.projectPackage()).thenReturn("com.example");
+
+      try (
+            MockedStatic<UiConfigHolder> configMock = mockStatic(UiConfigHolder.class);
+            MockedStatic<ReflectionUtil> reflectionMock = mockStatic(ReflectionUtil.class)
+      ) {
+         configMock.when(UiConfigHolder::getUiConfig).thenReturn(mockConfig);
+
+         reflectionMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+               ItemListComponentType.class,
+               "SomeType",
+               "com.example"
+         )).thenThrow(new RuntimeException("Simulated failure"));
+
+         // Use reflection to access the private static method
+         Method method = ItemListService.class.getDeclaredMethod("getDefaultType");
+         method.setAccessible(true);
+
+         ItemListComponentType result = (ItemListComponentType) method.invoke(null);
+
+         assertNull(result);
+      }
    }
 
    @Nested

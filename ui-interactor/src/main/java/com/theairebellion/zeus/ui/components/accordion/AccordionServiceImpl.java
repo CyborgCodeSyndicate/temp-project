@@ -198,6 +198,13 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
       return accordionComponent(componentType).areEnabled(accordionLocator);
    }
 
+   /**
+    * Checks if accordion panel identified by locator is enabled for a given type.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param accordionLocator The locator identifying the panel to check.
+    * @return {@code true} if the specified accordion panel is enabled, otherwise {@code false}.
+    */
    @Override
    public boolean isEnabled(final AccordionComponentType componentType, final By accordionLocator) {
       LogUi.step("Checking if accordion {} is enabled using locator {}", componentType, accordionLocator);
@@ -217,10 +224,17 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
       return accordionComponent(componentType).getExpanded(container);
    }
 
+   /**
+    * Retrieves a list of expanded panels for a given type, within a specific container identified by locator.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param containerLocator The container locator holding the accordion panels.
+    * @return A list of expanded panel titles.
+    */
    @Override
-   public List<String> getExpanded(final AccordionComponentType componentType, final By accordionLocator) {
-      LogUi.step("Getting expanded accordions for {}, using locator {}", componentType, accordionLocator);
-      return accordionComponent(componentType).getExpanded(accordionLocator);
+   public List<String> getExpanded(final AccordionComponentType componentType, final By containerLocator) {
+      LogUi.step("Getting expanded accordions for {}, using locator {}", componentType, containerLocator);
+      return accordionComponent(componentType).getExpanded(containerLocator);
    }
 
    /**
@@ -236,10 +250,17 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
       return accordionComponent(componentType).getCollapsed(container);
    }
 
+   /**
+    * Retrieves a list of collapsed panels for a given type, within a specific container identified by locator.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param containerLocator The container locator holding the accordion panels.
+    * @return A list of collapsed panel titles.
+    */
    @Override
-   public List<String> getCollapsed(final AccordionComponentType componentType, final By accordionLocator) {
-      LogUi.step("Getting collapsed accordions for {}, using locator {}", componentType, accordionLocator);
-      return accordionComponent(componentType).getCollapsed(accordionLocator);
+   public List<String> getCollapsed(final AccordionComponentType componentType, final By containerLocator) {
+      LogUi.step("Getting collapsed accordions for {}, using locator {}", componentType, containerLocator);
+      return accordionComponent(componentType).getCollapsed(containerLocator);
    }
 
    /**
@@ -256,17 +277,25 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
       return accordionComponent(componentType).getAll(container);
    }
 
+   /**
+    * Retrieves a list of all panel texts (both expanded and collapsed) for a given type
+    * within a specific container identified by locator.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param containerLocator The container holding the accordion panels.
+    * @return A list of all panel texts.
+    */
    @Override
-   public List<String> getAll(final AccordionComponentType componentType, final By accordionLocator) {
-      LogUi.step("Getting all accordions for {}, using locator {}", componentType, accordionLocator);
-      return accordionComponent(componentType).getAll(accordionLocator);
+   public List<String> getAll(final AccordionComponentType componentType, final By containerLocator) {
+      LogUi.step("Getting all accordions for {}, using locator {}", componentType, containerLocator);
+      return accordionComponent(componentType).getAll(containerLocator);
    }
 
    /**
     * Retrieves the title of an accordion panel for a given type, identified by a locator.
     *
     * @param componentType    The specific accordion component type.
-    * @param accordionLocator The locator of the panel.
+    * @param accordionLocator The locator of container holding the accordion panels.
     * @return The panel's title text.
     */
    @Override
