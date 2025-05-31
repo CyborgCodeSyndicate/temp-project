@@ -108,9 +108,21 @@ public class MockAccordionService implements AccordionService {
    }
 
    @Override
+   public boolean isEnabled(AccordionComponentType componentType, By accordionLocator) {
+      return false;
+   }
+
+   @Override
    public List<String> getExpanded(AccordionComponentType componentType, SmartWebElement container) {
       lastComponentType = (MockAccordionComponentType) componentType;
       lastContainer = container;
+      return EXPANDED_LIST;
+   }
+
+   @Override
+   public List<String> getExpanded(AccordionComponentType componentType, By containerLocator) {
+      lastComponentType = (MockAccordionComponentType) componentType;
+      lastAccordionLocators = new By[] {containerLocator};
       return EXPANDED_LIST;
    }
 
@@ -122,9 +134,23 @@ public class MockAccordionService implements AccordionService {
    }
 
    @Override
+   public List<String> getCollapsed(AccordionComponentType componentType, By containerLocator) {
+      lastComponentType = (MockAccordionComponentType) componentType;
+      lastAccordionLocators = new By[] {containerLocator};
+      return COLLAPSED_LIST;
+   }
+
+   @Override
    public List<String> getAll(AccordionComponentType componentType, SmartWebElement container) {
       lastComponentType = (MockAccordionComponentType) componentType;
       lastContainer = container;
+      return ALL_LIST;
+   }
+
+   @Override
+   public List<String> getAll(AccordionComponentType componentType, By containerLocator) {
+      lastComponentType = (MockAccordionComponentType) componentType;
+      lastAccordionLocators = new By[] {containerLocator};
       return ALL_LIST;
    }
 

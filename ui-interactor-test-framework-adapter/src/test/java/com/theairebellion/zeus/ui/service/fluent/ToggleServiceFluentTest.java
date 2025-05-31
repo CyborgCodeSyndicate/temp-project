@@ -3,6 +3,7 @@ package com.theairebellion.zeus.ui.service.fluent;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.selenium.ToggleUiElement;
+import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.service.fluent.mock.MockToggleComponentType;
 import com.theairebellion.zeus.ui.service.fluent.mock.MockToggleService;
 import com.theairebellion.zeus.ui.service.fluent.mock.MockToggleUiElement;
@@ -29,6 +30,7 @@ class ToggleServiceFluentTest extends BaseUnitUITest {
    private Storage storage;
    private Storage storageUI;
    private UiServiceFluent uiServiceFluent;
+   private SmartWebDriver driver;
    private ToggleUiElement element;
    private MockedStatic<Allure> allureMock;
 
@@ -39,6 +41,7 @@ class ToggleServiceFluentTest extends BaseUnitUITest {
       storage = mock(Storage.class);
       storageUI = mock(Storage.class);
       uiServiceFluent = mock(UiServiceFluent.class);
+      driver = mock(SmartWebDriver.class);
       element = new MockToggleUiElement(By.id("testToggle"), MockToggleComponentType.DUMMY);
 
       when(storage.sub(StorageKeysUi.UI)).thenReturn(storageUI);
@@ -47,7 +50,7 @@ class ToggleServiceFluentTest extends BaseUnitUITest {
       allureMock = mockStatic(Allure.class);
 
       // Create the SUT
-      sut = new ToggleServiceFluent(uiServiceFluent, storage, mockService);
+      sut = new ToggleServiceFluent(uiServiceFluent, storage, mockService, driver);
    }
 
    @AfterEach

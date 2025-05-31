@@ -107,7 +107,7 @@ public interface Accordion {
    boolean areEnabled(By... accordionLocator);
 
    /**
-    * Retrieves a list of text labels for accordion panels currently in an expanded state.
+    * Retrieves a list of text labels for accordion panels currently in an expanded state within a container element.
     *
     * @param container The container element holding the accordion.
     * @return A list of expanded panel labels.
@@ -115,12 +115,28 @@ public interface Accordion {
    List<String> getExpanded(SmartWebElement container);
 
    /**
-    * Retrieves a list of text labels for accordion panels currently in a collapsed state.
+    * Retrieves a list of text labels for accordion panels currently in an expanded state identified by a locator.
+    *
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of expanded panel labels.
+    */
+   List<String> getExpanded(By containerLocator);
+
+   /**
+    * Retrieves a list of text labels for accordion panels currently in a collapsed state within a container element.
     *
     * @param container The container element holding the accordion.
     * @return A list of collapsed panel labels.
     */
    List<String> getCollapsed(SmartWebElement container);
+
+   /**
+    * Retrieves a list of text labels for accordion panels currently in a collapsed state identified by a locator.
+    *
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of collapsed panel labels.
+    */
+   List<String> getCollapsed(By containerLocator);
 
    /**
     * Retrieves a list of all panel labels within the accordion container,
@@ -130,6 +146,15 @@ public interface Accordion {
     * @return A list of all panel labels in the accordion.
     */
    List<String> getAll(SmartWebElement container);
+
+   /**
+    * Retrieves a list of all panel labels identified by a locator,
+    * regardless of their expanded or collapsed state.
+    *
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of all panel labels in the accordion.
+    */
+   List<String> getAll(By containerLocator);
 
    /**
     * Retrieves the title text from a specific accordion panel using a locator.
@@ -146,5 +171,4 @@ public interface Accordion {
     * @return The text content of the accordion panel.
     */
    String getText(By accordionLocator);
-
 }

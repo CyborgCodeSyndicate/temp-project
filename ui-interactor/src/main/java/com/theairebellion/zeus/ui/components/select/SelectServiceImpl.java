@@ -149,7 +149,8 @@ public class SelectServiceImpl extends AbstractComponentService<SelectComponentT
     * @param value         the value of the option to select.
     */
    @Override
-   public void selectOption(SelectComponentType componentType, SmartWebElement container, String value) {
+   public void selectOption(final SelectComponentType componentType, final SmartWebElement container,
+                            final String value) {
       LogUi.step(String.format(SELECT_OPTION_CONTAINER, value, container, componentType));
       selectOptions(componentType, container, value);
    }

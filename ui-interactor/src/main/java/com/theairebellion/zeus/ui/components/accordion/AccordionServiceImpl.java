@@ -6,6 +6,7 @@ import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
+import java.util.Arrays;
 import java.util.List;
 import org.openqa.selenium.By;
 
@@ -192,7 +193,14 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
     */
    @Override
    public boolean areEnabled(final AccordionComponentType componentType, final By... accordionLocator) {
-      LogUi.step("Checking if accordion {} is enabled using locators", componentType);
+      LogUi.step("Checking if accordions {} are enabled using locators {}", componentType,
+            Arrays.asList(accordionLocator));
+      return accordionComponent(componentType).areEnabled(accordionLocator);
+   }
+
+   @Override
+   public boolean isEnabled(final AccordionComponentType componentType, final By accordionLocator) {
+      LogUi.step("Checking if accordion {} is enabled using locator {}", componentType, accordionLocator);
       return accordionComponent(componentType).areEnabled(accordionLocator);
    }
 
@@ -205,8 +213,14 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
     */
    @Override
    public List<String> getExpanded(final AccordionComponentType componentType, final SmartWebElement container) {
-      LogUi.step("Getting expanded accordions for {}", componentType);
+      LogUi.step("Getting expanded accordions for {} inside container {}", componentType, container);
       return accordionComponent(componentType).getExpanded(container);
+   }
+
+   @Override
+   public List<String> getExpanded(final AccordionComponentType componentType, final By accordionLocator) {
+      LogUi.step("Getting expanded accordions for {}, using locator {}", componentType, accordionLocator);
+      return accordionComponent(componentType).getExpanded(accordionLocator);
    }
 
    /**
@@ -218,8 +232,14 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
     */
    @Override
    public List<String> getCollapsed(final AccordionComponentType componentType, final SmartWebElement container) {
-      LogUi.step("Getting collapsed accordions for {}", componentType);
+      LogUi.step("Getting collapsed accordions for {} inside container {}", componentType, container);
       return accordionComponent(componentType).getCollapsed(container);
+   }
+
+   @Override
+   public List<String> getCollapsed(final AccordionComponentType componentType, final By accordionLocator) {
+      LogUi.step("Getting collapsed accordions for {}, using locator {}", componentType, accordionLocator);
+      return accordionComponent(componentType).getCollapsed(accordionLocator);
    }
 
    /**
@@ -234,6 +254,12 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
    public List<String> getAll(final AccordionComponentType componentType, final SmartWebElement container) {
       LogUi.step("Getting all accordions for {}", componentType);
       return accordionComponent(componentType).getAll(container);
+   }
+
+   @Override
+   public List<String> getAll(final AccordionComponentType componentType, final By accordionLocator) {
+      LogUi.step("Getting all accordions for {}, using locator {}", componentType, accordionLocator);
+      return accordionComponent(componentType).getAll(accordionLocator);
    }
 
    /**

@@ -24,7 +24,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class InputServiceFluent<T extends UiServiceFluent<?>> implements Insertion {
 
    private final InputService inputService;
@@ -173,8 +173,8 @@ public class InputServiceFluent<T extends UiServiceFluent<?>> implements Inserti
       storage.sub(UI).put(element.enumImpl(), enabled);
 
       String assertionMessage = shouldBeEnabled
-            ? "Validating Input is enabled"
-            : "Validating Input is disabled";
+            ? "Validating input is enabled"
+            : "Validating input is disabled";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
