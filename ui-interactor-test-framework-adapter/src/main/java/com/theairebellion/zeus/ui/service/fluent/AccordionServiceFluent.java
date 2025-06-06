@@ -512,7 +512,7 @@ public class AccordionServiceFluent<T extends UiServiceFluent<?>> {
     */
    public T validateText(final AccordionUiElement element, final String expectedValue) {
       Allure.step("[UI - Accordion] Validate text content of the accordion with type: " + element.componentType());
-      return validateTitle(element, false, expectedValue);
+      return validateText(element, false, expectedValue);
    }
 
    /**

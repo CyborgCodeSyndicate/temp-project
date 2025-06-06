@@ -22,6 +22,7 @@ public class MockAccordionService implements AccordionService {
    public String[] lastAccordionText;
    public By[] lastAccordionLocators;
    public Strategy lastStrategy;
+   public boolean returnEnabled;
 
    public void reset() {
       lastComponentType = MockAccordionComponentType.DUMMY;
@@ -29,6 +30,7 @@ public class MockAccordionService implements AccordionService {
       lastAccordionText = null;
       lastAccordionLocators = null;
       lastStrategy = null;
+      returnEnabled = true;
    }
 
    @Override
@@ -90,26 +92,28 @@ public class MockAccordionService implements AccordionService {
       lastComponentType = (MockAccordionComponentType) componentType;
       lastContainer = container;
       lastAccordionText = accordionText;
-      return true;
+      return returnEnabled;
    }
 
    @Override
    public boolean areEnabled(AccordionComponentType componentType, String... accordionText) {
       lastComponentType = (MockAccordionComponentType) componentType;
       lastAccordionText = accordionText;
-      return true;
+      return returnEnabled;
    }
 
    @Override
    public boolean areEnabled(AccordionComponentType componentType, By... accordionLocator) {
       lastComponentType = (MockAccordionComponentType) componentType;
       lastAccordionLocators = accordionLocator;
-      return true;
+      return returnEnabled;
    }
 
    @Override
    public boolean isEnabled(AccordionComponentType componentType, By accordionLocator) {
-      return false;
+      lastComponentType = (MockAccordionComponentType) componentType;
+      lastAccordionLocators = new By[] {accordionLocator};
+      return returnEnabled;
    }
 
    @Override

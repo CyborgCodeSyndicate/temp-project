@@ -26,6 +26,28 @@ public class MockToggleService implements ToggleService {
    }
 
    @Override
+   public boolean isEnabled(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
+      lastComponentType = componentType;
+      lastContainer = container;
+      lastText = toggleText;
+      return returnBool;
+   }
+
+   @Override
+   public boolean isEnabled(ToggleComponentType componentType, String toggleText) {
+      lastComponentType = componentType;
+      lastText = toggleText;
+      return returnBool;
+   }
+
+   @Override
+   public boolean isEnabled(ToggleComponentType componentType, By toggleLocator) {
+      lastComponentType = componentType;
+      lastLocator = toggleLocator;
+      return returnBool;
+   }
+
+   @Override
    public void activate(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
       lastComponentType = componentType;
       lastContainer = container;
@@ -61,28 +83,6 @@ public class MockToggleService implements ToggleService {
    public void deactivate(ToggleComponentType componentType, By toggleLocator) {
       lastComponentType = componentType;
       lastLocator = toggleLocator;
-   }
-
-   @Override
-   public boolean isEnabled(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
-      lastComponentType = componentType;
-      lastContainer = container;
-      lastText = toggleText;
-      return returnBool;
-   }
-
-   @Override
-   public boolean isEnabled(ToggleComponentType componentType, String toggleText) {
-      lastComponentType = componentType;
-      lastText = toggleText;
-      return returnBool;
-   }
-
-   @Override
-   public boolean isEnabled(ToggleComponentType componentType, By toggleLocator) {
-      lastComponentType = componentType;
-      lastLocator = toggleLocator;
-      return returnBool;
    }
 
    @Override
