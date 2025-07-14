@@ -20,7 +20,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class LoaderServiceFluent<T extends UiServiceFluent<?>> {
 
    private final LoaderService loaderService;
@@ -98,8 +98,8 @@ public class LoaderServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), visible);
 
       String assertionMessage = shouldBeVisible
-            ? "Validating Loader is visible"
-            : "Validating Loader is hidden";
+            ? "Validating loader is visible"
+            : "Validating loader is hidden";
 
       if (soft) {
          return (T) uiServiceFluent.validate(

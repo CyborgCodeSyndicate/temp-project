@@ -21,7 +21,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class AlertServiceFluent<T extends UiServiceFluent<?>> {
 
    private final AlertService alertService;

@@ -22,7 +22,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *            This type parameter ensures that method chaining correctly returns the calling instance type.
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class ButtonServiceFluent<T extends UiServiceFluent<?>> {
 
    private final ButtonService buttonService;
@@ -107,8 +107,8 @@ public class ButtonServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), enabled);
 
       String assertionMessage = shouldBeEnabled
-            ? "Validating Button is enabled"
-            : "Validating Button is disabled";
+            ? "Validating button is enabled"
+            : "Validating button is disabled";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
@@ -202,8 +202,8 @@ public class ButtonServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), visible);
 
       String assertionMessage = shouldBeVisible
-            ? "Validating Button is visible"
-            : "Validating Button is hidden";
+            ? "Validating button is visible"
+            : "Validating button is hidden";
 
       if (soft) {
          return (T) uiServiceFluent.validate(

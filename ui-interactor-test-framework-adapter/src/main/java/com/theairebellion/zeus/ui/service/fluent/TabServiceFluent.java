@@ -19,7 +19,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class TabServiceFluent<T extends UiServiceFluent<?>> {
 
    private static final String UI_TAB_CHECKING_IF_THE_TAB = "[UI - Tab] Checking if the tab ";
@@ -108,8 +108,8 @@ public class TabServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), enabled);
 
       String assertionMessage = shouldBeEnabled
-            ? "Validating Tab is enabled"
-            : "Validating Tab is disabled";
+            ? "Validating tab is enabled"
+            : "Validating tab is disabled";
 
       if (soft) {
          Allure.step(UI_TAB_PERFORMING_SOFT_VALIDATION_FOR_THE_TAB + element);
@@ -201,8 +201,8 @@ public class TabServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), visible);
 
       String assertionMessage = shouldBeVisible
-            ? "Validating Tab is visible"
-            : "Validating Tab is hidden";
+            ? "Validating tab is visible"
+            : "Validating tab is hidden";
 
       if (soft) {
          Allure.step(UI_TAB_PERFORMING_SOFT_VALIDATION_FOR_THE_TAB + element);
@@ -295,8 +295,8 @@ public class TabServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), selected);
 
       String assertionMessage = shouldBeSelected
-            ? "Validating Tab is selected"
-            : "Validating Tab is not selected";
+            ? "Validating tab is selected"
+            : "Validating tab is not selected";
 
       if (soft) {
          Allure.step(UI_TAB_PERFORMING_SOFT_VALIDATION_FOR_THE_TAB + element);
