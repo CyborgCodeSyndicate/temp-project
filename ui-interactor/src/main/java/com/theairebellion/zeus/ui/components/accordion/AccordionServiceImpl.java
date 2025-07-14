@@ -6,6 +6,7 @@ import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.util.strategy.Strategy;
+import java.util.Arrays;
 import java.util.List;
 import org.openqa.selenium.By;
 
@@ -192,7 +193,21 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
     */
    @Override
    public boolean areEnabled(final AccordionComponentType componentType, final By... accordionLocator) {
-      LogUi.step("Checking if accordion {} is enabled using locators", componentType);
+      LogUi.step("Checking if accordions {} are enabled using locators {}", componentType,
+            Arrays.asList(accordionLocator));
+      return accordionComponent(componentType).areEnabled(accordionLocator);
+   }
+
+   /**
+    * Checks if accordion panel identified by locator is enabled for a given type.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param accordionLocator The locator identifying the panel to check.
+    * @return {@code true} if the specified accordion panel is enabled, otherwise {@code false}.
+    */
+   @Override
+   public boolean isEnabled(final AccordionComponentType componentType, final By accordionLocator) {
+      LogUi.step("Checking if accordion {} is enabled using locator {}", componentType, accordionLocator);
       return accordionComponent(componentType).areEnabled(accordionLocator);
    }
 
@@ -205,8 +220,21 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
     */
    @Override
    public List<String> getExpanded(final AccordionComponentType componentType, final SmartWebElement container) {
-      LogUi.step("Getting expanded accordions for {}", componentType);
+      LogUi.step("Getting expanded accordions for {} inside container {}", componentType, container);
       return accordionComponent(componentType).getExpanded(container);
+   }
+
+   /**
+    * Retrieves a list of expanded panels for a given type, within a specific container identified by locator.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param containerLocator The container locator holding the accordion panels.
+    * @return A list of expanded panel titles.
+    */
+   @Override
+   public List<String> getExpanded(final AccordionComponentType componentType, final By containerLocator) {
+      LogUi.step("Getting expanded accordions for {}, using locator {}", componentType, containerLocator);
+      return accordionComponent(componentType).getExpanded(containerLocator);
    }
 
    /**
@@ -218,8 +246,21 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
     */
    @Override
    public List<String> getCollapsed(final AccordionComponentType componentType, final SmartWebElement container) {
-      LogUi.step("Getting collapsed accordions for {}", componentType);
+      LogUi.step("Getting collapsed accordions for {} inside container {}", componentType, container);
       return accordionComponent(componentType).getCollapsed(container);
+   }
+
+   /**
+    * Retrieves a list of collapsed panels for a given type, within a specific container identified by locator.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param containerLocator The container locator holding the accordion panels.
+    * @return A list of collapsed panel titles.
+    */
+   @Override
+   public List<String> getCollapsed(final AccordionComponentType componentType, final By containerLocator) {
+      LogUi.step("Getting collapsed accordions for {}, using locator {}", componentType, containerLocator);
+      return accordionComponent(componentType).getCollapsed(containerLocator);
    }
 
    /**
@@ -237,10 +278,24 @@ public class AccordionServiceImpl extends AbstractComponentService<AccordionComp
    }
 
    /**
+    * Retrieves a list of all panel texts (both expanded and collapsed) for a given type
+    * within a specific container identified by locator.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param containerLocator The container holding the accordion panels.
+    * @return A list of all panel texts.
+    */
+   @Override
+   public List<String> getAll(final AccordionComponentType componentType, final By containerLocator) {
+      LogUi.step("Getting all accordions for {}, using locator {}", componentType, containerLocator);
+      return accordionComponent(componentType).getAll(containerLocator);
+   }
+
+   /**
     * Retrieves the title of an accordion panel for a given type, identified by a locator.
     *
     * @param componentType    The specific accordion component type.
-    * @param accordionLocator The locator of the panel.
+    * @param accordionLocator The locator of container holding the accordion panels.
     * @return The panel's title text.
     */
    @Override

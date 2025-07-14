@@ -248,6 +248,21 @@ class AccordionServiceImplTest extends BaseUnitUITest {
          verify(accordion).areEnabled(sampleLocator);
          verifyNoMoreInteractions(accordion);
       }
+
+      @Test
+      @DisplayName("should delegate isEnabled with By locator")
+      void isEnabledWithByLocator() {
+         // Given
+         when(accordion.areEnabled(sampleLocator)).thenReturn(true);
+
+         // When
+         boolean result = service.isEnabled(componentType, sampleLocator);
+
+         // Then
+         assertThat(result).isTrue();
+         verify(accordion).areEnabled(sampleLocator);
+         verifyNoMoreInteractions(accordion);
+      }
    }
 
    @Nested
@@ -270,6 +285,21 @@ class AccordionServiceImplTest extends BaseUnitUITest {
       }
 
       @Test
+      @DisplayName("should delegate getExpanded by locator")
+      void getExpandedByLocator() {
+         // Given
+         when(accordion.getExpanded(sampleLocator)).thenReturn(sampleList);
+
+         // When
+         var result = service.getExpanded(componentType, sampleLocator);
+
+         // Then
+         assertThat(result).isEqualTo(sampleList);
+         verify(accordion).getExpanded(sampleLocator);
+         verifyNoMoreInteractions(accordion);
+      }
+
+      @Test
       @DisplayName("should delegate getCollapsed")
       void getCollapsed() {
          // Given
@@ -285,6 +315,21 @@ class AccordionServiceImplTest extends BaseUnitUITest {
       }
 
       @Test
+      @DisplayName("should delegate getCollapsed by locator")
+      void getCollapsedByLocator() {
+         // Given
+         when(accordion.getCollapsed(sampleLocator)).thenReturn(sampleList);
+
+         // When
+         var result = service.getCollapsed(componentType, sampleLocator);
+
+         // Then
+         assertThat(result).isEqualTo(sampleList);
+         verify(accordion).getCollapsed(sampleLocator);
+         verifyNoMoreInteractions(accordion);
+      }
+
+      @Test
       @DisplayName("should delegate getAll")
       void getAll() {
          // Given
@@ -296,6 +341,21 @@ class AccordionServiceImplTest extends BaseUnitUITest {
          // Then
          assertThat(result).isEqualTo(sampleList);
          verify(accordion).getAll(container);
+         verifyNoMoreInteractions(accordion);
+      }
+
+      @Test
+      @DisplayName("should delegate getAll by locator")
+      void getAllByLocator() {
+         // Given
+         when(accordion.getAll(sampleLocator)).thenReturn(sampleList);
+
+         // When
+         var result = service.getAll(componentType, sampleLocator);
+
+         // Then
+         assertThat(result).isEqualTo(sampleList);
+         verify(accordion).getAll(sampleLocator);
          verifyNoMoreInteractions(accordion);
       }
 

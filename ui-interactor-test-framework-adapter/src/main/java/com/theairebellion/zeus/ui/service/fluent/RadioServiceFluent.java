@@ -25,7 +25,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Insertion {
 
    private static final String UI_RADIO_VALIDATING_IF_RADIO_BUTTON_IS = "[UI - Radio] Validating if radio button is ";
@@ -110,8 +110,8 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
       storage.sub(UI).put(element.enumImpl(), enabled);
 
       String assertionMessage = shouldBeEnabled
-            ? "Validating Radio Input is enabled"
-            : "Validating Radio Input is disabled";
+            ? "Validating radio input is enabled"
+            : "Validating radio input is disabled";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
@@ -203,8 +203,8 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
       storage.sub(UI).put(element.enumImpl(), selected);
 
       String assertionMessage = shouldBeSelected
-            ? "Validating Radio Input is selected"
-            : "Validating Radio Input is not selected";
+            ? "Validating radio input is selected"
+            : "Validating radio input is not selected";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
@@ -297,8 +297,8 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
       storage.sub(UI).put(element.enumImpl(), visible);
 
       String assertionMessage = shouldBeVisible
-            ? "Validating Radio Input is visible"
-            : "Validating Radio Input is hidden";
+            ? "Validating radio input is visible"
+            : "Validating radio input is hidden";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
@@ -368,9 +368,8 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
     * @return The fluent UI service instance.
     */
    public T validateSelected(final RadioUiElement element, String expected) {
-      Allure.step(
-            "[UI - Radio] Validating selected value for radio button: " + element.enumImpl() + " (Expected: " + expected
-                  + ")");
+      Allure.step("[UI - Radio] Validating selected value for radio button: " + element.enumImpl()
+            + " (Expected: " + expected + ")");
       return validateSelected(element, expected, false);
    }
 
@@ -383,9 +382,8 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
     * @return The fluent UI service instance.
     */
    public T validateSelected(final RadioUiElement element, String expected, boolean soft) {
-      Allure.step(
-            "[UI - Radio] Validating selected value for radio button: " + element.enumImpl() + " (Expected: " + expected
-                  + ", Soft: " + soft + ")");
+      Allure.step("[UI - Radio] Validating selected value for radio button: " + element.enumImpl()
+            + " (Expected: " + expected + ", Soft: " + soft + ")");
       element.before().accept(driver);
       String selectedRadioInput = radioService.getSelected(element.componentType(), element.locator());
       element.after().accept(driver);
@@ -394,12 +392,12 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
       if (soft) {
          return (T) uiServiceFluent.validate(
                softAssertions -> softAssertions.assertThat(selectedRadioInput)
-                     .as("Validating Selected Radio Input").isEqualTo(expected)
+                     .as("Validating selected radio Input").isEqualTo(expected)
          );
       } else {
          return (T) uiServiceFluent.validate(
                () -> Assertions.assertThat(selectedRadioInput)
-                     .as("Validating Selected Radio Input").isEqualTo(expected)
+                     .as("Validating selected radio Input").isEqualTo(expected)
          );
       }
    }
@@ -413,8 +411,9 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
    public T getAll(final RadioUiElement element) {
       Allure.step("[UI - Radio] Retrieving all radio button options for: " + element.enumImpl());
       element.before().accept(driver);
-      radioService.getAll(element.componentType(), element.locator());
+      List<String> allItems = radioService.getAll(element.componentType(), element.locator());
       element.after().accept(driver);
+      storage.sub(UI).put(element.enumImpl(), allItems);
       return uiServiceFluent;
    }
 
@@ -451,12 +450,12 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
       if (soft) {
          return (T) uiServiceFluent.validate(
                softAssertions -> softAssertions.assertThat(selectedRadioInputs)
-                     .as("Validating Radio Inputs").containsAll(Arrays.asList(expectedValues))
+                     .as("Validating radio inputs").containsAll(Arrays.asList(expectedValues))
          );
       } else {
          return (T) uiServiceFluent.validate(
                () -> Assertions.assertThat(selectedRadioInputs)
-                     .as("Validating Radio Inputs").containsAll(Arrays.asList(expectedValues))
+                     .as("Validating radio inputs").containsAll(Arrays.asList(expectedValues))
          );
       }
    }
@@ -470,8 +469,8 @@ public class RadioServiceFluent<T extends UiServiceFluent<?>> implements Inserti
     */
    @Override
    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
-      Allure.step("[UI - Radio] Performing insertion on radio button (ComponentType: " + componentType + ", Locator: "
-            + locator + ")");
+      Allure.step("[UI - Radio] Performing insertion on radio button (ComponentType: " + componentType
+            + ", Locator: " + locator + ")");
       radioService.insertion(componentType, locator, values);
    }
 

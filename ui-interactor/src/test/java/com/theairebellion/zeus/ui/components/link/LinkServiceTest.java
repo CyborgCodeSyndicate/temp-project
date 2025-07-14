@@ -3,16 +3,25 @@ package com.theairebellion.zeus.ui.components.link;
 import com.theairebellion.zeus.ui.components.button.mock.MockButtonComponentType;
 import com.theairebellion.zeus.ui.components.link.mock.MockLinkComponentType;
 import com.theairebellion.zeus.ui.components.link.mock.MockLinkService;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
+import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.openqa.selenium.By;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 @DisplayName("LinkService Interface Default Methods")
 class LinkServiceTest extends BaseUnitUITest {
@@ -31,6 +40,34 @@ class LinkServiceTest extends BaseUnitUITest {
       container = MockSmartWebElement.createMock();
       locator = By.id("testLink");
       service.reset();
+   }
+
+   @Test
+   void testGetDefaultTypeShouldReturnNullWhenExceptionIsThrown() throws Exception {
+      UiConfig mockConfig = mock(UiConfig.class);
+      when(mockConfig.linkDefaultType()).thenReturn("SomeType");
+      when(mockConfig.projectPackage()).thenReturn("com.example");
+
+      try (
+            MockedStatic<UiConfigHolder> configMock = mockStatic(UiConfigHolder.class);
+            MockedStatic<ReflectionUtil> reflectionMock = mockStatic(ReflectionUtil.class)
+      ) {
+         configMock.when(UiConfigHolder::getUiConfig).thenReturn(mockConfig);
+
+         reflectionMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
+               LinkComponentType.class,
+               "SomeType",
+               "com.example"
+         )).thenThrow(new RuntimeException("Simulated failure"));
+
+         // Use reflection to access the private static method
+         Method method = LinkService.class.getDeclaredMethod("getDefaultType");
+         method.setAccessible(true);
+
+         LinkComponentType result = (LinkComponentType) method.invoke(null);
+
+         assertNull(result);
+      }
    }
 
    @Nested

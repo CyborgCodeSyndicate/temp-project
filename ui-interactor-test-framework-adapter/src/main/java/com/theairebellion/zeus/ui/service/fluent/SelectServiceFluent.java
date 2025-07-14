@@ -26,7 +26,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "squid:S1192", "unchecked"})
 public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insertion {
 
    private static final String VALIDATING_AVAILABLE_OPTIONS = "Validating Available Options";
@@ -138,8 +138,8 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
     * @return The fluent UI service instance.
     */
    public T validateAvailableOptions(final SelectUiElement element, boolean soft, final String... expectedValues) {
-      Allure.step("[UI - Select] Validating available options in dropdown: " + element.enumImpl() + " (Soft: " + soft
-            + ", Expected Values: " + Arrays.toString(expectedValues) + ")");
+      Allure.step("[UI - Select] Validating available options in dropdown: " + element.enumImpl() + " (Soft: "
+            + soft + ", Expected Values: " + Arrays.toString(expectedValues) + ")");
       element.before().accept(driver);
       List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
       element.after().accept(driver);
@@ -182,8 +182,8 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
     * @return The fluent UI service instance.
     */
    public T validateAvailableOptions(final SelectUiElement element, boolean soft, final int expectedValuesCount) {
-      Allure.step("[UI - Select] Validating number of available options in dropdown: " + element.enumImpl() + " (Soft: "
-            + soft + ", Expected Count: " + expectedValuesCount + ")");
+      Allure.step("[UI - Select] Validating number of available options in dropdown: " + element.enumImpl()
+            + " (Soft: " + soft + ", Expected Count: " + expectedValuesCount + ")");
       element.before().accept(driver);
       List<String> availableOptions = selectService.getAvailableOptions(element.componentType(), element.locator());
       element.after().accept(driver);
@@ -225,8 +225,8 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
     * @return The fluent UI service instance.
     */
    public T validateSelectedOptions(final SelectUiElement element, final String... expectedValues) {
-      Allure.step("[UI - Select] Validating selected options in dropdown: " + element.enumImpl() + " (Expected Values: "
-            + Arrays.toString(expectedValues) + ")");
+      Allure.step("[UI - Select] Validating selected options in dropdown: " + element.enumImpl()
+            + " (Expected Values: " + Arrays.toString(expectedValues) + ")");
       return validateSelectedOptions(element, false, expectedValues);
    }
 
@@ -240,8 +240,8 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
     * @return The fluent UI service instance.
     */
    public T validateSelectedOptions(final SelectUiElement element, boolean soft, final String... expectedValues) {
-      Allure.step("[UI - Select] Validating selected options in dropdown: " + element.enumImpl() + " (Soft: " + soft
-            + ", Expected Values: " + Arrays.toString(expectedValues) + ")");
+      Allure.step("[UI - Select] Validating selected options in dropdown: " + element.enumImpl()
+            + " (Soft: " + soft + ", Expected Values: " + Arrays.toString(expectedValues) + ")");
       element.before().accept(driver);
       List<String> selectedOptions = selectService.getSelectedOptions(element.componentType(), element.locator());
       element.after().accept(driver);
@@ -250,12 +250,12 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
       if (soft) {
          return (T) uiServiceFluent.validate(
                softAssertions -> softAssertions.assertThat(selectedOptions)
-                     .as("Validating Selected Options").containsAll(Arrays.asList(expectedValues))
+                     .as("Validating selected options").containsAll(Arrays.asList(expectedValues))
          );
       } else {
          return (T) uiServiceFluent.validate(
                () -> Assertions.assertThat(selectedOptions)
-                     .as("Validating Selected Options").containsAll(Arrays.asList(expectedValues))
+                     .as("Validating selected options").containsAll(Arrays.asList(expectedValues))
          );
       }
    }
@@ -333,8 +333,8 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
       storage.sub(UI).put(element.enumImpl(), visible);
 
       String assertionMessage = shouldBeVisible
-            ? "Validating Option is visible"
-            : "Validating Option is hidden";
+            ? "Validating option is visible"
+            : "Validating option is hidden";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
@@ -423,19 +423,17 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
       return validateIsEnabled(element, false, value, soft);
    }
 
-   private T validateIsEnabled(final SelectUiElement element, boolean shouldBeEnabled, String value,
-                               boolean soft) {
-      Allure.step(
-            "[UI - Select] Validating whether option " + value + " is " + (shouldBeEnabled ? "enabled" : "disabled")
-                  + " in select element " + element);
+   private T validateIsEnabled(final SelectUiElement element, boolean shouldBeEnabled, String value, boolean soft) {
+      Allure.step("[UI - Select] Validating whether option " + value + " is "
+            + (shouldBeEnabled ? "enabled" : "disabled") + " in select element " + element);
       element.before().accept(driver);
       boolean enabled = selectService.isOptionVisible(element.componentType(), element.locator(), value);
       element.after().accept(driver);
       storage.sub(UI).put(element.enumImpl(), enabled);
 
       String assertionMessage = shouldBeEnabled
-            ? "Validating Option is enabled"
-            : "Validating Option is disabled";
+            ? "Validating option is enabled"
+            : "Validating option is disabled";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
@@ -469,9 +467,8 @@ public class SelectServiceFluent<T extends UiServiceFluent<?>> implements Insert
     */
    @Override
    public void insertion(final ComponentType componentType, final By locator, final Object... values) {
-      Allure.step(
-            "[UI - Select] Inserting values into select element with component type " + componentType + " and locator "
-                  + locator);
+      Allure.step("[UI - Select] Inserting values into select element with component type " + componentType
+                  + " and locator " + locator);
       selectService.insertion(componentType, locator, values);
    }
 

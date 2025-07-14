@@ -49,7 +49,7 @@ public class AlertServiceImpl extends AbstractComponentService<AlertComponentTyp
     * @return The text displayed by the alert.
     */
    @Override
-   public String getValue(AlertComponentType componentType, SmartWebElement container) {
+   public String getValue(final AlertComponentType componentType, final SmartWebElement container) {
       LogUi.step("Getting value from alert: " + componentType);
       return alertComponent(componentType).getValue(container);
    }
@@ -62,7 +62,7 @@ public class AlertServiceImpl extends AbstractComponentService<AlertComponentTyp
     * @return The text displayed by the alert.
     */
    @Override
-   public String getValue(AlertComponentType componentType, By containerLocator) {
+   public String getValue(final AlertComponentType componentType, final By containerLocator) {
       LogUi.step("Getting value from alert located by: " + containerLocator);
       return alertComponent(componentType).getValue(containerLocator);
    }
@@ -75,7 +75,7 @@ public class AlertServiceImpl extends AbstractComponentService<AlertComponentTyp
     * @return {@code true} if the alert is visible, otherwise {@code false}.
     */
    @Override
-   public boolean isVisible(AlertComponentType componentType, SmartWebElement container) {
+   public boolean isVisible(final AlertComponentType componentType, final SmartWebElement container) {
       LogUi.step("Checking if alert is visible: " + componentType);
       return alertComponent(componentType).isVisible(container);
    }
@@ -88,7 +88,7 @@ public class AlertServiceImpl extends AbstractComponentService<AlertComponentTyp
     * @return {@code true} if the alert is visible, otherwise {@code false}.
     */
    @Override
-   public boolean isVisible(AlertComponentType componentType, By containerLocator) {
+   public boolean isVisible(final AlertComponentType componentType, final By containerLocator) {
       LogUi.step("Checking if alert is visible at: " + containerLocator);
       return alertComponent(componentType).isVisible(containerLocator);
    }

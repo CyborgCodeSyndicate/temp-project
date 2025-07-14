@@ -26,7 +26,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class CheckboxServiceFluent<T extends UiServiceFluent<?>> implements Insertion {
 
    private final CheckboxService checkboxService;
@@ -114,12 +114,12 @@ public class CheckboxServiceFluent<T extends UiServiceFluent<?>> implements Inse
       if (soft) {
          return (T) uiServiceFluent.validate(
                softAssertions -> softAssertions.assertThat(selected)
-                     .as("Validating Checkbox Selected").isTrue()
+                     .as("Validating checkbox Selected").isTrue()
          );
       } else {
          return (T) uiServiceFluent.validate(
                () -> Assertions.assertThat(selected)
-                     .as("Validating Checkbox Selected").isTrue()
+                     .as("Validating checkbox Selected").isTrue()
          );
       }
    }
@@ -179,12 +179,12 @@ public class CheckboxServiceFluent<T extends UiServiceFluent<?>> implements Inse
       if (soft) {
          return (T) uiServiceFluent.validate(
                softAssertions -> softAssertions.assertThat(enabled)
-                     .as("Validating Checkbox Enabled").isTrue()
+                     .as("Validating checkbox Enabled").isTrue()
          );
       } else {
          return (T) uiServiceFluent.validate(
                () -> Assertions.assertThat(enabled)
-                     .as("Validating Checkbox Enabled").isTrue()
+                     .as("Validating checkbox Enabled").isTrue()
          );
       }
    }
@@ -224,7 +224,10 @@ public class CheckboxServiceFluent<T extends UiServiceFluent<?>> implements Inse
     */
    public T getAll(final CheckboxUiElement element) {
       Allure.step("[UI - Checkbox] Retrieve all checkbox values from " + element);
-      checkboxService.getAll(element.componentType(), element.locator()); //todo: Do we need storage
+      element.before().accept(driver);
+      List<String> allItems = checkboxService.getAll(element.componentType(), element.locator());
+      element.after().accept(driver);
+      storage.sub(UI).put(element.enumImpl(), allItems);
       return uiServiceFluent;
    }
 

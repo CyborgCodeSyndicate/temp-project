@@ -254,7 +254,27 @@ public interface AccordionService {
    boolean areEnabled(AccordionComponentType componentType, By... accordionLocator);
 
    /**
-    * Retrieves a list of currently expanded panels inside the accordion, using the default accordion component type.
+    * Checks if specified panel inside the accordion is enabled, using the default accordion component type.
+    *
+    * @param accordionLocator The locator of the panel to check.
+    * @return true if all specified panel is enabled, false otherwise.
+    */
+   default boolean isEnabled(By accordionLocator) {
+      return isEnabled(DEFAULT_TYPE, accordionLocator);
+   }
+
+   /**
+    * Checks if specified panel inside the accordion is enabled, using the given accordion component type.
+    *
+    * @param componentType    The specific accordion component type.
+    * @param accordionLocator The locator of the panel to check.
+    * @return true if all specified panel is enabled, false otherwise.
+    */
+   boolean isEnabled(AccordionComponentType componentType, By accordionLocator);
+
+   /**
+    * Retrieves a list of currently expanded panels inside the accordion, using the default accordion component type
+    * within a container element.
     *
     * @param container The accordion container.
     * @return A list of expanded panel titles.
@@ -264,7 +284,8 @@ public interface AccordionService {
    }
 
    /**
-    * Retrieves a list of currently expanded panels inside the accordion, using the given accordion component type.
+    * Retrieves a list of currently expanded panels inside the accordion, using the given accordion component type
+    * within a container element.
     *
     * @param componentType The specific accordion component type.
     * @param container     The accordion container.
@@ -273,7 +294,29 @@ public interface AccordionService {
    List<String> getExpanded(AccordionComponentType componentType, SmartWebElement container);
 
    /**
-    * Retrieves a list of currently collapsed panels inside the accordion, using the default accordion component type.
+    * Retrieves a list of currently expanded panels inside the accordion, using the default accordion component type
+    * identified by a locator.
+    *
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of expanded panel titles.
+    */
+   default List<String> getExpanded(By containerLocator) {
+      return getExpanded(DEFAULT_TYPE, containerLocator);
+   }
+
+   /**
+    * Retrieves a list of currently expanded panels inside the accordion, using the default accordion component type
+    * identified by a locator.
+    *
+    * @param componentType The specific accordion component type.
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of expanded panel titles.
+    */
+   List<String> getExpanded(AccordionComponentType componentType, By containerLocator);
+
+   /**
+    * Retrieves a list of currently collapsed panels inside the accordion, using the default accordion component type
+    * within a container element.
     *
     * @param container The accordion container.
     * @return A list of collapsed panel titles.
@@ -283,7 +326,8 @@ public interface AccordionService {
    }
 
    /**
-    * Retrieves a list of currently collapsed panels inside the accordion, using the given accordion component type.
+    * Retrieves a list of currently collapsed panels inside the accordion, using the given accordion component type
+    * within a container element.
     *
     * @param componentType The specific accordion component type.
     * @param container     The accordion container.
@@ -292,7 +336,29 @@ public interface AccordionService {
    List<String> getCollapsed(AccordionComponentType componentType, SmartWebElement container);
 
    /**
-    * Retrieves a list of all panel texts inside the accordion, using the default accordion component type.
+    * Retrieves a list of currently collapsed panels inside the accordion, using the default accordion component type
+    * identified by a locator.
+    *
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of collapsed panel titles.
+    */
+   default List<String> getCollapsed(By containerLocator) {
+      return getCollapsed(DEFAULT_TYPE, containerLocator);
+   }
+
+   /**
+    * Retrieves a list of currently collapsed panels inside the accordion, using the given accordion component type
+    * identified by a locator.
+    *
+    * @param componentType The specific accordion component type.
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of collapsed panel titles.
+    */
+   List<String> getCollapsed(AccordionComponentType componentType, By containerLocator);
+
+   /**
+    * Retrieves a list of all panel texts inside the accordion, using the default accordion component type
+    * within a container element.
     *
     * @param container The accordion container.
     * @return A list of all panel texts.
@@ -302,13 +368,35 @@ public interface AccordionService {
    }
 
    /**
-    * Retrieves a list of all panel texts inside the accordion, using the given accordion component type.
+    * Retrieves a list of all panel texts inside the accordion, using the given accordion component type
+    * within a container element.
     *
     * @param componentType The specific accordion component type.
     * @param container     The accordion container.
     * @return A list of all panel texts.
     */
    List<String> getAll(AccordionComponentType componentType, SmartWebElement container);
+
+   /**
+    * Retrieves a list of all panel texts inside the accordion, using the default accordion component type
+    * identified by a locator.
+    *
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of all panel texts.
+    */
+   default List<String> getAll(By containerLocator) {
+      return getAll(DEFAULT_TYPE, containerLocator);
+   }
+
+   /**
+    * Retrieves a list of all panel texts inside the accordion, using the given accordion component type
+    * identified by a locator.
+    *
+    * @param componentType The specific accordion component type.
+    * @param containerLocator The {@link By} locator for the accordion elements.
+    * @return A list of all panel texts.
+    */
+   List<String> getAll(AccordionComponentType componentType, By containerLocator);
 
    /**
     * Retrieves the title of a panel inside the accordion, using the default accordion component type.

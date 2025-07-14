@@ -20,7 +20,7 @@ import static com.theairebellion.zeus.ui.storage.StorageKeysUi.UI;
  *
  * @author Cyborg Code Syndicate 💍👨💻
  */
-@SuppressWarnings("java:S5960")
+@SuppressWarnings({"java:S5960", "unchecked"})
 public class LinkServiceFluent<T extends UiServiceFluent<?>> {
 
    private final LinkService linkService;
@@ -118,8 +118,8 @@ public class LinkServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), enabled);
 
       String assertionMessage = shouldBeEnabled
-            ? "Validating Link is enabled"
-            : "Validating Link is disabled";
+            ? "Validating link is enabled"
+            : "Validating link is disabled";
 
       if (soft) {
          return (T) uiServiceFluent.validate(
@@ -211,8 +211,8 @@ public class LinkServiceFluent<T extends UiServiceFluent<?>> {
       storage.sub(UI).put(element.enumImpl(), visible);
 
       String assertionMessage = shouldBeVisible
-            ? "Validating Link is visible"
-            : "Validating Link is hidden";
+            ? "Validating link is visible"
+            : "Validating link is hidden";
 
       if (soft) {
          return (T) uiServiceFluent.validate(

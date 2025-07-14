@@ -333,7 +333,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is selected, otherwise false.
     */
    @Override
-   public boolean isSelected(ItemListComponentType componentType, SmartWebElement container, String itemText) {
+   public boolean isSelected(final ItemListComponentType componentType, final SmartWebElement container,
+                             final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_SELECTED_IN_LIST, itemText, componentType));
       return areSelected(componentType, container, itemText);
    }
@@ -347,7 +348,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is selected, otherwise false.
     */
    @Override
-   public boolean isSelected(ItemListComponentType componentType, By containerLocator, String itemText) {
+   public boolean isSelected(final ItemListComponentType componentType, final By containerLocator,
+                             final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_SELECTED_IN_LIST_BY_LOCATOR, itemText, componentType, containerLocator));
       return areSelected(componentType, containerLocator, itemText);
    }
@@ -360,7 +362,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is selected, otherwise false.
     */
    @Override
-   public boolean isSelected(ItemListComponentType componentType, String itemText) {
+   public boolean isSelected(final ItemListComponentType componentType, final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_SELECTED_IN_LIST, itemText, componentType));
       return areSelected(componentType, itemText);
    }
@@ -373,7 +375,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is selected, otherwise false.
     */
    @Override
-   public boolean isSelected(ItemListComponentType componentType, By itemListLocator) {
+   public boolean isSelected(final ItemListComponentType componentType, final By itemListLocator) {
       LogUi.step(String.format(CHECK_ITEM_NO_TEXT_SELECTED_BY_LOCATOR, componentType, itemListLocator));
       return areSelected(componentType, Collections.singletonList(itemListLocator).toArray(new By[0]));
    }
@@ -444,7 +446,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is enabled, otherwise false.
     */
    @Override
-   public boolean isEnabled(ItemListComponentType componentType, SmartWebElement container, String itemText) {
+   public boolean isEnabled(final ItemListComponentType componentType, final SmartWebElement container,
+                            final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_ENABLED_IN_LIST, itemText, componentType));
       return areEnabled(componentType, container, itemText);
    }
@@ -458,7 +461,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is enabled, otherwise false.
     */
    @Override
-   public boolean isEnabled(ItemListComponentType componentType, By containerLocator, String itemText) {
+   public boolean isEnabled(final ItemListComponentType componentType, final By containerLocator,
+                            final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_ENABLED_IN_LIST_BY_LOCATOR, itemText, componentType, containerLocator));
       return areEnabled(componentType, containerLocator, itemText);
    }
@@ -471,7 +475,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is enabled, otherwise false.
     */
    @Override
-   public boolean isEnabled(ItemListComponentType componentType, String itemText) {
+   public boolean isEnabled(final ItemListComponentType componentType, final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_ENABLED_IN_LIST, itemText, componentType));
       return areEnabled(componentType, itemText);
    }
@@ -484,7 +488,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is enabled, otherwise false.
     */
    @Override
-   public boolean isEnabled(ItemListComponentType componentType, By itemLocator) {
+   public boolean isEnabled(final ItemListComponentType componentType, final By itemLocator) {
       LogUi.step(String.format(CHECK_ITEM_NO_TEXT_ENABLED_BY_LOCATOR, componentType, itemLocator));
       return areEnabled(componentType, Collections.singletonList(itemLocator).toArray(new By[0]));
    }
@@ -555,7 +559,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is visible, otherwise false.
     */
    @Override
-   public boolean isVisible(ItemListComponentType componentType, SmartWebElement container, String itemText) {
+   public boolean isVisible(final ItemListComponentType componentType, final SmartWebElement container,
+                            final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_VISIBLE_IN_LIST, itemText, componentType));
       return areVisible(componentType, container, itemText);
    }
@@ -569,7 +574,8 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is visible, otherwise false.
     */
    @Override
-   public boolean isVisible(ItemListComponentType componentType, By containerLocator, String itemText) {
+   public boolean isVisible(final ItemListComponentType componentType, final By containerLocator,
+                            final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_VISIBLE_IN_LIST_BY_LOCATOR, itemText, componentType, containerLocator));
       return areVisible(componentType, containerLocator, itemText);
    }
@@ -582,7 +588,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is visible, otherwise false.
     */
    @Override
-   public boolean isVisible(ItemListComponentType componentType, String itemText) {
+   public boolean isVisible(final ItemListComponentType componentType, final String itemText) {
       LogUi.step(String.format(CHECK_ITEM_VISIBLE_IN_LIST, itemText, componentType));
       return areVisible(componentType, itemText);
    }
@@ -595,7 +601,7 @@ public class ItemListServiceImpl extends AbstractComponentService<ItemListCompon
     * @return true if the item is visible, otherwise false.
     */
    @Override
-   public boolean isVisible(ItemListComponentType componentType, By itemLocator) {
+   public boolean isVisible(final ItemListComponentType componentType, final By itemLocator) {
       LogUi.step(String.format(CHECK_ITEM_NO_TEXT_VISIBLE_BY_LOCATOR, componentType, itemLocator));
       return areVisible(componentType, Collections.singletonList(itemLocator).toArray(new By[0]));
    }
