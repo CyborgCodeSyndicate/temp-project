@@ -7,9 +7,9 @@ import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 @ImplementationOfType("SIMPLE")
 public class ExampleOfTable extends TableImpl {
 
-    protected ExampleOfTable(final SmartWebDriver smartWebDriver) {
-        super(smartWebDriver);
-    }
+   protected ExampleOfTable(final SmartWebDriver smartWebDriver) {
+      super(smartWebDriver);
+   }
 
 
 }

@@ -1,0 +1,121 @@
+name: PR Validator
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+
+env:
+  PR_NUM: ${{ github.event.number }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      pages-path: ${{ steps.stage.outputs.site }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Build & Verify
+        run: mvn -B clean verify -Pprofile_name --no-transfer-progress
+
+      - uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Tests
+          path: '**/target/surefire-reports/*.xml'
+          reporter: java-junit
+
+      # ------------------- Convert JaCoCo XML to SARIF ----------------------
+      - name: Convert JaCoCo XML → SARIF
+        uses: airtower-luna/convert-to-sarif@main
+        with:
+          tool: Jacoco
+          input_file: 'target/site/jacoco/jacoco.xml'
+          sarif_file: 'target/jacoco.sarif'
+
+      # ------------------- Upload SARIF to GitHub Code Scanning -------------
+      - name: Upload SARIF to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: |
+            **/target/**/*.sarif
+
+      # ------------------- Stage HTML Site for GitHub Pages -----------------
+      - name: Stage Maven site (HTML)
+        run: mvn -B site:stage -Pprofile_name -DstagingDirectory=public -DskipTests
+
+      - name: Move to PR sub-folder
+        id: stage
+        run: |
+          mkdir -p site/pr-${PR_NUM}
+          mv public/* site/pr-${PR_NUM}/
+          echo "site=site" >> $GITHUB_OUTPUT
+
+      - uses: actions/upload-pages-artifact@v2
+        with:
+          path: ${{ steps.stage.outputs.site }}
+
+  deploy-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html
+    steps:
+      - uses: actions/deploy-pages@v2
+
+  sonar:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: SonarCloud scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: >
+          mvn -B sonar:sonar -Pprofile_name
+          -Dsonar.projectKey=<YOUR_PROJECT_KEY>
+          -Dsonar.organization=<YOUR_ORG>
+          -Dsonar.login=$SONAR_TOKEN
+          -Dsonar.qualitygate.wait=true
+
+  summary:
+    needs: [ build, sonar, deploy-pages ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR-summary
+        run: |
+          {
+            echo "## ⏱️ PR Quality-Gate Summary"
+            echo ""
+            echo "| Check | Status | View |"
+            echo "|-------|--------|------|"
+            echo "| **Unit Tests & Coverage** | ${{ needs.build.result }} | [HTML report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html) |"
+            echo "| **SpotBugs** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
+            echo "| **OWASP Dependency-Check** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
+            echo "| **JaCoCo Coverage** | converted & uploaded to *Code scanning results* | open *Security → Code scanning* tab |"
+            echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=<YOUR_PROJECT_KEY>) |"
+          } >> $GITHUB_STEP_SUMMARY

@@ -3,35 +3,35 @@ package com.bakery.project.preconditions;
 import com.theairebellion.zeus.ui.parameters.DataIntercept;
 
 
-public enum BakeryInterceptRequests implements DataIntercept {
-    INTERCEPT_REQUEST_AUTH( "?v-r=uidl"),
-    INTERCEPT_REQUEST_LOGIN("/login");
+public enum BakeryInterceptRequests implements DataIntercept<BakeryInterceptRequests> {
+   INTERCEPT_REQUEST_AUTH("?v-r=uidl"),
+   INTERCEPT_REQUEST_LOGIN("/login");
 
 
-    public static final class Data {
+   public static final class Data {
 
-        public static final String INTERCEPT_REQUEST_AUTH = "INTERCEPT_REQUEST_AUTH";
-        public static final String INTERCEPT_REQUEST_LOGIN = "INTERCEPT_REQUEST_LOGIN";
+      public static final String INTERCEPT_REQUEST_AUTH = "INTERCEPT_REQUEST_AUTH";
+      public static final String INTERCEPT_REQUEST_LOGIN = "INTERCEPT_REQUEST_LOGIN";
 
-        private Data() {
-        }
-    }
+      private Data() {
+      }
+   }
 
 
-    private final String endpointSubString;
+   private final String endpointSubString;
 
-    BakeryInterceptRequests(final String endpointSubString) {
-        this.endpointSubString = endpointSubString;
-    }
+   BakeryInterceptRequests(final String endpointSubString) {
+      this.endpointSubString = endpointSubString;
+   }
 
-    @Override
-    public String getEndpointSubString() {
-        return endpointSubString;
-    }
+   @Override
+   public String getEndpointSubString() {
+      return endpointSubString;
+   }
 
-    @Override
-    public Enum<?> enumImpl() {
-        return this;
-    }
+   @Override
+   public BakeryInterceptRequests enumImpl() {
+      return this;
+   }
 
 }
