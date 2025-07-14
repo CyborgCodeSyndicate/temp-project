@@ -123,7 +123,8 @@ public class Oracle implements ParameterResolver {
    }
 
    /**
-    * Copies test-level hook parameters from the JUnit {@code ExtensionContext} store into the framework's {@code Storage}.
+    * Copies test-level hook parameters from the JUnit {@code ExtensionContext} store
+    * into the framework's {@code Storage}.
     *
     * <p>This method is used to propagate test-specific hook data (such as setup/teardown metadata)
     * from the JUnit context into the test execution context, allowing it to be accessed during the test run.

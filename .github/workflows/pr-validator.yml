@@ -4,6 +4,9 @@ on:
     branches: [ main ]
     types: [ opened, synchronize, reopened ]
 
+# --------------------------------------------------------------------------
+# GLOBAL PERMISSIONS & ENV
+# --------------------------------------------------------------------------
 permissions:
   contents: write
   pull-requests: write
@@ -11,8 +14,13 @@ permissions:
 
 env:
   PR_NUM: ${{ github.event.number }}
-  NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+  NVD_API_KEY: ${{ secrets.NVD_API_KEY }}      # <- set in repo-level secrets
+  SONAR_PROJECT_KEY: CyborgCodeSyndicate_temp-project       # <- ✏️ change if needed
+  SONAR_ORG: CyborgCodeSyndicate               # <- ✏️ change if needed
 
+# --------------------------------------------------------------------------
+# JOB 1 ─ build / test / static-analysis / reports
+# --------------------------------------------------------------------------
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,6 +28,7 @@ jobs:
       pages-path: ${{ steps.stage.outputs.site }}
 
     steps:
+      # ─────────────────────────── checkout & JDK ──────────────────────────
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -30,9 +39,16 @@ jobs:
           java-version: 17
           cache: maven
 
+      # ─────────────────────────── build & verify ──────────────────────────
       - name: Build & Verify
-        run: mvn -B clean verify -Ppr-validator -Dnvd.api.key="$NVD_API_KEY" --no-transfer-progress
+        run: |
+          mvn -B clean verify \
+              -Ppr-validator \
+              -Dnvd.api.key="$NVD_API_KEY" \
+#              -Ddependency-check.format=HTML,SARIF \   # ensure both formats
+              --no-transfer-progress
 
+      # ─────────────────────── unit-test report to GitHub ───────────────────
       - uses: dorny/test-reporter@v1
         if: always()
         with:
@@ -40,26 +56,43 @@ jobs:
           path: '**/target/surefire-reports/*.xml'
           reporter: java-junit
 
-      # ------------------- Convert JaCoCo XML to SARIF ----------------------
+      # ─────────────────────── SpotBugs + SARIF upload ──────────────────────
+      - name: SpotBugs static analysis
+        if: always()
+        uses: advanced-security/spotbugs-findsecbugs-action@v1.0.6
+        with:
+          spotbugs_target: target/
+          upload_sarif: true            # pushes to Security → Code scanning
+
+      # ────────────────── OWASP Dependency-Check SARIF upload ───────────────
+      - name: Upload OWASP Dependency-Check SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: target/dependency-check-report.sarif
+
+      # ─────────────── convert JaCoCo XML → SARIF (+ upload) ────────────────
       - name: Convert JaCoCo XML → SARIF
+        if: always()
         uses: airtower-luna/convert-to-sarif@main
         with:
           tool: Jacoco
           input_file: 'target/site/jacoco/jacoco.xml'
           sarif_file: 'target/jacoco.sarif'
 
-      # ------------------- Upload SARIF to GitHub Code Scanning -------------
-      - name: Upload SARIF to Code Scanning
+      - name: Upload JaCoCo SARIF
+        if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: |
-            **/target/**/*.sarif
+          sarif_file: target/jacoco.sarif
 
-      # ------------------- Stage HTML Site for GitHub Pages -----------------
+      # ──────────────── stage Maven site → GitHub Pages artifact ────────────
       - name: Stage Maven site (HTML)
-        run: mvn -B site:stage -Pprofile_name -DstagingDirectory=public -DskipTests
+        if: always()
+        run: mvn -B site:stage -Ppr-validator -DstagingDirectory=public -DskipTests
 
       - name: Move to PR sub-folder
+        if: always()
         id: stage
         run: |
           mkdir -p site/pr-${PR_NUM}
@@ -67,9 +100,13 @@ jobs:
           echo "site=site" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-pages-artifact@v3
+        if: always()
         with:
           path: ${{ steps.stage.outputs.site }}
 
+  # --------------------------------------------------------------------------
+  # JOB 2 ─ deploy static site to GitHub Pages
+  # --------------------------------------------------------------------------
   deploy-pages:
     needs: build
     runs-on: ubuntu-latest
@@ -79,6 +116,9 @@ jobs:
     steps:
       - uses: actions/deploy-pages@v4
 
+  # --------------------------------------------------------------------------
+  # JOB 3 ─ SonarCloud quality-gate
+  # --------------------------------------------------------------------------
   sonar:
     needs: build
     runs-on: ubuntu-latest
@@ -95,14 +135,17 @@ jobs:
 
       - name: SonarCloud scan
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # set in repo secrets
         run: >
-          mvn -B sonar:sonar -Pprofile_name
-          -Dsonar.projectKey=<YOUR_PROJECT_KEY>
-          -Dsonar.organization=<YOUR_ORG>
+          mvn -B sonar:sonar -Ppr-validator
+          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ env.SONAR_ORG }}
           -Dsonar.login=$SONAR_TOKEN
           -Dsonar.qualitygate.wait=true
 
+  # --------------------------------------------------------------------------
+  # JOB 4 ─ nice PR summary
+  # --------------------------------------------------------------------------
   summary:
     needs: [ build, sonar, deploy-pages ]
     runs-on: ubuntu-latest
@@ -114,9 +157,9 @@ jobs:
             echo ""
             echo "| Check | Status | View |"
             echo "|-------|--------|------|"
-            echo "| **Unit Tests & Coverage** | ${{ needs.build.result }} | [HTML report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html) |"
-            echo "| **SpotBugs** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
-            echo "| **OWASP Dependency-Check** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
-            echo "| **JaCoCo Coverage** | converted & uploaded to *Code scanning results* | open *Security → Code scanning* tab |"
-            echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=<YOUR_PROJECT_KEY>) |"
+            echo "| **Unit Tests & Coverage HTML** | ${{ needs.build.result }} | [Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html) |"
+            echo "| **SpotBugs / FindSecBugs** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
+            echo "| **OWASP Dependency-Check HTML** | ${{ needs.build.result }} | [Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/dependency-check-report.html) |"
+            echo "| **JaCoCo Coverage SARIF** | converted & uploaded to *Code scanning results* | open *Security → Code scanning* tab |"
+            echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=${{ env.SONAR_PROJECT_KEY }}) |"
           } >> $GITHUB_STEP_SUMMARY
