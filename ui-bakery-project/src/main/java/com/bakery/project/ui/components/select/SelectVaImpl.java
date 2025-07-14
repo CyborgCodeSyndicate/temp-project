@@ -18,6 +18,8 @@ import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 
@@ -179,7 +181,12 @@ public class SelectVaImpl extends BaseComponent implements Select {
    }
 
    protected SmartWebElement findOptionByText(List<SmartWebElement> options, String text) {
-      return findOptionByText(options, text, OPTION_TEXT_LOCATOR);
+      Wait<SmartWebDriver> wait = new FluentWait<>(driver)
+              .withTimeout(Duration.ofSeconds(2))
+              .pollingEvery(Duration.ofMillis(500))
+              .ignoring(NotFoundException.class);
+
+      return wait.until(driver -> findOptionByText(options, text, OPTION_TEXT_LOCATOR));
    }
 
    protected SmartWebElement findOptionByText(List<SmartWebElement> options, String text, By locator) {

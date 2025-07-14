@@ -50,8 +50,8 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v85.network.Network;
-import org.openqa.selenium.devtools.v85.network.model.RequestId;
+import org.openqa.selenium.devtools.v138.network.Network;
+import org.openqa.selenium.devtools.v138.network.model.RequestId;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -195,7 +195,8 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
       if (driver instanceof ChromeDriver chromeDriver) {
          DevTools chromeDevTools = chromeDriver.getDevTools();
          chromeDevTools.createSession();
-         chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+         chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(),
+                 Optional.empty(), Optional.empty()));
 
          Map<String, String> requestMethodMap = new ConcurrentHashMap<>();
 
@@ -216,17 +217,7 @@ public class UiTestExtension implements BeforeTestExecutionCallback, AfterTestEx
             if (checkUrl(urlsForIntercepting, url)) {
                try {
                   String body = chromeDevTools.send(Network.getResponseBody(entry.getRequestId())).getBody();
-
-                  if (body != null && body.length() > 10000) {
-                     response.setBody(String.format(
-                           "Response body truncated. Original length: %d characters. "
-                                 + "First 100 characters: %s",
-                           body.length(),
-                           body.substring(0, 100)
-                     ));
-                  } else {
-                     response.setBody(body);
-                  }
+                  response.setBody(body);
                } catch (Exception e) {
                   response.setBody("Error retrieving response body: " + e.getMessage());
                }

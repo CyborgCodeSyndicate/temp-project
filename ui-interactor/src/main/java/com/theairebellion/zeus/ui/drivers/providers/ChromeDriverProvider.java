@@ -60,6 +60,7 @@ public class ChromeDriverProvider extends BaseDriverProvider<ChromeOptions> {
    @Override
    public void applyDefaultArguments(ChromeOptions options) {
       options.addArguments("--disable-gpu", "--no-sandbox", "--remote-allow-origins=*");
+      options.addArguments("--guest");
    }
 
    /**
