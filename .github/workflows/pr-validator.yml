@@ -11,6 +11,7 @@ permissions:
 
 env:
   PR_NUM: ${{ github.event.number }}
+  NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
 jobs:
   build:
@@ -30,7 +31,7 @@ jobs:
           cache: maven
 
       - name: Build & Verify
-        run: mvn -B clean verify -Pprofile_name --no-transfer-progress
+        run: mvn -B clean verify -Ppr-validator -Dnvd.api.key="$NVD_API_KEY" --no-transfer-progress
 
       - uses: dorny/test-reporter@v1
         if: always()
