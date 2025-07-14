@@ -4,106 +4,133 @@ import com.theairebellion.zeus.ui.components.toggle.ToggleComponentType;
 import com.theairebellion.zeus.ui.components.toggle.ToggleService;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.openqa.selenium.By;
-import java.util.Collections;
-import java.util.List;
 
 public class MockToggleService implements ToggleService {
 
-    public ToggleComponentType lastComponentType;
-    public SmartWebElement lastContainer;
-    public By lastLocator;
-    public String lastText;
-    public boolean returnBool;
-    public List<String> returnOptions = Collections.emptyList();
+   public ToggleComponentType lastComponentTypeUsed;
+   public ToggleComponentType explicitComponentType;
+   public SmartWebElement lastContainer;
+   public By lastLocator;
+   public String lastText;
+   public boolean returnBool; // Used for isEnabled/isActivated return
 
-    public void reset() {
-        lastComponentType = null;
-        lastContainer = null;
-        lastLocator = null;
-        lastText = null;
-        returnBool = false;
-        returnOptions = Collections.emptyList();
-    }
+   public MockToggleService() {
+      reset();
+   }
 
-    @Override
-    public void activate(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
-        lastComponentType = componentType;
-        lastContainer = container;
-        lastText = toggleText;
-    }
+   private void setLastType(ToggleComponentType type) {
+      this.explicitComponentType = type;
+      if (MockToggleComponentType.DUMMY_TOGGLE.equals(type)) {
+         this.lastComponentTypeUsed = MockToggleComponentType.DUMMY_TOGGLE;
+      } else {
+         this.lastComponentTypeUsed = null;
+      }
+   }
 
-    @Override
-    public void activate(ToggleComponentType componentType, String toggleText) {
-        lastComponentType = componentType;
-        lastText = toggleText;
-    }
+   public void reset() {
+      lastComponentTypeUsed = null;
+      explicitComponentType = MockToggleComponentType.DUMMY_TOGGLE;
+      lastContainer = null;
+      lastLocator = null;
+      lastText = null;
+      returnBool = false; // Default return for boolean checks
+   }
 
-    @Override
-    public void activate(ToggleComponentType componentType, By toggleLocator) {
-        lastComponentType = componentType;
-        lastLocator = toggleLocator;
-    }
+   @Override
+   public void activate(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
+      setLastType(componentType);
+      lastContainer = container;
+      lastText = toggleText;
+   }
 
-    @Override
-    public void deactivate(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
-        lastComponentType = componentType;
-        lastContainer = container;
-        lastText = toggleText;
-    }
+   @Override
+   public void activate(ToggleComponentType componentType, String toggleText) {
+      setLastType(componentType);
+      lastText = toggleText;
+      lastContainer = null;
+      lastLocator = null;
+   }
 
-    @Override
-    public void deactivate(ToggleComponentType componentType, String toggleText) {
-        lastComponentType = componentType;
-        lastText = toggleText;
-    }
+   @Override
+   public void activate(ToggleComponentType componentType, By toggleLocator) {
+      setLastType(componentType);
+      lastLocator = toggleLocator;
+      lastContainer = null;
+      lastText = null;
+   }
 
-    @Override
-    public void deactivate(ToggleComponentType componentType, By toggleLocator) {
-        lastComponentType = componentType;
-        lastLocator = toggleLocator;
-    }
+   @Override
+   public void deactivate(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
+      setLastType(componentType);
+      lastContainer = container;
+      lastText = toggleText;
+   }
 
-    @Override
-    public boolean isEnabled(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
-        lastComponentType = componentType;
-        lastContainer = container;
-        lastText = toggleText;
-        return returnBool;
-    }
+   @Override
+   public void deactivate(ToggleComponentType componentType, String toggleText) {
+      setLastType(componentType);
+      lastText = toggleText;
+      lastContainer = null;
+      lastLocator = null;
+   }
 
-    @Override
-    public boolean isEnabled(ToggleComponentType componentType, String toggleText) {
-        lastComponentType = componentType;
-        lastText = toggleText;
-        return returnBool;
-    }
+   @Override
+   public void deactivate(ToggleComponentType componentType, By toggleLocator) {
+      setLastType(componentType);
+      lastLocator = toggleLocator;
+      lastContainer = null;
+      lastText = null;
+   }
 
-    @Override
-    public boolean isEnabled(ToggleComponentType componentType, By toggleLocator) {
-        lastComponentType = componentType;
-        lastLocator = toggleLocator;
-        return returnBool;
-    }
+   @Override
+   public boolean isEnabled(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
+      setLastType(componentType);
+      lastContainer = container;
+      lastText = toggleText;
+      return returnBool;
+   }
 
-    @Override
-    public boolean isActivated(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
-        lastComponentType = componentType;
-        lastContainer = container;
-        lastText = toggleText;
-        return returnBool;
-    }
+   @Override
+   public boolean isEnabled(ToggleComponentType componentType, String toggleText) {
+      setLastType(componentType);
+      lastText = toggleText;
+      lastContainer = null;
+      lastLocator = null;
+      return returnBool;
+   }
 
-    @Override
-    public boolean isActivated(ToggleComponentType componentType, String toggleText) {
-        lastComponentType = componentType;
-        lastText = toggleText;
-        return returnBool;
-    }
+   @Override
+   public boolean isEnabled(ToggleComponentType componentType, By toggleLocator) {
+      setLastType(componentType);
+      lastLocator = toggleLocator;
+      lastContainer = null;
+      lastText = null;
+      return returnBool;
+   }
 
-    @Override
-    public boolean isActivated(ToggleComponentType componentType, By toggleLocator) {
-        lastComponentType = componentType;
-        lastLocator = toggleLocator;
-        return returnBool;
-    }
+   @Override
+   public boolean isActivated(ToggleComponentType componentType, SmartWebElement container, String toggleText) {
+      setLastType(componentType);
+      lastContainer = container;
+      lastText = toggleText;
+      return returnBool;
+   }
+
+   @Override
+   public boolean isActivated(ToggleComponentType componentType, String toggleText) {
+      setLastType(componentType);
+      lastText = toggleText;
+      lastContainer = null;
+      lastLocator = null;
+      return returnBool;
+   }
+
+   @Override
+   public boolean isActivated(ToggleComponentType componentType, By toggleLocator) {
+      setLastType(componentType);
+      lastLocator = toggleLocator;
+      lastContainer = null;
+      lastText = null;
+      return returnBool;
+   }
 }

@@ -161,13 +161,6 @@ class DecoratorsFactoryTest {
         }
     }
 
-    @Test
-    @DisplayName("Class should have @Component annotation")
-    void testComponentAnnotation() {
-        Component annotation = DecoratorsFactory.class.getAnnotation(Component.class);
-        assertNotNull(annotation, "DecoratorsFactory should have @Component annotation");
-    }
-
     // Test decorator types
     record MockDecorator(MockTarget target) {}
 

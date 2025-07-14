@@ -436,4 +436,53 @@ class QuestTest {
                 exception.getMessage()
         );
     }
+
+    @Test
+    @DisplayName("Should handle empty field list in artifact retrieval")
+    void testArtifactEmptyFieldList() {
+        // Given
+        class EmptyService extends FluentService {}
+        quest.exposeRegisterWorld(EmptyService.class, new EmptyService());
+
+        // When/Then
+        assertThrows(ReflectionException.class,
+                () -> quest.exposeArtifact(EmptyService.class, String.class));
+    }
+
+    @Test
+    @DisplayName("Should log warning when multiple artifacts found")
+    void testArtifactMultipleFoundWarning() {
+        try (MockedStatic<LogTest> logMock = mockStatic(LogTest.class)) {
+            // Given
+            class MultiFieldService extends FluentService {
+                public String field1 = "first";
+                public String field2 = "second";
+            }
+            quest.exposeRegisterWorld(MultiFieldService.class, new MultiFieldService());
+
+            // When
+            quest.exposeArtifact(MultiFieldService.class, String.class);
+
+            // Then
+            logMock.verify(() -> LogTest.warn(
+                    anyString(), any(), any(), any()
+            ));
+        }
+    }
+
+    @Test
+    @DisplayName("Should maintain separate worlds per Quest instance")
+    void testInstanceIsolation() {
+        TestableQuest quest1 = new TestableQuest();
+        TestableQuest quest2 = new TestableQuest();
+
+        FluentService service1 = new MockFluentService();
+        FluentService service2 = new MockFluentService();
+
+        quest1.exposeRegisterWorld(MockFluentService.class, service1);
+        quest2.exposeRegisterWorld(MockFluentService.class, service2);
+
+        assertSame(service1, quest1.enters(MockFluentService.class));
+        assertSame(service2, quest2.enters(MockFluentService.class));
+    }
 }

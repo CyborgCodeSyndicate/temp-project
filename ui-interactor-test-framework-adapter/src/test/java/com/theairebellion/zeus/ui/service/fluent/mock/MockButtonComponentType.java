@@ -3,10 +3,10 @@ package com.theairebellion.zeus.ui.service.fluent.mock;
 import com.theairebellion.zeus.ui.components.button.ButtonComponentType;
 
 public enum MockButtonComponentType implements ButtonComponentType {
-    DUMMY;
+   DUMMY;
 
-    @Override
-    public Enum<?> getType() {
-        return this;
-    }
+   @Override
+   public Enum<?> getType() {
+      return this;
+   }
 }

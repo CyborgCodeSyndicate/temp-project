@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,13 +19,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.theairebellion.zeus.framework.storage.StorageKeysTest.ARGUMENTS;
 import static com.theairebellion.zeus.framework.storage.StoreKeys.QUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -142,7 +147,7 @@ class TestContextManagerTest {
 
             // Verify the argument was added to the list
             verify(globalStore).get(ARGUMENTS);
-            assertThat(existingArgs).contains(testArgument);
+            assertThat(existingArgs).hasSize(1).containsExactly(testArgument);
         }
 
         @Test
@@ -187,6 +192,38 @@ class TestContextManagerTest {
             verify(extensionContext).getUniqueId();
             verify(extensionContext).getStore(namespace);
             verify(parameterStore).getOrComputeIfAbsent(eq("totalParams"), any());
+        }
+
+        @DisplayName("initializeParameterTracking computes and stores number of test method parameters")
+        @Test
+        void initializeParameterTracking_shouldStoreNumberOfParameters() {
+            // Given
+            ExtensionContext.Store mockStore = mock(ExtensionContext.Store.class);
+            Method mockMethod = mock(Method.class);
+
+            Parameter[] fakeParams = new Parameter[]{ mock(Parameter.class), mock(Parameter.class) };
+
+            // When
+            when(extensionContext.getUniqueId()).thenReturn("unique-id");
+            when(extensionContext.getStore(any())).thenReturn(mockStore);
+            when(extensionContext.getRequiredTestMethod()).thenReturn(mockMethod);
+            when(mockMethod.getParameters()).thenReturn(fakeParams);
+
+            ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<Function<String, Integer>> fnCaptor = ArgumentCaptor.forClass(Function.class);
+
+            // Mock store behavior to call the actual function with the key
+            when(mockStore.getOrComputeIfAbsent(keyCaptor.capture(), fnCaptor.capture()))
+                    .thenAnswer(invocation -> {
+                        String key = invocation.getArgument(0);
+                        Function<String, Integer> fn = invocation.getArgument(1);
+                        return fn.apply(key);
+                    });
+
+            TestContextManager.initializeParameterTracking(extensionContext);
+
+            // Then
+            assertEquals(2, fnCaptor.getValue().apply("anyKey"));
         }
     }
 }

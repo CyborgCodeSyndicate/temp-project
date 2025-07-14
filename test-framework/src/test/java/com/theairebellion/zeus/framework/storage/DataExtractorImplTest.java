@@ -100,5 +100,17 @@ class DataExtractorImplTest {
             assertEquals(20, extractor.extract(10), "Should multiply number by 2");
             assertEquals(-1, extractor.extract(new Object()), "Should return default for other types");
         }
+
+        @Test
+        @DisplayName("Should handle extraction exceptions gracefully")
+        void handlesExtractionExceptions() {
+            // Given
+            DataExtractorImpl<String> extractor = new DataExtractorImpl<>(
+                    MockEnum.KEY1, obj -> ((String)obj).toUpperCase());
+
+            // When/Then
+            assertThrows(ClassCastException.class,
+                    () -> extractor.extract(123));
+        }
     }
 }

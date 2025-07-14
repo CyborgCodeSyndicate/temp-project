@@ -104,7 +104,7 @@ class ServicesTest {
     @Test
     @DisplayName("Should filter beans by exact class match")
     void testServiceRetrieval_FiltersByExactClass() {
-        // Create real instances instead of mocks to test the class filtering
+        // Given
         MockClassLevelHook realMockHook = new MockClassLevelHook();
         ClassLevelHook otherHook = new ClassLevelHook() {};  // Anonymous implementation
 
@@ -131,25 +131,19 @@ class ServicesTest {
     }
 
     @Test
-    @DisplayName("Should have @Component and @Lazy annotations")
-    void testComponentAnnotations() {
+    @DisplayName("Should log warning if multiple services are returned, but still return the first one")
+    void testServiceRetrieval_MultipleServicesWarning() {
+        // Given
+        MockService secondService = mock(MockService.class);
+        reflectionUtilMock.when(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class))
+                .thenReturn(List.of(mockService, secondService));
+
         // When
-        Component component = Services.class.getAnnotation(Component.class);
-        Lazy lazy = Services.class.getAnnotation(Lazy.class);
+        MockService result = services.service(MockClassLevelHook.class, MockService.class);
 
         // Then
-        assertNotNull(component, "Should have @Component annotation");
-        assertNotNull(lazy, "Should have @Lazy annotation");
-    }
-
-    @Test
-    @DisplayName("Constructor should have @Autowired annotation")
-    void testConstructorAnnotation() throws NoSuchMethodException {
-        // When
-        Autowired autowired = Services.class.getConstructor(ApplicationContext.class)
-                .getAnnotation(Autowired.class);
-
-        // Then
-        assertNotNull(autowired, "Constructor should have @Autowired annotation");
+        assertNotNull(result);
+        assertEquals(mockService, result); // should return the first one
+        reflectionUtilMock.verify(() -> ReflectionUtil.getFieldValues(mockHook, MockService.class));
     }
 }

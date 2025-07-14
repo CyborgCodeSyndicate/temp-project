@@ -38,12 +38,6 @@ class FluentServiceDecoratorTest {
     }
 
     @Test
-    @DisplayName("Constructor should initialize with provided service")
-    void testConstructor() {
-        assertNotNull(decorator);
-    }
-
-    @Test
     @DisplayName("setQuest should delegate to decorated service")
     void testSetQuest() {
         // When

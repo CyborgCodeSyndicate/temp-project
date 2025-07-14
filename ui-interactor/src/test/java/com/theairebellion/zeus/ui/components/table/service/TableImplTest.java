@@ -1,14 +1,16 @@
 package com.theairebellion.zeus.ui.components.table.service;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
 import com.theairebellion.zeus.ui.components.base.ComponentType;
-import com.theairebellion.zeus.ui.components.table.annotations.*;
+import com.theairebellion.zeus.ui.components.table.annotations.CellFilter;
+import com.theairebellion.zeus.ui.components.table.annotations.CellInsertion;
+import com.theairebellion.zeus.ui.components.table.annotations.CustomCellFilter;
+import com.theairebellion.zeus.ui.components.table.annotations.CustomCellInsertion;
+import com.theairebellion.zeus.ui.components.table.annotations.TableCellLocator;
+import com.theairebellion.zeus.ui.components.table.annotations.TableInfo;
 import com.theairebellion.zeus.ui.components.table.base.TableField;
-import com.theairebellion.zeus.ui.components.table.filters.CellFilterComponent;
 import com.theairebellion.zeus.ui.components.table.filters.CellFilterFunction;
 import com.theairebellion.zeus.ui.components.table.filters.FilterStrategy;
 import com.theairebellion.zeus.ui.components.table.filters.TableFilter;
-import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionComponent;
 import com.theairebellion.zeus.ui.components.table.insertion.CellInsertionFunction;
 import com.theairebellion.zeus.ui.components.table.insertion.TableInsertion;
 import com.theairebellion.zeus.ui.components.table.model.CellLocator;
@@ -16,16 +18,30 @@ import com.theairebellion.zeus.ui.components.table.model.TableCell;
 import com.theairebellion.zeus.ui.components.table.model.TableLocators;
 import com.theairebellion.zeus.ui.components.table.registry.TableServiceRegistry;
 import com.theairebellion.zeus.ui.components.table.sort.SortingStrategy;
-import com.theairebellion.zeus.ui.log.LogUI;
+import com.theairebellion.zeus.ui.config.UiConfig;
+import com.theairebellion.zeus.ui.config.UiConfigHolder;
+import com.theairebellion.zeus.ui.log.LogUi;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.util.reflections.ReflectionUtil;
+import com.theairebellion.zeus.util.reflections.exceptions.ReflectionException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -34,3421 +50,2062 @@ import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.function.BiConsumer;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.contains;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-@SuppressWarnings("all")
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("TableImpl Tests")
+@SuppressWarnings("all")
 class TableImplTest extends BaseUnitUITest {
 
-    @Mock
-    private SmartWebDriver driver;
-
-    @Mock
-    private SmartWebElement container;
-
-    @Mock
-    private SmartWebElement rowElement;
-
-    @Mock
-    private SmartWebElement cellElement;
-
-    @Mock
-    private WebDriverWait wait;
-
-    @Spy
-    private TableServiceRegistry registry;
-
-    private List<SmartWebElement> rows;
-    private TableLocators locators;
-    private TestTableImpl tableImpl;
-
-    // Common test classes
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "dummyTable"),
-            rowsLocator = @FindBy(className = "dummyRow"),
-            headerRowLocator = @FindBy(className = "dummyHeader")
-    )
-    static class DummyRow {
-        @TableCellLocator(
-                cellLocator = @FindBy(className = "dummyCell"),
-                cellTextLocator = @FindBy(className = "dummyText"),
-                headerCellLocator = @FindBy(className = "dummyHeader"),
-                tableSection = "dummySection"
-        )
-        private TableCell dummyField;
-
-        public TableCell getDummyField() {
-            return dummyField;
-        }
-
-        public void setDummyField(TableCell dummyField) {
-            this.dummyField = dummyField;
-        }
-    }
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "table"),
-            rowsLocator = @FindBy(className = "row"),
-            headerRowLocator = @FindBy(className = "header")
-    )
-    static class MultiValueRow {
-        @TableCellLocator(
-                cellLocator = @FindBy(className = "cell"),
-                cellTextLocator = @FindBy(className = "text"),
-                headerCellLocator = @FindBy(className = "header"),
-                tableSection = "section"
-        )
-        @CellInsertion(type = ComponentType.class, componentType = "TEST", order = 1)
-        private List<TableCell> cells = Arrays.asList(
-                new TableCell(null, "value1"),
-                new TableCell(null, "value2"),
-                new TableCell(null, "value3")
-        );
-
-        public List<TableCell> getCells() {
-            return cells;
-        }
-
-        public void setCells(List<TableCell> cells) {
-            this.cells = cells;
-        }
-    }
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "container"),
-            rowsLocator = @FindBy(id = "rows"),
-            headerRowLocator = @FindBy(id = "header")
-    )
-    static class InvalidFieldTypeRow {
-        @TableCellLocator(
-                cellLocator = @FindBy(id = "cell"),
-                cellTextLocator = @FindBy(id = "text"),
-                headerCellLocator = @FindBy(id = "header"),
-                tableSection = "section"
-        )
-        private String invalidField = "not a TableCell";
-
-        // Public default constructor
-        public InvalidFieldTypeRow() {
-        }
-    }
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "dummyTable"),
-            rowsLocator = @FindBy(className = "dummyRow"),
-            headerRowLocator = @FindBy(className = "dummyHeader")
-    )
-    static class DummyRowWithList {
-        @TableCellLocator(
-                cellLocator = @FindBy(className = "dummyCell"),
-                cellTextLocator = @FindBy(className = "dummyText"),
-                headerCellLocator = @FindBy(className = "dummyHeader"),
-                tableSection = "dummySection"
-        )
-        private List<TableCell> cells;
-
-        public List<TableCell> getCells() {
-            return cells;
-        }
-
-        public void setCells(List<TableCell> cells) {
-            this.cells = cells;
-        }
-    }
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "dummyTable"),
-            rowsLocator = @FindBy(className = "dummyRow"),
-            headerRowLocator = @FindBy(className = "dummyHeader")
-    )
-    static class InsertionRow {
-        @TableCellLocator(
-                cellLocator = @FindBy(className = "dummyCell"),
-                cellTextLocator = @FindBy(className = "dummyText"),
-                headerCellLocator = @FindBy(className = "dummyHeader"),
-                tableSection = "dummySection"
-        )
-        @CellInsertion(type = ComponentType.class, componentType = "TEST", order = 1)
-        private TableCell insertionField;
-
-        public TableCell getInsertionField() {
-            return insertionField;
-        }
-
-        public void setInsertionField(TableCell insertionField) {
-            this.insertionField = insertionField;
-        }
-    }
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "dummyTable"),
-            rowsLocator = @FindBy(className = "dummyRow"),
-            headerRowLocator = @FindBy(className = "dummyHeader")
-    )
-    static class CustomInsertionRow {
-        @TableCellLocator(
-                cellLocator = @FindBy(className = "dummyCell"),
-                cellTextLocator = @FindBy(className = "dummyText"),
-                headerCellLocator = @FindBy(className = "dummyHeader"),
-                tableSection = "dummySection"
-        )
-        @CustomCellInsertion(insertionFunction = WorkingCellInsertionFunction.class, order = 1)
-        private TableCell customInsertionField;
-
-        public TableCell getCustomInsertionField() {
-            return customInsertionField;
-        }
-
-        public void setCustomInsertionField(TableCell customInsertionField) {
-            this.customInsertionField = customInsertionField;
-        }
-    }
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "dummyTable"),
-            rowsLocator = @FindBy(className = "dummyRow"),
-            headerRowLocator = @FindBy(className = "dummyHeader")
-    )
-    static class FilterRow {
-        @TableCellLocator(
-                cellLocator = @FindBy(className = "dummyCell"),
-                cellTextLocator = @FindBy(className = "dummyText"),
-                headerCellLocator = @FindBy(className = "dummyHeader"),
-                tableSection = "dummySection"
-        )
-        @CellFilter(type = ComponentType.class, componentType = "FILTER")
-        private TableCell cell;
-
-        public TableCell getCell() {
-            return cell;
-        }
-
-        public void setCell(TableCell cell) {
-            this.cell = cell;
-        }
-    }
-
-    @TableInfo(
-            tableContainerLocator = @FindBy(id = "dummyTable"),
-            rowsLocator = @FindBy(className = "dummyRow"),
-            headerRowLocator = @FindBy(className = "dummyHeader")
-    )
-    static class CustomFilterRow {
-        @TableCellLocator(
-                cellLocator = @FindBy(className = "dummyCell"),
-                cellTextLocator = @FindBy(className = "dummyText"),
-                headerCellLocator = @FindBy(className = "dummyHeader"),
-                tableSection = "dummySection"
-        )
-        @CustomCellFilter(cellFilterFunction = WorkingCellFilterFunction.class)
-        private TableCell customFilterField;
-
-        public TableCell getCustomFilterField() {
-            return customFilterField;
-        }
-
-        public void setCustomFilterField(TableCell customFilterField) {
-            this.customFilterField = customFilterField;
-        }
-    }
-
-    static class BadRow {
-        // Missing TableCellLocator annotation to test validation failures
-        private String value;
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-    }
-
-    // Working implementation for tests
-    static class WorkingCellInsertionFunction implements CellInsertionFunction {
-        static int callCount = 0;
-        static SmartWebElement lastCell;
-        static String[] lastValues;
-
-        @Override
-        public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
-
-        }
-
-        @Override
-        public void accept(SmartWebElement cell, String[] values) {
-            callCount++;
-            lastCell = cell;
-            lastValues = values;
-        }
-    }
-
-    // Function with private constructor for negative tests
-    static class PrivateConstructorInsertionFunction implements CellInsertionFunction {
-        private PrivateConstructorInsertionFunction() {
-        }
-
-        @Override
-        public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
-
-        }
-
-        @Override
-        public void accept(SmartWebElement cell, String[] values) {
-            // Do nothing
-        }
-    }
-
-    // Working implementation for tests
-    static class WorkingCellFilterFunction implements CellFilterFunction {
-        static int callCount = 0;
-        static SmartWebElement lastCell;
-        static FilterStrategy lastStrategy;
-        static String[] lastValues;
-
-        @Override
-        public void cellFilterFunction(SmartWebElement cellElement, FilterStrategy filterStrategy, String... values) {
-
-        }
-
-        @Override
-        public void accept(SmartWebElement cell, FilterStrategy strategy, String[] values) {
-            callCount++;
-            lastCell = cell;
-            lastStrategy = strategy;
-            lastValues = values;
-        }
-    }
-
-    // Non-working implementation for tests
-    static abstract class TestCellFilterFunction implements CellFilterFunction {
-        // Abstract class cannot be instantiated
-    }
-
-    // Test ComponentType for enum lookups
-    enum TestComponentType implements ComponentType {
-        TEST, FILTER;
-
-        @Override
-        public Enum<?> getType() {
-            return null;
-        }
-    }
-
-    // Custom TestTableImpl for targeted testing
-    static class TestTableImpl extends TableImpl {
-        private final TableLocators locators;
-        private final SmartWebElement container;
-        private final List<SmartWebElement> rows;
-
-        TestTableImpl(SmartWebDriver driver, TableServiceRegistry registry,
-                      TableLocators locators, SmartWebElement container,
-                      List<SmartWebElement> rows) {
-            super(driver, registry);
-            this.locators = locators;
-            this.container = container;
-            this.rows = rows;
-        }
-
-        @Override
-        protected SmartWebElement getTableContainer(By tableContainerLocator) {
-            return container;
-        }
-
-        @Override
-        protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-            return rows;
-        }
-
-        @Override
-        protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-            return null;
-        }
-
-        @Override
-        protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-            // Do nothing for testing
-        }
-    }
-
-    @BeforeEach
-    void setUp() {
-        // Initialize mocks that aren't handled by annotations
-        MockitoAnnotations.openMocks(this);
-
-        // Setup test data
-        rows = new ArrayList<>();
-        rows.add(rowElement);
-        locators = new TableLocators(By.id("dummyTable"), By.className("dummyRow"), By.className("dummyHeader"));
-
-        // Clear static counters
-        WorkingCellInsertionFunction.callCount = 0;
-        WorkingCellFilterFunction.callCount = 0;
-
-        // Create table implementation with mocks
-        tableImpl = new TestTableImpl(driver, registry, locators, container, rows);
-
-        // Setup common mock behaviors
-        when(driver.getWait()).thenReturn(wait);
-        when(wait.until(any())).thenReturn(true);
-        when(driver.findSmartElement(any(By.class))).thenReturn(container);
-        when(rowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-        when(cellElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-        when(cellElement.getText()).thenReturn("value");
-    }
-
-    // Helper method to mock static classes
-    private <T> MockedStatic<T> mockStatic(Class<T> clazz) {
-        return Mockito.mockStatic(clazz);
-    }
-
-    @Nested
-    @DisplayName("Constructor and basic methods tests")
-    class ConstructorAndBasicMethodsTest {
-
-        @Test
-        @DisplayName("Constructor with driver only initializes properly")
-        void testConstructorWithDriverOnly() {
-            TableImpl impl = new TableImpl(driver) {
-                @Override
-                protected SmartWebElement getTableContainer(By tableContainerLocator) {
-                    return null;
-                }
-
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return null;
-                }
-
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return null;
-                }
-
-                @Override
-                protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-                }
-            };
-
-            assertNotNull(impl);
-
-            // Check acceptedValues list
-            try {
-                Field acceptedValuesField = TableImpl.class.getDeclaredField("acceptedValues");
-                acceptedValuesField.setAccessible(true);
-
-                List<?> acceptedValues = (List<?>) acceptedValuesField.get(impl);
-                assertEquals(2, acceptedValues.size());
-                assertTrue(acceptedValues.get(0) instanceof TableCell);
-                assertTrue(acceptedValues.get(1) instanceof List);
-
-                // Check serviceRegistry is null
-                Field registryField = TableImpl.class.getDeclaredField("serviceRegistry");
-                registryField.setAccessible(true);
-                assertNull(registryField.get(impl));
-            } catch (Exception e) {
-                fail("Exception accessing fields: " + e.getMessage());
-            }
-        }
-
-        @Test
-        @DisplayName("Constructor with driver and registry initializes properly")
-        void testConstructorWithDriverAndRegistry() {
-            TableServiceRegistry testRegistry = new TableServiceRegistry();
-            TableImpl impl = new TableImpl(driver, testRegistry) {
-                @Override
-                protected SmartWebElement getTableContainer(By tableContainerLocator) {
-                    return null;
-                }
-
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return null;
-                }
-
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return null;
-                }
-
-                @Override
-                protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-                }
-            };
-
-            assertNotNull(impl);
-
-            try {
-                // Check serviceRegistry is properly set
-                Field registryField = TableImpl.class.getDeclaredField("serviceRegistry");
-                registryField.setAccessible(true);
-                assertEquals(testRegistry, registryField.get(impl));
-
-                // Check acceptedValues list
-                Field acceptedValuesField = TableImpl.class.getDeclaredField("acceptedValues");
-                acceptedValuesField.setAccessible(true);
-
-                List<?> acceptedValues = (List<?>) acceptedValuesField.get(impl);
-                assertEquals(2, acceptedValues.size());
-            } catch (Exception e) {
-                fail("Exception accessing fields: " + e.getMessage());
-            }
-        }
-
-        @Test
-        @DisplayName("getTableContainer returns the expected container")
-        void testGetTableContainer() {
-            By locator = By.id("testContainer");
-            when(driver.findSmartElement(locator)).thenReturn(container);
-
-            TableImpl impl = new TableImpl(driver) {
-                @Override
-                public SmartWebElement getTableContainer(By tableContainerLocator) {
-                    return super.getTableContainer(tableContainerLocator);
-                }
-
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return null;
-                }
-
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return null;
-                }
-
-                @Override
-                protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-                }
-            };
-
-            SmartWebElement result = impl.getTableContainer(locator);
-            assertEquals(container, result);
-            verify(driver).findSmartElement(locator);
-        }
-
-        @Test
-        @DisplayName("getRows waits for visibility and returns expected rows")
-        void testGetRows() {
-            By rowsLocator = By.className("rows");
-            List<SmartWebElement> expectedRows = List.of(mock(SmartWebElement.class), mock(SmartWebElement.class));
-            when(container.findSmartElements(rowsLocator)).thenReturn(expectedRows);
-
-            TableImpl impl = new TableImpl(driver) {
-                @Override
-                protected SmartWebElement getTableContainer(By tableContainerLocator) {
-                    return null;
-                }
-
-                @Override
-                public List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return super.getRows(tableContainer, tableRowsLocator, section);
-                }
-
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return null;
-                }
-
-                @Override
-                protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-                }
-            };
-
-            List<SmartWebElement> result = impl.getRows(container, rowsLocator, "testSection");
-            assertEquals(expectedRows, result);
-            verify(wait).until(any());
-        }
-
-        @Test
-        @DisplayName("getHeaderRow returns the expected header row")
-        void testGetHeaderRow() {
-            By headerLocator = By.className("header");
-            SmartWebElement headerElement = mock(SmartWebElement.class);
-            when(container.findSmartElement(headerLocator)).thenReturn(headerElement);
-
-            TableImpl impl = new TableImpl(driver) {
-                @Override
-                protected SmartWebElement getTableContainer(By tableContainerLocator) {
-                    return null;
-                }
-
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return null;
-                }
-
-                @Override
-                public SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return super.getHeaderRow(tableContainer, headerRowLocator, tableSection);
-                }
-
-                @Override
-                protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-                }
-            };
-
-            SmartWebElement result = impl.getHeaderRow(container, headerLocator, "testSection");
-            assertEquals(headerElement, result);
-        }
-
-        @Test
-        @DisplayName("sortTable doesn't throw exceptions")
-        void testSortTable() {
-            SmartWebElement headerCell = mock(SmartWebElement.class);
-
-            TableImpl impl = new TableImpl(driver) {
-                @Override
-                protected SmartWebElement getTableContainer(By tableContainerLocator) {
-                    return null;
-                }
-
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return null;
-                }
-
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return null;
-                }
-
-                @Override
-                public void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-                    super.sortTable(headerCell, sortingStrategy);
-                }
-            };
-
-            // Method is empty in base class, so just verify no exception
-            assertDoesNotThrow(() -> impl.sortTable(headerCell, SortingStrategy.ASC));
-        }
-    }
-
-    @Nested
-    @DisplayName("Table reading operations tests")
-    class TableReadingTest {
-
-        @Test
-        @DisplayName("readTable(Class) reads all rows with annotated fields")
-        void testReadTable_Class() {
-            // Setup with proper stubbing
-            List<SmartWebElement> rowsList = List.of(rowElement);
-
-            // Use a custom table implementation that returns our mocked rows directly
-            TableImplConsolidatedTest.TestTableImpl customTableImpl = new TableImplConsolidatedTest.TestTableImpl(driver, registry, locators, container, rowsList) {
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return rowsList;
-                }
-            };
-
-            when(rowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-            when(cellElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-            when(cellElement.getText()).thenReturn("simple value");
-
-            // Execute
-            List<TableImplConsolidatedTest.DummyRow> result = customTableImpl.readTable(TableImplConsolidatedTest.DummyRow.class);
-
-            // Verify
-            assertNotNull(result);
-            assertEquals(1, result.size());
-            assertEquals("simple value", result.get(0).getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("readTable(Class, TableField...) reads all rows with specified fields")
-        void testReadTable_ClassAndFields() {
-            // Setup with proper stubbing
-            List<SmartWebElement> rowsList = List.of(rowElement);
-
-            // Use a custom table implementation that returns our mocked rows directly
-            TestTableImpl customTableImpl = new TestTableImpl(driver, registry, locators, container, rowsList) {
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return rowsList;
-                }
-            };
-
-            when(rowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-            when(cellElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-            when(cellElement.getText()).thenReturn("field value");
-
-            // Create field invoker
-            TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-            // Execute
-            List<DummyRow> result = customTableImpl.readTable(DummyRow.class, field);
-
-            // Verify
-            assertNotNull(result);
-            assertEquals(1, result.size());
-            assertEquals("field value", result.get(0).getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("readTable(int, int, Class) reads rows in specified range")
-        void testReadTable_Range() {
-            // Setup multiple rows
-            List<SmartWebElement> multipleRows = new ArrayList<>();
-            for (int i = 0; i < 5; i++) {
-                SmartWebElement row = mock(SmartWebElement.class);
-                SmartWebElement cell = mock(SmartWebElement.class);
-                SmartWebElement textElem = mock(SmartWebElement.class);
-
-                when(row.findSmartElement(any(By.class))).thenReturn(cell);
-                when(cell.findSmartElement(any(By.class))).thenReturn(textElem);
-                when(textElem.getText()).thenReturn("row " + i);
-
-                multipleRows.add(row);
-            }
-
-            TestTableImpl tableImplWithRows = new TestTableImpl(driver, registry, locators, container, multipleRows) {
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return multipleRows;
-                }
-            };
-
-            // Test with valid range (2-4)
-            List<DummyRow> result = tableImplWithRows.readTable(2, 4, DummyRow.class);
-            assertEquals(3, result.size());
-
-            // Test with invalid range (start > end)
-            List<DummyRow> emptyResult = tableImplWithRows.readTable(4, 2, DummyRow.class);
-            assertTrue(emptyResult.isEmpty());
-
-            // Test with range exceeding available rows
-            List<DummyRow> exceededResult = tableImplWithRows.readTable(4, 10, DummyRow.class);
-            assertEquals(2, exceededResult.size());
-        }
-
-        @Test
-        @DisplayName("readTable(int, int, Class, TableField...) reads rows in range with specified fields")
-        void testReadTable_RangeAndFields() {
-            // Setup
-            List<SmartWebElement> multipleRows = new ArrayList<>();
-            for (int i = 0; i < 5; i++) {
-                SmartWebElement row = mock(SmartWebElement.class);
-                SmartWebElement cell = mock(SmartWebElement.class);
-                SmartWebElement textElem = mock(SmartWebElement.class);
-
-                when(row.findSmartElement(any(By.class))).thenReturn(cell);
-                when(cell.findSmartElement(any(By.class))).thenReturn(textElem);
-                when(textElem.getText()).thenReturn("field row " + i);
-
-                multipleRows.add(row);
-            }
-
-            TestTableImpl tableImplWithRows = new TestTableImpl(driver, registry, locators, container, multipleRows) {
-                @Override
-                protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                    return multipleRows;
-                }
-            };
-
-            // Create field invoker
-            TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-            // Execute
-            List<DummyRow> result = tableImplWithRows.readTable(2, 4, DummyRow.class, field);
-
-            // Verify
-            assertEquals(3, result.size());
-            assertEquals("field row 1", result.get(0).getDummyField().getText());
-            assertEquals("field row 2", result.get(1).getDummyField().getText());
-            assertEquals("field row 3", result.get(2).getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("readRow(int, Class) reads a single row by index")
-        void testReadRow_Index() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-            when(cellElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-            when(cellElement.getText()).thenReturn("row by index");
-
-            // Execute
-            DummyRow result = tableImpl.readRow(1, DummyRow.class);
-
-            // Verify
-            assertNotNull(result);
-            assertEquals("row by index", result.getDummyField().getText());
-
-            // Test with invalid index by creating a test-specific implementation
-            TestTableImpl emptyTableImpl = new TestTableImpl(driver, registry, locators, container, Collections.emptyList());
-
-            // Now this should throw the correct exception
-            assertThrows(IndexOutOfBoundsException.class, () -> emptyTableImpl.readRow(1, DummyRow.class));
-        }
-
-        @Test
-        @DisplayName("readRow(List<String>, Class) reads a row by search criteria")
-        void testReadRow_Criteria() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("match this criteria");
-            when(cellElement.getText()).thenReturn("row by criteria");
-
-            // Execute
-            DummyRow result = tableImpl.readRow(List.of("match"), DummyRow.class);
-
-            // Verify
-            assertNotNull(result);
-            assertEquals("row by criteria", result.getDummyField().getText());
-
-            // Test when no match found
-            when(rowElement.getAttribute("innerText")).thenReturn("no match");
-            assertThrows(NotFoundException.class, () -> tableImpl.readRow(List.of("criteria"), DummyRow.class));
-        }
-
-        @Test
-        @DisplayName("readRow(int, Class, TableField...) reads a row by index with specific fields")
-        void testReadRow_IndexAndFields() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(cellElement.getText()).thenReturn("row index with fields");
-
-            // Create field invoker
-            TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-            // Execute
-            DummyRow result = tableImpl.readRow(1, DummyRow.class, field);
-
-            // Verify
-            assertNotNull(result);
-            assertEquals("row index with fields", result.getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("readRow(List<String>, Class, TableField...) reads a row by criteria with specific fields")
-        void testReadRow_CriteriaAndFields() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("search with criteria and fields");
-            when(cellElement.getText()).thenReturn("row criteria with fields");
-
-            // Create field invoker
-            TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-            // Execute
-            DummyRow result = tableImpl.readRow(List.of("search"), DummyRow.class, field);
-
-            // Verify
-            assertNotNull(result);
-            assertEquals("row criteria with fields", result.getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("findRowByCriteria correctly matches rows")
-        void testFindRowByCriteria() throws Exception {
-            // Access private method through reflection
-            Method findRowByCriteriaMethod = TableImpl.class.getDeclaredMethod(
-                    "findRowByCriteria", List.class, List.class);
-            findRowByCriteriaMethod.setAccessible(true);
-
-            // Setup rows with different text content
-            SmartWebElement row1 = mock(SmartWebElement.class);
-            when(row1.getAttribute("innerText")).thenReturn("first row with text");
-
-            SmartWebElement row2 = mock(SmartWebElement.class);
-            when(row2.getAttribute("innerText")).thenReturn("second row with other words");
-
-            SmartWebElement row3 = mock(SmartWebElement.class);
-            when(row3.getAttribute("innerText")).thenReturn("third row with keywords to find");
-
-            List<SmartWebElement> testRows = Arrays.asList(row1, row2, row3);
-
-            // Test with single criterion
-            List<String> criteria1 = List.of("keywords");
-            SmartWebElement result1 = (SmartWebElement) findRowByCriteriaMethod.invoke(tableImpl, criteria1, testRows);
-            assertEquals(row3, result1);
-
-            // Test with multiple criteria (all must match)
-            List<String> criteria2 = Arrays.asList("third", "find");
-            SmartWebElement result2 = (SmartWebElement) findRowByCriteriaMethod.invoke(tableImpl, criteria2, testRows);
-            assertEquals(row3, result2);
-
-            // Test with criteria that don't match any row
-            List<String> criteria3 = List.of("not found");
-
-            // Modified assertion to handle the NotFoundException correctly
-            Exception exception = assertThrows(InvocationTargetException.class, () ->
-                    findRowByCriteriaMethod.invoke(tableImpl, criteria3, testRows));
-
-            // Check that the cause is NotFoundException
-            assertTrue(exception.getCause() instanceof NotFoundException);
-            assertTrue(exception.getCause().getMessage().contains("No row found containing all criteria"));
-
-            // Test with null attribute value
-            when(row1.getAttribute("innerText")).thenReturn(null);
-            SmartWebElement result4 = (SmartWebElement) findRowByCriteriaMethod.invoke(tableImpl, criteria2, testRows);
-            assertEquals(row3, result4);
-        }
-    }
-
-    @Nested
-    @DisplayName("Table cell value insertion tests")
-    class TableInsertionTest {
-
-        @Test
-        @DisplayName("insertCellValue(List<String>, Class<T>, T) with single value field")
-        void testInsertCellValue_CriteriaAndData_SingleValue() {
-            // Setup
-            List<String> criteria = List.of("search criteria");
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("search criteria match");
-
-            // Setup cell elements
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Register the insertion service
-            TableInsertion insertionService = mock(TableInsertion.class);
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Mock ReflectionUtil for enum lookup
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenReturn(List.of(TestComponentType.class));
-
-                // Create test data with single value field
-                InsertionRow data = new InsertionRow();
-                data.setInsertionField(new TableCell(null, "single value"));
-
-                // Execute
-                tableImpl.insertCellValue(criteria, InsertionRow.class, data);
-
-                // Verify the correct method was called with single value
-                verify(insertionService, times(1)).tableInsertion(any(), any(), any(String[].class));
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(List<String>, Class<T>, T) with multiple value fields")
-        void testInsertCellValue_CriteriaAndData_MultipleValues() throws InvocationTargetException, IllegalAccessException {
-            // Setup
-            List<String> criteria = List.of("search criteria");
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("search criteria match");
-
-            // Setup cell elements
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Register the insertion service
-            TableInsertion insertionService = mock(TableInsertion.class);
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Mock ReflectionUtil for enum lookup
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenReturn(List.of(TestComponentType.class));
-
-                // Create test data with multiple values in a list
-                MultiValueRow data = new MultiValueRow();
-
-                // Execute - use mock instead of real call since we just need to cover lambda paths
-                // tableImpl.insertCellValue(criteria, MultiValueRow.class, data);
-
-                // Directly test the lambda logic
-                BiConsumer<TableField<MultiValueRow>, String[]> consumer = (field, strings) -> {
-                    if (strings.length == 1) {
-                        // Single value branch (covered in other tests)
-                    } else {
-                        // Multiple values branch
-                        for (int i = 0; i < strings.length; i++) {
-                            // This is what we need to cover
-                        }
-                    }
-                };
-
-                // Execute by directly calling the processInsertCellValue method with reflection
-                Method processMethod = TableImpl.class.getDeclaredMethod(
-                        "processInsertCellValue", BiConsumer.class, Class.class, Object.class);
-                processMethod.setAccessible(true);
-                processMethod.invoke(tableImpl, consumer, MultiValueRow.class, data);
-
-                // If we get here without exception, the test passed
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(int, Class<T>, T) with multiple value fields")
-        void testInsertCellValue_RowAndData_MultipleValues() throws InvocationTargetException, IllegalAccessException {
-            // Same approach as above test
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-
-            // Setup cell elements
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Register the insertion service
-            TableInsertion insertionService = mock(TableInsertion.class);
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Mock ReflectionUtil for enum lookup
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenReturn(List.of(TestComponentType.class));
-
-                // Create test data with multiple values in a list
-                MultiValueRow data = new MultiValueRow();
-
-                // Directly test the lambda logic using reflection to call processInsertCellValue
-                BiConsumer<TableField<MultiValueRow>, String[]> consumer = (field, strings) -> {
-                    if (strings.length == 1) {
-                        // Single value branch (covered in other tests)
-                    } else {
-                        // Multiple values branch
-                        for (int i = 0; i < strings.length; i++) {
-                            // This is what we need to cover
-                        }
-                    }
-                };
-
-                // Execute by directly calling the processInsertCellValue method with reflection
-                Method processMethod = TableImpl.class.getDeclaredMethod(
-                        "processInsertCellValue", BiConsumer.class, Class.class, Object.class);
-                processMethod.setAccessible(true);
-                processMethod.invoke(tableImpl, consumer, MultiValueRow.class, data);
-
-                // If we get here without exception, the test passed
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(int, Class<T>, T) with single value field")
-        void testInsertCellValue_RowAndData_SingleValue() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-
-            // Setup cell elements
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Register the insertion service
-            TableInsertion insertionService = mock(TableInsertion.class);
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Mock ReflectionUtil for enum lookup
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenReturn(List.of(TestComponentType.class));
-
-                // Create test data with single value field
-                InsertionRow data = new InsertionRow();
-                data.setInsertionField(new TableCell(null, "single row value"));
-
-                // Execute
-                tableImpl.insertCellValue(1, InsertionRow.class, data);
-
-                // Verify the correct method was called with single value
-                verify(insertionService, times(1)).tableInsertion(any(), any(), any(String[].class));
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(List<String>, Class, TableField, int, String...) inserts values for matching criteria")
-        void testInsertCellValue_CriteriaAndFieldAndCellAndValues() {
-            // Setup
-            List<String> criteria = List.of("insert criteria");
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("insert criteria match");
-
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Create a TableInsertion service and register it
-            TableInsertion insertionService = mock(TableInsertion.class);
-            doNothing().when(insertionService).tableInsertion(any(), any(), any());
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Setup for ReflectionUtil to correctly return TestComponentType.class
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        eq(ComponentType.class), anyString()
-                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
-
-                // Create field invoker
-                TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-                // Execute
-                tableImpl.insertCellValue(criteria, TableImplConsolidatedTest.DummyRow.class, field, 1, "inserted value");
-
-                // Verify
-                verify(insertionService).tableInsertion(any(), any(), any());
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(List<String>, Class<T>, T) for-loop branch coverage")
-        void testInsertCellValue_ListCriteria_ForLoopBranch() {
-            // Setup search criteria
-            List<String> criteria = List.of("search criteria");
-
-            // Mock the row finding
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("search criteria match");
-
-            // Setup cell elements
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Create a spy on tableImpl to track method calls
-            TableImpl spyTableImpl = spy(tableImpl);
-
-            // Stub the insertCellValue method to do nothing (avoid actual execution which might fail)
-            doNothing().when(spyTableImpl).insertCellValue(
-                    any(List.class), any(Class.class), any(TableField.class), anyInt(), anyString());
-
-            // Create the data object with multiple values
-            MultiValueRow data = new MultiValueRow();
-
-            // Register service and mock ReflectionUtil for enum lookup
-            TableInsertion insertionService = mock(TableInsertion.class);
-            registry.registerService(ComponentType.class, insertionService);
-
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenReturn(List.of(TestComponentType.class));
-
-                // Execute the method that should hit the for-loop branch
-                spyTableImpl.insertCellValue(criteria, MultiValueRow.class, data);
-
-                // Verify that insertCellValue was called multiple times (once for each string in the collection)
-                // The exact number depends on how many values are in the MultiValueRow.cells list
-                verify(spyTableImpl, times(3)).insertCellValue(
-                        eq(criteria), eq(MultiValueRow.class), any(TableField.class), anyInt(), anyString());
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(int, Class<T>, T) for-loop branch coverage")
-        void testInsertCellValue_RowIndex_ForLoopBranch() {
-            // Setup row index
-            int rowIndex = 1;
-
-            // Mock the row finding
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-
-            // Setup cell elements
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Create a spy on tableImpl to track method calls
-            TableImpl spyTableImpl = spy(tableImpl);
-
-            // Stub the insertCellValue method to do nothing (avoid actual execution which might fail)
-            doNothing().when(spyTableImpl).insertCellValue(
-                    anyInt(), any(Class.class), any(TableField.class), anyInt(), anyString());
-
-            // Create the data object with multiple values
-            MultiValueRow data = new MultiValueRow();
-
-            // Register service and mock ReflectionUtil for enum lookup
-            TableInsertion insertionService = mock(TableInsertion.class);
-            registry.registerService(ComponentType.class, insertionService);
-
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
-
-                // Execute the method that should hit the for-loop branch
-                spyTableImpl.insertCellValue(rowIndex, MultiValueRow.class, data);
-
-                // Verify that insertCellValue was called multiple times (once for each string in the collection)
-                // The exact number depends on how many values are in the MultiValueRow.cells list
-                verify(spyTableImpl, times(3)).insertCellValue(
-                        eq(rowIndex), eq(MultiValueRow.class), any(TableField.class), anyInt(), anyString());
-            }
-        }
-
-        @Test
-        @DisplayName("insertInCell throws exception when both component and custom function are null")
-        void testInsertInCell_BothNull() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Set both component and customFunction to null
-            when(cellLocator.getCellInsertionComponent()).thenReturn(null);
-            when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-            when(cellLocator.getFieldName()).thenReturn("testField");
-
-            // Execute and verify exception
-            try {
-                insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-                fail("Expected exception was not thrown");
-            } catch (InvocationTargetException ex) {
-                assertTrue(ex.getCause() instanceof RuntimeException);
-                assertTrue(ex.getCause().getMessage().contains("No table cell insertion method provided for field"));
-            }
-        }
-
-        @Test
-        @DisplayName("insertInCell throws exception for invalid cell index")
-        void testInsertInCell_InvalidCellIndex() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-
-            // Test with cell index that is out of range (too high)
-            int cellIndex = 5;
-
-            // Setup for component (doesn't matter which one, we'll fail on cell index check)
-            CellInsertionComponent component = mock(CellInsertionComponent.class);
-            when(cellLocator.getCellInsertionComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-
-            // Return empty cells list to trigger the isEmpty check
-            List<SmartWebElement> emptyCells = Collections.emptyList();
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(emptyCells);
-
-            // Execute and verify exception for empty cells
-            try {
-                insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-                fail("Expected exception was not thrown for empty cells");
-            } catch (InvocationTargetException ex) {
-                assertTrue(ex.getCause() instanceof RuntimeException);
-                assertTrue(ex.getCause().getMessage().contains("Invalid cell index"));
-            }
-
-            // Now try with non-empty cells but index <= 0
-            List<SmartWebElement> cells = List.of(mock(SmartWebElement.class));
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Test with cell index that is out of range (too low)
-            cellIndex = 0;
-
-            // Execute and verify exception for index <= 0
-            try {
-                insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-                fail("Expected exception was not thrown for index <= 0");
-            } catch (InvocationTargetException ex) {
-                assertTrue(ex.getCause() instanceof RuntimeException);
-                assertTrue(ex.getCause().getMessage().contains("Invalid cell index"));
-            }
-
-            // Now try with non-empty cells but index > cells.size()
-            cellIndex = 2; // Cells list only has 1 element
-
-            // Execute and verify exception for index > cells.size()
-            try {
-                insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-                fail("Expected exception was not thrown for index > cells.size()");
-            } catch (InvocationTargetException ex) {
-                assertTrue(ex.getCause() instanceof RuntimeException);
-                assertTrue(ex.getCause().getMessage().contains("Invalid cell index"));
-            }
-        }
-
-        @Test
-        @DisplayName("insertInCell successfully processes with component")
-        void testInsertInCell_WithComponent() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup mocks for the test
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup cell elements
-            SmartWebElement targetCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(targetCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Setup for component
-            CellInsertionComponent component = mock(CellInsertionComponent.class);
-            when(component.getType()).thenReturn((Class) ComponentType.class);
-            when(component.getComponentType()).thenReturn("TEST");
-
-            when(cellLocator.getCellInsertionComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-
-            // Register a mock insertion service
-            TableInsertion insertionService = mock(TableInsertion.class);
-            doNothing().when(insertionService).tableInsertion(any(), any(), any());
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Mock the ReflectionUtil.findEnumClassImplementationsOfInterface method
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                // This is the key fix - make sure it returns TestComponentType.class
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        eq(ComponentType.class), anyString())
-                ).thenReturn(List.of(TestComponentType.class));
-
-                reflectionUtil.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                    eq(ComponentType.class), anyString(), anyString())
-                ).thenReturn(TestComponentType.TEST);
-
-                // Execute - this should now work without throwing a NullPointerException
-                insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-
-                // Verify the insertion service was called correctly
-                verify(insertionService).tableInsertion(eq(targetCell), any(ComponentType.class), eq(values));
-            }
-        }
-
-        @Test
-        @DisplayName("insertInCell successfully processes with custom function")
-        void testInsertInCell_WithCustomFunction() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Reset the static counter in WorkingCellInsertionFunction
-            WorkingCellInsertionFunction.callCount = 0;
-            WorkingCellInsertionFunction.lastCell = null;
-            WorkingCellInsertionFunction.lastValues = null;
-
-            // Setup mocks for the test
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup cell elements
-            SmartWebElement targetCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(targetCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Setup for custom function (component is null)
-            when(cellLocator.getCellInsertionComponent()).thenReturn(null);
-            when(cellLocator.getCustomCellInsertion()).thenReturn((Class) WorkingCellInsertionFunction.class);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-
-            // Execute
-            insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-
-            // Verify the custom function was called by checking static counters
-            assertEquals(1, WorkingCellInsertionFunction.callCount);
-            assertSame(targetCell, WorkingCellInsertionFunction.lastCell);
-            assertArrayEquals(values, WorkingCellInsertionFunction.lastValues);
-        }
-
-        @Test
-        @DisplayName("insertCellValue(int, Class, TableField, int, String...) inserts values at specified row index")
-        void testInsertCellValue_IndexAndFieldAndCellAndValues() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Create a TableInsertion service and register it
-            TableInsertion insertionService = mock(TableInsertion.class);
-            doNothing().when(insertionService).tableInsertion(any(), any(), any());
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Setup for ReflectionUtil to correctly return TestComponentType.class
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        eq(ComponentType.class), anyString()
-                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
-
-                // Create field invoker
-                TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-                // Execute
-                tableImpl.insertCellValue(1, TableImplConsolidatedTest.DummyRow.class, field, 1, "inserted by index");
-
-                // Verify
-                verify(insertionService).tableInsertion(any(), any(), any());
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue with invalid index throws IndexOutOfBoundsException")
-        void testInsertCellValue_WithInvalidIndex() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(Collections.emptyList());
-
-            // Create field invoker
-            TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-            // Execute and verify - expect IndexOutOfBoundsException
-            assertThrows(IndexOutOfBoundsException.class, () -> {
-                try {
-                    tableImpl.insertCellValue(1, TableImplConsolidatedTest.DummyRow.class, field, 1, "will fail");
-                } catch (RuntimeException e) {
-                    if (e.getMessage().contains("Invalid cell index")) {
-                        throw new IndexOutOfBoundsException(e.getMessage());
-                    }
-                    throw e;
-                }
-            });
-        }
-
-        @Test
-        @DisplayName("insertCellValue(List<String>, Class, T) inserts all values from data object using search criteria")
-        void testInsertCellValue_CriteriaAndData() {
-            // Setup
-            List<String> criteria = List.of("insert object");
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("insert object match");
-
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Register a service to handle the insertion
-            registry.registerService(ComponentType.class, (TableInsertion) (cell, type, values) -> {
-                // Just a test implementation
-            });
-
-            // Create data object with TableCell value
-            DummyRow data = new DummyRow();
-            data.setDummyField(new TableCell(null, "object value"));
-
-            // Execute
-            tableImpl.insertCellValue(criteria, DummyRow.class, data);
-
-            // No exceptions means success
-        }
-
-        @Test
-        @DisplayName("insertCellValue(List<String>, Class, TableField, String...) inserts values using search criteria")
-        void testInsertCellValue_CriteriaAndFieldAndValues() {
-            // Setup
-            List<String> criteria = List.of("field values");
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-            when(rowElement.getAttribute("innerText")).thenReturn("field values match");
-
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Create a TableInsertion service and register it
-            TableInsertion insertionService = mock(TableInsertion.class);
-            // Use doNothing() pattern for void methods with varargs
-            doNothing().when(insertionService).tableInsertion(any(), any(), any(String[].class));
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Setup for ReflectionUtil to correctly return TestComponentType.class
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        eq(ComponentType.class), anyString()
-                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
-
-                // Create field invoker
-                TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-                // Execute
-                tableImpl.insertCellValue(criteria, TableImplConsolidatedTest.DummyRow.class, field, "field", "values");
-
-                // Verify with argument captor to match varargs correctly
-                verify(insertionService).tableInsertion(any(), any(), any(String[].class));
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(int, Class, TableField, String...) inserts values at specified row")
-        void testInsertCellValue_IndexAndFieldAndValues() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Create a TableInsertion service and register it
-            TableInsertion insertionService = mock(TableInsertion.class);
-            // Use doNothing() pattern for void methods with varargs
-            doNothing().when(insertionService).tableInsertion(any(), any(), any(String[].class));
-            registry.registerService(ComponentType.class, insertionService);
-
-            // Setup for ReflectionUtil to correctly return TestComponentType.class
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        eq(ComponentType.class), anyString()
-                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
-
-                // Create field invoker
-                TableField<TableImplConsolidatedTest.DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-                // Execute
-                tableImpl.insertCellValue(1, TableImplConsolidatedTest.DummyRow.class, field, "index", "field", "values");
-
-                // Verify with argument captor to match varargs correctly
-                verify(insertionService).tableInsertion(any(), any(), any(String[].class));
-            }
-        }
-
-        @Test
-        @DisplayName("insertCellValue(int, Class, T) inserts all values from data object at specified row")
-        void testInsertCellValue_IndexAndData() {
-            // Setup
-            when(container.findSmartElements(any(By.class))).thenReturn(rows);
-
-            SmartWebElement mockCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(mockCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Register a service to handle the insertion
-            registry.registerService(ComponentType.class, (TableInsertion) (cell, type, values) -> {
-                // Just a test implementation
-            });
-
-            // Create data object with TableCell value
-            DummyRow data = new DummyRow();
-            data.setDummyField(new TableCell(null, "index object"));
-
-            // Execute
-            tableImpl.insertCellValue(1, DummyRow.class, data);
-
-            // No exceptions means success
-        }
-
-        @Test
-        @DisplayName("insertInCell handles working custom cell insertion function")
-        void testInsertInCell_WithWorkingCustomFunction() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup cell elements
-            SmartWebElement targetCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(targetCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Setup for custom function insertion
-            when(cellLocator.getCellInsertionComponent()).thenReturn(null);
-            when(cellLocator.getCustomCellInsertion()).thenReturn((Class) WorkingCellInsertionFunction.class);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-
-            // Execute
-            insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-
-            // Verify
-            assertEquals(1, WorkingCellInsertionFunction.callCount);
-            assertEquals(targetCell, WorkingCellInsertionFunction.lastCell);
-            assertArrayEquals(values, WorkingCellInsertionFunction.lastValues);
-        }
-
-        @Test
-        @DisplayName("insertInCell throws exception with no insertion method")
-        void testInsertInCell_WithNoInsertionMethod() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup cell elements
-            SmartWebElement targetCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(targetCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Setup for component insertion
-            CellInsertionComponent component = mock(CellInsertionComponent.class);
-            when(cellLocator.getCellInsertionComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-            when(component.getType()).thenReturn((Class) ComponentType.class);
-            when(component.getComponentType()).thenReturn("TEST");
-
-            // Mock ReflectionUtil to throw a RuntimeException
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenThrow(new RuntimeException("Test exception"));
-
-                // Execute and verify - expect RuntimeException
-                Exception ex = assertThrows(InvocationTargetException.class, () ->
-                        insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex));
-
-                // Verify that it's the expected RuntimeException
-                assertTrue(ex.getCause() instanceof RuntimeException);
-                assertTrue(ex.getCause().getMessage().contains("Failed to insert using component"));
-            }
-        }
-
-        @Test
-        @DisplayName("insertInCell throws exception with invalid cell index")
-        void testInsertInCell_WithInvalidCellIndex() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup for component insertion
-            CellInsertionComponent component = mock(CellInsertionComponent.class);
-            when(cellLocator.getCellInsertionComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-
-            // Empty cells list
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(Collections.emptyList());
-
-            // Execute and verify
-            Exception ex = assertThrows(InvocationTargetException.class, () ->
-                    insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex));
-
-            // Verify the cause is RuntimeException with the expected message
-            assertTrue(ex.getCause() instanceof RuntimeException);
-            assertTrue(ex.getCause().getMessage().contains("Invalid cell index"));
-        }
-
-        @Test
-        @DisplayName("insertInCell throws exception with missing registry")
-        void testInsertInCell_WithMissingRegistry() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup cell elements
-            SmartWebElement targetCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(targetCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Setup for component insertion
-            CellInsertionComponent component = mock(CellInsertionComponent.class);
-            when(cellLocator.getCellInsertionComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-
-            // Create a table without registry
-            TableImplConsolidatedTest.TestTableImpl noRegistryTable = new TableImplConsolidatedTest.TestTableImpl(driver, null, locators, container, rows);
-
-            // Execute and verify
-            Exception ex = assertThrows(InvocationTargetException.class, () ->
-                    insertMethod.invoke(noRegistryTable, cellLocator, rowElement, values, cellIndex));
-
-            // Verify the cause is IllegalStateException with the expected message
-            assertTrue(ex.getCause() instanceof IllegalStateException);
-            assertTrue(ex.getCause().getMessage().contains("Your instance of table is not having registered services"));
-        }
-
-        @Test
-        @DisplayName("insertInCell throws exception with component type lookup error")
-        void testInsertInCell_WithComponentLookupError() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup cell elements
-            SmartWebElement targetCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(targetCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Setup for component insertion
-            CellInsertionComponent component = mock(CellInsertionComponent.class);
-            when(cellLocator.getCellInsertionComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellInsertion()).thenReturn(null);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-            when(component.getType()).thenReturn((Class) ComponentType.class);
-            when(component.getComponentType()).thenReturn("TEST");
-
-            // Mock ReflectionUtil to throw a RuntimeException
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), anyString()
-                )).thenThrow(new RuntimeException("Test exception"));
-
-                // Execute and verify - expect RuntimeException wrapped in InvocationTargetException
-                Exception ex = assertThrows(InvocationTargetException.class, () ->
-                        insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex));
-
-                // Verify that the cause is RuntimeException with expected message
-                assertTrue(ex.getCause() instanceof RuntimeException);
-                assertTrue(ex.getCause().getMessage().contains("Failed to insert using component"));
-            }
-        }
-
-        @Test
-        @DisplayName("insertInCell throws exception with problematic custom function")
-        void testInsertInCell_WithProblemCustomFunction() throws Exception {
-            // Access private method through reflection
-            Method insertMethod = TableImpl.class.getDeclaredMethod(
-                    "insertInCell", CellLocator.class, SmartWebElement.class, String[].class, int.class);
-            insertMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            String[] values = new String[]{"test value"};
-            int cellIndex = 1;
-
-            // Setup cell elements
-            SmartWebElement targetCell = mock(SmartWebElement.class);
-            List<SmartWebElement> cells = List.of(targetCell);
-            when(rowElement.findSmartElements(any(By.class))).thenReturn(cells);
-
-            // Create a truly problematic class that can't be instantiated
-            abstract class TrulyProblematicFunction implements CellInsertionFunction {
-                // Abstract class can't be instantiated
-                @Override
-                public void accept(SmartWebElement cell, String[] values) {
-                    // Never called
-                }
-            }
-
-            // Setup for custom function with abstract class
-            when(cellLocator.getCellInsertionComponent()).thenReturn(null);
-            when(cellLocator.getCustomCellInsertion()).thenReturn((Class) TrulyProblematicFunction.class);
-            when(cellLocator.getLocator()).thenReturn(By.id("cell"));
-
-            // Direct exception handling approach
-            try {
-                insertMethod.invoke(tableImpl, cellLocator, rowElement, values, cellIndex);
-                fail("Expected InvocationTargetException to be thrown");
-            } catch (InvocationTargetException e) {
-                assertTrue(e.getCause() instanceof RuntimeException);
-                assertTrue(e.getCause().getMessage().contains("Failed to instantiate custom cell insertion function"));
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("Table filtering tests")
-    class TableFilteringTest {
-
-        @Test
-        @DisplayName("filterTable applies filters with registered service")
-        void testFilterTable() {
-            // Setup
-            SmartWebElement headerRow = mock(SmartWebElement.class);
-            SmartWebElement headerCell = mock(SmartWebElement.class);
-            when(headerRow.findSmartElement(any(By.class))).thenReturn(headerCell);
-
-            // Override getHeaderRow method
-            TableImplConsolidatedTest.TestTableImpl testTableWithHeader = new TableImplConsolidatedTest.TestTableImpl(driver, registry, locators, container, rows) {
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return headerRow;
-                }
-            };
-
-            // Create and register a filter service
-            TableFilter filterService = mock(TableFilter.class);
-            registry.registerService(ComponentType.class, filterService);
-
-            // Setup ReflectionUtil for the enum lookup
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        eq(ComponentType.class), anyString()
-                )).thenReturn(List.of(TableImplConsolidatedTest.TestComponentType.class));
-
-                // Create field with required annotations
-                TableField<TableImplConsolidatedTest.FilterRow> field = (row, value) -> row.setCell((TableCell) value);
-
-                // Execute - should not throw exceptions
-                testTableWithHeader.filterTable(TableImplConsolidatedTest.FilterRow.class, field, FilterStrategy.SELECT, "filter value");
-
-                // Verify filter service was called
-                verify(filterService).tableFilter(any(), any(), any(), any());
-            }
-        }
-
-        @Test
-        @DisplayName("filterTable throws exception without registered service")
-        void testFilterTableWithoutService() {
-            // Setup
-            SmartWebElement headerRow = mock(SmartWebElement.class);
-            SmartWebElement headerCell = mock(SmartWebElement.class);
-            when(headerRow.findSmartElement(any(By.class))).thenReturn(headerCell);
-
-            // Create table without registry but with header row
-            TestTableImpl testTableNoRegistry = new TestTableImpl(driver, null, locators, container, rows) {
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return headerRow;
-                }
-            };
-
-            // Create field
-            TableField<FilterRow> field = (row, value) -> row.setCell((TableCell) value);
-
-            // Execute and verify
-            assertThrows(IllegalStateException.class, () ->
-                    testTableNoRegistry.filterTable(FilterRow.class, field, FilterStrategy.SELECT, "filter value"));
-        }
-
-        @Test
-        @DisplayName("filterCells throws exception with no filter method")
-        void testFilterCells_WithNoFilterMethod() throws Exception {
-            // Access private method through reflection
-            Method filterCellsMethod = TableImpl.class.getDeclaredMethod(
-                    "filterCells", CellLocator.class, SmartWebElement.class, FilterStrategy.class, String[].class);
-            filterCellsMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement headerRowElement = mock(SmartWebElement.class);
-            FilterStrategy strategy = FilterStrategy.SELECT;
-            String[] values = new String[]{"test"};
-
-            // Setup for no filter components
-            when(cellLocator.getCellFilterComponent()).thenReturn(null);
-            when(cellLocator.getCustomCellFilter()).thenReturn(null);
-            when(cellLocator.getFieldName()).thenReturn("testField");
-
-            // Execute and verify - expect RuntimeException wrapped in InvocationTargetException
-            Exception ex = assertThrows(InvocationTargetException.class, () ->
-                    filterCellsMethod.invoke(tableImpl, cellLocator, headerRowElement, strategy, values));
-
-            // Verify that the cause is RuntimeException with expected message
-            assertTrue(ex.getCause() instanceof RuntimeException);
-            assertTrue(ex.getCause().getMessage().contains("No table cell insertion method provided"));
-        }
-
-        @Test
-        @DisplayName("filterCells with component and no registry throws exception")
-        void testFilterCells_WithComponentNoRegistry() throws Exception {
-            // Access private method through reflection
-            Method filterCellsMethod = TableImpl.class.getDeclaredMethod(
-                    "filterCells", CellLocator.class, SmartWebElement.class, FilterStrategy.class, String[].class);
-            filterCellsMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement headerRowElement = mock(SmartWebElement.class);
-            FilterStrategy strategy = FilterStrategy.SELECT;
-            String[] values = new String[]{"test"};
-
-            // Setup for filter component
-            CellFilterComponent component = mock(CellFilterComponent.class);
-            when(cellLocator.getCellFilterComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellFilter()).thenReturn(null);
-            when(cellLocator.getHeaderCellLocator()).thenReturn(By.id("header"));
-            when(headerRowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-
-            // Create table without registry
-            TableImplConsolidatedTest.TestTableImpl noRegistryTable = new TableImplConsolidatedTest.TestTableImpl(driver, null, locators, container, rows);
-
-            // Execute and verify - expect IllegalStateException
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-                try {
-                    filterCellsMethod.invoke(noRegistryTable, cellLocator, headerRowElement, strategy, values);
-                } catch (InvocationTargetException e) {
-                    if (e.getCause() instanceof IllegalStateException) {
-                        throw (IllegalStateException) e.getCause();
-                    }
-                    throw new RuntimeException(e);
-                }
-            });
-
-            assertTrue(exception.getMessage().contains("Your instance of table is not having registered services"));
-        }
-
-        @Test
-        @DisplayName("filterCells with component type lookup error throws exception")
-        void testFilterCells_WithComponentLookupError() throws Exception {
-            // Access private method through reflection
-            Method filterCellsMethod = TableImpl.class.getDeclaredMethod(
-                    "filterCells", CellLocator.class, SmartWebElement.class, FilterStrategy.class, String[].class);
-            filterCellsMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement headerRowElement = mock(SmartWebElement.class);
-            FilterStrategy strategy = FilterStrategy.SELECT;
-            String[] values = new String[]{"test"};
-
-            // Setup for component branch
-            CellFilterComponent component = mock(CellFilterComponent.class);
-            when(cellLocator.getCellFilterComponent()).thenReturn(component);
-            when(cellLocator.getCustomCellFilter()).thenReturn(null);
-            when(component.getType()).thenReturn((Class) ComponentType.class);
-            when(component.getComponentType()).thenReturn("TEST_COMPONENT");
-            when(cellLocator.getHeaderCellLocator()).thenReturn(By.id("header"));
-            when(headerRowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-
-            // Mock the ReflectionUtil for the component branch
-            try (MockedStatic<ReflectionUtil> reflectionUtil = mockStatic(ReflectionUtil.class)) {
-                reflectionUtil.when(() -> ReflectionUtil.findEnumClassImplementationsOfInterface(
-                        any(Class.class), any(String.class)
-                )).thenThrow(new RuntimeException("Test exception"));
-
-                // Execute and verify - expect RuntimeException wrapped in InvocationTargetException
-                Exception ex = assertThrows(InvocationTargetException.class, () ->
-                        filterCellsMethod.invoke(tableImpl, cellLocator, headerRowElement, strategy, values));
-
-                // Verify that the cause is RuntimeException with expected message
-                assertTrue(ex.getCause() instanceof RuntimeException);
-                assertTrue(ex.getCause().getMessage().contains("Failed to filter using component"));
-            }
-        }
-
-        @Test
-        @DisplayName("filterCells with problematic custom filter throws exception")
-        void testFilterCells_WithProblemCustomFilter() throws Exception {
-            // Access private method through reflection
-            Method filterCellsMethod = TableImpl.class.getDeclaredMethod(
-                    "filterCells", CellLocator.class, SmartWebElement.class, FilterStrategy.class, String[].class);
-            filterCellsMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement headerRowElement = mock(SmartWebElement.class);
-            FilterStrategy strategy = FilterStrategy.SELECT;
-            String[] values = new String[]{"test"};
-
-            // Setup for custom filter function branch
-            when(cellLocator.getCellFilterComponent()).thenReturn(null);
-            when(cellLocator.getCustomCellFilter()).thenReturn((Class) TableImplConsolidatedTest.TestCellFilterFunction.class);
-            when(cellLocator.getHeaderCellLocator()).thenReturn(By.id("header"));
-            when(headerRowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-
-            // Execute and verify - expect RuntimeException
-            RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-                try {
-                    filterCellsMethod.invoke(tableImpl, cellLocator, headerRowElement, strategy, values);
-                } catch (InvocationTargetException e) {
-                    if (e.getCause() instanceof RuntimeException) {
-                        throw (RuntimeException) e.getCause();
-                    }
-                    throw new RuntimeException(e);
-                }
-            });
-
-            assertTrue(exception.getMessage().contains("Failed to instantiate custom cell filter function"));
-        }
-
-        @Test
-        @DisplayName("filterCells with working custom filter succeeds")
-        void testFilterCells_WithWorkingCustomFilter() throws Exception {
-            // Access private method through reflection
-            Method filterCellsMethod = TableImpl.class.getDeclaredMethod(
-                    "filterCells", CellLocator.class, SmartWebElement.class, FilterStrategy.class, String[].class);
-            filterCellsMethod.setAccessible(true);
-
-            // Setup
-            CellLocator cellLocator = mock(CellLocator.class);
-            SmartWebElement headerRowElement = mock(SmartWebElement.class);
-            FilterStrategy strategy = FilterStrategy.SELECT;
-            String[] values = new String[]{"test"};
-
-            // Setup for custom filter function branch
-            when(cellLocator.getCellFilterComponent()).thenReturn(null);
-            when(cellLocator.getCustomCellFilter()).thenReturn((Class) WorkingCellFilterFunction.class);
-            when(cellLocator.getHeaderCellLocator()).thenReturn(By.id("header"));
-            when(headerRowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-
-            // Execute
-            filterCellsMethod.invoke(tableImpl, cellLocator, headerRowElement, strategy, values);
-
-            // Verify
-            assertEquals(1, WorkingCellFilterFunction.callCount);
-            assertEquals(cellElement, WorkingCellFilterFunction.lastCell);
-            assertEquals(strategy, WorkingCellFilterFunction.lastStrategy);
-            assertArrayEquals(values, WorkingCellFilterFunction.lastValues);
-        }
-    }
-
-    @Nested
-    @DisplayName("Table sorting tests")
-    class TableSortingTest {
-
-        @Test
-        @DisplayName("sortTable with field doesn't throw exceptions")
-        void testSortTableWithField() {
-            // Setup
-            when(container.findSmartElement(any(By.class))).thenReturn(container);
-
-            SmartWebElement headerRow = mock(SmartWebElement.class);
-            when(container.findSmartElement(any(By.class))).thenReturn(headerRow);
-            SmartWebElement headerCell = mock(SmartWebElement.class);
-            when(headerRow.findSmartElement(any(By.class))).thenReturn(headerCell);
-
-            // Create field
-            TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-
-            // Override getHeaderRow method in TestTableImpl
-            TestTableImpl testTableWithHeader = new TestTableImpl(driver, registry, locators, container, rows) {
-                @Override
-                protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                    return headerRow;
-                }
-            };
-
-            // Execute
-            assertDoesNotThrow(() -> testTableWithHeader.sortTable(DummyRow.class, field, SortingStrategy.ASC));
-        }
-    }
-
-    @Nested
-    @DisplayName("Helper methods tests")
-    class HelperMethodsTest {
-
-        @Test
-        @DisplayName("populateFieldValue handles single cell")
-        void testPopulateFieldValue_SingleCell() throws Exception {
-            // Access private method through reflection
-            Method populateFieldValueMethod = TableImpl.class.getDeclaredMethod(
-                    "populateFieldValue", Object.class, SmartWebElement.class, CellLocator.class);
-            populateFieldValueMethod.setAccessible(true);
-
-            // Test for single cell
-            DummyRow rowInstance = new DummyRow();
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            CellLocator cellLocator = mock(CellLocator.class);
-
-            By locator = By.className("cell");
-            By textLocator = By.className("text");
-            SmartWebElement cellElement = mock(SmartWebElement.class);
-            SmartWebElement textElement = mock(SmartWebElement.class);
-
-            when(cellLocator.getLocator()).thenReturn(locator);
-            when(cellLocator.getCellTextLocator()).thenReturn(textLocator);
-            when(cellLocator.getFieldName()).thenReturn("dummyField");
-            when(cellLocator.isCollection()).thenReturn(false);
-            when(rowElement.findSmartElement(locator)).thenReturn(cellElement);
-            when(cellElement.findSmartElement(textLocator)).thenReturn(textElement);
-            when(textElement.getText()).thenReturn("cell text");
-
-            // Execute
-            populateFieldValueMethod.invoke(tableImpl, rowInstance, rowElement, cellLocator);
-
-            // Verify
-            assertEquals("cell text", rowInstance.getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("populateFieldValue handles collection")
-        void testPopulateFieldValue_Collection() throws Exception {
-            // Access private method through reflection
-            Method populateFieldValueMethod = TableImpl.class.getDeclaredMethod(
-                    "populateFieldValue", Object.class, SmartWebElement.class, CellLocator.class);
-            populateFieldValueMethod.setAccessible(true);
-
-            // Test for collection
-            DummyRowWithList listInstance = new DummyRowWithList();
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            CellLocator listLocator = mock(CellLocator.class);
-
-            By listLocatorBy = By.className("cells");
-            By textLocator = By.className("text");
-            List<SmartWebElement> cellElements = new ArrayList<>();
-            SmartWebElement cell1 = mock(SmartWebElement.class);
-            SmartWebElement text1 = mock(SmartWebElement.class);
-            SmartWebElement cell2 = mock(SmartWebElement.class);
-            SmartWebElement text2 = mock(SmartWebElement.class);
-
-            cellElements.add(cell1);
-            cellElements.add(cell2);
-
-            when(listLocator.getLocator()).thenReturn(listLocatorBy);
-            when(listLocator.getCellTextLocator()).thenReturn(textLocator);
-            when(listLocator.getFieldName()).thenReturn("cells");
-            when(listLocator.isCollection()).thenReturn(true);
-            when(rowElement.findSmartElements(listLocatorBy)).thenReturn(cellElements);
-            when(cell1.findSmartElement(textLocator)).thenReturn(text1);
-            when(text1.getText()).thenReturn("cell 1 text");
-            when(cell2.findSmartElement(textLocator)).thenReturn(text2);
-            when(text2.getText()).thenReturn("cell 2 text");
-
-            // Execute
-            populateFieldValueMethod.invoke(tableImpl, listInstance, rowElement, listLocator);
-
-            // Verify
-            List<TableCell> cells = listInstance.getCells();
-            assertEquals(2, cells.size());
-            assertEquals("cell 1 text", cells.get(0).getText());
-            assertEquals("cell 2 text", cells.get(1).getText());
-        }
-
-        @Test
-        @DisplayName("populateFieldValue handles direct text locator")
-        void testPopulateFieldValue_DirectTextLocator() throws Exception {
-            // Access private method through reflection
-            Method populateFieldValueMethod = TableImpl.class.getDeclaredMethod(
-                    "populateFieldValue", Object.class, SmartWebElement.class, CellLocator.class);
-            populateFieldValueMethod.setAccessible(true);
-
-            // Test with direct text locator (cellLocator == null)
-            DummyRow directTextInstance = new DummyRow();
-            SmartWebElement rowElement = mock(SmartWebElement.class);
-            CellLocator directTextLocator = mock(CellLocator.class);
-            By textLocator = By.className("text");
-            SmartWebElement textElement = mock(SmartWebElement.class);
-
-            when(directTextLocator.getLocator()).thenReturn(null);
-            when(directTextLocator.getCellTextLocator()).thenReturn(textLocator);
-            when(directTextLocator.getFieldName()).thenReturn("dummyField");
-            when(directTextLocator.isCollection()).thenReturn(false);
-            when(rowElement.findSmartElement(textLocator)).thenReturn(textElement);
-            when(textElement.getText()).thenReturn("direct text");
-
-            // Execute
-            populateFieldValueMethod.invoke(tableImpl, directTextInstance, rowElement, directTextLocator);
-
-            // Verify
-            assertEquals("direct text", directTextInstance.getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("buildTableCell creates TableCell with expected values")
-        void testBuildTableCell() throws Exception {
-            // Access private method through reflection
-            Method buildTableCellMethod = TableImpl.class.getDeclaredMethod(
-                    "buildTableCell", SmartWebElement.class, By.class, By.class);
-            buildTableCellMethod.setAccessible(true);
-
-            // Test with cellLocator provided
-            SmartWebElement container = mock(SmartWebElement.class);
-            By cellLocator = By.className("cell");
-            By textLocator = By.className("text");
-
-            SmartWebElement cellElement = mock(SmartWebElement.class);
-            SmartWebElement textElement = mock(SmartWebElement.class);
-
-            when(container.findSmartElement(cellLocator)).thenReturn(cellElement);
-            when(cellElement.findSmartElement(textLocator)).thenReturn(textElement);
-            when(textElement.getText()).thenReturn("cell text");
-
-            // Execute
-            TableCell result = (TableCell) buildTableCellMethod.invoke(tableImpl, container, cellLocator, textLocator);
-
-            // Verify
-            assertEquals("cell text", result.getText());
-
-            // Test with null cellLocator (direct container)
-            when(container.findSmartElement(textLocator)).thenReturn(textElement);
-            when(textElement.getText()).thenReturn("direct container text");
-
-            // Execute
-            TableCell directResult = (TableCell) buildTableCellMethod.invoke(tableImpl, container, null, textLocator);
-
-            // Verify
-            assertEquals("direct container text", directResult.getText());
-        }
-
-        @Test
-        @DisplayName("createInstance creates instance of class with default constructor")
-        void testCreateInstance() throws Exception {
-            // Access private method through reflection
-            Method createInstanceMethod = TableImpl.class.getDeclaredMethod("createInstance", Class.class);
-            createInstanceMethod.setAccessible(true);
-
-            // Test with a class that has a default constructor
-            DummyRow row = (DummyRow) createInstanceMethod.invoke(tableImpl, DummyRow.class);
-
-            // Verify
-            assertNotNull(row);
-
-            // Test with a class that doesn't have a default constructor
-            class NoDefaultConstructor {
-                public NoDefaultConstructor(String arg) {
-                }
-            }
-
-            // Should throw exception
-            try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class)) {
-                logUIMock.when(() -> LogUI.error(anyString(), any(ReflectiveOperationException.class)))
-                        .thenAnswer(invocation -> null);
-
-                Exception ex = assertThrows(InvocationTargetException.class, () ->
-                        createInstanceMethod.invoke(tableImpl, NoDefaultConstructor.class));
-                assertTrue(ex.getCause() instanceof IllegalStateException);
-
-                // Verify LogUI.error was called
-                logUIMock.verify(() ->
-                        LogUI.error(anyString(), any(ReflectiveOperationException.class)));
-            }
-        }
-
-        @Test
-        @DisplayName("mergeObjects handles null cases correctly")
-        void testMergeObjects_NullCases() throws Exception {
-            // Access private method through reflection
-            Method mergeObjectsMethod = TableImpl.class.getDeclaredMethod("mergeObjects", Object.class, Object.class);
-            mergeObjectsMethod.setAccessible(true);
-
-            // Test with both null
-            Object result1 = mergeObjectsMethod.invoke(tableImpl, null, null);
-            assertNull(result1);
-
-            // Test with first null
-            DummyRow row = new DummyRow();
-            row.setDummyField(new TableCell(null, "row"));
-
-            Object result2 = mergeObjectsMethod.invoke(tableImpl, null, row);
-            assertEquals(row, result2);
-
-            // Test with second null
-            Object result3 = mergeObjectsMethod.invoke(tableImpl, row, null);
-            assertEquals(row, result3);
-        }
-
-        @Test
-        @DisplayName("mergeObjects merges fields correctly")
-        void testMergeObjects_Merge() throws Exception {
-            // Access private method through reflection
-            Method mergeObjectsMethod = TableImpl.class.getDeclaredMethod("mergeObjects", Object.class, Object.class);
-            mergeObjectsMethod.setAccessible(true);
-
-            // Test merging two objects
-            DummyRow row1 = new DummyRow();
-            row1.setDummyField(new TableCell(null, "row1"));
-
-            DummyRow row2 = new DummyRow();
-            row2.setDummyField(null);
-
-            DummyRow merged = (DummyRow) mergeObjectsMethod.invoke(tableImpl, row1, row2);
-            assertEquals("row1", merged.getDummyField().getText());
-
-            // Test merging where both have non-null values (first object's value should be kept)
-            DummyRow row3 = new DummyRow();
-            row3.setDummyField(new TableCell(null, "row3"));
-
-            DummyRow row4 = new DummyRow();
-            row4.setDummyField(new TableCell(null, "row4"));
-
-            DummyRow merged2 = (DummyRow) mergeObjectsMethod.invoke(tableImpl, row3, row4);
-            assertEquals("row3", merged2.getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("mergeObjects handles field access exceptions")
-        void testMergeObjects_AccessException() throws Exception {
-            // Access private method through reflection
-            Method mergeObjectsMethod = TableImpl.class.getDeclaredMethod("mergeObjects", Object.class, Object.class);
-            mergeObjectsMethod.setAccessible(true);
-
-            // Create a normal row with a value
-            TableImplConsolidatedTest.DummyRow normalRow = new TableImplConsolidatedTest.DummyRow();
-            normalRow.setDummyField(new TableCell(null, "normal value"));
-
-            // Create a row that throws exception on field access
-            TableImplConsolidatedTest.DummyRow problemRow = new TableImplConsolidatedTest.DummyRow() {
-                @Override
-                public TableCell getDummyField() {
-                    throw new RuntimeException("Test exception");
-                }
-            };
-
-            // Execute - this should not throw an exception
-            TableImplConsolidatedTest.DummyRow result = (TableImplConsolidatedTest.DummyRow) mergeObjectsMethod.invoke(tableImpl, normalRow, problemRow);
-
-            // Verify the method handled the exception gracefully and returned the first object unchanged
-            assertSame(normalRow, result);
-            assertEquals("normal value", result.getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("invokeSetter handles null parameters")
-        void testInvokeSetter_NullParameters() throws Exception {
-            // Access private method through reflection
-            Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
-                    "invokeSetter", Object.class, String.class, Object.class);
-            invokeSetterMethod.setAccessible(true);
-
-            // Test with null parameters - should be no-op
-            invokeSetterMethod.invoke(tableImpl, null, "any", "value"); // null target object
-            invokeSetterMethod.invoke(tableImpl, new DummyRow(), null, "value"); // null field name
-            invokeSetterMethod.invoke(tableImpl, new DummyRow(), "field", null); // null value
-
-            // No exception means success
-        }
-
-        @Test
-        @DisplayName("invokeSetter calls setter method correctly")
-        void testInvokeSetter_Success() throws Exception {
-            // Access private method through reflection
-            Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
-                    "invokeSetter", Object.class, String.class, Object.class);
-            invokeSetterMethod.setAccessible(true);
-
-            // Test successful invocation
-            DummyRow row = new DummyRow();
-            TableCell cell = new TableCell(null, "setter test");
-
-            invokeSetterMethod.invoke(tableImpl, row, "dummyField", cell);
-            assertEquals("setter test", row.getDummyField().getText());
-        }
-
-        @Test
-        @DisplayName("invokeSetter handles missing setter method")
-        void testInvokeSetter_NoSuchMethod() throws Exception {
-            // Access private method through reflection
-            Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
-                    "invokeSetter", Object.class, String.class, Object.class);
-            invokeSetterMethod.setAccessible(true);
-
-            try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class)) {
-                logUIMock.when(() -> LogUI.error(contains("Setter not found"), any(NoSuchMethodException.class)))
-                        .thenAnswer(invocation -> null);
-
-                DummyRow row = new DummyRow();
-
-                // Execute with non-existent field
-                invokeSetterMethod.invoke(tableImpl, row, "nonExistentField", "value");
-
-                // Verify error was logged
-                logUIMock.verify(() -> LogUI.error(contains("Setter not found"), any(NoSuchMethodException.class)));
-            }
-        }
-
-        @Test
-        @DisplayName("invokeSetter handles invocation exceptions")
-        void testInvokeSetter_InvocationException() throws Exception {
-            // Access private method through reflection
-            Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
-                    "invokeSetter", Object.class, String.class, Object.class);
-            invokeSetterMethod.setAccessible(true);
-
-            try (MockedStatic<LogUI> logUIMock = mockStatic(LogUI.class)) {
-                logUIMock.when(() -> LogUI.error(contains("Failed to invoke setter"), any(Exception.class)))
-                        .thenAnswer(invocation -> null);
-
-                // Create a class with a setter that throws an exception
-                class BadSetter {
-                    public void setField(String value) throws IllegalAccessException {
-                        throw new IllegalAccessException("Test exception");
-                    }
-                }
-
-                // Execute with problematic setter
-                invokeSetterMethod.invoke(tableImpl, new BadSetter(), "field", "value");
-
-                // Verify error was logged
-                logUIMock.verify(() -> LogUI.error(contains("Failed to invoke setter"), any(Exception.class)));
-            }
-        }
-
-        @Test
-        @DisplayName("isListOfTableCell correctly identifies List<TableCell> fields")
-        void testIsListOfTableCell() throws Exception {
-            // Access private method through reflection
-            Method isListMethod = TableImpl.class.getDeclaredMethod("isListOfTableCell", Field.class);
-            isListMethod.setAccessible(true);
-
-            // Test with a field that is not a List
-            Field nonListField = DummyRow.class.getDeclaredField("dummyField");
-            boolean result1 = (boolean) isListMethod.invoke(tableImpl, nonListField);
-            assertFalse(result1);
-
-            // Test with a field that is a List<TableCell>
-            Field listField = DummyRowWithList.class.getDeclaredField("cells");
-            boolean result2 = (boolean) isListMethod.invoke(tableImpl, listField);
-            assertTrue(result2);
-
-            // Test with a field that is a List of something else
-            class StringListClass {
-                @SuppressWarnings("unused")
-                private List<String> strings = new ArrayList<>();
-            }
-
-            Field stringListField = StringListClass.class.getDeclaredField("strings");
-            boolean result3 = (boolean) isListMethod.invoke(tableImpl, stringListField);
-            assertFalse(result3);
-
-            // Test with a raw List (no generic type)
-            class RawListClass {
-                @SuppressWarnings({"unused", "rawtypes"})
-                private List rawList = new ArrayList();
-            }
-
-            Field rawListField = RawListClass.class.getDeclaredField("rawList");
-            boolean result4 = (boolean) isListMethod.invoke(tableImpl, rawListField);
-            assertFalse(result4);
-        }
-    }
-
-    @Nested
-    @DisplayName("Field extraction and mapping tests")
-    class FieldExtractionTest {
-
-        @Test
-        @DisplayName("validateFieldInvokers handles accepted values successfully")
-        void testValidateFieldInvokers_AllValues() throws Exception {
-            // Access private method through reflection
-            Method validateMethod = TableImpl.class.getDeclaredMethod(
-                    "validateFieldInvokers", Object.class, List.class);
-            validateMethod.setAccessible(true);
-
-            // Create test data
-            DummyRow row = new DummyRow();
-
-            // Create field that accepts any TableCell value
-            TableField<DummyRow> validField = (instance, value) -> {
-                if (value instanceof TableCell) {
-                    instance.setDummyField((TableCell) value);
-                }
-            };
-
-            // Execute - should succeed because the field accepts TableCell values
-            validateMethod.invoke(tableImpl, row, Collections.singletonList(validField));
-
-            // If we get here without exception, the test passed
-        }
-
-        @Test
-        @DisplayName("validateFieldInvokers throws exception when no accepted values work")
-        void testValidateFieldInvokers_AllValuesFail() throws Exception {
-            // Access private method through reflection
-            Method validateMethod = TableImpl.class.getDeclaredMethod(
-                    "validateFieldInvokers", Object.class, List.class);
-            validateMethod.setAccessible(true);
-
-            // Setup
-            DummyRow row = new DummyRow();
-
-            // Prepare a consistent exception message for our field
-            final String expectedExceptionMessage = "Rejecting TableCell";
-
-            // Create field that rejects all values with our consistent message
-            TableField<DummyRow> rejectAllField = (instance, value) -> {
-                throw new IllegalArgumentException(expectedExceptionMessage);
-            };
-
-            // Execute - should throw an exception
-            InvocationTargetException exception = assertThrows(InvocationTargetException.class, () ->
-                    validateMethod.invoke(tableImpl, row, Collections.singletonList(rejectAllField)));
-
-            // Verify we got the expected exception with our specific message
-            assertTrue(exception.getCause() instanceof IllegalArgumentException);
-            assertEquals(expectedExceptionMessage, exception.getCause().getMessage());
-        }
-
-        @Test
-        @DisplayName("getTableSectionLocatorsMap maps fields to table sections")
-        void testGetTableSectionLocatorsMap() throws Exception {
-            // Access private method through reflection
-            Method getMapMethod = TableImpl.class.getDeclaredMethod(
-                    "getTableSectionLocatorsMap", Class.class, List.class);
-            getMapMethod.setAccessible(true);
-
-            // Test with null fields
-            Map<String, List<CellLocator>> result1 = (Map<String, List<CellLocator>>)
-                    getMapMethod.invoke(tableImpl, DummyRow.class, null);
-
-            assertNotNull(result1);
-            assertFalse(result1.isEmpty());
-            assertTrue(result1.containsKey("dummySection"));
-
-            // Test with empty fields
-            Map<String, List<CellLocator>> result2 = (Map<String, List<CellLocator>>)
-                    getMapMethod.invoke(tableImpl, DummyRow.class, Collections.emptyList());
-
-            assertNotNull(result2);
-            assertFalse(result2.isEmpty());
-            assertTrue(result2.containsKey("dummySection"));
-
-            // Test with specific fields
-            TableField<DummyRow> field = (row, value) -> row.setDummyField((TableCell) value);
-            Map<String, List<CellLocator>> result3 = (Map<String, List<CellLocator>>)
-                    getMapMethod.invoke(tableImpl, DummyRow.class, List.of(field));
-
-            assertNotNull(result3);
-            assertFalse(result3.isEmpty());
-            assertTrue(result3.containsKey("dummySection"));
-        }
-
-        @Test
-        @DisplayName("extractAnnotatedFields with empty fields list returns all annotated fields")
-        void testExtractAnnotatedFields_EmptyFieldsList() throws Exception {
-            // Access private method through reflection
-            Method extractMethod = TableImpl.class.getDeclaredMethod(
-                    "extractAnnotatedFields", Class.class, List.class);
-            extractMethod.setAccessible(true);
-
-            // Test with empty fields list
-            List<CellLocator> result = (List<CellLocator>)
-                    extractMethod.invoke(tableImpl, DummyRow.class, Collections.emptyList());
-
-            assertNotNull(result);
-            assertFalse(result.isEmpty());
-            assertEquals(1, result.size());
-            assertEquals("dummyField", result.get(0).getFieldName());
-            assertEquals("dummySection", result.get(0).getTableSection());
-        }
-
-        @Test
-        @DisplayName("extractAnnotatedFields with field invokers returns matching fields")
-        void testExtractAnnotatedFields_WithFieldInvokers() throws Exception {
-            // Access private method through reflection
-            Method extractMethod = TableImpl.class.getDeclaredMethod(
-                    "extractAnnotatedFields", Class.class, List.class);
-            extractMethod.setAccessible(true);
-
-            // Set up a DummyRow with dummyField value already set
-            DummyRow row = new DummyRow();
-            row.setDummyField(new TableCell(null, "test"));
-
-            // Create field invoker that sets the same field
-            TableField<DummyRow> field = (r, value) -> r.setDummyField((TableCell) value);
-
-            // This forces the test to use the "fields.isEmpty()" = false branch,
-            // using the field invoker to determine what fields to extract
-            List<CellLocator> result = (List<CellLocator>)
-                    extractMethod.invoke(tableImpl, DummyRow.class, List.of(field));
-
-            assertNotNull(result);
-            assertFalse(result.isEmpty());
-            assertEquals(1, result.size());
-            assertEquals("dummyField", result.get(0).getFieldName());
-        }
-
-        @Test
-        @DisplayName("extractAnnotatedFields throws exception for invalid field syntax")
-        void testExtractAnnotatedFields_InvalidSyntax() throws Exception {
-            // Access private method through reflection
-            Method extractMethod = TableImpl.class.getDeclaredMethod(
-                    "extractAnnotatedFields", Class.class, List.class);
-            extractMethod.setAccessible(true);
-
-            // Create a MockedStatic for LogUI
-            try (MockedStatic<LogUI> logMock = mockStatic(LogUI.class)) {
-                // For void methods, use doNothing() instead of when().thenReturn()
-                logMock.when(() -> LogUI.error(anyString())).thenAnswer(invocation -> null);
-
-                // Try to extract fields from InvalidFieldTypeRow which has a String field
-                // annotated with @TableCellLocator instead of TableCell
-                try {
-                    extractMethod.invoke(tableImpl, InvalidFieldTypeRow.class, Collections.emptyList());
-                    fail("Should have thrown an exception for invalid field type");
-                } catch (InvocationTargetException e) {
-                    // Check if the cause is RuntimeException with expected message
-                    assertTrue(e.getCause() instanceof RuntimeException);
-                    assertTrue(e.getCause().getMessage().contains("Invalid field type"));
-
-                    // Verify LogUI.error was called
-                    logMock.verify(() -> LogUI.error(contains("Some fields are not TableCell")));
-                }
-            }
-        }
-
-        @Test
-        @DisplayName("extractAnnotatedFields handles fields without annotations")
-        void testExtractAnnotatedFields_MissingAnnotations() throws Exception {
-            // Access private method through reflection
-            Method extractMethod = TableImpl.class.getDeclaredMethod(
-                    "extractAnnotatedFields", Class.class, List.class);
-            extractMethod.setAccessible(true);
-
-            // Create test data with a class that's missing annotations
-            TableImplConsolidatedTest.BadRow badRow = new TableImplConsolidatedTest.BadRow();
-            badRow.setValue("test value");
-
-            // Create a field that attempts to use this unannotated field
-            TableField<TableImplConsolidatedTest.BadRow> badField = (row, value) -> {
-                if (value instanceof String) {
-                    row.setValue((String) value);
-                }
-            };
-
-            // Create a list with our field
-            List<TableField<TableImplConsolidatedTest.BadRow>> fields = new ArrayList<>();
-            fields.add(badField);
-
-            // Execute the method - the behavior here depends on your implementation
-            // If it doesn't throw an exception, it should just return an empty list
-            List<CellLocator> result = (List<CellLocator>) extractMethod.invoke(tableImpl, TableImplConsolidatedTest.BadRow.class, fields);
-
-            // Verify the result - it should be an empty list since BadRow has no annotated fields
-            assertNotNull(result);
-            assertTrue(result.isEmpty(), "Result should be an empty list for a class with no annotated fields");
-        }
-
-        @Test
-        @DisplayName("mapToCellLocator creates CellLocator with correct fields")
-        void testMapToCellLocator_BasicField() throws Exception {
-            // Access private method through reflection
-            Method mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
-            mapMethod.setAccessible(true);
-
-            // Test with a basic field
-            Field basicField = DummyRow.class.getDeclaredField("dummyField");
-            CellLocator result = (CellLocator) mapMethod.invoke(tableImpl, basicField);
-
-            assertNotNull(result);
-            assertEquals("dummyField", result.getFieldName());
-            assertEquals("dummySection", result.getTableSection());
-            assertNotNull(result.getLocator());
-            assertNotNull(result.getCellTextLocator());
-            assertNotNull(result.getHeaderCellLocator());
-            assertNull(result.getCellInsertionComponent());
-            assertNull(result.getCustomCellInsertion());
-            assertNull(result.getCellFilterComponent());
-            assertNull(result.getCustomCellFilter());
-            assertFalse(result.isCollection());
-        }
-
-        @Test
-        @DisplayName("mapToCellLocator handles cell insertion annotation")
-        void testMapToCellLocator_WithCellInsertion() throws Exception {
-            // Access private method through reflection
-            Method mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
-            mapMethod.setAccessible(true);
-
-            // Test with field having cell insertion
-            Field insertionField = InsertionRow.class.getDeclaredField("insertionField");
-            CellLocator result = (CellLocator) mapMethod.invoke(tableImpl, insertionField);
-
-            assertNotNull(result);
-            assertEquals("insertionField", result.getFieldName());
-            assertNotNull(result.getCellInsertionComponent());
-            assertEquals(ComponentType.class, result.getCellInsertionComponent().getType());
-            assertEquals("TEST", result.getCellInsertionComponent().getComponentType());
-            assertEquals(1, result.getCellInsertionComponent().getOrder());
-            assertNull(result.getCustomCellInsertion());
-        }
-
-        @Test
-        @DisplayName("mapToCellLocator handles custom cell insertion annotation")
-        void testMapToCellLocator_WithCustomCellInsertion() throws Exception {
-            // Access private method through reflection
-            Method mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
-            mapMethod.setAccessible(true);
-
-            // Test with field having custom cell insertion
-            Field customInsertionField = CustomInsertionRow.class.getDeclaredField("customInsertionField");
-            CellLocator result = (CellLocator) mapMethod.invoke(tableImpl, customInsertionField);
-
-            assertNotNull(result);
-            assertEquals("customInsertionField", result.getFieldName());
-            assertNull(result.getCellInsertionComponent());
-            assertEquals(WorkingCellInsertionFunction.class, result.getCustomCellInsertion());
-        }
-
-        @Test
-        @DisplayName("mapToCellLocator handles cell filter annotation")
-        void testMapToCellLocator_WithCellFilter() throws Exception {
-            // Access private method through reflection
-            Method mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
-            mapMethod.setAccessible(true);
-
-            // Test with field having cell filter
-            Field filterField = FilterRow.class.getDeclaredField("cell");
-            CellLocator result = (CellLocator) mapMethod.invoke(tableImpl, filterField);
-
-            assertNotNull(result);
-            assertEquals("cell", result.getFieldName());
-            assertNotNull(result.getCellFilterComponent());
-            assertEquals(ComponentType.class, result.getCellFilterComponent().getType());
-            assertEquals("FILTER", result.getCellFilterComponent().getComponentType());
-            assertNull(result.getCustomCellFilter());
-        }
-
-        @Test
-        @DisplayName("mapToCellLocator handles custom cell filter annotation")
-        void testMapToCellLocator_WithCustomCellFilter() throws Exception {
-            // Access private method through reflection
-            Method mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
-            mapMethod.setAccessible(true);
-
-            // Test with field having custom cell filter
-            Field customFilterField = CustomFilterRow.class.getDeclaredField("customFilterField");
-            CellLocator result = (CellLocator) mapMethod.invoke(tableImpl, customFilterField);
-
-            assertNotNull(result);
-            assertEquals("customFilterField", result.getFieldName());
-            assertNull(result.getCellFilterComponent());
-            assertEquals(WorkingCellFilterFunction.class, result.getCustomCellFilter());
-        }
-
-        @Test
-        @DisplayName("validateFieldInvokers validates invokers successfully")
-        void testValidateFieldInvokers_Success() throws Exception {
-            // Access private method through reflection
-            Method validateMethod = TableImpl.class.getDeclaredMethod(
-                    "validateFieldInvokers", Object.class, List.class);
-            validateMethod.setAccessible(true);
-
-            // Test with valid field invoker
-            DummyRow row = new DummyRow();
-            TableField<DummyRow> validField = (r, value) -> {
-                if (value instanceof TableCell) {
-                    r.setDummyField((TableCell) value);
-                }
-            };
-
-            // Should not throw exception
-            validateMethod.invoke(tableImpl, row, List.of(validField));
-
-            // If we got here, test passed
-        }
-
-        @Test
-        @DisplayName("validateFieldInvokers throws exception for invalid invokers")
-        void testValidateFieldInvokers_Failure() throws Exception {
-            // Access private method through reflection
-            Method validateMethod = TableImpl.class.getDeclaredMethod(
-                    "validateFieldInvokers", Object.class, List.class);
-            validateMethod.setAccessible(true);
-
-            // Create test data
-            TableImplConsolidatedTest.DummyRow row = new TableImplConsolidatedTest.DummyRow();
-
-            // Create a field that throws exception for all accepted values
-            TableField<TableImplConsolidatedTest.DummyRow> invalidField = (r, value) -> {
-                throw new RuntimeException("Test exception");
-            };
-
-            // Just verify that the method throws an exception for invalid invokers
-            // This is the core behavior we need to test for coverage
-            assertThrows(InvocationTargetException.class, () ->
-                    validateMethod.invoke(tableImpl, row, List.of(invalidField)));
-        }
-
-        @Test
-        @DisplayName("getTableLocators extracts table locators from annotation")
-        void testGetTableLocators() throws Exception {
-            // Access private method through reflection
-            Method getTableLocatorsMethod = TableImpl.class.getDeclaredMethod("getTableLocators", Class.class);
-            getTableLocatorsMethod.setAccessible(true);
-
-            // Test with class that has TableInfo annotation
-            TableLocators result = (TableLocators) getTableLocatorsMethod.invoke(tableImpl, DummyRow.class);
-
-            // Verify
-            assertNotNull(result);
-            assertNotNull(result.getTableContainerLocator());
-            assertNotNull(result.getTableRowsLocator());
-            assertNotNull(result.getHeaderRowLocator());
-
-            // Test with class missing annotation
-            Exception ex = assertThrows(InvocationTargetException.class, () ->
-                    getTableLocatorsMethod.invoke(tableImpl, BadRow.class));
-            assertTrue(ex.getCause() instanceof IllegalArgumentException);
-            assertTrue(ex.getCause().getMessage().contains("is missing @TableInfo annotation"));
-        }
-    }
-
-    @Nested
-    @DisplayName("Lambda expressions and advanced functionality tests")
-    class LambdaAndAdvancedTests {
-
-        @Test
-        @DisplayName("processInsertCellValue with OrderedFieldInvokerAndValues processes in correct order")
-        void testProcessInsertCellValue_Order() throws Exception {
-            // Access private method through reflection
-            Method processMethod = TableImpl.class.getDeclaredMethod(
-                    "processInsertCellValue", BiConsumer.class, Class.class, Object.class);
-            processMethod.setAccessible(true);
-
-            // Setup test class with fields of different orders
-            @TableInfo(
-                    tableContainerLocator = @FindBy(id = "container"),
-                    rowsLocator = @FindBy(id = "rows"),
-                    headerRowLocator = @FindBy(id = "header")
-            )
-            class OrderedFieldsRow {
-                @TableCellLocator(
-                        cellLocator = @FindBy(id = "cell1"),
-                        cellTextLocator = @FindBy(id = "text1"),
-                        headerCellLocator = @FindBy(id = "header1"),
-                        tableSection = "section"
-                )
-                @CellInsertion(type = ComponentType.class, componentType = "TEST", order = 2)
-                private TableCell field1 = new TableCell(null, "field1");
-
-                @TableCellLocator(
-                        cellLocator = @FindBy(id = "cell2"),
-                        cellTextLocator = @FindBy(id = "text2"),
-                        headerCellLocator = @FindBy(id = "header2"),
-                        tableSection = "section"
-                )
-                @CellInsertion(type = ComponentType.class, componentType = "TEST", order = 1)
-                private TableCell field2 = new TableCell(null, "field2");
-
-                // Getters and setters
-                public TableCell getField1() {
-                    return field1;
-                }
-
-                public void setField1(TableCell cell) {
-                    field1 = cell;
-                }
-
-                public TableCell getField2() {
-                    return field2;
-                }
-
-                public void setField2(TableCell cell) {
-                    field2 = cell;
-                }
-            }
-
-            OrderedFieldsRow row = new OrderedFieldsRow();
-
-            // Store invocation order to verify sorting
-            List<String> invocationOrder = new ArrayList<>();
-
-            // Simplified consumer that just records the field names in order
-            // without trying to modify the fields which can cause multiple matches
-            BiConsumer<TableField<OrderedFieldsRow>, String[]> consumer = (field, values) -> {
-                // Create test objects to identify which field was passed
-                OrderedFieldsRow testRow1 = new OrderedFieldsRow();
-                OrderedFieldsRow testRow2 = new OrderedFieldsRow();
-
-                // Set field1 to a unique value in testRow1
-                testRow1.setField1(new TableCell(null, "UNIQUE_TEST_FIELD1"));
-                testRow1.setField2(null);
-
-                // Set field2 to a unique value in testRow2
-                testRow2.setField1(null);
-                testRow2.setField2(new TableCell(null, "UNIQUE_TEST_FIELD2"));
-
-                try {
-                    // First try field1
-                    field.invoke(testRow1, new TableCell(null, "test"));
-                    if (testRow1.getField1() != null && !"UNIQUE_TEST_FIELD1".equals(testRow1.getField1().getText())) {
-                        invocationOrder.add("field1");
-                        return;
-                    }
-
-                    // Then try field2
-                    field.invoke(testRow2, new TableCell(null, "test"));
-                    if (testRow2.getField2() != null && !"UNIQUE_TEST_FIELD2".equals(testRow2.getField2().getText())) {
-                        invocationOrder.add("field2");
-                        return;
-                    }
-                } catch (Exception e) {
-                    // Ignore exceptions
-                }
-            };
-
-            // Execute
-            processMethod.invoke(tableImpl, consumer, OrderedFieldsRow.class, row);
-
-            // Verify that field2 (order=1) is processed before field1 (order=2)
-            assertEquals(2, invocationOrder.size(), "Should process exactly 2 fields");
-            assertEquals("field2", invocationOrder.get(0), "Field2 (order=1) should be processed first");
-            assertEquals("field1", invocationOrder.get(1), "Field1 (order=2) should be processed second");
-        }
-
-        @Test
-        @DisplayName("convertFieldValueToStrings converts TableCell to string array")
-        void testConvertFieldValueToStrings_TableCell() throws Exception {
-            // Access private method through reflection
-            Method convertMethod = TableImpl.class.getDeclaredMethod(
-                    "convertFieldValueToStrings", Field.class, Object.class);
-            convertMethod.setAccessible(true);
-
-            // Setup a test class with TableCell field
-            class TestClass {
-                @SuppressWarnings("unused")
-                private TableCell cell = new TableCell(null, "test value");
-            }
-
-            TestClass testObj = new TestClass();
-            Field cellField = TestClass.class.getDeclaredField("cell");
-
-            // Execute
-            String[] result = (String[]) convertMethod.invoke(tableImpl, cellField, testObj);
-
-            // Verify
-            assertEquals(1, result.length);
-            assertEquals("test value", result[0]);
-        }
-
-        @Test
-        @DisplayName("convertFieldValueToStrings converts List<TableCell> to string array")
-        void testConvertFieldValueToStrings_ListOfTableCell() throws Exception {
-            // Access private method through reflection
-            Method convertMethod = TableImpl.class.getDeclaredMethod(
-                    "convertFieldValueToStrings", Field.class, Object.class);
-            convertMethod.setAccessible(true);
-
-            // Setup a test class with List<TableCell> field
-            class TestClass {
-                @SuppressWarnings("unused")
-                private List<TableCell> cells = Arrays.asList(
-                        new TableCell(null, "value1"),
-                        new TableCell(null, null),  // Null value should be filtered out
-                        new TableCell(null, "value3")
-                );
-            }
-
-            TestClass testObj = new TestClass();
-            Field cellsField = TestClass.class.getDeclaredField("cells");
-
-            // Execute
-            String[] result = (String[]) convertMethod.invoke(tableImpl, cellsField, testObj);
-
-            // Verify - null value should be filtered out
-            assertEquals(2, result.length);
-            assertEquals("value1", result[0]);
-            assertEquals("value3", result[1]);
-        }
-
-        @Test
-        @DisplayName("convertFieldValueToStrings handles null values and direct field test")
-        void testConvertFieldValueToStrings_EdgeCases() throws Exception {
-            // Test with null field value
-            class TestClassWithNull {
-                @SuppressWarnings("unused")
-                private TableCell cell = null;
-            }
-
-            TestClassWithNull nullObj = new TestClassWithNull();
-            Field nullField = TestClassWithNull.class.getDeclaredField("cell");
-            nullField.setAccessible(true);
-
-            // Access private method through reflection
-            Method convertMethod = TableImpl.class.getDeclaredMethod(
-                    "convertFieldValueToStrings", Field.class, Object.class);
-            convertMethod.setAccessible(true);
-
-            String[] nullResult = (String[]) convertMethod.invoke(tableImpl, nullField, nullObj);
-            assertEquals(0, nullResult.length);
-
-            // Test with valid TableCell
-            class TestClassWithValue {
-                @SuppressWarnings("unused")
-                private TableCell cell = new TableCell(null, "test value");
-            }
-
-            TestClassWithValue valueObj = new TestClassWithValue();
-            Field valueField = TestClassWithValue.class.getDeclaredField("cell");
-            valueField.setAccessible(true);
-
-            String[] valueResult = (String[]) convertMethod.invoke(tableImpl, valueField, valueObj);
-            assertEquals(1, valueResult.length);
-            assertEquals("test value", valueResult[0]);
-
-            // Test with List<TableCell>
-            class TestClassWithList {
-                @SuppressWarnings("unused")
-                private List<TableCell> cells = Arrays.asList(
-                        new TableCell(null, "value1"),
-                        new TableCell(null, null),  // Null value
-                        new TableCell(null, "value3")
-                );
-            }
-
-            TestClassWithList listObj = new TestClassWithList();
-            Field listField = TestClassWithList.class.getDeclaredField("cells");
-            listField.setAccessible(true);
-
-            String[] listResult = (String[]) convertMethod.invoke(tableImpl, listField, listObj);
-            assertEquals(2, listResult.length);  // Should filter out the null value
-            assertEquals("value1", listResult[0]);
-            assertEquals("value3", listResult[1]);
-        }
-    }
-
-    @Test
-    @DisplayName("readTablesInternal lambda handles empty rows correctly")
-    void testReadTableInternal_WithEmptyRows() throws Exception {
-        // Access private method through reflection
-        Method readTableMethod = TableImpl.class.getDeclaredMethod(
-                "readTableInternal", Class.class, List.class, Integer.class, Integer.class);
-        readTableMethod.setAccessible(true);
-
-        // Create a simpler version of TableImpl for testing
-        TableImpl simpleImpl = new TableImpl(driver) {
-            @Override
-            protected SmartWebElement getTableContainer(By tableContainerLocator) {
-                return container;
-            }
-
-            @Override
-            protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                // Always return an empty list
-                return Collections.emptyList();
-            }
-
-            @Override
-            protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                return null;
-            }
-
-            @Override
-            protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
-            }
-        };
-
-        // Execute
-        List<DummyRow> result = (List<DummyRow>) readTableMethod.invoke(
-                simpleImpl, DummyRow.class, null, null, null);
-
-        // Verify
-        assertNotNull(result);
-        assertTrue(result.isEmpty(), "Result should be an empty list");
-    }
-
-    @Test
-    @DisplayName("readTable(Class, TableField...) handles null fields parameter")
-    void testReadTable_ClassWithNullFields() {
-        // Setup
-        List<SmartWebElement> rowsList = List.of(rowElement);
-
-        // Create custom table impl that directly returns our test rows
-        TestTableImpl customTableImpl = new TestTableImpl(driver, registry, locators, container, rowsList) {
-            @Override
-            protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                return rowsList;
-            }
-        };
-
-        when(rowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-        when(cellElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-        when(cellElement.getText()).thenReturn("test value");
-
-        // Execute with null fields
-        List<DummyRow> result = customTableImpl.readTable(DummyRow.class, (TableField<DummyRow>[]) null);
-
-        // Verify
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("test value", result.get(0).getDummyField().getText());
-    }
-
-    @Test
-    @DisplayName("readTable(int, int, Class, TableField...) handles null fields parameter")
-    void testReadTable_RangeWithNullFields() {
-        // Setup
-        List<SmartWebElement> rowsList = List.of(rowElement);
-
-        // Create custom table impl that directly returns our test rows
-        TestTableImpl customTableImpl = new TestTableImpl(driver, registry, locators, container, rowsList) {
-            @Override
-            protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                return rowsList;
-            }
-        };
-
-        when(rowElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-        when(cellElement.findSmartElement(any(By.class))).thenReturn(cellElement);
-        when(cellElement.getText()).thenReturn("range test value");
-
-        // Execute with null fields and range parameters
-        List<DummyRow> result = customTableImpl.readTable(1, 2, DummyRow.class, (TableField<DummyRow>[]) null);
-
-        // Verify
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("range test value", result.get(0).getDummyField().getText());
-    }
-
-    @Test
-    @DisplayName("lambda for readTable branch coverage")
-    void testReadTable_LambdaCoverage() {
-        // This test specifically targets lambda expressions in readTable methods
-
-        // Setup with multiple rows
-        List<SmartWebElement> multipleRows = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            SmartWebElement row = mock(SmartWebElement.class);
-            when(row.findSmartElement(any(By.class))).thenReturn(cellElement);
-            multipleRows.add(row);
-        }
-
-        // Custom implementation
-        TestTableImpl customTableImpl = new TestTableImpl(driver, registry, locators, container, multipleRows) {
-            @Override
-            protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                return multipleRows;
-            }
-        };
-
-        // Test with various combinations to hit different lambda paths
-
-        // 1. With null fields (triggers the first branch)
-        List<DummyRow> result1 = customTableImpl.readTable(DummyRow.class, (TableField<DummyRow>[]) null);
-        assertNotNull(result1);
-        assertEquals(3, result1.size());
-
-        // 2. With empty array (different branch)
-        List<DummyRow> result2 = customTableImpl.readTable(DummyRow.class, new TableField[0]);
-        assertNotNull(result2);
-        assertEquals(3, result2.size());
-
-        // 3. With range and null fields
-        // Note: In TableImpl's range implementation, the range is inclusive of start and exclusive of end
-        // So a range of 1, 3 should return rows 1, 2 (but 1 is actually index 0, so it returns 3 rows)
-        List<DummyRow> result3 = customTableImpl.readTable(1, 3, DummyRow.class, (TableField<DummyRow>[]) null);
-        assertNotNull(result3);
-        assertEquals(3, result3.size());  // Should return all three rows (0, 1, 2)
-    }
-
-    @Test
-    @DisplayName("mergeRowsAcrossSections merges data from multiple sections")
-    void testMergeRowsAcrossSections() throws Exception {
-        // Access private method through reflection
-        Method mergeMethod = TableImpl.class.getDeclaredMethod(
-                "mergeRowsAcrossSections", Map.class, Map.class, Class.class);
-        mergeMethod.setAccessible(true);
-
-        // Setup multiple sections
-        SmartWebElement section1Row = mock(SmartWebElement.class);
-        SmartWebElement section1Cell = mock(SmartWebElement.class);
-        SmartWebElement section1Text = mock(SmartWebElement.class);
-
-        when(section1Row.findSmartElement(any(By.class))).thenReturn(section1Cell);
-        when(section1Cell.findSmartElement(any(By.class))).thenReturn(section1Text);
-        when(section1Text.getText()).thenReturn("section1 value");
-
-        SmartWebElement section2Row = mock(SmartWebElement.class);
-        SmartWebElement section2Cell = mock(SmartWebElement.class);
-        SmartWebElement section2Text = mock(SmartWebElement.class);
-
-        when(section2Row.findSmartElement(any(By.class))).thenReturn(section2Cell);
-        when(section2Cell.findSmartElement(any(By.class))).thenReturn(section2Text);
-        when(section2Text.getText()).thenReturn("section2 value");
-
-        // Create maps for the test
-        Map<String, List<SmartWebElement>> rowsMap = new HashMap<>();
-        rowsMap.put("section1", List.of(section1Row));
-        rowsMap.put("section2", List.of(section2Row));
-
-        // Create CellLocator maps
-        CellLocator section1Locator = mock(CellLocator.class);
-        when(section1Locator.getFieldName()).thenReturn("dummyField");  // Match the field in DummyRow
-        when(section1Locator.getLocator()).thenReturn(By.id("cell1"));
-        when(section1Locator.getCellTextLocator()).thenReturn(By.id("text1"));
-        when(section1Locator.isCollection()).thenReturn(false);
-
-        CellLocator section2Locator = mock(CellLocator.class);
-        when(section2Locator.getFieldName()).thenReturn("dummyField");  // Match the field in DummyRow
-        when(section2Locator.getLocator()).thenReturn(By.id("cell2"));
-        when(section2Locator.getCellTextLocator()).thenReturn(By.id("text2"));
-        when(section2Locator.isCollection()).thenReturn(false);
-
-        Map<String, List<CellLocator>> locatorsMap = new HashMap<>();
-        locatorsMap.put("section1", List.of(section1Locator));
-        locatorsMap.put("section2", List.of(section2Locator));
-
-        // The key here is to use the static DummyRow class which already exists in the test class
-        // Set up the method to access mergeObjects as well since it's used by mergeRowsAcrossSections
-        Method mergeObjectsMethod = TableImpl.class.getDeclaredMethod("mergeObjects", Object.class, Object.class);
-        mergeObjectsMethod.setAccessible(true);
-
-        // Execute
-        List<DummyRow> result = new ArrayList<>();
-        try {
-            result = (List<DummyRow>) mergeMethod.invoke(tableImpl, rowsMap, locatorsMap, DummyRow.class);
-            // The expected result depends on how mergeRowsAcrossSections internally works
-            // If everything worked correctly, we should have a non-empty result
-            assertFalse(result.isEmpty(), "Result should not be empty");
-        } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof IllegalStateException &&
-                    e.getCause().getMessage().contains("Could not create a new instance")) {
-
-                DummyRow row1 = new DummyRow();
-                row1.setDummyField(new TableCell(null, "section1 value"));
-
-                DummyRow row2 = new DummyRow();
-                row2.setDummyField(new TableCell(null, "section2 value"));
-
-                DummyRow mergedRow = (DummyRow) mergeObjectsMethod.invoke(tableImpl, row1, row2);
-                assertEquals("section1 value", mergedRow.getDummyField().getText());
+   // --- Constants ---
+   private static final String SECTION_1 = "section1";
+   private static final String SECTION_2 = "section2";
+   private static final By TABLE_LOCATOR = By.id("dummyTable");
+   private static final By ROWS_LOCATOR = By.className("dummyRow");
+   private static final By HEADER_LOCATOR = By.className("dummyHeader");
+   private static final By CELL_LOCATOR_DUMMY = By.className("dummyCell");
+   private static final By TEXT_LOCATOR_DUMMY = By.className("dummyText");
+   private static final By HEADER_CELL_LOCATOR_DUMMY = By.className("dummyHeaderCell");
+   private static final By CELL_LOCATOR_S1 = By.className("section1Cell");
+   private static final By CELL_LOCATOR_S2 = By.className("section2Cell");
+   private static final By HEADER_LOCATOR_S1 = By.className("header1");
+   private static final By HEADER_LOCATOR_S2 = By.className("header2");
+   private static final By LIST_CELL_LOCATOR = By.className("listCell");
+   private static final By INSERT_CELL_LOCATOR = By.className("insCell");
+   private static final By CUSTOM_INSERT_CELL_LOCATOR = By.className("customInsCell");
+   private static final By FILTER_DATA_CELL_LOCATOR = By.className("filterDataCell");
+   private static final By FILTER_HEADER_CELL_LOCATOR = By.className("filterHeaderCell");
+   private static final By CUSTOM_FILTER_DATA_CELL_LOCATOR = By.className("customFilterDataCell");
+   private static final By CUSTOM_FILTER_HEADER_CELL_LOCATOR = By.className("customFilterHeaderCell");
+   private static final By MISSING_TABLE_LOCATOR = By.id("missingAnnotation");
+   private static final List<String> CRITERIA_MATCH = List.of("match");
+   private static final List<String> CRITERIA_NO_MATCH = List.of("no match");
+   private static final String CELL_TEXT_1 = "cell 1 text";
+   private static final String CELL_TEXT_VALUE = "value";
+   // --- Mocks ---
+   @Mock
+   private SmartWebDriver driver;
+   @Mock
+   private SmartWebElement container;
+   @Mock
+   private SmartWebElement rowElement;
+   @Mock
+   private SmartWebElement cellElement;
+   @Mock
+   private SmartWebElement headerRowElement;
+   @Mock
+   private SmartWebElement headerCellElement;
+   @Mock
+   private WebDriverWait wait;
+   @Mock
+   private TableServiceRegistry registry;
+   // --- Test Subject & Helpers ---
+   private List<SmartWebElement> rows;
+   private TableLocators locators;
+   private TestTableImpl tableImpl;
+
+   // --- Inner Row Model Classes (Necessary for scenarios) ---
+
+   @BeforeEach
+   void setUp() {
+      // Given
+      MockitoAnnotations.openMocks(this); // Ensures @Mock fields are initialized
+      rows = new ArrayList<>(List.of(rowElement));
+      locators = new TableLocators(TABLE_LOCATOR, ROWS_LOCATOR, HEADER_LOCATOR);
+      WorkingCellInsertionFunction.reset();
+      WorkingCellFilterFunction.reset();
+
+      // Instantiate the TestTableImpl (make sure TestTableImpl class is defined correctly)
+      tableImpl = spy(new TestTableImpl(driver, registry, locators, container, rows, headerRowElement));
+
+      // Setup common mock behaviors needed by TableImpl logic being tested
+      lenient().when(driver.getWait()).thenReturn(wait);
+      lenient().when(wait.until(any())).thenReturn(true);
+      lenient().when(driver.findSmartElement(TABLE_LOCATOR)).thenReturn(container);
+      lenient().when(container.findSmartElements(ROWS_LOCATOR)).thenReturn(rows);
+      lenient().when(rowElement.findSmartElement(CELL_LOCATOR_DUMMY)).thenReturn(cellElement);
+      lenient().when(cellElement.findSmartElement(TEXT_LOCATOR_DUMMY)).thenReturn(cellElement);
+      lenient().when(cellElement.getText()).thenReturn(CELL_TEXT_VALUE);
+      lenient().when(container.findSmartElement(HEADER_LOCATOR)).thenReturn(headerRowElement);
+      lenient().when(headerRowElement.findSmartElement(HEADER_CELL_LOCATOR_DUMMY)).thenReturn(headerCellElement);
+   }
+
+   // Helper to setup static mocks for component lookup (used in insertion/filter tests)
+   private void setupStaticMocksForComponentLookup(MockedStatic<ReflectionUtil> reflectionUtilMock, MockedStatic<UiConfigHolder> uiConfigHolderMock) {
+      var uiConfig = mock(UiConfig.class);
+      uiConfigHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+      // Use lenient() if these might not be called in every path of the test using the helper
+      lenient().when(uiConfig.projectPackage()).thenReturn("com.theairebellion.zeus"); // Or test package
+   }
+
+   // --- Inner Mock Component Type (Keep Necessary) ---
+   enum MockComponentTypeForTable implements ComponentType {
+      INSERT_TYPE, FILTER_TYPE;
+
+      @Override
+      public Enum<?> getType() {
+         return this;
+      } // Return self for simple type checking
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
+   static class DummyRow {
+      @TableCellLocator(cellLocator = @FindBy(className = "dummyCell"), cellTextLocator = @FindBy(className = "dummyText"), headerCellLocator = @FindBy(className = "dummyHeaderCell"), tableSection = SECTION_1)
+      private TableCell field1;
+
+      public TableCell getField1() {
+         return field1;
+      }
+
+      public void setField1(TableCell cell) {
+         this.field1 = cell;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
+   static class MultiSectionRow {
+      @TableCellLocator(cellLocator = @FindBy(className = "section1Cell"), tableSection = SECTION_1, headerCellLocator = @FindBy(className = "header1"))
+      private TableCell section1Field;
+      @TableCellLocator(cellLocator = @FindBy(className = "section2Cell"), tableSection = SECTION_2, headerCellLocator = @FindBy(className = "header2"))
+      private TableCell section2Field;
+
+      public TableCell getSection1Field() {
+         return section1Field;
+      }
+
+      public void setSection1Field(TableCell cell) {
+         this.section1Field = cell;
+      }
+
+      public TableCell getSection2Field() {
+         return section2Field;
+      }
+
+      public void setSection2Field(TableCell cell) {
+         this.section2Field = cell;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
+   static class ListFieldRow {
+      @TableCellLocator(cellLocator = @FindBy(className = "listCell"))
+      private List<TableCell> listField;
+
+      public List<TableCell> getListField() {
+         return listField;
+      }
+
+      public void setListField(List<TableCell> list) {
+         this.listField = list;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
+   static class InsertionRow {
+      @TableCellLocator(cellLocator = @FindBy(className = "insCell"), tableSection = "dummySection") // Add tableSection
+      @CellInsertion(type = MockComponentTypeForTable.class, componentType = "INSERT_TYPE", order = 1)
+      private TableCell insertionField;
+
+      public TableCell getInsertionField() {
+         return insertionField;
+      }
+
+      public void setInsertionField(TableCell cell) {
+         this.insertionField = cell;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
+   static class CustomInsertionRow {
+      @TableCellLocator(cellLocator = @FindBy(className = "customInsCell"), tableSection = "dummySection")
+      // Add tableSection
+      @CustomCellInsertion(insertionFunction = WorkingCellInsertionFunction.class, order = 1)
+      private TableCell customInsertionField;
+
+      public TableCell getCustomInsertionField() {
+         return customInsertionField;
+      }
+
+      public void setCustomInsertionField(TableCell cell) {
+         this.customInsertionField = cell;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
+   static class FilterRow {
+      @TableCellLocator(cellLocator = @FindBy(className = "filterDataCell"), headerCellLocator = @FindBy(className = "filterHeaderCell"), tableSection = "dummySection")
+      // Add tableSection
+      @CellFilter(type = MockComponentTypeForTable.class, componentType = "FILTER_TYPE")
+      private TableCell filterField;
+
+      public TableCell getFilterField() {
+         return filterField;
+      }
+
+      public void setFilterField(TableCell cell) {
+         this.filterField = cell;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "dummyTable"), rowsLocator = @FindBy(className = "dummyRow"), headerRowLocator = @FindBy(className = "dummyHeader"))
+   static class CustomFilterRow {
+      @TableCellLocator(cellLocator = @FindBy(className = "customFilterDataCell"), headerCellLocator = @FindBy(className = "customFilterHeaderCell"), tableSection = "dummySection")
+      // Add tableSection
+      @CustomCellFilter(cellFilterFunction = WorkingCellFilterFunction.class)
+      private TableCell customFilterField;
+
+      public TableCell getCustomFilterField() {
+         return customFilterField;
+      }
+
+      public void setCustomFilterField(TableCell cell) {
+         this.customFilterField = cell;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "t"), rowsLocator = @FindBy(id = "r"), headerRowLocator = @FindBy(id = "h"))
+   static class RowWithMissingLocator {
+      private TableCell missingAnnotationField; // No @TableCellLocator
+
+      public void setMissingAnnotationField(TableCell c) {
+         missingAnnotationField = c;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "t"), rowsLocator = @FindBy(id = "r"), headerRowLocator = @FindBy(id = "h"))
+   static class BadCustomRow {
+      @TableCellLocator(cellLocator = @FindBy(id = "c"))
+      @CustomCellInsertion(insertionFunction = PrivateConstructorInsertionFunction.class) // Private constructor
+      TableCell field = new TableCell("bad");
+
+      public TableCell getField() {
+         return field;
+      } // Add getter
+
+      public void setField(TableCell c) {
+         field = c;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "t"), rowsLocator = @FindBy(id = "r"), headerRowLocator = @FindBy(id = "h"))
+   static class BadCustomFilterRow {
+      @TableCellLocator(cellLocator = @FindBy(id = "c"), headerCellLocator = @FindBy(id = "hc"))
+      @CustomCellFilter(cellFilterFunction = PrivateConstructorFilterFunction.class) // Use helper below
+      TableCell field = new TableCell("bad");
+
+      public void setField(TableCell c) {
+         field = c;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "t"), rowsLocator = @FindBy(id = "r"), headerRowLocator = @FindBy(id = "h"))
+   static class RowWithCustomInsertion {
+      @TableCellLocator(cellLocator = @FindBy(id = "c"))
+      @CustomCellInsertion(insertionFunction = ValidCustomInsertionFunction.class)
+      TableCell field = new TableCell("bad");
+
+      public void setField(TableCell c) {
+         field = c;
+      }
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "t"), rowsLocator = @FindBy(id = "r"), headerRowLocator = @FindBy(id = "h"))
+   static class InvalidRow {
+      @TableCellLocator(cellLocator = @FindBy(id = "c"))
+      private String invalidField;
+   }
+
+   @TableInfo(tableContainerLocator = @FindBy(id = "t"), rowsLocator = @FindBy(id = "r"), headerRowLocator = @FindBy(id = "h"))
+   static class RowMissingLocator {
+      private TableCell fieldWithoutLocator;
+
+      public TableCell getFieldWithoutLocator() {
+         return fieldWithoutLocator;
+      }
+
+      public void setFieldWithoutLocator(TableCell c) {
+         fieldWithoutLocator = c;
+      }
+   }
+
+   @TableInfo(
+         tableContainerLocator = @FindBy(id = "dummyTable"),
+         rowsLocator = @FindBy(className = "dummyRow"),
+         headerRowLocator = @FindBy(className = "dummyHeader")
+   )
+   static class DummyRowWithList {
+      @TableCellLocator(
+            cellLocator = @FindBy(className = "dummyCell"),
+            cellTextLocator = @FindBy(className = "dummyText"),
+            headerCellLocator = @FindBy(className = "dummyHeader"),
+            tableSection = "dummySection"
+      )
+      private List<TableCell> cells;
+
+      public List<TableCell> getCells() {
+         return cells;
+      }
+
+      public void setCells(List<TableCell> cells) {
+         this.cells = cells;
+      }
+   }
+
+   static class CustomException extends Exception {
+      public CustomException(String message) {
+         super(message);
+      }
+   }
+
+   static class BadSetter {
+      public void setField(String value) throws IllegalAccessException {
+         throw new IllegalAccessException("Test exception");
+      }
+   }
+
+   static class BadSetterTableCell {
+      public void setDummyField(TableCell value) throws CustomException {
+         throw new CustomException("Custom setter exception");
+      }
+   }
+
+   // Class missing @TableInfo used for testing getTableLocators error path via public API
+   static class MissingTableInfoRow {
+   }
+
+   public static class TestClassWithPrivateField {
+      @SuppressWarnings("unused")
+      private String privateField = "private value";
+   }
+
+   // --- Inner Mock Functions (Keep Necessary) ---
+   static class WorkingCellInsertionFunction implements CellInsertionFunction {
+      static int callCount = 0;
+      static SmartWebElement lastCell;
+      static String[] lastValues;
+
+      static void reset() {
+         callCount = 0;
+         lastCell = null;
+         lastValues = null;
+      }
+
+      @Override
+      public void cellInsertionFunction(SmartWebElement element, String... vals) {
+         accept(element, vals);
+      }
+
+      @Override
+      public void accept(SmartWebElement cell, String[] vals) {
+         callCount++;
+         lastCell = cell;
+         lastValues = vals;
+      }
+   }
+
+   static class WorkingCellFilterFunction implements CellFilterFunction {
+      static int callCount = 0;
+      static SmartWebElement lastCell;
+      static FilterStrategy lastStrategy;
+      static String[] lastValues;
+
+      static void reset() {
+         callCount = 0;
+         lastCell = null;
+         lastStrategy = null;
+         lastValues = null;
+      }
+
+      @Override
+      public void cellFilterFunction(SmartWebElement element, FilterStrategy strategy, String... vals) {
+         accept(element, strategy, vals);
+      }
+
+      @Override
+      public void accept(SmartWebElement cell, FilterStrategy strategy, String[] vals) {
+         callCount++;
+         lastCell = cell;
+         lastStrategy = strategy;
+         lastValues = vals;
+      }
+   }
+
+   // --- Test Implementation of TableImpl (Keep) ---
+   static class TestTableImpl extends TableImpl {
+      private final SmartWebElement headerRowMock;
+      boolean sortTableCalled = false;
+      SmartWebElement sortHeaderCellArg = null;
+      SortingStrategy sortStrategyArg = null;
+
+
+      TestTableImpl(SmartWebDriver driver, TableServiceRegistry registry, TableLocators locators, SmartWebElement container,
+                    List<SmartWebElement> rows, SmartWebElement headerRow) {
+         super(driver, registry);
+         this.headerRowMock = headerRow;
+      }
+
+      @Override
+      protected SmartWebElement getTableContainer(By tableContainerLocator) {
+         // Can add verification of locator if needed, return mocked container provided in setup
+         return super.getTableContainer(tableContainerLocator); // Call super to test its logic, rely on driver mock
+      }
+
+      @Override
+      protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
+         // Can add verification, return mocked rows provided in setup
+         return super.getRows(tableContainer, tableRowsLocator, section); // Call super to test its logic
+      }
+
+      @Override
+      protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
+         // Can add verification, return mocked header provided in setup
+         return headerRowMock != null ? headerRowMock :
+               super.getHeaderRow(tableContainer, headerRowLocator, tableSection); // Return specific mock if provided
+      }
+
+      @Override
+      protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
+         // Track calls for verification
+         this.sortTableCalled = true;
+         this.sortHeaderCellArg = headerCell;
+         this.sortStrategyArg = sortingStrategy;
+      }
+   }
+
+   public static class ValidCustomInsertionFunction implements CellInsertionFunction {
+      public static boolean called = false;
+      public static SmartWebElement lastElement = null;
+      public static String[] lastValues = null;
+
+      @Override
+      public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
+         called = true;
+         lastElement = cellElement;
+         lastValues = values;
+      }
+
+      @Override
+      public void accept(SmartWebElement smartWebElement, String[] objects) {
+         cellInsertionFunction(smartWebElement, (String[]) objects);
+      }
+   }
+
+   // Function with private constructor for negative tests
+   static class PrivateConstructorInsertionFunction implements CellInsertionFunction {
+      private PrivateConstructorInsertionFunction() {
+         // Private constructor makes it non-instantiable via reflection's default newInstance()
+      }
+
+      @Override
+      public void cellInsertionFunction(SmartWebElement cellElement, String... values) {
+         // Implementation not needed for this test scenario
+      }
+
+      @Override
+      public void accept(SmartWebElement cell, String[] values) {
+         // Implementation not needed for this test scenario
+      }
+   }
+
+   // Helper class with private constructor for testing instantiation failure
+   static class PrivateConstructorFilterFunction implements CellFilterFunction {
+      private PrivateConstructorFilterFunction() {
+         // Private constructor prevents easy instantiation via reflection's newInstance()
+      }
+
+      @Override
+      public void cellFilterFunction(SmartWebElement cellElement, FilterStrategy filterStrategy, String... values) {
+         // Implementation not needed as instantiation should fail first
+         fail("Instantiation should have failed for PrivateConstructorFilterFunction");
+      }
+   }
+
+   @Nested
+   @DisplayName("Constructor and Protected Getters")
+   class ConstructorAndProtectedGetters {
+
+      @Test
+      @DisplayName("Constructor with driver and registry initializes properly")
+      void testConstructorWithDriverAndRegistry() {
+         // Given
+         var testRegistry = new TableServiceRegistry();
+
+         // When
+         var impl = new TestTableImpl(driver, testRegistry, locators, container, rows, headerRowElement);
+
+         // Then
+         assertThat(impl).isNotNull();
+         // Verify registry was stored - Use reflection carefully only if absolutely necessary for coverage
+         try {
+            var registryField = TableImpl.class.getDeclaredField("serviceRegistry");
+            registryField.setAccessible(true);
+            assertThat(registryField.get(impl)).isSameAs(testRegistry);
+         } catch (Exception e) {
+            fail("Reflection failed for registry check", e);
+         }
+      }
+
+      @Test
+      @DisplayName("getTableContainer calls driver")
+      void testGetTableContainer() {
+         // Given - driver mock setup in main @BeforeEach
+
+         // When
+         // Call directly on the instance (which uses super implementation if not overridden fully)
+         var result = tableImpl.getTableContainer(TABLE_LOCATOR);
+
+         // Then
+         assertThat(result).isSameAs(container);
+         verify(driver).findSmartElement(TABLE_LOCATOR); // Verify interaction with driver mock
+      }
+
+      @Test
+      @DisplayName("getRows calls container and waits")
+      void testGetRows() {
+         // Given - container mock setup in main @BeforeEach
+
+         // When
+         var result = tableImpl.getRows(container, ROWS_LOCATOR, SECTION_1);
+
+         // Then
+         assertThat(result).isSameAs(rows);
+         verify(driver.getWait()).until(any()); // Verify wait was called
+         verify(container).findSmartElements(ROWS_LOCATOR); // Verify find was called
+      }
+
+      @Test
+      @DisplayName("getHeaderRow calls container")
+      void testGetHeaderRow() {
+         // Given - driver and container mocks setup in main @BeforeEach
+         TableLocators locators = new TableLocators(TABLE_LOCATOR, ROWS_LOCATOR, HEADER_LOCATOR);
+         TestTableImpl tableImplWithoutHeaderMock =
+               spy(new TestTableImpl(driver, registry, locators, container, rows, null)); // Pass null for headerRowElement
+
+         // When
+         var result = tableImplWithoutHeaderMock.getHeaderRow(container, HEADER_LOCATOR, SECTION_1);
+
+         // Then
+         assertThat(result).isSameAs(headerRowElement);
+         verify(container).findSmartElement(HEADER_LOCATOR);
+      }
+   }
+
+   @Nested
+   @DisplayName("Table Reading Tests (Public API)")
+   class TableReadingTest {
+
+      // Define specific constants used in this section
+      private static final String SIMPLE_VALUE = "simple value";
+      private static final String FIELD_VALUE = "field value";
+      private static final String ROW_PREFIX = "row ";
+      private static final String FIELD_ROW_PREFIX = "field row ";
+      private static final String ROW_BY_INDEX_VALUE = "row by index";
+      private static final String ROW_BY_CRITERIA_VALUE = "row by criteria";
+      private static final String ROW_INDEX_WITH_FIELDS_VALUE = "row index with fields";
+      private static final String ROW_CRITERIA_WITH_FIELDS_VALUE = "row criteria with fields";
+      private static final String MATCH_CRITERIA_TEXT = "match this criteria";
+      private static final String NO_MATCH_CRITERIA_TEXT = "no match here";
+      private static final String LIST_VALUE_1 = "listValue1";
+      private static final String LIST_VALUE_2 = "listValue2";
+      private static final String SECTION_1_VALUE = "S1 Value";
+      private static final String SECTION_2_VALUE = "S2 Value";
+
+
+      // Helper to create a mocked row with specific cell text
+      private SmartWebElement createMockedRow(String cellText) {
+         var mockRow = mock(SmartWebElement.class);
+         var mockCell = mock(SmartWebElement.class);
+         // Assume the DummyRow's locators are used for simplicity here
+         when(mockRow.findSmartElement(eq(CELL_LOCATOR_DUMMY))).thenReturn(mockCell);
+         // Assume text locator points to cell itself
+         when(mockCell.findSmartElement(eq(TEXT_LOCATOR_DUMMY))).thenReturn(mockCell);
+         when(mockCell.getText()).thenReturn(cellText);
+         when(mockRow.getAttribute("innerText")).thenReturn(cellText); // Simple inner text for criteria matching
+         return mockRow;
+      }
+
+      @Test
+      @DisplayName("readTable(Class) reads all rows correctly")
+      void testReadTable_Class() {
+         // Given
+         var row1 = createMockedRow(SIMPLE_VALUE);
+         // Use doReturn for methods overridden in the spy's class if needed,
+         // or directly mock the dependencies called by the *original* TableImpl method
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), anyString());
+
+         // When
+         var result = tableImpl.readTable(DummyRow.class);
+
+         // Then
+         assertThat(result).hasSize(1);
+         assertThat(result.get(0)).isInstanceOf(DummyRow.class);
+         assertThat(result.get(0).getField1().getText()).isEqualTo(SIMPLE_VALUE);
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, SECTION_1); // Verify protected method call on spy
+         verify(row1).findSmartElement(CELL_LOCATOR_DUMMY);
+         verify(cellElement, never()).getText(); // Should use mockCell's text
+      }
+
+      @Test
+      @DisplayName("readTable(Class, fields) reads only specified fields")
+      void testReadTable_ClassAndFields() {
+         // Given
+         var row1 = createMockedRow(FIELD_VALUE);
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), anyString());
+         TableField<DummyRow> field1 = TableField.of(DummyRow::setField1);
+
+         // When
+         var result = tableImpl.readTable(DummyRow.class, field1);
+
+         // Then
+         assertThat(result).hasSize(1);
+         assertThat(result.get(0).getField1()).isNotNull();
+         assertThat(result.get(0).getField1().getText()).isEqualTo(FIELD_VALUE);
+         // Add assertions if DummyRow had other fields to ensure they are null/default
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, SECTION_1);
+         verify(row1).findSmartElement(CELL_LOCATOR_DUMMY);
+      }
+
+      @Test
+      @DisplayName("readTable(start, end, Class) reads rows in specified range")
+      void testReadTable_Range() {
+         // Given
+         var rowList = List.of(
+               createMockedRow(ROW_PREFIX + 0),
+               createMockedRow(ROW_PREFIX + 1),
+               createMockedRow(ROW_PREFIX + 2),
+               createMockedRow(ROW_PREFIX + 3),
+               createMockedRow(ROW_PREFIX + 4)
+         );
+         // Mock getRows directly on the spy instance
+         doReturn(rowList).when(tableImpl).getRows(any(), any(), anyString());
+
+         // When - Test valid range (2-4, expects rows at index 1, 2, 3)
+         var result = tableImpl.readTable(2, 4, DummyRow.class);
+         // When - Test invalid range (start > end)
+         var emptyResult = tableImpl.readTable(4, 2, DummyRow.class);
+         // When - Test range exceeding available rows (reads rows at index 3, 4)
+         var exceededResult = tableImpl.readTable(4, 10, DummyRow.class);
+
+         // Then
+         assertThat(result).hasSize(3);
+         assertThat(result.get(0).getField1().getText()).isEqualTo(ROW_PREFIX + 1);
+         assertThat(result.get(1).getField1().getText()).isEqualTo(ROW_PREFIX + 2);
+         assertThat(result.get(2).getField1().getText()).isEqualTo(ROW_PREFIX + 3);
+         assertThat(emptyResult).isEmpty();
+         assertThat(exceededResult).hasSize(2);
+         assertThat(exceededResult.get(0).getField1().getText()).isEqualTo(ROW_PREFIX + 3);
+         assertThat(exceededResult.get(1).getField1().getText()).isEqualTo(ROW_PREFIX + 4);
+      }
+
+      @Test
+      @DisplayName("readTable(start, end, Class, fields) reads range with specified fields")
+      void testReadTable_RangeAndFields() {
+         // Given
+         var rowList = List.of(
+               createMockedRow(FIELD_ROW_PREFIX + 0),
+               createMockedRow(FIELD_ROW_PREFIX + 1),
+               createMockedRow(FIELD_ROW_PREFIX + 2),
+               createMockedRow(FIELD_ROW_PREFIX + 3),
+               createMockedRow(FIELD_ROW_PREFIX + 4)
+         );
+         doReturn(rowList).when(tableImpl).getRows(any(), any(), anyString());
+         TableField<DummyRow> field1 = TableField.of(DummyRow::setField1);
+
+         // When
+         var result = tableImpl.readTable(2, 4, DummyRow.class, field1);
+
+         // Then
+         assertThat(result).hasSize(3);
+         assertThat(result.get(0).getField1().getText()).isEqualTo(FIELD_ROW_PREFIX + 1);
+         assertThat(result.get(1).getField1().getText()).isEqualTo(FIELD_ROW_PREFIX + 2);
+         assertThat(result.get(2).getField1().getText()).isEqualTo(FIELD_ROW_PREFIX + 3);
+      }
+
+      @Test
+      @DisplayName("readRow(index, Class) reads correct row")
+      void testReadRow_Index() {
+         // Given
+         var row1 = createMockedRow(ROW_BY_INDEX_VALUE);
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), anyString());
+
+         // When
+         var result = tableImpl.readRow(1, DummyRow.class); // 1-based index
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getField1().getText()).isEqualTo(ROW_BY_INDEX_VALUE);
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, SECTION_1);
+      }
+
+      @Test
+      @DisplayName("readRow(index, Class) throws for invalid index")
+      void testReadRow_InvalidIndex() {
+         // Given
+         // TestTableImpl returns only 1 row in setup
+         var emptyRows = Collections.<SmartWebElement>emptyList();
+         // Use spy on a new instance configured with empty rows
+         var emptyTableImpl =
+               spy(new TestTableImpl(driver, registry, locators, container, emptyRows, headerRowElement));
+         // Mock the getRows call on the spy
+         doReturn(emptyRows).when(emptyTableImpl).getRows(any(), any(), anyString());
+
+
+         // When / Then
+         assertThatThrownBy(() -> tableImpl.readRow(2, DummyRow.class)) // Index 2 > size 1
+               .isInstanceOf(IndexOutOfBoundsException.class);
+         assertThatThrownBy(() -> tableImpl.readRow(0, DummyRow.class)) // Index 0 invalid
+               .isInstanceOf(IndexOutOfBoundsException.class);
+         assertThatThrownBy(() -> emptyTableImpl.readRow(1, DummyRow.class)) // Index 1 on empty list
+               .isInstanceOf(IndexOutOfBoundsException.class);
+      }
+
+      @Test
+      @DisplayName("readRow(criteria, Class) reads correct row")
+      void testReadRow_Criteria() {
+         // Given
+         var row1 = createMockedRow(ROW_BY_CRITERIA_VALUE);
+         when(row1.getAttribute("innerText")).thenReturn(MATCH_CRITERIA_TEXT); // Setup text for criteria match
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), anyString());
+
+
+         // When
+         var result = tableImpl.readRow(CRITERIA_MATCH, DummyRow.class);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getField1().getText()).isEqualTo(ROW_BY_CRITERIA_VALUE);
+         verify(row1).getAttribute("innerText"); // Verify criteria check happened
+      }
+
+      @Test
+      @DisplayName("readRow(criteria, Class) throws when not found")
+      void testReadRow_CriteriaNotFound() {
+         // Given
+         var row1 = createMockedRow(CELL_TEXT_1);
+         when(row1.getAttribute("innerText")).thenReturn(NO_MATCH_CRITERIA_TEXT);
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), eq("dummySection")); // Ensure correct section
+
+         // When / Then
+         assertThatThrownBy(() -> tableImpl.readRow(CRITERIA_NO_MATCH, DummyRow.class))
+               .isInstanceOf(NotFoundException.class)
+               .hasMessageContaining("No row found containing all criteria");
+      }
+
+      @Test
+      @DisplayName("readRow(index, Class, fields) reads row by index with specific fields")
+      void testReadRow_IndexAndFields() {
+         // Given
+         var row1 = createMockedRow(ROW_INDEX_WITH_FIELDS_VALUE);
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), anyString());
+         TableField<DummyRow> field1 = TableField.of(DummyRow::setField1);
+
+         // When
+         var result = tableImpl.readRow(1, DummyRow.class, field1);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getField1().getText()).isEqualTo(ROW_INDEX_WITH_FIELDS_VALUE);
+         // Assert other fields would be null if they existed and weren't specified
+      }
+
+      @Test
+      @DisplayName("readRow(criteria, Class, fields) reads row by criteria with specific fields")
+      void testReadRow_CriteriaAndFields() {
+         // Given
+         var row1 = createMockedRow(ROW_CRITERIA_WITH_FIELDS_VALUE);
+         when(row1.getAttribute("innerText")).thenReturn(MATCH_CRITERIA_TEXT);
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), anyString());
+         TableField<DummyRow> field1 = TableField.of(DummyRow::setField1);
+
+         // When
+         var result = tableImpl.readRow(CRITERIA_MATCH, DummyRow.class, field1);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getField1().getText()).isEqualTo(ROW_CRITERIA_WITH_FIELDS_VALUE);
+      }
+
+      @Test
+      @DisplayName("readTable handles List<TableCell> fields correctly")
+      void testReadTable_ListField() {
+         // Given
+         var listCell1 = mock(SmartWebElement.class);
+         var listCell2 = mock(SmartWebElement.class);
+         var rowForList = mock(SmartWebElement.class); // Use a fresh row mock
+         doReturn(List.of(rowForList)).when(tableImpl).getRows(any(), any(), anyString()); // Mock getRows to return this row
+
+         when(rowForList.findSmartElements(eq(LIST_CELL_LOCATOR))).thenReturn(List.of(listCell1, listCell2));
+         when(listCell1.findSmartElement(any(By.class))).thenReturn(listCell1);
+         when(listCell2.findSmartElement(any(By.class))).thenReturn(listCell2);
+         when(listCell1.getText()).thenReturn(LIST_VALUE_1);
+         when(listCell2.getText()).thenReturn(LIST_VALUE_2);
+
+         // When
+         var result = tableImpl.readTable(ListFieldRow.class);
+
+         // Then
+         assertThat(result).hasSize(1);
+         assertThat(result.get(0).getListField()).isNotNull();
+         assertThat(result.get(0).getListField()).hasSize(2);
+         assertThat(result.get(0).getListField().get(0).getText()).isEqualTo(LIST_VALUE_1);
+         assertThat(result.get(0).getListField().get(1).getText()).isEqualTo(LIST_VALUE_2);
+      }
+
+      @Test
+      @DisplayName("readTable handles multiple table sections")
+      void testReadTable_MultiSection() {
+         // Given
+         var rowSec1 = mock(SmartWebElement.class);
+         var cellS1 = mock(SmartWebElement.class);
+         when(rowSec1.findSmartElement(eq(CELL_LOCATOR_S1))).thenReturn(cellS1);
+         when(cellS1.findSmartElement(any(By.class))).thenReturn(cellS1);
+         when(cellS1.getText()).thenReturn(SECTION_1_VALUE);
+
+         var rowSec2 = mock(SmartWebElement.class);
+         var cellS2 = mock(SmartWebElement.class);
+         when(rowSec2.findSmartElement(eq(CELL_LOCATOR_S2))).thenReturn(cellS2);
+         when(cellS2.findSmartElement(any(By.class))).thenReturn(cellS2);
+         when(cellS2.getText()).thenReturn(SECTION_2_VALUE);
+
+         // Mock getRows to return the correct row based on section
+         // Use thenAnswer for more complex mock logic
+         doAnswer(invocation -> {
+            String section = invocation.getArgument(2);
+            if (SECTION_1.equals(section)) return List.of(rowSec1);
+            if (SECTION_2.equals(section)) return List.of(rowSec2);
+            return Collections.emptyList();
+         }).when(tableImpl).getRows(any(SmartWebElement.class), any(By.class), anyString());
+
+
+         // When
+         var result = tableImpl.readTable(MultiSectionRow.class);
+
+         // Then
+         assertThat(result).hasSize(1);
+         assertThat(result.get(0).getSection1Field().getText()).isEqualTo(SECTION_1_VALUE);
+         assertThat(result.get(0).getSection2Field().getText()).isEqualTo(SECTION_2_VALUE);
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, SECTION_1);
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, SECTION_2);
+      }
+
+      @Test
+      @DisplayName("readTable throws exception for class missing @TableInfo")
+      void testReadTable_MissingTableInfo() {
+         // Given - MissingTableInfoRow class has no @TableInfo
+
+         // When / Then
+         assertThatThrownBy(() -> tableImpl.readTable(MissingTableInfoRow.class))
+               .isInstanceOf(IllegalArgumentException.class)
+               .hasMessageContaining("is missing @TableInfo annotation");
+      }
+
+      @Test
+      @DisplayName("readTable throws exception for field missing @TableCellLocator")
+      void testReadTable_MissingCellLocator() {
+         // Given
+         var row1 = createMockedRow("data");
+         doReturn(List.of(row1)).when(tableImpl).getRows(any(), any(), anyString());
+         TableField<RowWithMissingLocator> dummyField =
+               TableField.of(RowWithMissingLocator::setMissingAnnotationField); // Create a dummy field
+
+         // When / Then
+         assertThatThrownBy(() -> tableImpl.readTable(RowWithMissingLocator.class, dummyField)) // Call with a field
+               .isInstanceOf(IllegalArgumentException.class)
+               .hasMessageContaining("is missing a @TableCellLocator annotation");
+      }
+
+      @Test
+      @DisplayName("readTable(Class, fields...) handles null fields parameter correctly")
+      void testReadTable_ClassWithNullFields() {
+         // Given
+         // Setup mocks for row/cell finding
+         when(rowElement.findSmartElement(eq(CELL_LOCATOR_DUMMY))).thenReturn(cellElement);
+         when(cellElement.findSmartElement(eq(TEXT_LOCATOR_DUMMY))).thenReturn(cellElement);
+         when(cellElement.getText()).thenReturn(CELL_TEXT_VALUE);
+         // Ensure getRows returns our rowElement
+         doReturn(List.of(rowElement)).when(tableImpl).getRows(any(), any(), anyString());
+
+         // When
+         // Call public method with null for the varargs parameter
+         var result = tableImpl.readTable(DummyRow.class, (TableField<DummyRow>[]) null);
+
+         // Then
+         // Should read all annotated fields as if no fields were specified
+         assertThat(result).isNotNull();
+         assertThat(result).hasSize(1);
+         assertThat(result.get(0).getField1().getText()).isEqualTo(CELL_TEXT_VALUE);
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, SECTION_1); // Verify protected method called
+      }
+
+      @Test
+      @DisplayName("readTable(start, end, Class, fields...) handles null fields parameter correctly")
+      void testReadTable_RangeWithNullFields() {
+         // Given
+         var rowList = List.of(rowElement); // Only one row for simplicity
+         doReturn(rowList).when(tableImpl).getRows(any(), any(), anyString());
+         when(rowElement.findSmartElement(eq(CELL_LOCATOR_DUMMY))).thenReturn(cellElement);
+         when(cellElement.findSmartElement(eq(TEXT_LOCATOR_DUMMY))).thenReturn(cellElement);
+         when(cellElement.getText()).thenReturn(CELL_TEXT_VALUE);
+
+
+         // When
+         // Call public method with null for the varargs parameter
+         var result = tableImpl.readTable(1, 2, DummyRow.class, (TableField<DummyRow>[]) null);
+
+         // Then
+         // Should read row 1 (index 0) with all annotated fields
+         assertThat(result).isNotNull();
+         assertThat(result).hasSize(1);
+         assertThat(result.get(0).getField1().getText()).isEqualTo(CELL_TEXT_VALUE);
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, SECTION_1);
+      }
+
+      @Test
+      @DisplayName("readTable handles null vs empty fields parameter similarly")
+      void testReadTable_LambdaCoverage_NullVsEmptyFields() {
+         // Given
+         var rowList = List.of(rowElement, rowElement, rowElement); // 3 rows
+         doReturn(rowList).when(tableImpl).getRows(any(), any(), anyString());
+         when(rowElement.findSmartElement(eq(CELL_LOCATOR_DUMMY))).thenReturn(cellElement);
+         when(cellElement.findSmartElement(eq(TEXT_LOCATOR_DUMMY))).thenReturn(cellElement);
+         when(cellElement.getText()).thenReturn(CELL_TEXT_VALUE);
+
+         // When
+         // 1. Call with null fields varargs
+         var result1 = tableImpl.readTable(DummyRow.class, (TableField<DummyRow>[]) null);
+         // 2. Call with empty fields varargs
+         var result2 = tableImpl.readTable(DummyRow.class, new TableField[0]);
+
+         // Then
+         // Both should read all annotated fields for all rows
+         assertThat(result1).isNotNull();
+         assertThat(result1).hasSize(3);
+         assertThat(result2).isNotNull();
+         assertThat(result2).hasSize(3);
+         // Verify getRows was called (likely twice overall for this test)
+         verify(tableImpl, times(2)).getRows(container, ROWS_LOCATOR, SECTION_1);
+      }
+   }
+
+   @Nested
+   @DisplayName("Table Insertion Tests (Public API)")
+   class TableInsertionTest {
+
+      // Constants for insertion tests
+      private static final String INSERT_VAL = "inserted value";
+      private static final String CUSTOM_INSERT_VAL = "custom insert value";
+      private static final String SINGLE_ROW_VAL = "single row value";
+      private static final List<String> INSERT_CRITERIA = List.of("insert criteria");
+      private static final String[] MULTI_INSERT_VALS = {"ins1", "ins2"};
+      private static final String[] INSERT_VALUES = {"insert1", "insert2"};
+
+      @Mock
+      private TableInsertion mockInsertionService; // Mock the service interface
+
+      @BeforeEach
+      void setupInsertionTests() {
+         // Given
+         // Reset static counters for custom functions
+         WorkingCellInsertionFunction.reset();
+         // Register the mock insertion service for component-based tests
+         // Use the specific mock component type defined in the outer class
+         lenient().when(registry.getTableService(eq(MockComponentTypeForTable.class))).thenReturn(mockInsertionService);
+      }
+
+      // --- Tests for inserting entire data object ---
+
+      @Test
+      @DisplayName("insertCellValue(row, class, data) should handle component insertion")
+      void testInsertCellValue_RowAndData_Component() {
+         // Given
+         var data = new InsertionRow(); // Uses @CellInsertion
+         data.setInsertionField(new TableCell(null, SINGLE_ROW_VAL));
+         // Mock row/cell finding for the specific @TableCellLocator in InsertionRow
+         when(rowElement.findSmartElements(eq(By.className("insCell")))).thenReturn(List.of(cellElement));
+         // Mock enum lookup needed by insertUsingComponent (use try-with-resources for static mock)
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock); // Use helper
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq("INSERT_TYPE"), anyString()))
+                  .thenReturn(MockComponentTypeForTable.INSERT_TYPE);
+
+            // When
+            tableImpl.insertCellValue(1, InsertionRow.class, data);
+
+            // Then
+            verify(registry).getTableService(MockComponentTypeForTable.class);
+            verify(mockInsertionService).tableInsertion(eq(cellElement), eq(MockComponentTypeForTable.INSERT_TYPE), eq(SINGLE_ROW_VAL));
+            verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection"); // Verify row finding was triggered
+         }
+      }
+
+      @Test
+      @DisplayName("insertCellValue(row, class, data) should handle custom function insertion")
+      void testInsertCellValue_RowAndData_CustomFunction() {
+         // Given
+         var data = new CustomInsertionRow(); // Uses @CustomCellInsertion
+         data.setCustomInsertionField(new TableCell(null, CUSTOM_INSERT_VAL));
+         when(rowElement.findSmartElements(eq(By.className("customInsCell")))).thenReturn(List.of(cellElement));
+
+         // When
+         tableImpl.insertCellValue(1, CustomInsertionRow.class, data);
+
+         // Then
+         assertThat(WorkingCellInsertionFunction.callCount).isEqualTo(1);
+         assertThat(WorkingCellInsertionFunction.lastCell).isSameAs(cellElement);
+         assertThat(WorkingCellInsertionFunction.lastValues).containsExactly(CUSTOM_INSERT_VAL);
+         verify(registry, never()).getTableService(any()); // Ensure component service not called
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection");
+      }
+
+      @Test
+      @DisplayName("insertCellValue(criteria, class, data) uses component insertion")
+      void testInsertCellValue_CriteriaAndData_Component() {
+         // Given
+         var data = new InsertionRow();
+         data.setInsertionField(new TableCell(null, SINGLE_ROW_VAL));
+         when(rowElement.getAttribute("innerText")).thenReturn("match criteria");
+         when(rowElement.findSmartElements(eq(By.className("insCell")))).thenReturn(List.of(cellElement));
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq("INSERT_TYPE"), anyString()))
+                  .thenReturn(MockComponentTypeForTable.INSERT_TYPE);
+
+            // When
+            tableImpl.insertCellValue(List.of("match"), InsertionRow.class, data);
+
+            // Then
+            verify(registry).getTableService(MockComponentTypeForTable.class);
+            verify(mockInsertionService).tableInsertion(eq(cellElement), eq(MockComponentTypeForTable.INSERT_TYPE), eq(SINGLE_ROW_VAL));
+            verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection");
+         }
+      }
+
+      @Test
+      @DisplayName("insertCellValue(criteria, class, data) uses custom function insertion")
+      void testInsertCellValue_CriteriaAndData_CustomFunction() {
+         // Given
+         var data = new CustomInsertionRow();
+         data.setCustomInsertionField(new TableCell(null, CUSTOM_INSERT_VAL));
+         when(rowElement.getAttribute("innerText")).thenReturn("match criteria");
+         when(rowElement.findSmartElements(eq(By.className("customInsCell")))).thenReturn(List.of(cellElement));
+         WorkingCellInsertionFunction.reset();
+
+         // When
+         tableImpl.insertCellValue(List.of("match"), CustomInsertionRow.class, data);
+
+         // Then
+         assertThat(WorkingCellInsertionFunction.callCount).isEqualTo(1);
+         assertThat(WorkingCellInsertionFunction.lastCell).isSameAs(cellElement);
+         assertThat(WorkingCellInsertionFunction.lastValues).containsExactly(CUSTOM_INSERT_VAL);
+         verify(registry, never()).getTableService(any());
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection");
+      }
+
+      // --- Tests for inserting specific field values ---
+
+      @Test
+      @DisplayName("insertCellValue(row, class, field, index, values...) uses component insertion")
+      void testInsertCellValue_RowAndField_Component() {
+         // Given
+         TableField<InsertionRow> field = TableField.of(InsertionRow::setInsertionField);
+         when(rowElement.findSmartElements(eq(By.className("insCell")))).thenReturn(List.of(cellElement));
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq("INSERT_TYPE"), anyString()))
+                  .thenReturn(MockComponentTypeForTable.INSERT_TYPE);
+
+            // When
+            tableImpl.insertCellValue(1, InsertionRow.class, field, 1, INSERT_VALUES);
+
+            // Then
+            verify(registry).getTableService(MockComponentTypeForTable.class);
+            verify(mockInsertionService).tableInsertion(eq(cellElement), eq(MockComponentTypeForTable.INSERT_TYPE), eq(INSERT_VALUES));
+            verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection");
+         }
+      }
+
+      @Test
+      @DisplayName("insertCellValue(criteria, class, field, index, values...) uses component insertion")
+      void testInsertCellValue_CriteriaAndField_Component() {
+         // Given
+         TableField<InsertionRow> field = TableField.of(InsertionRow::setInsertionField);
+         when(rowElement.getAttribute("innerText")).thenReturn("match criteria");
+         when(rowElement.findSmartElements(eq(By.className("insCell")))).thenReturn(List.of(cellElement));
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq("INSERT_TYPE"), anyString()))
+                  .thenReturn(MockComponentTypeForTable.INSERT_TYPE);
+
+            // When
+            tableImpl.insertCellValue(List.of("match"), InsertionRow.class, field, 1, INSERT_VALUES);
+
+            // Then
+            verify(registry).getTableService(MockComponentTypeForTable.class);
+            verify(mockInsertionService).tableInsertion(eq(cellElement), eq(MockComponentTypeForTable.INSERT_TYPE), eq(INSERT_VALUES));
+            verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection");
+         }
+      }
+
+      @Test
+      @DisplayName("insertCellValue(row, class, field, index, value) uses custom function")
+      void testInsertCellValue_RowAndField_CustomFunction() {
+         // Given
+         TableField<CustomInsertionRow> field = TableField.of(CustomInsertionRow::setCustomInsertionField);
+         when(rowElement.findSmartElements(eq(By.className("customInsCell")))).thenReturn(List.of(cellElement));
+         WorkingCellInsertionFunction.reset();
+
+         // When
+         tableImpl.insertCellValue(1, CustomInsertionRow.class, field, 1, INSERT_VALUES);
+
+         // Then
+         assertThat(WorkingCellInsertionFunction.callCount).isEqualTo(1);
+         assertThat(WorkingCellInsertionFunction.lastCell).isSameAs(cellElement);
+         assertThat(WorkingCellInsertionFunction.lastValues).isEqualTo(INSERT_VALUES);
+         verify(registry, never()).getTableService(any());
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection");
+      }
+
+      @Test
+      @DisplayName("insertCellValue(criteria, class, field, index, value) uses custom function")
+      void testInsertCellValue_CriteriaAndField_CustomFunction() {
+         // Given
+         TableField<CustomInsertionRow> field = TableField.of(CustomInsertionRow::setCustomInsertionField);
+         when(rowElement.getAttribute("innerText")).thenReturn("match criteria");
+         when(rowElement.findSmartElements(eq(By.className("customInsCell")))).thenReturn(List.of(cellElement));
+         WorkingCellInsertionFunction.reset();
+
+         // When
+         tableImpl.insertCellValue(List.of("match"), CustomInsertionRow.class, field, 1, INSERT_VALUES);
+
+         // Then
+         assertThat(WorkingCellInsertionFunction.callCount).isEqualTo(1);
+         assertThat(WorkingCellInsertionFunction.lastCell).isSameAs(cellElement);
+         assertThat(WorkingCellInsertionFunction.lastValues).isEqualTo(INSERT_VALUES);
+         verify(registry, never()).getTableService(any());
+         verify(tableImpl).getRows(container, ROWS_LOCATOR, "dummySection");
+      }
+
+      // --- Error Handling Tests via Public API ---
+
+      @Test
+      @DisplayName("insertCellValue throws exception for invalid index")
+      void testInsertCellValue_InvalidIndex() {
+         // Given
+         var data = new InsertionRow();
+         data.setInsertionField(new TableCell(null, "insert-me"));
+         // Make findSmartElements return an empty list for the cell locator
+         when(rowElement.findSmartElements(eq(By.className("insCell")))).thenReturn(Collections.emptyList());
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq("INSERT_TYPE"), anyString()))
+                  .thenReturn(MockComponentTypeForTable.INSERT_TYPE);
+
+            // When / Then
+            assertThatThrownBy(() -> tableImpl.insertCellValue(1, InsertionRow.class, data))
+                  .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
+                  .hasMessageContaining("Invalid cell index: 1");
+         }
+      }
+
+      @Test
+      @DisplayName("insertCellValue throws exception if no insertion method defined for field")
+      void testInsertCellValue_NoMethodDefinedForField() {
+         // Given
+         var data = new DummyRow(); // DummyRow field has no @CellInsertion or @CustomCellInsertion
+         data.setField1(new TableCell(null, "wont-insert"));
+
+         TableField<DummyRow> field1Accessor = TableField.of(DummyRow::setField1);
+
+         // When / Then
+         assertThatThrownBy(() -> tableImpl.insertCellValue(1, DummyRow.class, field1Accessor, "wont-insert"))
+               .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
+               .hasMessageContaining("No table cell insertion method provided for field: field1");
+      }
+
+      @Test
+      @DisplayName("insertCellValue throws exception if registry is null for component insertion")
+      void testInsertCellValue_ComponentButNoRegistry() {
+         // Given
+         var data = new InsertionRow();
+         data.setInsertionField(new TableCell(null, "insert-me"));
+         when(rowElement.findSmartElements(eq(By.className("insCell")))).thenReturn(List.of(cellElement));
+         // Create instance without registry
+         var tableImplNoRegistry = new TestTableImpl(driver, null, locators, container, rows, headerRowElement);
+
+         // When / Then
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq("INSERT_TYPE"), anyString()))
+                  .thenReturn(MockComponentTypeForTable.INSERT_TYPE);
+
+            assertThatThrownBy(() -> tableImplNoRegistry.insertCellValue(1, InsertionRow.class, data))
+                  .isInstanceOf(IllegalStateException.class)
+                  .hasMessageContaining("Your instance of table is not having registered services");
+         }
+      }
+
+      @Test
+      @DisplayName("insertCellValue uses custom function if provided")
+      void testInsertCellValue_WithCustomFunction() {
+         // Given
+         var data = new RowWithCustomInsertion();
+         data.setField(new TableCell(null, "val1")); // Set the value we want to insert
+         when(rowElement.findSmartElements(eq(By.id("c")))).thenReturn(List.of(cellElement));
+
+         SmartWebElement badTableContainer = mock(SmartWebElement.class);
+         when(driver.findSmartElement(By.id("t"))).thenReturn(badTableContainer);
+         when(badTableContainer.findSmartElements(By.id("r"))).thenReturn(rows);
+
+         ValidCustomInsertionFunction.called = false;
+         ValidCustomInsertionFunction.lastElement = null;
+         ValidCustomInsertionFunction.lastValues = null;
+
+         String[] testValues = {"val1"}; // Adjust to match the single value we are setting
+
+         // When
+         tableImpl.insertCellValue(1, RowWithCustomInsertion.class, data);
+
+         // Then
+         assertThat(ValidCustomInsertionFunction.called).isTrue();
+         assertThat(ValidCustomInsertionFunction.lastElement).isEqualTo(cellElement);
+         assertThat(ValidCustomInsertionFunction.lastValues).isEqualTo(testValues);
+      }
+   }
+
+   @Nested
+   @DisplayName("Table Filtering Tests (Public API)")
+   class TableFilteringTest {
+
+      // Constants for filtering tests
+      private static final String FILTER_VALUE = "filter value";
+      private static final String[] FILTER_VALUES = {"filter value", "another"};
+      private static final String HEADER_CELL_FILTER_CLASS = "filterHeaderCell"; // From FilterRow annotation
+      private static final String COMPONENT_TYPE_FILTER = "FILTER_TYPE"; // From FilterRow annotation
+      @Mock
+      private TableFilter mockFilterService; // Mock the service interface
+
+      @BeforeEach
+      void setupFilteringTests() {
+         // Given
+         // Reset static counter for custom function mock
+         WorkingCellFilterFunction.reset();
+         // Register the mock filter service
+         lenient().when(registry.getFilterService(eq(MockComponentTypeForTable.class))).thenReturn(mockFilterService);
+         // Mock header cell finding
+         lenient().when(headerRowElement.findSmartElement(any(By.class))).thenReturn(headerCellElement);
+      }
+
+      @Test
+      @DisplayName("filterTable uses component filter correctly")
+      void testFilterTable_Component() {
+         // Given
+         TableField<FilterRow> field = TableField.of(FilterRow::setFilterField); // Field annotated with @CellFilter
+         when(headerRowElement.findSmartElement(eq(By.className(HEADER_CELL_FILTER_CLASS)))).thenReturn(headerCellElement);
+         // Mock ReflectionUtil needed by filterCellsUsingComponent
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock); // Use helper
+            // Mock enum lookup to return the specific type from the annotation
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq(COMPONENT_TYPE_FILTER), anyString()))
+                  .thenReturn(MockComponentTypeForTable.FILTER_TYPE);
+
+            // When
+            tableImpl.filterTable(FilterRow.class, field, FilterStrategy.SELECT_ONLY, FILTER_VALUES);
+
+            // Then
+            verify(tableImpl).getHeaderRow(container, HEADER_LOCATOR, "dummySection"); // From @TableInfo
+            verify(headerRowElement).findSmartElement(By.className(HEADER_CELL_FILTER_CLASS)); // From @TableCellLocator
+            verify(registry).getFilterService(MockComponentTypeForTable.class); // Verify registry lookup
+            verify(mockFilterService).tableFilter(eq(headerCellElement), eq(MockComponentTypeForTable.FILTER_TYPE), eq(FilterStrategy.SELECT_ONLY), eq(FILTER_VALUES));
+            verifyNoMoreInteractions(mockFilterService);
+         }
+      }
+
+      @Test
+      @DisplayName("filterTable uses custom function correctly")
+      void testFilterTable_CustomFunction() {
+         // Given
+         TableField<CustomFilterRow> field =
+               TableField.of(CustomFilterRow::setCustomFilterField); // Field annotated with @CustomCellFilter
+         when(headerRowElement.findSmartElement(eq(CUSTOM_FILTER_HEADER_CELL_LOCATOR))).thenReturn(headerCellElement);
+         WorkingCellFilterFunction.reset();
+
+         // When
+         tableImpl.filterTable(CustomFilterRow.class, field, FilterStrategy.UNSELECT, FILTER_VALUE);
+
+         // Then
+         verify(tableImpl).getHeaderRow(container, HEADER_LOCATOR, "dummySection");
+         verify(headerRowElement).findSmartElement(CUSTOM_FILTER_HEADER_CELL_LOCATOR);
+         assertThat(WorkingCellFilterFunction.callCount).isEqualTo(1);
+         assertThat(WorkingCellFilterFunction.lastCell).isSameAs(headerCellElement);
+         assertThat(WorkingCellFilterFunction.lastStrategy).isEqualTo(FilterStrategy.UNSELECT);
+         assertThat(WorkingCellFilterFunction.lastValues).containsExactly(FILTER_VALUE);
+         verify(registry, never()).getFilterService(any()); // Ensure component service not called
+      }
+
+      @Test
+      @DisplayName("filterTable throws exception if no filter method defined for field")
+      void testFilterTable_NoFilterAnnotation() {
+         // Given
+         TableField<DummyRow> field = TableField.of(DummyRow::setField1); // DummyRow field has no filter annotations
+
+         // When / Then
+         assertThatThrownBy(() -> tableImpl.filterTable(DummyRow.class, field, FilterStrategy.SELECT, FILTER_VALUE))
+               .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
+               // Check implementation detail: filterCells reuses exception message from insertion check currently
+               .hasMessageContaining("No table cell insertion method provided for field: field1");
+      }
+
+      @Test
+      @DisplayName("filterTable throws exception if registry is null for component filter")
+      void testFilterTable_ComponentButNoRegistry() {
+         // Given
+         TableField<FilterRow> field = TableField.of(FilterRow::setFilterField);
+         when(headerRowElement.findSmartElement(any(By.class))).thenReturn(headerCellElement);
+         // Create instance without registry
+         var tableImplNoRegistry = new TestTableImpl(driver, null, locators, container, rows, headerRowElement);
+
+         // When / Then
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq(COMPONENT_TYPE_FILTER), anyString()))
+                  .thenReturn(MockComponentTypeForTable.FILTER_TYPE);
+
+            assertThatThrownBy(() -> tableImplNoRegistry.filterTable(FilterRow.class, field, FilterStrategy.SELECT, FILTER_VALUE))
+                  .isInstanceOf(IllegalStateException.class)
+                  .hasMessageContaining("Your instance of table is not having registered services");
+         }
+      }
+
+      @Test
+      @DisplayName("filterTable throws exception if component type lookup fails")
+      void testFilterTable_ComponentLookupError() {
+         // Given
+         TableField<FilterRow> field = TableField.of(FilterRow::setFilterField);
+         when(headerRowElement.findSmartElement(any(By.class))).thenReturn(headerCellElement);
+         when(registry.getFilterService(eq(MockComponentTypeForTable.class))).thenReturn(mockFilterService); // Registry has service
+
+         // Mock ReflectionUtil to throw error during enum lookup
+         try (var reflectionUtilMock = mockStatic(ReflectionUtil.class);
+              var uiConfigHolderMock = mockStatic(UiConfigHolder.class)) {
+            setupStaticMocksForComponentLookup(reflectionUtilMock, uiConfigHolderMock);
+            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(eq(MockComponentTypeForTable.class), eq(COMPONENT_TYPE_FILTER), anyString()))
+                  .thenThrow(new ReflectionException("Simulated Lookup Failure"));
+
+            // When / Then
+            assertThatThrownBy(() -> tableImpl.filterTable(FilterRow.class, field, FilterStrategy.SELECT, FILTER_VALUE))
+                  .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
+                  .hasMessageContaining("Failed to filter using component")
+                  .cause() // Check cause from ReflectionUtil
+                  .isInstanceOf(ReflectionException.class)
+                  .hasMessageContaining("Simulated Lookup Failure");
+         }
+      }
+
+      @Test
+      @DisplayName("filterTable throws exception if custom function fails instantiation")
+      void testFilterTable_BadCustomFunction() {
+         // Given
+         TableField<BadCustomFilterRow> field = TableField.of(BadCustomFilterRow::setField);
+         when(headerRowElement.findSmartElement(any(By.class))).thenReturn(headerCellElement);
+
+         // When / Then
+         assertThatThrownBy(() -> tableImpl.filterTable(BadCustomFilterRow.class, field, FilterStrategy.SELECT, FILTER_VALUE))
+               .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
+               .hasMessageContaining("Failed to instantiate custom cell filter function");
+      }
+   }
+
+   @Nested
+   @DisplayName("Table Sorting Tests (Public API)")
+   class TableSortingTest {
+
+      @Test
+      @DisplayName("sortTable delegates to protected helper with correct arguments")
+      void testSortTableDelegatesToProtectedHelper() {
+         // Given
+         // Use TableField.of for clarity and type safety
+         TableField<DummyRow> field = TableField.of(DummyRow::setField1);
+         var strategy = SortingStrategy.DESC;
+
+         // Reset spy state if needed (might not be necessary depending on test structure)
+         reset(tableImpl); // Reset interactions on the spy itself
+
+         // When
+         tableImpl.sortTable(DummyRow.class, field, strategy);
+
+         // Then
+         // Verify the internal protected sortTable method on our spied TestTableImpl was called
+         verify(tableImpl).sortTable(eq(headerCellElement), eq(strategy));
+
+         // Optionally verify the interactions that lead to finding the header cell
+         verify(tableImpl).getHeaderRow(container, HEADER_LOCATOR, SECTION_1);
+         verify(headerRowElement).findSmartElement(HEADER_CELL_LOCATOR_DUMMY);
+
+         // Verify the specific tracking fields in the TestTableImpl spy instance
+         assertThat(tableImpl.sortTableCalled).isTrue();
+         assertThat(tableImpl.sortHeaderCellArg).isSameAs(headerCellElement);
+         assertThat(tableImpl.sortStrategyArg).isSameAs(strategy);
+      }
+   }
+
+   @Nested
+   @DisplayName("Field Extraction and Mapping Tests (Internal Logic)")
+   class FieldExtractionTest {
+
+      // --- Tests for validateFieldInvokers ---
+      @Test
+      @DisplayName("validateFieldInvokers should succeed with valid TableField")
+      void testValidateFieldInvokers_Success() throws Exception {
+         // Given
+         var validateMethod = TableImpl.class.getDeclaredMethod(
+               "validateFieldInvokers", Object.class, List.class);
+         validateMethod.setAccessible(true);
+         var row = new DummyRow();
+         // Valid field accepts TableCell
+         TableField<DummyRow> validField = (instance, value) -> {
+            if (value instanceof TableCell) {
+               instance.setField1((TableCell) value);
             } else {
-                throw e; // Re-throw if it's a different issue
+               throw new ClassCastException("Invalid type for TableCell");
             }
-        }
-    }
+         };
+         var fields = List.of(validField);
 
-    @Test
-    @DisplayName("readRowsInRange handles different range scenarios")
-    void testReadRowsInRange() throws Exception {
-        // Access private method through reflection
-        Method readRowsMethod = TableImpl.class.getDeclaredMethod(
-                "readRowsInRange", SmartWebElement.class, By.class,
-                String.class, Integer.class, Integer.class);
-        readRowsMethod.setAccessible(true);
+         // When & Then
+         // Should not throw because TableImpl passes TableCell or List instances
+         assertDoesNotThrow(() -> validateMethod.invoke(tableImpl, row, fields));
+      }
 
-        // Create a simpler version that doesn't rely on complex mocking
-        TableImpl simpleImpl = new TableImpl(driver) {
-            @Override
-            protected SmartWebElement getTableContainer(By tableContainerLocator) {
-                return null;
+      @Test
+      @DisplayName("validateFieldInvokers should throw exception for invalid TableField")
+      void testValidateFieldInvokers_Failure() throws NoSuchMethodException {
+         // Given
+         var validateMethod = TableImpl.class.getDeclaredMethod(
+               "validateFieldInvokers", Object.class, List.class);
+         validateMethod.setAccessible(true);
+         var row = new DummyRow();
+         // Invalid field throws for any accepted value type
+         TableField<DummyRow> invalidField = (instance, value) -> {
+            throw new IllegalArgumentException("Setter failed validation");
+         };
+         var fields = List.of(invalidField);
+
+         // When & Then
+         var thrown = catchThrowable(() -> validateMethod.invoke(tableImpl, row, fields));
+         assertThat(thrown).isInstanceOf(InvocationTargetException.class)
+               .cause().isInstanceOf(IllegalArgumentException.class); // Check only the exception type
+      }
+
+      // --- Tests for extractAnnotatedFields ---
+      @Test
+      @DisplayName("extractAnnotatedFields with empty fields list returns all annotated fields")
+      void testExtractAnnotatedFields_EmptyFieldsList() throws Exception {
+         // Given
+         var extractMethod = TableImpl.class.getDeclaredMethod(
+               "extractAnnotatedFields", Class.class, List.class);
+         extractMethod.setAccessible(true);
+
+         // When
+         @SuppressWarnings("unchecked") // Suppress for cast from reflection
+         List<CellLocator> result = (List<CellLocator>)
+               extractMethod.invoke(tableImpl, DummyRow.class, Collections.emptyList());
+
+         // Then
+         assertThat(result).isNotNull().hasSize(1);
+         assertThat(result.get(0).getFieldName()).isEqualTo("field1"); // Match field name in DummyRow
+         assertThat(result.get(0).getTableSection()).isEqualTo(SECTION_1);
+      }
+
+      @Test
+      @DisplayName("extractAnnotatedFields with field invokers returns matching fields")
+      void testExtractAnnotatedFields_WithFieldInvokers() throws Exception {
+         // Given
+         var extractMethod = TableImpl.class.getDeclaredMethod(
+               "extractAnnotatedFields", Class.class, List.class);
+         extractMethod.setAccessible(true);
+         // Create field invoker matching the field in DummyRow
+         TableField<DummyRow> field = TableField.of(DummyRow::setField1);
+         var fieldsToExtract = List.of(field);
+         // Set dummy value on an instance to simulate field being "used" by the TableField
+         // This is needed to pass the filtering logic inside extractAnnotatedFields
+         var dummyInstance = new DummyRow();
+         field.invoke(dummyInstance, new TableCell("temp"));
+
+         // When
+         @SuppressWarnings("unchecked")
+         List<CellLocator> result = (List<CellLocator>)
+               extractMethod.invoke(tableImpl, DummyRow.class, fieldsToExtract);
+
+         // Then
+         assertThat(result).isNotNull().hasSize(1);
+         assertThat(result.get(0).getFieldName()).isEqualTo("field1");
+      }
+
+      @Test
+      @DisplayName("extractAnnotatedFields throws exception for invalid field type syntax")
+      void testExtractAnnotatedFields_InvalidSyntax() throws Exception {
+         // Given
+         var extractMethod = TableImpl.class.getDeclaredMethod(
+               "extractAnnotatedFields", Class.class, List.class);
+         extractMethod.setAccessible(true);
+
+         // When / Then
+         try (var logMock = mockStatic(LogUi.class)) {
+            var thrown =
+                  catchThrowable(() -> extractMethod.invoke(tableImpl, InvalidRow.class, Collections.emptyList()));
+
+            assertThat(thrown)
+                  .isInstanceOf(InvocationTargetException.class)
+                  .cause()
+                  .isInstanceOf(com.theairebellion.zeus.ui.components.table.exceptions.TableException.class)
+                  .hasMessageContaining("Invalid field type for table cell usage");
+
+            logMock.verify(() -> LogUi.error(contains("Some fields are not TableCell")));
+         }
+      }
+
+      @Test
+      @DisplayName("extractAnnotatedFields throws exception for field missing TableCellLocator when fields provided")
+      void testExtractAnnotatedFields_MissingLocatorWithFields() throws Exception {
+         // Given
+         var extractMethod = TableImpl.class.getDeclaredMethod(
+               "extractAnnotatedFields", Class.class, List.class);
+         extractMethod.setAccessible(true);
+         var instance = new RowMissingLocator();
+         // Provide TableField for the field *without* the annotation
+         TableField<RowMissingLocator> field = TableField.of(RowMissingLocator::setFieldWithoutLocator);
+         instance.setFieldWithoutLocator(new TableCell("value")); // Mark as 'used'
+
+         // When / Then
+         var thrown = catchThrowable(() -> extractMethod.invoke(tableImpl, RowMissingLocator.class, List.of(field)));
+         assertThat(thrown)
+               .isInstanceOf(InvocationTargetException.class)
+               .cause()
+               .isInstanceOf(IllegalArgumentException.class)
+               .hasMessageContaining("is missing a @TableCellLocator annotation");
+      }
+
+
+      // --- Tests for mapToCellLocator ---
+      // Testing different annotation combinations
+
+      @Test
+      @DisplayName("mapToCellLocator creates CellLocator for basic field")
+      void testMapToCellLocator_BasicField() throws Exception {
+         // Given
+         var mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
+         mapMethod.setAccessible(true);
+         var field = DummyRow.class.getDeclaredField("field1");
+
+         // When
+         var result = (CellLocator) mapMethod.invoke(tableImpl, field);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getFieldName()).isEqualTo("field1");
+         assertThat(result.getTableSection()).isEqualTo(SECTION_1);
+         assertThat(result.getLocator()).isEqualTo(CELL_LOCATOR_DUMMY);
+         assertThat(result.getCellTextLocator()).isEqualTo(TEXT_LOCATOR_DUMMY);
+         assertThat(result.getHeaderCellLocator()).isEqualTo(HEADER_CELL_LOCATOR_DUMMY);
+         assertThat(result.getCellInsertionComponent()).isNull();
+         assertThat(result.getCustomCellInsertion()).isNull();
+         assertThat(result.getCellFilterComponent()).isNull();
+         assertThat(result.getCustomCellFilter()).isNull();
+         assertThat(result.isCollection()).isFalse();
+      }
+
+      @Test
+      @DisplayName("mapToCellLocator handles cell insertion annotation")
+      void testMapToCellLocator_WithCellInsertion() throws Exception {
+         // Given
+         var mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
+         mapMethod.setAccessible(true);
+         var field = InsertionRow.class.getDeclaredField("insertionField");
+
+         // When
+         var result = (CellLocator) mapMethod.invoke(tableImpl, field);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getFieldName()).isEqualTo("insertionField");
+         assertThat(result.getCellInsertionComponent()).isNotNull();
+         assertThat(result.getCellInsertionComponent().getType()).isEqualTo(MockComponentTypeForTable.class);
+         assertThat(result.getCellInsertionComponent().getComponentType()).isEqualTo("INSERT_TYPE");
+         assertThat(result.getCellInsertionComponent().getOrder()).isEqualTo(1);
+         assertThat(result.getCustomCellInsertion()).isNull();
+      }
+
+      @Test
+      @DisplayName("mapToCellLocator handles custom cell insertion annotation")
+      void testMapToCellLocator_WithCustomCellInsertion() throws Exception {
+         // Given
+         var mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
+         mapMethod.setAccessible(true);
+         var field = CustomInsertionRow.class.getDeclaredField("customInsertionField");
+
+         // When
+         var result = (CellLocator) mapMethod.invoke(tableImpl, field);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getFieldName()).isEqualTo("customInsertionField");
+         assertThat(result.getCellInsertionComponent()).isNull();
+         assertThat(result.getCustomCellInsertion()).isEqualTo(WorkingCellInsertionFunction.class);
+      }
+
+      @Test
+      @DisplayName("mapToCellLocator handles cell filter annotation")
+      void testMapToCellLocator_WithCellFilter() throws Exception {
+         // Given
+         var mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
+         mapMethod.setAccessible(true);
+         var field = FilterRow.class.getDeclaredField("filterField");
+
+         // When
+         var result = (CellLocator) mapMethod.invoke(tableImpl, field);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getFieldName()).isEqualTo("filterField");
+         assertThat(result.getCellFilterComponent()).isNotNull();
+         assertThat(result.getCellFilterComponent().getType()).isEqualTo(MockComponentTypeForTable.class);
+         assertThat(result.getCellFilterComponent().getComponentType()).isEqualTo("FILTER_TYPE");
+         assertThat(result.getCustomCellFilter()).isNull();
+      }
+
+      @Test
+      @DisplayName("mapToCellLocator handles custom cell filter annotation")
+      void testMapToCellLocator_WithCustomCellFilter() throws Exception {
+         // Given
+         var mapMethod = TableImpl.class.getDeclaredMethod("mapToCellLocator", Field.class);
+         mapMethod.setAccessible(true);
+         var field = CustomFilterRow.class.getDeclaredField("customFilterField");
+
+         // When
+         var result = (CellLocator) mapMethod.invoke(tableImpl, field);
+
+         // Then
+         assertThat(result).isNotNull();
+         assertThat(result.getFieldName()).isEqualTo("customFilterField");
+         assertThat(result.getCellFilterComponent()).isNull();
+         assertThat(result.getCustomCellFilter()).isEqualTo(WorkingCellFilterFunction.class);
+      }
+
+      @Test
+      @DisplayName("validateFieldInvokers throws exception for IllegalAccessException")
+      void testValidateFieldInvokers_IllegalAccessException() throws Exception {
+         // Access private method through reflection
+         Method validateMethod = TableImpl.class.getDeclaredMethod(
+               "validateFieldInvokers", Object.class, List.class);
+         validateMethod.setAccessible(true);
+         var row = new DummyRow();
+         // Invalid field throws IllegalAccessException
+         TableField<DummyRow> invalidField = (instance, value) -> {
+            throw new IllegalAccessException("Setter access denied");
+         };
+         var fields = List.of(invalidField);
+
+         // When / Then
+         var thrown = catchThrowable(() -> validateMethod.invoke(tableImpl, row, fields));
+         assertThat(thrown).isInstanceOf(InvocationTargetException.class)
+               .cause().isInstanceOf(IllegalArgumentException.class) // Expect IllegalArgumentException
+               .hasMessageContaining("No accepted value could be applied via FieldInvoker");
+      }
+   }
+
+   @Nested
+   @DisplayName("Lambda Expressions and Advanced Functionality Tests")
+   class LambdaAndAdvancedTests {
+
+      // Constants for local row model
+      private static final String FIELD1_TEXT = "field1";
+      private static final String FIELD2_TEXT = "field2";
+      private static final String UNIQUE_FIELD1_TEXT = "UNIQUE_TEST_FIELD1";
+      private static final String UNIQUE_FIELD2_TEXT = "UNIQUE_TEST_FIELD2";
+      private static final String CELL1_LOCATOR_STR = "cell1";
+      private static final String CELL2_LOCATOR_STR = "cell2";
+      private static final String TEXT1_LOCATOR_STR = "text1";
+      private static final String TEXT2_LOCATOR_STR = "text2";
+      private static final String HEADER1_LOCATOR_STR = "header1";
+      private static final String HEADER2_LOCATOR_STR = "header2";
+      private static final String SECTION_NAME = "section";
+
+      @Test
+      @DisplayName("processInsertCellValue should process fields in specified order")
+      void testProcessInsertCellValue_Order() throws Exception {
+         // Given: Reflection setup for private method
+         var processMethod = TableImpl.class.getDeclaredMethod(
+               "processInsertCellValue", BiConsumer.class, Class.class, Object.class);
+         processMethod.setAccessible(true);
+
+         // Row model with fields having different @CellInsertion orders
+         @TableInfo(tableContainerLocator = @FindBy(id = "container"), rowsLocator = @FindBy(id = "rows"), headerRowLocator = @FindBy(id = "header"))
+         class OrderedFieldsRow {
+            @TableCellLocator(cellLocator = @FindBy(id = CELL1_LOCATOR_STR), cellTextLocator = @FindBy(id = TEXT1_LOCATOR_STR), headerCellLocator = @FindBy(id = HEADER1_LOCATOR_STR), tableSection = SECTION_NAME)
+            @CellInsertion(type = MockComponentTypeForTable.class, componentType = "TEST", order = 2)
+            private TableCell field1 = new TableCell(null, FIELD1_TEXT);
+
+            @TableCellLocator(cellLocator = @FindBy(id = CELL2_LOCATOR_STR), cellTextLocator = @FindBy(id = TEXT2_LOCATOR_STR), headerCellLocator = @FindBy(id = HEADER2_LOCATOR_STR), tableSection = SECTION_NAME)
+            @CellInsertion(type = MockComponentTypeForTable.class, componentType = "TEST", order = 1)
+            private TableCell field2 = new TableCell(null, FIELD2_TEXT);
+
+            public TableCell getField1() {
+               return field1;
             }
 
-            @Override
-            protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                // Always return a fixed list of 5 elements for testing purposes
-                List<SmartWebElement> elements = new ArrayList<>();
-                for (int i = 0; i < 5; i++) {
-                    elements.add(mock(SmartWebElement.class));
-                }
-                return elements;
+            public void setField1(TableCell cell) {
+               field1 = cell;
             }
 
-            @Override
-            protected SmartWebElement getHeaderRow(SmartWebElement tableContainer, By headerRowLocator, String tableSection) {
-                return null;
+            public TableCell getField2() {
+               return field2;
             }
 
-            @Override
-            protected void sortTable(SmartWebElement headerCell, SortingStrategy sortingStrategy) {
+            public void setField2(TableCell cell) {
+               field2 = cell;
             }
-        };
+         }
 
-        // Test with null range (all rows)
-        List<SmartWebElement> allRows = (List<SmartWebElement>) readRowsMethod.invoke(
-                simpleImpl, container, By.className("rows"), "section", null, null);
-        assertEquals(5, allRows.size());
+         var dataRow = new OrderedFieldsRow();
+         var invocationOrder = new ArrayList<String>();
 
-        // Test with valid range
-        List<SmartWebElement> rangeRows = (List<SmartWebElement>) readRowsMethod.invoke(
-                simpleImpl, container, By.className("rows"), "section", 2, 4);
-        assertEquals(3, rangeRows.size());
+         // Consumer to record the effective field name based on unique values
+         BiConsumer<TableField<OrderedFieldsRow>, String[]> recordingConsumer = (field, values) -> {
+            var testRowForField1 = new OrderedFieldsRow();
+            var testRowForField2 = new OrderedFieldsRow();
+            testRowForField1.setField1(new TableCell(null, UNIQUE_FIELD1_TEXT));
+            testRowForField2.setField2(new TableCell(null, UNIQUE_FIELD2_TEXT));
 
-        // Test with invalid range (start > end)
-        List<SmartWebElement> invalidRows = (List<SmartWebElement>) readRowsMethod.invoke(
-                simpleImpl, container, By.className("rows"), "section", 4, 2);
-        assertTrue(invalidRows.isEmpty());
-
-        // Test with range exceeding available rows
-        List<SmartWebElement> exceedingRows = (List<SmartWebElement>) readRowsMethod.invoke(
-                simpleImpl, container, By.className("rows"), "section", 3, 10);
-        assertEquals(3, exceedingRows.size());
-    }
-
-    @Test
-    @DisplayName("findRowElement handles different row identifier types")
-    void testFindRowElement() throws Exception {
-        // First create multiple rows for testing
-        List<SmartWebElement> multipleRows = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            SmartWebElement row = mock(SmartWebElement.class);
-            when(row.getAttribute("innerText")).thenReturn("row " + i + " content");
-            multipleRows.add(row);
-        }
-
-        // Create a special TableImpl instance that returns our test rows
-        TestTableImpl customTableImpl = new TestTableImpl(driver, registry, locators, container, multipleRows) {
-            @Override
-            protected List<SmartWebElement> getRows(SmartWebElement tableContainer, By tableRowsLocator, String section) {
-                return multipleRows; // Return our test rows regardless of input
+            try {
+               var tempCell = new TableCell(null, "temp");
+               field.invoke(testRowForField1, tempCell); // Try invoking on row where field1 is unique
+               if (testRowForField1.getField1() != tempCell) { // If field1 wasn't changed, it must be field2
+                  invocationOrder.add("field2");
+               } else {
+                  invocationOrder.add("field1");
+               }
+            } catch (Exception e) {
+               fail("Invocation failed during field identification", e);
             }
-        };
+         };
 
-        // Access the private method using reflection
-        Method findRowMethod = TableImpl.class.getDeclaredMethod(
-                "findRowElement", SmartWebElement.class, By.class,
-                Object.class, String.class);
-        findRowMethod.setAccessible(true);
+         // When
+         processMethod.invoke(tableImpl, recordingConsumer, OrderedFieldsRow.class, dataRow);
 
-        // Test with row index (indexes in TableImpl are 0-based internally)
-        SmartWebElement indexResult = (SmartWebElement) findRowMethod.invoke(
-                customTableImpl, container, By.className("rows"), 1, "section");
-        assertEquals(multipleRows.get(1), indexResult);
+         // Then
+         assertThat(invocationOrder).as("Should process exactly 2 fields").hasSize(2);
+         assertThat(invocationOrder.get(0)).as("Field2 (order=1) should be processed first").isEqualTo("field2");
+         assertThat(invocationOrder.get(1)).as("Field1 (order=2) should be processed second").isEqualTo("field1");
+      }
+   }
 
-        // Test with invalid index
-        Exception ex = assertThrows(InvocationTargetException.class, () ->
-                findRowMethod.invoke(customTableImpl, container, By.className("rows"), 5, "section"));
-        assertTrue(ex.getCause() instanceof IndexOutOfBoundsException);
+   @Nested
+   @DisplayName("Helper Method Tests")
+   class HelperMethodTests {
 
-        // Test with search criteria
-        SmartWebElement criteriaResult = (SmartWebElement) findRowMethod.invoke(
-                customTableImpl, container, By.className("rows"), List.of("row 2"), "section");
-        assertEquals(multipleRows.get(2), criteriaResult);
+      @Test
+      @DisplayName("invokeSetter handles null parameters")
+      void testInvokeSetter_NullParameters() throws Exception {
+         // Access private method through reflection
+         Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
+               "invokeSetter", Object.class, String.class, Object.class);
+         invokeSetterMethod.setAccessible(true);
 
-        // Test with unsupported identifier type
-        Exception ex2 = assertThrows(InvocationTargetException.class, () ->
-                findRowMethod.invoke(customTableImpl, container, By.className("rows"), 3.14, "section"));
-        assertTrue(ex2.getCause() instanceof IllegalArgumentException);
-        assertTrue(ex2.getCause().getMessage().contains("Unsupported row identifier type"));
-    }
+         // Test with null parameters - should be no-op
+         invokeSetterMethod.invoke(tableImpl, null, "any", "value"); // null target object
+         invokeSetterMethod.invoke(tableImpl, new TableImplTest.DummyRow(), null, "value"); // null field name
+         invokeSetterMethod.invoke(tableImpl, new TableImplTest.DummyRow(), "field", null); // null value
 
-    @Test
-    @DisplayName("OrderedFieldInvokerAndValues record works correctly")
-    void testOrderedFieldInvokerAndValues() throws Exception {
-        // Access the record class through reflection
-        Class<?> recordClass = Class.forName(
-                "com.theairebellion.zeus.ui.components.table.service.TableImpl$OrderedFieldInvokerAndValues");
+         // No exception means success
+      }
 
-        // Get the constructor
-        Constructor<?> constructor = recordClass.getDeclaredConstructors()[0];
-        constructor.setAccessible(true);
+      @Test
+      @DisplayName("invokeSetter calls setter method correctly")
+      void testInvokeSetter_Success() throws Exception {
+         // Access private method through reflection
+         Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
+               "invokeSetter", Object.class, String.class, Object.class);
+         invokeSetterMethod.setAccessible(true);
 
-        // Create field invoker for test
-        TableField<DummyRow> field = (row, value) -> {
-        };
+         // Test successful invocation
+         TableImplTest.DummyRow row = new TableImplTest.DummyRow();
+         TableCell cell = new TableCell(null, "setter test");
 
-        // Create record instance
-        String[] values = new String[]{"test"};
-        Object record = constructor.newInstance(field, 1, values);
+         invokeSetterMethod.invoke(tableImpl, row, "field1", cell);
+         assertEquals("setter test", row.getField1().getText());
+      }
 
-        // Test accessor methods
-        Method fieldInvokerMethod = recordClass.getMethod("fieldInvoker");
-        Method orderMethod = recordClass.getMethod("order");
-        Method stringValuesMethod = recordClass.getMethod("stringValues");
+      @Test
+      @DisplayName("invokeSetter handles missing setter method")
+      void testInvokeSetter_NoSuchMethod() throws Exception {
+         // Access private method through reflection
+         Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
+               "invokeSetter", Object.class, String.class, Object.class);
+         invokeSetterMethod.setAccessible(true);
 
-        assertEquals(field, fieldInvokerMethod.invoke(record));
-        assertEquals(1, orderMethod.invoke(record));
-        assertArrayEquals(values, (String[]) stringValuesMethod.invoke(record));
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
+            LogUiMock.when(() -> LogUi.error(contains("Setter not found"), any(NoSuchMethodException.class)))
+                  .thenAnswer(invocation -> null);
 
-        // Test toString method
-        String toString = record.toString();
-        assertTrue(toString.contains("fieldInvoker"));
-        assertTrue(toString.contains("order=1"));
+            TableImplTest.DummyRow row = new TableImplTest.DummyRow();
 
-        // Test equals method
-        Object record2 = constructor.newInstance(field, 1, values);
-        assertEquals(record, record2);
+            // Execute with non-existent field
+            invokeSetterMethod.invoke(tableImpl, row, "nonExistentField", "value");
 
-        // Test hashCode method
-        assertEquals(record.hashCode(), record2.hashCode());
-    }
+            // Verify error was logged
+            LogUiMock.verify(() -> LogUi.error(contains("Setter not found"), any(NoSuchMethodException.class)));
+         }
+      }
 
-    @Test
-    @DisplayName("Lambda expressions for various processing stages")
-    void testLambdaExpressions() throws Exception {
-        // This test targets various lambda expressions throughout the TableImpl class
+      @Test
+      @DisplayName("invokeSetter handles invocation exceptions")
+      void testInvokeSetter_InvocationException() throws Exception {
+         // Access private method through reflection
+         Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
+               "invokeSetter", Object.class, String.class, Object.class);
+         invokeSetterMethod.setAccessible(true);
 
-        // Test processInsertCellValue lambda
-        Method processInsertMethod = TableImpl.class.getDeclaredMethod(
-                "processInsertCellValue", BiConsumer.class, Class.class, Object.class);
-        processInsertMethod.setAccessible(true);
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
+            LogUiMock.when(() -> LogUi.error(contains("Failed to invoke setter"), any(Exception.class)))
+                  .thenAnswer(invocation -> null);
 
-        // Create a custom class with fields with CellInsertion annotations
-        @TableInfo(
-                tableContainerLocator = @FindBy(id = "container"),
-                rowsLocator = @FindBy(id = "rows"),
-                headerRowLocator = @FindBy(id = "header")
-        )
-        class TestRow {
-            @TableCellLocator(
-                    cellLocator = @FindBy(id = "cell1"),
-                    cellTextLocator = @FindBy(id = "text1"),
-                    headerCellLocator = @FindBy(id = "header1"),
-                    tableSection = "section"
-            )
-            @CellInsertion(type = ComponentType.class, componentType = "TEST", order = 1)
-            private TableCell cell1 = new TableCell(null, "cell1");
+            // Execute with problematic setter
+            invokeSetterMethod.invoke(tableImpl, new BadSetter(), "field", "value");
 
-            @TableCellLocator(
-                    cellLocator = @FindBy(id = "cell2"),
-                    cellTextLocator = @FindBy(id = "text2"),
-                    headerCellLocator = @FindBy(id = "header2"),
-                    tableSection = "section"
-            )
-            @CustomCellInsertion(insertionFunction = WorkingCellInsertionFunction.class, order = 2)
-            private TableCell cell2 = new TableCell(null, "cell2");
+            // Verify error was logged
+            LogUiMock.verify(() -> LogUi.error(contains("Failed to invoke setter"), any(Exception.class)));
+         }
+      }
 
-            // Non-TableCell field (should be filtered out)
-            private String notACell = "not a cell";
+      @Test
+      @DisplayName("invokeSetter handles List parameter type correctly")
+      void testInvokeSetter_ListParameter() throws Exception {
+         // Access private method through reflection
+         Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
+               "invokeSetter", Object.class, String.class, Object.class);
+         invokeSetterMethod.setAccessible(true);
 
-            // Field without annotation (should be filtered out)
-            private TableCell noAnnotation = new TableCell(null, "no annotation");
+         // Test successful invocation with a List
+         TableImplTest.DummyRowWithList row = new TableImplTest.DummyRowWithList();
+         List<TableCell> cells =
+               Arrays.asList(new TableCell(null, "list value 1"), new TableCell(null, "list value 2"));
 
-            // Getters and setters
-            public TableCell getCell1() {
-                return cell1;
+         invokeSetterMethod.invoke(tableImpl, row, "cells", cells);
+         assertEquals(2, row.getCells().size());
+         assertEquals("list value 1", row.getCells().get(0).getText());
+         assertEquals("list value 2", row.getCells().get(1).getText());
+      }
+
+      @Test
+      @DisplayName("invokeSetter handles InvocationTargetException with other causes")
+      void testInvokeSetter_InvocationTargetExceptionOtherCause() throws Exception {
+         // Access private method through reflection
+         Method invokeSetterMethod = TableImpl.class.getDeclaredMethod(
+               "invokeSetter", Object.class, String.class, Object.class);
+         invokeSetterMethod.setAccessible(true);
+         BadSetterTableCell badSetter = new BadSetterTableCell();
+
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
+            try {
+               invokeSetterMethod.invoke(tableImpl, badSetter, "dummyField", new TableCell(null, "test")); // Pass a TableCell
+            } catch (InvocationTargetException e) {
+               // We expect an InvocationTargetException here, caused by CustomException
             }
 
-            public void setCell1(TableCell cell) {
-                this.cell1 = cell;
-            }
+            // Verify error was logged
+            LogUiMock.verify(() -> LogUi.error(anyString(), any(InvocationTargetException.class)));
+         }
+      }
 
-            public TableCell getCell2() {
-                return cell2;
-            }
+      @Test
+      @DisplayName("convertFieldValueToStrings handles TableCell correctly")
+      void testConvertFieldValueToStrings_TableCell() throws Exception {
+         // Access private method through reflection
+         Method convertMethod = TableImpl.class.getDeclaredMethod(
+               "convertFieldValueToStrings", Field.class, Object.class);
+         convertMethod.setAccessible(true);
 
-            public void setCell2(TableCell cell) {
-                this.cell2 = cell;
-            }
+         // Create test class with TableCell field
+         class TestClass {
+            @SuppressWarnings("unused")
+            private TableCell cell = new TableCell(null, "test cell value");
+         }
 
-            public String getNotACell() {
-                return notACell;
-            }
+         // Setup test instance and field
+         TestClass testObj = new TestClass();
+         Field cellField = TestClass.class.getDeclaredField("cell");
+         cellField.setAccessible(true);
 
-            public void setNotACell(String value) {
-                this.notACell = value;
-            }
+         // Execute
+         String[] result = (String[]) convertMethod.invoke(tableImpl, cellField, testObj);
 
-            public TableCell getNoAnnotation() {
-                return noAnnotation;
-            }
+         // Verify result
+         assertEquals(1, result.length);
+         assertEquals("test cell value", result[0]);
+      }
 
-            public void setNoAnnotation(TableCell cell) {
-                this.noAnnotation = cell;
-            }
-        }
+      @Test
+      @DisplayName("convertFieldValueToStrings handles List<TableCell> correctly")
+      void testConvertFieldValueToStrings_ListOfTableCell() throws Exception {
+         // Access private method through reflection
+         Method convertMethod = TableImpl.class.getDeclaredMethod(
+               "convertFieldValueToStrings", Field.class, Object.class);
+         convertMethod.setAccessible(true);
 
-        TestRow testRow = new TestRow();
+         // Create test class with List<TableCell> field
+         class TestClass {
+            @SuppressWarnings("unused")
+            private List<TableCell> cells = Arrays.asList(
+                  new TableCell(null, "value 1"),
+                  new TableCell(null, null),
+                  new TableCell(null, "value 3")
+            );
+         }
 
-        // Track processed fields
-        List<String> processedFields = new ArrayList<>();
-        BiConsumer<TableField<TestRow>, String[]> consumer = (field, values) -> {
-            processedFields.add(Arrays.toString(values));
-        };
+         // Setup test instance and field
+         TestClass testObj = new TestClass();
+         Field cellsField = TestClass.class.getDeclaredField("cells");
+         cellsField.setAccessible(true);
 
-        // Execute
-        processInsertMethod.invoke(tableImpl, consumer, TestRow.class, testRow);
+         // Execute
+         String[] result = (String[]) convertMethod.invoke(tableImpl, cellsField, testObj);
 
-        // Verify that only the fields with CellInsertion/CustomCellInsertion annotations are processed
-        assertEquals(2, processedFields.size());
-    }
+         // Verify result - null values should be filtered out
+         assertEquals(2, result.length);
+         assertEquals("value 1", result[0]);
+         assertEquals("value 3", result[1]);
+      }
+
+      @Test
+      @DisplayName("convertFieldValueToStrings handles non-TableCell/List field")
+      void testConvertFieldValueToStrings_NonTableCellList() throws Exception {
+         // Access private method through reflection
+         Method convertMethod = TableImpl.class.getDeclaredMethod(
+               "convertFieldValueToStrings", Field.class, Object.class);
+         convertMethod.setAccessible(true);
+
+         // Create test class with a String field
+         class TestClass {
+            @SuppressWarnings("unused")
+            private String name = "test name";
+         }
+
+         // Setup test instance and field
+         TestClass testObj = new TestClass();
+         Field nameField = TestClass.class.getDeclaredField("name");
+         nameField.setAccessible(true);
+
+         // Execute
+         String[] result = (String[]) convertMethod.invoke(tableImpl, nameField, testObj);
+
+         // Verify result
+         assertEquals(0, result.length);
+      }
+
+      @Test
+      @DisplayName("convertFieldValueToStrings returns empty array for private field (no exception in test)")
+      void testConvertFieldValueToStrings_PrivateFieldNoException() throws Exception {
+         // Access private method through reflection
+         Method convertMethod = TableImpl.class.getDeclaredMethod(
+               "convertFieldValueToStrings", Field.class, Object.class);
+         convertMethod.setAccessible(true);
+
+         // Setup test instance and field
+         TestClassWithPrivateField testObj = new TestClassWithPrivateField();
+         Field privateField = TestClassWithPrivateField.class.getDeclaredField("privateField");
+         privateField.setAccessible(false); // Intentionally set it to non-accessible
+
+         // Execute
+         String[] result = (String[]) convertMethod.invoke(tableImpl, privateField, testObj);
+
+         // Verify that an empty array is returned (if no exception is thrown)
+         assertEquals(0, result.length);
+      }
+
+      @Test
+      @DisplayName("convertFieldValueToStrings handles empty List<TableCell>")
+      void testConvertFieldValueToStrings_EmptyList() throws Exception {
+         // Access private method through reflection
+         Method convertMethod = TableImpl.class.getDeclaredMethod(
+               "convertFieldValueToStrings", Field.class, Object.class);
+         convertMethod.setAccessible(true);
+
+         // Create test class with an empty List<TableCell>
+         class TestClass {
+            @SuppressWarnings("unused")
+            private List<TableCell> emptyList = Collections.emptyList();
+         }
+
+         // Setup test instance and field
+         TestClass testObj = new TestClass();
+         Field emptyListField = TestClass.class.getDeclaredField("emptyList");
+         emptyListField.setAccessible(true);
+
+         // Execute
+         String[] result = (String[]) convertMethod.invoke(tableImpl, emptyListField, testObj);
+
+         // Verify result
+         assertEquals(0, result.length);
+      }
+
+      @Test
+      @DisplayName("createInstance handles ReflectiveOperationException")
+      void testCreateInstance_ReflectiveOperationException() throws Exception {
+         // Access private method through reflection
+         Method createInstanceMethod = TableImpl.class.getDeclaredMethod("createInstance", Class.class);
+         createInstanceMethod.setAccessible(true);
+
+         // Test with an abstract class
+         abstract class AbstractTestClass {
+         }
+
+         // Should throw exception
+         try (MockedStatic<LogUi> LogUiMock = mockStatic(LogUi.class)) {
+            LogUiMock.when(() -> LogUi.error(anyString(), any(ReflectiveOperationException.class)))
+                  .thenAnswer(invocation -> null);
+
+            Exception ex = assertThrows(InvocationTargetException.class,
+                  () -> createInstanceMethod.invoke(tableImpl, AbstractTestClass.class));
+
+            assertTrue(ex.getCause() instanceof IllegalStateException);
+            assertTrue(ex.getCause().getMessage().contains("Could not create a new instance"));
+
+            // Verify LogUi.error was called
+            LogUiMock.verify(() ->
+                  LogUi.error(anyString(), any(ReflectiveOperationException.class)));
+         }
+      }
+   }
 }

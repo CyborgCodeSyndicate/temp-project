@@ -1,170 +1,94 @@
 package com.theairebellion.zeus.ui.service.fluent;
 
-import com.theairebellion.zeus.framework.chain.FluentService;
-import com.theairebellion.zeus.framework.quest.Quest;
-import com.theairebellion.zeus.framework.quest.SuperQuest;
 import com.theairebellion.zeus.framework.storage.Storage;
 import com.theairebellion.zeus.ui.components.interceptor.ApiResponse;
 import com.theairebellion.zeus.ui.storage.StorageKeysUi;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.core.ParameterizedTypeReference;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import com.theairebellion.zeus.validator.core.AssertionResult;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@DisplayName("InterceptorServiceFluent Tests")
-@MockitoSettings(strictness = Strictness.LENIENT)
-@Disabled
 class InterceptorServiceFluentTest {
 
-    @Mock
-    private UIServiceFluent<?> mockUiServiceFluent;
+   private Storage storage;
+   private UiServiceFluent<?> uiServiceFluent;
+   private InterceptorServiceFluent<UiServiceFluent<?>> sut;
+   private static final int TEST_STATUS = 200;
+   private static final String TEST_METHOD = "GET";
 
-    @Mock
-    private Storage mockStorage;
+   @BeforeEach
+   void setUp() {
+      storage = mock(Storage.class);
+      uiServiceFluent = mock(UiServiceFluent.class);
+      sut = new InterceptorServiceFluent<>(uiServiceFluent, storage);
+   }
 
-    @Mock
-    private SuperQuest mockSuperQuest;
+   @Test
+   void validateResponseHaveStatusShouldValidateWithMatchingStatusPrefix() {
+      // Given
+      ApiResponse response1 = new ApiResponse("https://example.com/api/test1", TEST_METHOD, TEST_STATUS);
+      ApiResponse response2 = new ApiResponse("https://example.com/api/test2", TEST_METHOD, TEST_STATUS);
+      List<ApiResponse> responses = List.of(response1, response2);
 
-    private InterceptorServiceFluent<UIServiceFluent<?>> sut;
+      // Mock storage
+      Storage subStorage = mock(Storage.class);
+      when(storage.sub(StorageKeysUi.UI)).thenReturn(subStorage);
+      when(subStorage.getByClass(StorageKeysUi.RESPONSES, Object.class)).thenReturn(responses);
 
-    @BeforeEach
-    @Disabled
-    void setUp() throws Exception {
-        // Create the system under test
-        sut = new InterceptorServiceFluent<>(mockUiServiceFluent, mockStorage);
+      // When
+      UiServiceFluent<?> result = sut.validateResponseHaveStatus("/api/", 2);
 
-        // Use reflection to set protected quest field in FluentService
-        Field questField = FluentService.class.getDeclaredField("quest");
-        questField.setAccessible(true);
-        questField.set(sut, mockSuperQuest);
+      // Then
+      verify(uiServiceFluent).validation(argThat(results ->
+            results.stream().allMatch(AssertionResult::isPassed)
+      ));
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
 
-        // Mock storage get method
-        when(mockStorage.sub(StorageKeysUi.UI)).thenReturn(mockStorage);
-    }
+   @Test
+   void validateResponseHaveStatusShouldSupportSoftAssertionTrue() {
+      // Given
+      ApiResponse response = new ApiResponse("https://example.com/api/soft", TEST_METHOD, TEST_STATUS);
+      List<ApiResponse> responses = List.of(response);
 
-    @Test
-    @DisplayName("validateResponseHaveStatus with matching status - Hard Assertion")
-    @Disabled
-    void validateResponseHaveStatusWithMatchingStatusHardAssertion() {
-        // Prepare test data
-        List<ApiResponse> apiResponses = new ArrayList<>();
-        apiResponses.add(new ApiResponse("/api/test1", "GET", 200));
-        apiResponses.add(new ApiResponse("/api/test2", "GET", 201));
+      Storage subStorage = mock(Storage.class);
+      when(storage.sub(StorageKeysUi.UI)).thenReturn(subStorage);
+      when(subStorage.getByClass(StorageKeysUi.RESPONSES, Object.class)).thenReturn(responses);
 
-        // Setup mock behavior for storage get method
-        when(mockStorage.get(eq(StorageKeysUi.RESPONSES), any(ParameterizedTypeReference.class)))
-                .thenReturn(apiResponses);
+      // When
+      UiServiceFluent<?> result = sut.validateResponseHaveStatus("/api/", 2, true);
 
-        // Use reflection to invoke the validation method
-        UIServiceFluent<?> result = sut.validateResponseHaveStatus("/api", 2);
+      // Then
+      verify(uiServiceFluent).validation(argThat(results ->
+            results.stream().allMatch(AssertionResult::isSoft)
+      ));
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
 
-        // Assertion is implicit - if no exception is thrown, the test passes
-        assertThat(result).isSameAs(mockUiServiceFluent);
-    }
+   @Test
+   void validateResponseHaveStatusShouldHandleNoMatchingUrls() {
+      // Given
+      ApiResponse response = new ApiResponse("https://example.com/other", TEST_METHOD, TEST_STATUS);
+      List<ApiResponse> responses = List.of(response);
 
-    @Test
-    @DisplayName("validateResponseHaveStatus with non-matching status - Hard Assertion")
-    @Disabled
-    void validateResponseHaveStatusWithNonMatchingStatusHardAssertion() {
-        // Prepare test data
-        List<ApiResponse> apiResponses = new ArrayList<>();
-        apiResponses.add(new ApiResponse("/api/test1", "GET",404));
-        apiResponses.add(new ApiResponse("/api/test2", "GET", 500));
+      Storage subStorage = mock(Storage.class);
+      when(storage.sub(StorageKeysUi.UI)).thenReturn(subStorage);
+      when(subStorage.getByClass(StorageKeysUi.RESPONSES, Object.class)).thenReturn(responses);
 
-        // Setup mock behavior for storage get method
-        when(mockStorage.get(eq(StorageKeysUi.RESPONSES), any(ParameterizedTypeReference.class)))
-                .thenReturn(apiResponses);
+      // When
+      UiServiceFluent<?> result = sut.validateResponseHaveStatus("/api/", 2, false);
 
-        // We expect this to throw an assertion error
-        try {
-            sut.validateResponseHaveStatus("/api", 2);
-        } catch (AssertionError e) {
-            // Expected behavior
-            assertThat(e).isNotNull();
-        }
-    }
-
-    @Test
-    @DisplayName("validateResponseHaveStatus with soft assertion")
-    @Disabled
-    void validateResponseHaveStatusWithSoftAssertion() throws Exception {
-        // Prepare test data
-        List<ApiResponse> apiResponses = new ArrayList<>();
-        apiResponses.add(new ApiResponse("/other/test", "GET",404));
-
-        // Setup mock behavior for storage get method
-        when(mockStorage.get(eq(StorageKeysUi.RESPONSES), any(ParameterizedTypeReference.class)))
-                .thenReturn(apiResponses);
-
-        // Create a real Quest with its own CustomSoftAssertion
-        Quest realQuest = new Quest();
-
-        // Create a SuperQuest with the real Quest
-        SuperQuest superQuest = new SuperQuest(realQuest);
-
-        // Use reflection to set the quest in the system under test
-        Field questField = FluentService.class.getDeclaredField("quest");
-        questField.setAccessible(true);
-        questField.set(sut, superQuest);
-
-        // Invoke the method
-        UIServiceFluent<?> result = sut.validateResponseHaveStatus("/api", 2, true);
-
-        // Assertions
-        assertThat(result).isSameAs(mockUiServiceFluent);
-
-        // Verify soft assertion failure
-        try {
-            realQuest.complete(); // This will trigger assertAll()
-            fail("Soft assertion should have failed");
-        } catch (AssertionError e) {
-            // Expected behavior
-            assertThat(e).isNotNull();
-        }
-    }
-
-    @Test
-    @DisplayName("validateStatus method - positive scenarios")
-    @Disabled
-    void validateStatusMethod() throws Exception {
-        // Make validateStatus method accessible for testing
-        java.lang.reflect.Method validateStatusMethod =
-                InterceptorServiceFluent.class.getDeclaredMethod("validateStatus", int.class, int.class);
-        validateStatusMethod.setAccessible(true);
-
-        assertThat(validateStatusMethod.invoke(sut, 2, 200)).isEqualTo(true);
-        assertThat(validateStatusMethod.invoke(sut, 4, 404)).isEqualTo(true);
-        assertThat(validateStatusMethod.invoke(sut, 5, 500)).isEqualTo(true);
-    }
-
-    @Test
-    @DisplayName("validateStatus method - negative scenarios")
-    @Disabled
-    void validateStatusMethodNegative() throws Exception {
-        // Make validateStatus method accessible for testing
-        java.lang.reflect.Method validateStatusMethod =
-                InterceptorServiceFluent.class.getDeclaredMethod("validateStatus", int.class, int.class);
-        validateStatusMethod.setAccessible(true);
-
-        assertThat(validateStatusMethod.invoke(sut, 3, 200)).isEqualTo(false);
-        assertThat(validateStatusMethod.invoke(sut, 2, 404)).isEqualTo(false);
-        assertThat(validateStatusMethod.invoke(sut, 1, 500)).isEqualTo(false);
-    }
+      // Then
+      // No matches => allMatch returns true by default (on empty stream)
+      verify(uiServiceFluent).validation(argThat(results ->
+            results.stream().allMatch(AssertionResult::isPassed)
+      ));
+      assertThat(result).isSameAs(uiServiceFluent);
+   }
 }

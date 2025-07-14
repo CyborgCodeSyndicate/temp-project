@@ -43,12 +43,15 @@ class RipperManTest {
         @Test
         @DisplayName("Should do nothing when no Ripper annotation is present")
         void afterTestExecution_NoRipperAnnotation_DoesNothing() throws Exception {
+            // Given
             RipperMan ripperMan = new RipperMan();
             ExtensionContext context = mock(ExtensionContext.class);
             Method method = MockNoRipper.class.getMethod(TEST_METHOD);
 
+            // When
             when(context.getTestMethod()).thenReturn(Optional.of(method));
 
+            // Then
             assertDoesNotThrow(() -> ripperMan.afterTestExecution(context));
             verify(context).getTestMethod();
             verifyNoMoreInteractions(context);
@@ -57,10 +60,12 @@ class RipperManTest {
         @Test
         @DisplayName("Should throw exception when Quest is not found in global store")
         void afterTestExecution_QuestNull_ThrowsException() throws Exception {
+            // Given
             RipperMan ripperMan = new RipperMan();
             ExtensionContext context = mock(ExtensionContext.class);
             Method method = MockRipper.class.getMethod(TEST_METHOD);
 
+            // When
             when(context.getTestMethod()).thenReturn(Optional.of(method));
             when(context.getRoot()).thenReturn(context);
 
@@ -76,6 +81,7 @@ class RipperManTest {
                 when(appCtx.getBean(DecoratorsFactory.class)).thenReturn(decoratorsFactory);
                 when(decoratorsFactory.decorate(null, SuperQuest.class)).thenReturn(null);
 
+                // Then
                 assertThrows(IllegalStateException.class, () -> ripperMan.afterTestExecution(context));
             }
         }
@@ -83,10 +89,12 @@ class RipperManTest {
         @Test
         @DisplayName("Should process ripper logic successfully with valid inputs")
         void afterTestExecution_ProcessesRipperLogic() throws Exception {
+            // Given
             RipperMan ripperMan = new RipperMan();
             ExtensionContext context = mock(ExtensionContext.class);
             Method method = MockRipper.class.getMethod(TEST_METHOD);
 
+            // When
             when(context.getTestMethod()).thenReturn(Optional.of(method));
             when(context.getRoot()).thenReturn(context);
 
@@ -135,6 +143,7 @@ class RipperManTest {
                         try (MockedStatic<LogTest> logTestMock = mockStatic(LogTest.class)) {
                             ripperMan.afterTestExecution(context);
 
+                            // Then
                             verify(subStorage).joinLateArguments();
                             verify(consumer).accept(superQuest);
 

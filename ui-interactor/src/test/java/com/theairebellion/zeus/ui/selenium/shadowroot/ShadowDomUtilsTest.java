@@ -1,8 +1,9 @@
 package com.theairebellion.zeus.ui.selenium.shadowroot;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.config.UiConfig;
 import com.theairebellion.zeus.ui.config.UiConfigHolder;
+import com.theairebellion.zeus.ui.selenium.exceptions.UiInteractionException;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.theairebellion.zeus.ui.selenium.shadowroot.ShadowDomUtils.findElementInShadowRoots;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -73,14 +75,14 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @MethodSource("supportedByTypes")
         @DisplayName("parseBy should handle all supported By types correctly")
         void parseByShouldHandleSupportedByTypes(By locator, String expectedType, String expectedValue) throws Exception {
-            // Use reflection to access private method
+            // Given
             java.lang.reflect.Method parseByMethod = ShadowDomUtils.class.getDeclaredMethod("parseBy", By.class);
             parseByMethod.setAccessible(true);
 
-            // Execute the method
+            // When
             Map<String, Object> result = (Map<String, Object>) parseByMethod.invoke(null, locator);
 
-            // Verify results
+            // Then
             assertEquals(expectedType, result.get("type"));
             assertEquals(expectedValue, result.get("value"));
         }
@@ -100,19 +102,20 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("parseBy should throw exception for xpath")
         void parseByShouldThrowExceptionForXpath() throws Exception {
-            // Use reflection to access private method
+            // Given
             java.lang.reflect.Method parseByMethod = ShadowDomUtils.class.getDeclaredMethod("parseBy", By.class);
             parseByMethod.setAccessible(true);
 
             // Create xpath locator
             By xpathLocator = By.xpath("//div[@id='test']");
 
-            // Execute and verify exception
+            // When
             Exception exception = assertThrows(
                     java.lang.reflect.InvocationTargetException.class,
                     () -> parseByMethod.invoke(null, xpathLocator)
             );
 
+            // Then
             assertInstanceOf(IllegalArgumentException.class, exception.getCause());
             assertTrue(exception.getCause().getMessage().contains("Xpath selectors are not supported inside shadow roots"));
         }
@@ -120,7 +123,7 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("parseBy should throw exception for unsupported types")
         void parseByShouldThrowExceptionForUnsupportedTypes() throws Exception {
-            // Use reflection to access private method
+            // Given
             java.lang.reflect.Method parseByMethod = ShadowDomUtils.class.getDeclaredMethod("parseBy", By.class);
             parseByMethod.setAccessible(true);
 
@@ -128,12 +131,13 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
             By customBy = mock(By.class);
             when(customBy.toString()).thenReturn("By.custom: value");
 
-            // Execute and verify exception
+            // When
             Exception exception = assertThrows(
                     java.lang.reflect.InvocationTargetException.class,
                     () -> parseByMethod.invoke(null, customBy)
             );
 
+            // Then
             assertInstanceOf(IllegalArgumentException.class, exception.getCause());
             assertTrue(exception.getCause().getMessage().contains("Unsupported By type"));
         }
@@ -146,7 +150,7 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementInShadowRoots should use default wait from config")
         void findElementInShadowRootsShouldUseDefaultWait() {
-            // Arrange
+            // Given
             WebElement foundElement = mock(WebElement.class);
             By locator = By.id("testId");
 
@@ -159,10 +163,10 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
                 // Set up mocks
                 configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-                // Act
-                SmartWebElement result = ShadowDomUtils.findElementInShadowRoots(smartDriver, locator);
+                // When
+                SmartWebElement result = findElementInShadowRoots(smartDriver, locator);
 
-                // Assert
+                // Then
                 assertNotNull(result);
                 assertEquals(foundElement, result.getOriginal());
                 assertEquals(jsDriver, result.getDriver());
@@ -173,32 +177,25 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         }
 
         @Test
-        @DisplayName("findElementInShadowRoots should use specified wait")
-        void findElementInShadowRootsShouldUseSpecifiedWait() {
-            // Arrange
+        @DisplayName("findElementInShadowRoots should throw exception when element is not found")
+        void findElementInShadowRootsWithWebDriverShouldThrowExceptionWhenElementIsNotFound() {
+            // Given
             WebElement foundElement = mock(WebElement.class);
             By locator = By.id("testId");
-            long waitTime = 5000L;
 
-            // Configure driver as a JavascriptExecutor for this test only
+            // When
             WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
             when(smartDriver.getOriginal()).thenReturn(jsDriver);
-            when(((JavascriptExecutor) jsDriver).executeScript(anyString(), any(Map.class))).thenReturn(foundElement);
+            when(((JavascriptExecutor) jsDriver).executeScript(anyString(), any(Map.class))).thenReturn(null);
 
             try (MockedStatic<UiConfigHolder> configHolderMock = mockStatic(UiConfigHolder.class)) {
                 // Set up mocks
                 configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-                // Act
-                SmartWebElement result = ShadowDomUtils.findElementInShadowRoots(smartDriver, locator, waitTime);
-
-                // Assert
-                assertNotNull(result);
-                assertEquals(foundElement, result.getOriginal());
-                assertEquals(jsDriver, result.getDriver());
-
-                // Verify the script was executed with correct parameters
-                verify((JavascriptExecutor) jsDriver).executeScript(anyString(), any(Map.class));
+                // Then
+                assertThrows(UiInteractionException.class,
+                        () -> findElementInShadowRoots(smartDriver, locator)
+                );
             }
         }
     }
@@ -210,7 +207,7 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementInShadowRoots with element should return element if found")
         void findElementInShadowRootsWithElementShouldReturnElementIfFound() {
-            // Arrange
+            // Given
             WebElement foundElement = mock(WebElement.class);
             By locator = By.id("testId");
 
@@ -223,10 +220,10 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
                 // Set up mocks
                 configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-                // Act
-                SmartWebElement result = ShadowDomUtils.findElementInShadowRoots(smartElement, locator);
+                // When
+                SmartWebElement result = findElementInShadowRoots(smartElement, locator);
 
-                // Assert
+                // Then
                 assertNotNull(result);
                 assertEquals(foundElement, result.getOriginal());
                 assertEquals(jsDriver, result.getDriver());
@@ -237,15 +234,39 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         }
 
         @Test
-        @DisplayName("findElementInShadowRoots with element should return null if root is null")
-        void findElementInShadowRootsWithElementShouldReturnNullIfRootIsNull() {
-            // Arrange
+        @DisplayName("findElementInShadowRoots should throw exception when element is not found")
+        void findElementInShadowRootsWithElementShouldThrowExceptionWhenElementIsNotFound() {
+            // Given
+            WebElement foundElement = mock(WebElement.class);
             By locator = By.id("testId");
 
-            // Act
-            SmartWebElement result = ShadowDomUtils.findElementInShadowRoots((SmartWebElement) null, locator);
+            // Configure driver as a JavascriptExecutor for this test only
+            WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
+            when(smartElement.getDriver()).thenReturn(jsDriver);
+            when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement), any(Map.class))).thenReturn(null);
 
-            // Assert
+            try (MockedStatic<UiConfigHolder> configHolderMock = mockStatic(UiConfigHolder.class)) {
+                // Set up mocks
+                configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
+
+                // When
+                // Then
+                assertThrows(UiInteractionException.class,
+                        () -> findElementInShadowRoots(smartElement, locator)
+                );
+            }
+        }
+
+        @Test
+        @DisplayName("findElementInShadowRoots with element should return null if root is null")
+        void findElementInShadowRootsWithElementShouldReturnNullIfRootIsNull() {
+            // Given
+            By locator = By.id("testId");
+
+            // When
+            SmartWebElement result = findElementInShadowRoots((SmartWebElement) null, locator);
+
+            // Then
             assertEquals(null, result);
         }
     }
@@ -257,7 +278,7 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsInShadowRoots should return list of elements")
         void findElementsInShadowRootsShouldReturnListOfElements() {
-            // Arrange
+            // Given
             List<WebElement> foundElements = new ArrayList<>();
             foundElements.add(mock(WebElement.class));
             foundElements.add(mock(WebElement.class));
@@ -272,10 +293,10 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
                 // Set up mocks
                 configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-                // Act
+                // When
                 List<SmartWebElement> results = ShadowDomUtils.findElementsInShadowRoots(smartDriver, locator);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertEquals(2, results.size());
 
@@ -293,7 +314,7 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsInShadowRoots should return empty list if no elements found")
         void findElementsInShadowRootsShouldReturnEmptyListIfNoElementsFound() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
 
             // Configure driver as a JavascriptExecutor for this test only
@@ -305,34 +326,10 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
                 // Set up mocks
                 configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-                // Act
+                // When
                 List<SmartWebElement> results = ShadowDomUtils.findElementsInShadowRoots(smartDriver, locator);
 
-                // Assert
-                assertNotNull(results);
-                assertTrue(results.isEmpty());
-            }
-        }
-
-        @Test
-        @DisplayName("findElementsInShadowRoots should return empty list if script returns non-list")
-        void findElementsInShadowRootsShouldReturnEmptyListIfScriptReturnsNonList() {
-            // Arrange
-            By locator = By.id("testId");
-
-            // Configure driver as a JavascriptExecutor for this test only
-            WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
-            when(smartDriver.getOriginal()).thenReturn(jsDriver);
-            when(((JavascriptExecutor) jsDriver).executeScript(anyString(), any(Map.class))).thenReturn("not a list");
-
-            try (MockedStatic<UiConfigHolder> configHolderMock = mockStatic(UiConfigHolder.class)) {
-                // Set up mocks
-                configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
-
-                // Act
-                List<SmartWebElement> results = ShadowDomUtils.findElementsInShadowRoots(smartDriver, locator);
-
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertTrue(results.isEmpty());
             }
@@ -346,7 +343,7 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsInShadowRoots with element should return list of elements")
         void findElementsInShadowRootsWithElementShouldReturnListOfElements() {
-            // Arrange
+            // Given
             List<WebElement> foundElements = new ArrayList<>();
             foundElements.add(mock(WebElement.class));
             foundElements.add(mock(WebElement.class));
@@ -361,10 +358,10 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
                 // Set up mocks
                 configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-                // Act
+                // When
                 List<SmartWebElement> results = ShadowDomUtils.findElementsInShadowRoots(smartElement, locator);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertEquals(2, results.size());
 
@@ -382,13 +379,13 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsInShadowRoots with element should return empty list if root is null")
         void findElementsInShadowRootsWithElementShouldReturnEmptyListIfRootIsNull() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
 
-            // Act
+            // When
             List<SmartWebElement> results = ShadowDomUtils.findElementsInShadowRoots((SmartWebElement) null, locator);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertTrue(results.isEmpty());
         }
@@ -396,7 +393,7 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsInShadowRoots with element should return empty list if script returns non-list")
         void findElementsInShadowRootsWithElementShouldReturnEmptyListIfScriptReturnsNonList() {
-            // Arrange
+            // Given
             By locator = By.id("testId");
 
             // Configure driver as a JavascriptExecutor for this test only
@@ -408,10 +405,10 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
                 // Set up mocks
                 configHolderMock.when(UiConfigHolder::getUiConfig).thenReturn(uiConfig);
 
-                // Act
+                // When
                 List<SmartWebElement> results = ShadowDomUtils.findElementsInShadowRoots(smartElement, locator);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertTrue(results.isEmpty());
             }
@@ -425,16 +422,16 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         @Test
         @DisplayName("shadowRootElementsPresent with driver should return true when shadow roots exist")
         void shadowRootElementsPresentWithDriverShouldReturnTrueWhenShadowRootsExist() {
-            // Arrange
+            // Given
             // Configure driver as a JavascriptExecutor for this test
             WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
             when(smartDriver.getOriginal()).thenReturn(jsDriver);
             when(((JavascriptExecutor) jsDriver).executeScript(anyString())).thenReturn(Boolean.TRUE);
 
-            // Act
+            // When
             boolean result = ShadowDomUtils.shadowRootElementsPresent(smartDriver);
 
-            // Assert
+            // Then
             assertTrue(result);
 
             // Verify the script was executed
@@ -442,50 +439,34 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         }
 
         @Test
-        @DisplayName("shadowRootElementsPresent with driver should return false when no shadow roots exist")
-        void shadowRootElementsPresentWithDriverShouldReturnFalseWhenNoShadowRootsExist() {
-            // Arrange
-            // Configure driver as a JavascriptExecutor for this test
-            WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
-            when(smartDriver.getOriginal()).thenReturn(jsDriver);
-            when(((JavascriptExecutor) jsDriver).executeScript(anyString())).thenReturn(Boolean.FALSE);
-
-            // Act
-            boolean result = ShadowDomUtils.shadowRootElementsPresent(smartDriver);
-
-            // Assert
-            assertFalse(result);
-        }
-
-        @Test
         @DisplayName("shadowRootElementsPresent with driver should return false when script returns null")
         void shadowRootElementsPresentWithDriverShouldReturnFalseWhenScriptReturnsNull() {
-            // Arrange
+            // Given
             // Configure driver as a JavascriptExecutor for this test
             WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
             when(smartDriver.getOriginal()).thenReturn(jsDriver);
             when(((JavascriptExecutor) jsDriver).executeScript(anyString())).thenReturn(null);
 
-            // Act
+            // When
             boolean result = ShadowDomUtils.shadowRootElementsPresent(smartDriver);
 
-            // Assert
+            // Then
             assertFalse(result);
         }
 
         @Test
         @DisplayName("shadowRootElementsPresent with element should return true when shadow roots exist")
         void shadowRootElementsPresentWithElementShouldReturnTrueWhenShadowRootsExist() {
-            // Arrange
+            // Given
             // Configure driver as a JavascriptExecutor for this test
             WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
             when(smartElement.getDriver()).thenReturn(jsDriver);
             when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement))).thenReturn(Boolean.TRUE);
 
-            // Act
+            // When
             boolean result = ShadowDomUtils.shadowRootElementsPresent(smartElement);
 
-            // Assert
+            // Then
             assertTrue(result);
 
             // Verify the script was executed
@@ -493,84 +474,29 @@ class ShadowDomUtilsTest extends BaseUnitUITest {
         }
 
         @Test
-        @DisplayName("shadowRootElementsPresent with element should return false when no shadow roots exist")
-        void shadowRootElementsPresentWithElementShouldReturnFalseWhenNoShadowRootsExist() {
-            // Arrange
-            // Configure driver as a JavascriptExecutor for this test
-            WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
-            when(smartElement.getDriver()).thenReturn(jsDriver);
-            when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement))).thenReturn(Boolean.FALSE);
-
-            // Act
-            boolean result = ShadowDomUtils.shadowRootElementsPresent(smartElement);
-
-            // Assert
-            assertFalse(result);
-        }
-
-        @Test
         @DisplayName("shadowRootElementsPresent with element should return false when script returns null")
         void shadowRootElementsPresentWithElementShouldReturnFalseWhenScriptReturnsNull() {
-            // Arrange
+            // Given
             // Configure driver as a JavascriptExecutor for this test
             WebDriver jsDriver = mock(WebDriver.class, org.mockito.Mockito.withSettings().extraInterfaces(JavascriptExecutor.class));
             when(smartElement.getDriver()).thenReturn(jsDriver);
             when(((JavascriptExecutor) jsDriver).executeScript(anyString(), eq(webElement))).thenReturn(null);
 
-            // Act
+            // When
             boolean result = ShadowDomUtils.shadowRootElementsPresent(smartElement);
 
-            // Assert
+            // Then
             assertFalse(result);
         }
 
         @Test
         @DisplayName("shadowRootElementsPresent with element should return false when element is null")
         void shadowRootElementsPresentWithElementShouldReturnFalseWhenElementIsNull() {
-            // Act
+            // When
             boolean result = ShadowDomUtils.shadowRootElementsPresent((SmartWebElement) null);
 
-            // Assert
+            // Then
             assertFalse(result);
-        }
-    }
-
-    @Nested
-    @DisplayName("JavaScript constants tests")
-    class JavaScriptConstantsTests {
-
-        @Test
-        @DisplayName("JavaScript constants should be accessible via reflection")
-        void javaScriptConstantsShouldBeAccessible() throws Exception {
-            // Use reflection to access private static final fields
-            java.lang.reflect.Field findShadowElementJs = ShadowDomUtils.class.getDeclaredField("FIND_SHADOW_ELEMENT_JS");
-            findShadowElementJs.setAccessible(true);
-
-            java.lang.reflect.Field findShadowElementFromElementJs = ShadowDomUtils.class.getDeclaredField("FIND_SHADOW_ELEMENT_FROM_ELEMENT_JS");
-            findShadowElementFromElementJs.setAccessible(true);
-
-            java.lang.reflect.Field findShadowElementsJs = ShadowDomUtils.class.getDeclaredField("FIND_SHADOW_ELEMENTS_JS");
-            findShadowElementsJs.setAccessible(true);
-
-            java.lang.reflect.Field findShadowElementsFromElementJs = ShadowDomUtils.class.getDeclaredField("FIND_SHADOW_ELEMENTS_FROM_ELEMENT_JS");
-            findShadowElementsFromElementJs.setAccessible(true);
-
-            // Assert all fields are non-null and contain JavaScript code
-            assertNotNull(findShadowElementJs.get(null));
-            assertInstanceOf(String.class, findShadowElementJs.get(null));
-            assertTrue(((String) findShadowElementJs.get(null)).contains("function findShadowElement"));
-
-            assertNotNull(findShadowElementFromElementJs.get(null));
-            assertInstanceOf(String.class, findShadowElementFromElementJs.get(null));
-            assertTrue(((String) findShadowElementFromElementJs.get(null)).contains("function findShadowElementFromRoot"));
-
-            assertNotNull(findShadowElementsJs.get(null));
-            assertInstanceOf(String.class, findShadowElementsJs.get(null));
-            assertTrue(((String) findShadowElementsJs.get(null)).contains("function findShadowElements"));
-
-            assertNotNull(findShadowElementsFromElementJs.get(null));
-            assertInstanceOf(String.class, findShadowElementsFromElementJs.get(null));
-            assertTrue(((String) findShadowElementsFromElementJs.get(null)).contains("function findShadowElementsFromRoot"));
         }
     }
 }

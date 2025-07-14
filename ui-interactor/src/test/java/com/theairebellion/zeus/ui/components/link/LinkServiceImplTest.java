@@ -1,343 +1,360 @@
 package com.theairebellion.zeus.ui.components.link;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
+import com.theairebellion.zeus.ui.components.base.ComponentType;
 import com.theairebellion.zeus.ui.components.factory.ComponentFactory;
 import com.theairebellion.zeus.ui.components.link.mock.MockLinkComponentType;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import org.junit.jupiter.api.*;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.openqa.selenium.By;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @DisplayName("LinkServiceImpl Unit Tests")
 class LinkServiceImplTest extends BaseUnitUITest {
 
-    private SmartWebDriver driver;
-    private LinkServiceImpl service;
-    private SmartWebElement container;
-    private SmartWebElement cellElement;
-    private Link linkMock;
-    private MockLinkComponentType componentType;
-    private By locator;
-    private MockedStatic<ComponentFactory> factoryMock;
+   private static final String LINK_TEXT = "LinkText";
+   private static final String[] TABLE_VALUES = {"value1", "value2"};
+   private final MockLinkComponentType componentType = MockLinkComponentType.DUMMY_LINK;
+   @Mock
+   private SmartWebDriver driver;
+   @Mock
+   private SmartWebElement container;
+   @Mock
+   private SmartWebElement cellElement;
+   @Mock
+   private Link linkMock;
+   @Mock
+   private By locator;
+   private LinkServiceImpl service;
+   private MockedStatic<ComponentFactory> factoryMock;
 
-    @BeforeEach
-    void setUp() {
-        driver = mock(SmartWebDriver.class);
-        service = new LinkServiceImpl(driver);
-        container = MockSmartWebElement.createMock();
-        cellElement = MockSmartWebElement.createMock();
-        linkMock = mock(Link.class);
-        componentType = MockLinkComponentType.DUMMY_LINK;
-        locator = By.id("link");
+   @BeforeEach
+   void setUp() {
+      MockitoAnnotations.openMocks(this);
+      service = new LinkServiceImpl(driver);
+      locator = By.id("link");
 
-        // Configure static mock for ComponentFactory
-        factoryMock = mockStatic(ComponentFactory.class);
-        factoryMock.when(() -> ComponentFactory.getLinkComponent(eq(componentType), eq(driver)))
-                .thenReturn(linkMock);
-    }
+      factoryMock = Mockito.mockStatic(ComponentFactory.class);
+      factoryMock.when(() -> ComponentFactory.getLinkComponent(any(LinkComponentType.class), eq(driver)))
+            .thenReturn(linkMock);
+   }
 
-    @AfterEach
-    void tearDown() {
-        if (factoryMock != null) {
-            factoryMock.close();
-        }
-    }
+   @AfterEach
+   void tearDown() {
+      if (factoryMock != null) {
+         factoryMock.close();
+      }
+   }
 
-    @Nested
-    @DisplayName("Click Method Tests")
-    class ClickMethodTests {
+   @Nested
+   @DisplayName("Click Method Tests (Inherited/Overridden)")
+   class ClickMethodTests {
 
-        @Test
-        @DisplayName("click with container and text delegates correctly")
-        void clickWithContainerAndText() {
-            // Given
-            var linkText = "LinkText";
+      @Test
+      @DisplayName("click with container and text delegates correctly")
+      void clickWithContainerAndText() {
+         // Given
 
-            // When
-            service.click(componentType, container, linkText);
+         // When
+         service.click(componentType, container, LINK_TEXT);
 
-            // Then
-            verify(linkMock).click(container, linkText);
-        }
+         // Then
+         verify(linkMock).click(container, LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-        @Test
-        @DisplayName("click with container delegates correctly")
-        void clickWithContainer() {
-            // When
-            service.click(componentType, container);
+      @Test
+      @DisplayName("click with container delegates correctly")
+      void clickWithContainer() {
+         // Given
 
-            // Then
-            verify(linkMock).click(container);
-        }
+         // When
+         service.click(componentType, container);
 
-        @Test
-        @DisplayName("click with text only delegates correctly")
-        void clickWithTextOnly() {
-            // Given
-            var linkText = "LinkText";
+         // Then
+         verify(linkMock).click(container);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-            // When
-            service.click(componentType, linkText);
+      @Test
+      @DisplayName("click with text only delegates correctly")
+      void clickWithTextOnly() {
+         // Given
 
-            // Then
-            verify(linkMock).click(linkText);
-        }
+         // When
+         service.click(componentType, LINK_TEXT);
 
-        @Test
-        @DisplayName("click with locator delegates correctly")
-        void clickWithLocator() {
-            // When
-            service.click(componentType, locator);
+         // Then
+         verify(linkMock).click(LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-            // Then
-            verify(linkMock).click(locator);
-        }
-    }
+      @Test
+      @DisplayName("click with locator delegates correctly")
+      void clickWithLocator() {
+         // Given
 
-    @Nested
-    @DisplayName("Double Click Method Tests")
-    class DoubleClickMethodTests {
+         // When
+         service.click(componentType, locator);
 
-        @Test
-        @DisplayName("doubleClick with container and text delegates correctly")
-        void doubleClickWithContainerAndText() {
-            // Given
-            var linkText = "LinkText";
+         // Then
+         verify(linkMock).click(locator);
+         verifyNoMoreInteractions(linkMock);
+      }
+   }
 
-            // When
-            service.doubleClick(componentType, container, linkText);
+   @Nested
+   @DisplayName("Double Click Method Tests")
+   class DoubleClickMethodTests {
 
-            // Then
-            verify(linkMock).doubleClick(container, linkText);
-        }
+      @Test
+      @DisplayName("doubleClick with container and text delegates correctly")
+      void doubleClickWithContainerAndText() {
+         // Given
 
-        @Test
-        @DisplayName("doubleClick with container delegates correctly")
-        void doubleClickWithContainer() {
-            // When
-            service.doubleClick(componentType, container);
+         // When
+         service.doubleClick(componentType, container, LINK_TEXT);
 
-            // Then
-            verify(linkMock).doubleClick(container);
-        }
+         // Then
+         verify(linkMock).doubleClick(container, LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-        @Test
-        @DisplayName("doubleClick with text only delegates correctly")
-        void doubleClickWithTextOnly() {
-            // Given
-            var linkText = "LinkText";
+      @Test
+      @DisplayName("doubleClick with container delegates correctly")
+      void doubleClickWithContainer() {
+         // Given
 
-            // When
-            service.doubleClick(componentType, linkText);
+         // When
+         service.doubleClick(componentType, container);
 
-            // Then
-            verify(linkMock).doubleClick(linkText);
-        }
+         // Then
+         verify(linkMock).doubleClick(container);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-        @Test
-        @DisplayName("doubleClick with locator delegates correctly")
-        void doubleClickWithLocator() {
-            // When
-            service.doubleClick(componentType, locator);
+      @Test
+      @DisplayName("doubleClick with text only delegates correctly")
+      void doubleClickWithTextOnly() {
+         // Given
 
-            // Then
-            verify(linkMock).doubleClick(locator);
-        }
-    }
+         // When
+         service.doubleClick(componentType, LINK_TEXT);
 
-    @Nested
-    @DisplayName("IsEnabled Method Tests")
-    class IsEnabledMethodTests {
+         // Then
+         verify(linkMock).doubleClick(LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-        @Test
-        @DisplayName("isEnabled with container and text delegates correctly")
-        void isEnabledWithContainerAndText() {
-            // Given
-            var linkText = "LinkText";
-            when(linkMock.isEnabled(container, linkText)).thenReturn(true);
+      @Test
+      @DisplayName("doubleClick with locator delegates correctly")
+      void doubleClickWithLocator() {
+         // Given
 
-            // When
-            var result = service.isEnabled(componentType, container, linkText);
+         // When
+         service.doubleClick(componentType, locator);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isEnabled(container, linkText);
-        }
+         // Then
+         verify(linkMock).doubleClick(locator);
+         verifyNoMoreInteractions(linkMock);
+      }
+   }
 
-        @Test
-        @DisplayName("isEnabled with container delegates correctly")
-        void isEnabledWithContainer() {
-            // Given
-            when(linkMock.isEnabled(container)).thenReturn(true);
+   @Nested
+   @DisplayName("IsEnabled Method Tests (Inherited/Overridden)")
+   class IsEnabledMethodTests {
 
-            // When
-            var result = service.isEnabled(componentType, container);
+      @Test
+      @DisplayName("isEnabled with container and text delegates correctly")
+      void isEnabledWithContainerAndText() {
+         // Given
+         when(linkMock.isEnabled(container, LINK_TEXT)).thenReturn(true);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isEnabled(container);
-        }
+         // When
+         var result = service.isEnabled(componentType, container, LINK_TEXT);
 
-        @Test
-        @DisplayName("isEnabled with text only delegates correctly")
-        void isEnabledWithTextOnly() {
-            // Given
-            var linkText = "LinkText";
-            when(linkMock.isEnabled(linkText)).thenReturn(true);
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isEnabled(container, LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-            // When
-            var result = service.isEnabled(componentType, linkText);
+      @Test
+      @DisplayName("isEnabled with container delegates correctly")
+      void isEnabledWithContainer() {
+         // Given
+         when(linkMock.isEnabled(container)).thenReturn(true);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isEnabled(linkText);
-        }
+         // When
+         var result = service.isEnabled(componentType, container);
 
-        @Test
-        @DisplayName("isEnabled with locator delegates correctly")
-        void isEnabledWithLocator() {
-            // Given
-            when(linkMock.isEnabled(locator)).thenReturn(true);
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isEnabled(container);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-            // When
-            var result = service.isEnabled(componentType, locator);
+      @Test
+      @DisplayName("isEnabled with text only delegates correctly")
+      void isEnabledWithTextOnly() {
+         // Given
+         when(linkMock.isEnabled(LINK_TEXT)).thenReturn(true);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isEnabled(locator);
-        }
-    }
+         // When
+         var result = service.isEnabled(componentType, LINK_TEXT);
 
-    @Nested
-    @DisplayName("IsVisible Method Tests")
-    class IsVisibleMethodTests {
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isEnabled(LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-        @Test
-        @DisplayName("isVisible with container and text delegates correctly")
-        void isVisibleWithContainerAndText() {
-            // Given
-            var linkText = "LinkText";
-            when(linkMock.isVisible(container, linkText)).thenReturn(true);
+      @Test
+      @DisplayName("isEnabled with locator delegates correctly")
+      void isEnabledWithLocator() {
+         // Given
+         when(linkMock.isEnabled(locator)).thenReturn(true);
 
-            // When
-            var result = service.isVisible(componentType, container, linkText);
+         // When
+         var result = service.isEnabled(componentType, locator);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isVisible(container, linkText);
-        }
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isEnabled(locator);
+         verifyNoMoreInteractions(linkMock);
+      }
+   }
 
-        @Test
-        @DisplayName("isVisible with container delegates correctly")
-        void isVisibleWithContainer() {
-            // Given
-            when(linkMock.isVisible(container)).thenReturn(true);
+   @Nested
+   @DisplayName("IsVisible Method Tests (Inherited/Overridden)")
+   class IsVisibleMethodTests {
 
-            // When
-            var result = service.isVisible(componentType, container);
+      @Test
+      @DisplayName("isVisible with container and text delegates correctly")
+      void isVisibleWithContainerAndText() {
+         // Given
+         when(linkMock.isVisible(container, LINK_TEXT)).thenReturn(true);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isVisible(container);
-        }
+         // When
+         var result = service.isVisible(componentType, container, LINK_TEXT);
 
-        @Test
-        @DisplayName("isVisible with text only delegates correctly")
-        void isVisibleWithTextOnly() {
-            // Given
-            var linkText = "LinkText";
-            when(linkMock.isVisible(linkText)).thenReturn(true);
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isVisible(container, LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-            // When
-            var result = service.isVisible(componentType, linkText);
+      @Test
+      @DisplayName("isVisible with container delegates correctly")
+      void isVisibleWithContainer() {
+         // Given
+         when(linkMock.isVisible(container)).thenReturn(true);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isVisible(linkText);
-        }
+         // When
+         var result = service.isVisible(componentType, container);
 
-        @Test
-        @DisplayName("isVisible with locator delegates correctly")
-        void isVisibleWithLocator() {
-            // Given
-            when(linkMock.isVisible(locator)).thenReturn(true);
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isVisible(container);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-            // When
-            var result = service.isVisible(componentType, locator);
+      @Test
+      @DisplayName("isVisible with text only delegates correctly")
+      void isVisibleWithTextOnly() {
+         // Given
+         when(linkMock.isVisible(LINK_TEXT)).thenReturn(true);
 
-            // Then
-            assertThat(result).isTrue();
-            verify(linkMock).isVisible(locator);
-        }
-    }
+         // When
+         var result = service.isVisible(componentType, LINK_TEXT);
 
-    @Test
-    @DisplayName("tableInsertion delegates to clickElementInCell correctly")
-    void tableInsertion() {
-        // When
-        service.tableInsertion(cellElement, componentType, "value1", "value2");
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isVisible(LINK_TEXT);
+         verifyNoMoreInteractions(linkMock);
+      }
 
-        // Then
-        verify(linkMock).clickElementInCell(cellElement);
-    }
+      @Test
+      @DisplayName("isVisible with locator delegates correctly")
+      void isVisibleWithLocator() {
+         // Given
+         when(linkMock.isVisible(locator)).thenReturn(true);
 
-    @Nested
-    @DisplayName("Component Caching Tests")
-    class ComponentCachingTests {
+         // When
+         var result = service.isVisible(componentType, locator);
 
-        @Test
-        @DisplayName("Component is cached and reused")
-        void componentCaching() {
-            // When
-            service.click(componentType, container, "ClickMe");
-            service.isEnabled(componentType, container, "EnableMe");
-            service.isVisible(componentType, container, "VisibleMe");
+         // Then
+         assertThat(result).isTrue();
+         verify(linkMock).isVisible(locator);
+         verifyNoMoreInteractions(linkMock);
+      }
+   }
 
-            // Then
-            factoryMock.verify(() -> ComponentFactory.getLinkComponent(eq(componentType), eq(driver)), times(1));
-        }
+   @Nested
+   @DisplayName("TableInsertion Method Tests")
+   class TableInsertionMethodTests {
+      @Test
+      @DisplayName("tableInsertion delegates to link component's clickElementInCell")
+      void tableInsertion() {
+         // Given
 
-        @Test
-        @DisplayName("Different component types create different instances")
-        void differentComponentTypes() {
-            // Setup mock component types
-            var type1 = MockLinkComponentType.DUMMY_LINK;
-            var type2 = MockLinkComponentType.TEST;
+         // When
+         service.tableInsertion(cellElement, componentType, TABLE_VALUES);
 
-            // Create mock components
-            var link1 = mock(Link.class);
-            var link2 = mock(Link.class);
+         // Then
+         verify(linkMock).clickElementInCell(cellElement);
+         factoryMock.verify(() -> ComponentFactory.getLinkComponent(eq(componentType), eq(driver)), times(1));
+      }
 
-            // Configure behavior
-            when(link1.isVisible(container)).thenReturn(false);
-            when(link2.isVisible(container)).thenReturn(true);
+      @Test
+      @DisplayName("tableInsertion with non-LinkComponentType throws exception")
+      void testTableInsertionWithNonButtonComponentType() {
+         // Given
+         ComponentType nonLinkType = mock(ComponentType.class);
 
-            // Configure factory mock
-            factoryMock.reset();
-            factoryMock.when(() -> ComponentFactory.getLinkComponent(eq(type1), eq(driver)))
-                    .thenReturn(link1);
-            factoryMock.when(() -> ComponentFactory.getLinkComponent(eq(type2), eq(driver)))
-                    .thenReturn(link2);
+         // When / Then
+         assertThatThrownBy(() -> service.tableInsertion(cellElement, nonLinkType, TABLE_VALUES))
+               .isInstanceOf(IllegalArgumentException.class);
 
-            // First component type operation
-            var result1 = service.isVisible(type1, container);
-            assertThat(result1).isFalse();
-            verify(link1).isVisible(container);
+         factoryMock.verifyNoInteractions();
+         verify(linkMock, never()).clickElementInCell(any());
+      }
+   }
 
-            // Second component type operation
-            var result2 = service.isVisible(type2, container);
-            assertThat(result2).isTrue();
-            verify(link2).isVisible(container);
+   @Nested
+   @DisplayName("Component Caching Tests")
+   class ComponentCachingTests {
 
-            // Verify factory calls
-            factoryMock.verify(() -> ComponentFactory.getLinkComponent(eq(type1), eq(driver)), times(1));
-            factoryMock.verify(() -> ComponentFactory.getLinkComponent(eq(type2), eq(driver)), times(1));
-        }
-    }
+      @Test
+      @DisplayName("Component is cached and reused")
+      void componentCaching() {
+         // Given
+
+         // When
+         service.click(componentType, container, LINK_TEXT);
+         service.isEnabled(componentType, locator);
+
+         // Then
+         factoryMock.verify(() -> ComponentFactory.getLinkComponent(eq(componentType), eq(driver)), times(1));
+      }
+   }
 }

@@ -1,232 +1,166 @@
 package com.theairebellion.zeus.ui.components.modal;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
-import com.theairebellion.zeus.ui.components.accordion.mock.MockSmartWebElement;
 import com.theairebellion.zeus.ui.components.modal.mock.MockModalComponentType;
 import com.theairebellion.zeus.ui.components.modal.mock.MockModalService;
-import com.theairebellion.zeus.ui.config.UiConfig;
-import com.theairebellion.zeus.ui.config.UiConfigHolder;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
-import com.theairebellion.zeus.util.reflections.ReflectionUtil;
-import org.junit.jupiter.api.*;
-import org.mockito.MockedStatic;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.MockSmartWebElement;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 @DisplayName("ModalService Interface Default Methods")
 class ModalServiceTest extends BaseUnitUITest {
 
-    private MockModalService service;
-    private SmartWebElement container;
-    private By locator;
+   private static final MockModalComponentType DEFAULT_TYPE = MockModalComponentType.DUMMY_MODAL;
+   private static final String BUTTON_TEXT_OK = "OK";
+   private static final String BUTTON_TEXT_SUBMIT = "Submit";
+   private static final String MODAL_TITLE = "Modal Title";
+   private static final String MODAL_BODY = "Body Content";
+   private static final String MODAL_CONTENT_TITLE = "Content Title";
+   private MockModalService service;
+   private SmartWebElement container;
+   private By locator;
 
-    @BeforeEach
-    void setUp() {
-        service = new MockModalService();
-        WebElement webElement = mock(WebElement.class);
-        WebDriver driver = mock(WebDriver.class);
-        container = new MockSmartWebElement(webElement, driver);
-        locator = By.id("testModal");
-    }
+   @BeforeEach
+   void setUp() {
+      // Given
+      service = new MockModalService();
+      container = MockSmartWebElement.createMock();
+      locator = By.id("testModal");
+      service.reset();
+   }
 
-    @Nested
-    @DisplayName("Default Methods Tests")
-    class DefaultMethodsTests {
+   @Nested
+   @DisplayName("Default Methods Tests")
+   class DefaultMethodsTests {
 
-        @Test
-        @DisplayName("isOpened delegates correctly")
-        void isOpenedDelegates() {
-            // Given
-            service.reset();
-            service.returnOpened = true;
+      @Test
+      @DisplayName("isOpened delegates correctly")
+      void isOpenedDelegates() {
+         // Given
+         service.returnOpened = true;
 
-            // When
-            var result = service.isOpened();
+         // When
+         var result = service.isOpened();
 
-            // Then
-            assertThat(result).isTrue();
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-        }
+         // Then
+         assertThat(result).isTrue();
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+      }
 
-        @Test
-        @DisplayName("clickButton with container and text delegates correctly")
-        void clickButtonWithContainerAndText() {
-            // Given
-            service.reset();
-            var buttonText = "OK";
+      @Test
+      @DisplayName("clickButton with container and text delegates correctly")
+      void clickButtonWithContainerAndText() {
+         // Given - setup in @BeforeEach
 
-            // When
-            service.clickButton(container, buttonText);
+         // When
+         service.clickButton(container, BUTTON_TEXT_OK);
 
-            // Then
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-            assertThat(service.lastContainer).isEqualTo(container);
-            assertThat(service.lastButtonText).isEqualTo(buttonText);
-        }
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.lastContainer).isEqualTo(container);
+         assertThat(service.lastButtonText).isEqualTo(BUTTON_TEXT_OK);
+         assertThat(service.lastButtonLocator).isNull();
+      }
 
-        @Test
-        @DisplayName("clickButton with text only delegates correctly")
-        void clickButtonWithTextOnly() {
-            // Given
-            service.reset();
-            var buttonText = "Proceed";
+      @Test
+      @DisplayName("clickButton with text only delegates correctly")
+      void clickButtonWithTextOnly() {
+         // Given - setup in @BeforeEach
 
-            // When
-            service.clickButton(buttonText);
+         // When
+         service.clickButton(BUTTON_TEXT_SUBMIT);
 
-            // Then
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-            assertThat(service.lastButtonText).isEqualTo(buttonText);
-        }
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.lastButtonText).isEqualTo(BUTTON_TEXT_SUBMIT);
+         assertThat(service.lastContainer).isNull();
+         assertThat(service.lastButtonLocator).isNull();
+      }
 
-        @Test
-        @DisplayName("clickButton with locator delegates correctly")
-        void clickButtonWithLocator() {
-            // Given
-            service.reset();
+      @Test
+      @DisplayName("clickButton with locator delegates correctly")
+      void clickButtonWithLocator() {
+         // Given - setup in @BeforeEach
 
-            // When
-            service.clickButton(locator);
+         // When
+         service.clickButton(locator);
 
-            // Then
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-            assertThat(service.lastButtonLocator).isEqualTo(locator);
-        }
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.lastButtonLocator).isEqualTo(locator);
+         assertThat(service.lastContainer).isNull();
+         assertThat(service.lastButtonText).isNull();
+      }
 
-        @Test
-        @DisplayName("getTitle delegates correctly")
-        void getTitleDelegates() {
-            // Given
-            service.reset();
-            var expectedTitle = "Modal Title Here";
-            service.returnTitle = expectedTitle;
+      @Test
+      @DisplayName("getTitle delegates correctly")
+      void getTitleDelegates() {
+         // Given
+         service.returnTitle = MODAL_TITLE;
 
-            // When
-            var result = service.getTitle();
+         // When
+         var result = service.getTitle();
 
-            // Then
-            assertThat(result).isEqualTo(expectedTitle);
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-        }
+         // Then
+         assertThat(result).isEqualTo(MODAL_TITLE);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+      }
 
-        @Test
-        @DisplayName("getBodyText delegates correctly")
-        void getBodyTextDelegates() {
-            // Given
-            service.reset();
-            var expectedBody = "Body content sample";
-            service.returnBodyText = expectedBody;
+      @Test
+      @DisplayName("getBodyText delegates correctly")
+      void getBodyTextDelegates() {
+         // Given
+         service.returnBodyText = MODAL_BODY;
 
-            // When
-            var result = service.getBodyText();
+         // When
+         var result = service.getBodyText();
 
-            // Then
-            assertThat(result).isEqualTo(expectedBody);
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-        }
+         // Then
+         assertThat(result).isEqualTo(MODAL_BODY);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+      }
 
-        @Test
-        @DisplayName("getContentTitle delegates correctly")
-        void getContentTitleDelegates() {
-            // Given
-            service.reset();
-            var expectedTitle = "Content Title Sample";
-            service.returnContentTitle = expectedTitle;
+      @Test
+      @DisplayName("getContentTitle delegates correctly")
+      void getContentTitleDelegates() {
+         // Given
+         service.returnContentTitle = MODAL_CONTENT_TITLE;
 
-            // When
-            var result = service.getContentTitle();
+         // When
+         var result = service.getContentTitle();
 
-            // Then
-            assertThat(result).isEqualTo(expectedTitle);
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-        }
+         // Then
+         assertThat(result).isEqualTo(MODAL_CONTENT_TITLE);
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+      }
 
-        @Test
-        @DisplayName("close delegates correctly")
-        void closeDelegates() {
-            // Given
-            service.reset();
+      @Test
+      @DisplayName("close delegates correctly")
+      void closeDelegates() {
+         // Given - setup in @BeforeEach
 
-            // When
-            service.close();
+         // When
+         service.close();
 
-            // Then
-            assertThat(service.lastComponentType).isEqualTo(MockModalComponentType.DUMMY);
-        }
-    }
-
-    @Nested
-    @DisplayName("Default Type Resolution Tests")
-    class DefaultTypeResolutionTests {
-        private MockedStatic<UiConfigHolder> uiConfigHolderMock;
-        private MockedStatic<ReflectionUtil> reflectionUtilMock;
-        private UiConfig uiConfigMock;
-
-        @BeforeEach
-        void setUp() {
-            uiConfigMock = mock(UiConfig.class);
-            uiConfigHolderMock = mockStatic(UiConfigHolder.class);
-            reflectionUtilMock = mockStatic(ReflectionUtil.class);
-
-            uiConfigHolderMock.when(UiConfigHolder::getUiConfig)
-                    .thenReturn(uiConfigMock);
-            when(uiConfigMock.modalDefaultType()).thenReturn("TEST_TYPE");
-            when(uiConfigMock.projectPackage()).thenReturn("com.test.package");
-        }
-
-        @AfterEach
-        void tearDown() {
-            if (uiConfigHolderMock != null) {
-                uiConfigHolderMock.close();
-            }
-            if (reflectionUtilMock != null) {
-                reflectionUtilMock.close();
-            }
-        }
-
-        @Test
-        @DisplayName("getDefaultType returns component type when found")
-        void getDefaultTypeSuccess() throws Exception {
-            // Given
-            var mockType = MockModalComponentType.DUMMY;
-            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            eq(ModalComponentType.class),
-                            eq("TEST_TYPE"),
-                            eq("com.test.package")))
-                    .thenReturn(mockType);
-
-            // When - access the private method using reflection
-            var getDefaultTypeMethod = ModalService.class.getDeclaredMethod("getDefaultType");
-            getDefaultTypeMethod.setAccessible(true);
-            var result = (ModalComponentType) getDefaultTypeMethod.invoke(null);
-
-            // Then
-            assertThat(result).isEqualTo(mockType);
-        }
-
-        @Test
-        @DisplayName("getDefaultType returns null when exception occurs")
-        void getDefaultTypeWithException() throws Exception {
-            // Given - ReflectionUtil throws exception when called
-            reflectionUtilMock.when(() -> ReflectionUtil.findEnumImplementationsOfInterface(
-                            eq(ModalComponentType.class),
-                            anyString(),
-                            anyString()))
-                    .thenThrow(new RuntimeException("Test exception"));
-
-            // When - access private method via reflection
-            var getDefaultTypeMethod = ModalService.class.getDeclaredMethod("getDefaultType");
-            getDefaultTypeMethod.setAccessible(true);
-            var result = (ModalComponentType) getDefaultTypeMethod.invoke(null);
-
-            // Then - verify null is returned when exception occurs
-            assertThat(result).isNull();
-        }
-    }
+         // Then
+         assertThat(service.lastComponentTypeUsed).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.explicitComponentType).isEqualTo(DEFAULT_TYPE);
+         assertThat(service.lastContainer).isNull();
+         assertThat(service.lastButtonText).isNull();
+         assertThat(service.lastButtonLocator).isNull();
+      }
+   }
 }

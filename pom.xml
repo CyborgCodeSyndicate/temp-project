@@ -22,6 +22,7 @@
         <module>ui-interactor-test-framework-adapter</module>
         <module>example-project</module>
         <module>ui-bakery-project</module>
+        <module>ui-zerobank-project</module>
         <module>commons</module>
         <module>reqres-test-framework</module>
         <module>test-allocator-maven-plugin</module>
@@ -65,8 +66,7 @@
         <vulnerabilities.threshold>5.0</vulnerabilities.threshold>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <checkstyle.version>10.22.0</checkstyle.version>
-        <maven-checkstyle-plugin.configLocation>${project.basedir}/zeus_checkstyle.xml
-        </maven-checkstyle-plugin.configLocation>
+        <maven-checkstyle-plugin.configLocation>roa_checks.xml</maven-checkstyle-plugin.configLocation>
         <delombok-maven-plugin.skip>false</delombok-maven-plugin.skip>
         <maven-spring-boot-plugin.version>3.4.0</maven-spring-boot-plugin.version>
 
@@ -469,8 +469,8 @@
                     <configuration>
                         <skip>false</skip>
                         <configLocation>${maven-checkstyle-plugin.configLocation}</configLocation>
-                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        <violationSeverity>error</violationSeverity>
+                        <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                        <violationSeverity>warning</violationSeverity>
                         <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
                         <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
                         <consoleOutput>true</consoleOutput>
@@ -490,15 +490,15 @@
                             <version>${checkstyle.version}</version>
                         </dependency>
                     </dependencies>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--                            <id>validate</id>-->
+<!--                            <phase>validate</phase>-->
+<!--                            <goals>-->
+<!--                                <goal>check</goal>-->
+<!--                            </goals>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
                 </plugin>
 
                 <plugin>

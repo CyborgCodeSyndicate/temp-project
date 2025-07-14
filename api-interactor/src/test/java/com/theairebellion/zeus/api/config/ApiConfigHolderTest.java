@@ -1,9 +1,8 @@
 package com.theairebellion.zeus.api.config;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -11,36 +10,31 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 @DisplayName("ApiConfigHolder Basic Tests")
 class ApiConfigHolderTest {
 
-    @Test
-    @DisplayName("getApiConfig should return non-null config")
-    void getApiConfigShouldReturnNonNullConfig() {
-        // Act
-        ApiConfig config = ApiConfigHolder.getApiConfig();
+   @BeforeEach
+   void resetSingleton() {
+      // Clear any cached instance before each test
+      ApiConfigHolder.resetForTest();
+   }
 
-        // Assert
-        assertNotNull(config, "ApiConfig should not be null");
-    }
+   @Test
+   @DisplayName("getApiConfig should return non-null config")
+   void getApiConfigShouldReturnNonNullConfig() {
+      // Act
+      ApiConfig config = ApiConfigHolder.getApiConfig();
 
-    @Test
-    @DisplayName("getApiConfig should return the same instance on multiple calls")
-    void getApiConfigShouldReturnSameInstance() throws Exception {
-        // Reset the singleton first to ensure test isolation
-        resetConfigHolder();
+      // Assert
+      assertNotNull(config, "ApiConfig should not be null");
+   }
 
-        // Act
-        ApiConfig config1 = ApiConfigHolder.getApiConfig();
-        ApiConfig config2 = ApiConfigHolder.getApiConfig();
+   @Test
+   @DisplayName("getApiConfig should return the same instance on multiple calls")
+   void getApiConfigShouldReturnSameInstance() {
+      // Act
+      ApiConfig first = ApiConfigHolder.getApiConfig();
+      ApiConfig second = ApiConfigHolder.getApiConfig();
 
-        // Assert
-        assertSame(config1, config2, "Multiple calls to getApiConfig should return the same instance");
-    }
+      // Assert
+      assertSame(first, second, "Multiple calls to getApiConfig should return the same instance");
+   }
 
-    /**
-     * Helper method to reset the singleton for testing
-     */
-    private void resetConfigHolder() throws Exception {
-        Field configField = ApiConfigHolder.class.getDeclaredField("config");
-        configField.setAccessible(true);
-        configField.set(null, null);
-    }
 }

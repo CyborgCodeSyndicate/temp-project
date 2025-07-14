@@ -11,12 +11,12 @@ import static org.mockito.Mockito.mock;
  */
 public abstract class MockTestableEndpoint implements Endpoint {
 
-    private final RequestSpecification mockRequestSpec = mock(RequestSpecification.class);
+   private final RequestSpecification mockRequestSpec = mock(RequestSpecification.class);
 
-    @Override
-    public RequestSpecification defaultConfiguration() {
-        // Return a mock instead of calling RestAssured.given()
-        return mockRequestSpec;
-    }
+   @Override
+   public RequestSpecification defaultConfiguration() {
+      // Return a mock instead of calling RestAssured.given()
+      return mockRequestSpec;
+   }
 }
 

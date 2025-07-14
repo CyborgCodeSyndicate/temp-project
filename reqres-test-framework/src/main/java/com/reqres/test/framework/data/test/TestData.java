@@ -9,10 +9,10 @@ import org.aeonbits.owner.Config;
 @Config.Sources({"system:properties", "classpath:${test.data.file}.properties"})
 public interface TestData extends PropertyConfig {
 
-    @Key("username")
-    String username();
+   @Key("username")
+   String username();
 
-    @Key("password")
-    String password();
+   @Key("password")
+   String password();
 
 }

@@ -7,71 +7,90 @@ import org.openqa.selenium.By;
 
 public class MockModalService implements ModalService {
 
-    public ModalComponentType lastComponentType;
-    public SmartWebElement lastContainer;
-    public String lastButtonText;
-    public By lastButtonLocator;
-    public boolean returnOpened;
-    public String returnTitle;
-    public String returnBodyText;
-    public String returnContentTitle;
+   public ModalComponentType lastComponentTypeUsed;
+   public ModalComponentType explicitComponentType;
+   public SmartWebElement lastContainer;
+   public String lastButtonText;
+   public By lastButtonLocator;
+   public boolean returnOpened;
+   public String returnTitle;
+   public String returnBodyText;
+   public String returnContentTitle;
 
-    public void reset() {
-        lastComponentType = null;
-        lastContainer = null;
-        lastButtonText = null;
-        lastButtonLocator = null;
-        returnOpened = false;
-        returnTitle = "";
-        returnBodyText = "";
-        returnContentTitle = "";
-    }
+   public MockModalService() {
+      reset();
+   }
 
-    @Override
-    public boolean isOpened(ModalComponentType componentType) {
-        lastComponentType = componentType;
-        return returnOpened;
-    }
+   private void setLastType(ModalComponentType type) {
+      this.explicitComponentType = type;
+      if (MockModalComponentType.DUMMY_MODAL.equals(type)) {
+         this.lastComponentTypeUsed = MockModalComponentType.DUMMY_MODAL;
+      } else {
+         this.lastComponentTypeUsed = null;
+      }
+   }
 
-    @Override
-    public void clickButton(ModalComponentType componentType, SmartWebElement container, String modalButtonText) {
-        lastComponentType = componentType;
-        lastContainer = container;
-        lastButtonText = modalButtonText;
-    }
+   public void reset() {
+      lastComponentTypeUsed = null;
+      explicitComponentType = MockModalComponentType.DUMMY_MODAL;
+      lastContainer = null;
+      lastButtonText = null;
+      lastButtonLocator = null;
+      returnOpened = false;
+      returnTitle = "";
+      returnBodyText = "";
+      returnContentTitle = "";
+   }
 
-    @Override
-    public void clickButton(ModalComponentType componentType, String modalButtonText) {
-        lastComponentType = componentType;
-        lastButtonText = modalButtonText;
-    }
+   @Override
+   public boolean isOpened(ModalComponentType componentType) {
+      setLastType(componentType);
+      return returnOpened;
+   }
 
-    @Override
-    public void clickButton(ModalComponentType componentType, By modalButtonLocator) {
-        lastComponentType = componentType;
-        lastButtonLocator = modalButtonLocator;
-    }
+   @Override
+   public void clickButton(ModalComponentType componentType, SmartWebElement container, String modalButtonText) {
+      setLastType(componentType);
+      lastContainer = container;
+      lastButtonText = modalButtonText;
+   }
 
-    @Override
-    public String getTitle(ModalComponentType componentType) {
-        lastComponentType = componentType;
-        return returnTitle;
-    }
+   @Override
+   public void clickButton(ModalComponentType componentType, String modalButtonText) {
+      setLastType(componentType);
+      lastButtonText = modalButtonText;
+      lastContainer = null;
+      lastButtonLocator = null;
+   }
 
-    @Override
-    public String getBodyText(ModalComponentType componentType) {
-        lastComponentType = componentType;
-        return returnBodyText;
-    }
+   @Override
+   public void clickButton(ModalComponentType componentType, By modalButtonLocator) {
+      setLastType(componentType);
+      lastButtonLocator = modalButtonLocator;
+      lastContainer = null;
+      lastButtonText = null;
+   }
 
-    @Override
-    public String getContentTitle(ModalComponentType componentType) {
-        lastComponentType = componentType;
-        return returnContentTitle;
-    }
+   @Override
+   public String getTitle(ModalComponentType componentType) {
+      setLastType(componentType);
+      return returnTitle;
+   }
 
-    @Override
-    public void close(ModalComponentType componentType) {
-        lastComponentType = componentType;
-    }
+   @Override
+   public String getBodyText(ModalComponentType componentType) {
+      setLastType(componentType);
+      return returnBodyText;
+   }
+
+   @Override
+   public String getContentTitle(ModalComponentType componentType) {
+      setLastType(componentType);
+      return returnContentTitle;
+   }
+
+   @Override
+   public void close(ModalComponentType componentType) {
+      setLastType(componentType);
+   }
 }

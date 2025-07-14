@@ -1,6 +1,6 @@
 package com.theairebellion.zeus.ui.selenium.locating;
 
-import com.theairebellion.zeus.ui.BaseUnitUITest;
+import com.theairebellion.zeus.ui.testutil.BaseUnitUITest;
 import com.theairebellion.zeus.ui.selenium.shadowroot.ShadowDomUtils;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebDriver;
 import com.theairebellion.zeus.ui.selenium.smart.SmartWebElement;
@@ -67,13 +67,13 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementNoWrap with WebDriver should return SmartWebElement")
         void testFindElementNoWrapWithWebDriver() {
-            // Arrange
+            // Given
             when(driver.findElement(by)).thenReturn(webElement);
 
-            // Act
+            // When
             SmartWebElement result = SmartFinder.findElementNoWrap(driver, by);
 
-            // Assert
+            // Then
             assertNotNull(result);
             assertEquals(webElement, result.getOriginal());
             assertEquals(driver, result.getDriver());
@@ -82,13 +82,13 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementNoWrap with SmartWebElement should return SmartWebElement")
         void testFindElementNoWrapWithSmartWebElement() {
-            // Arrange
+            // Given
             when(webElement.findElement(by)).thenReturn(webElement);
 
-            // Act
+            // When
             SmartWebElement result = SmartFinder.findElementNoWrap(smartElement, by);
 
-            // Assert
+            // Then
             assertNotNull(result);
             assertEquals(webElement, result.getOriginal());
             assertEquals(driver, result.getDriver());
@@ -102,16 +102,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementNormallyWithWebDriver should wait and return SmartWebElement")
         void testFindElementNormallyWithWebDriver() {
-            // Arrange
+            // Given
             when(driver.findElement(by)).thenReturn(webElement);
-
-            // Create a mock wait consumer that doesn't actually execute the function
             Consumer<Function<WebDriver, ?>> mockWaitConsumer = mock(Consumer.class);
 
-            // Act
+            // When
             SmartWebElement result = SmartFinder.findElementNormally(driver, by, mockWaitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(result);
             assertEquals(webElement, result.getOriginal());
             verify(driver).findElement(by);
@@ -122,13 +120,13 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementNormally with SmartWebElement should wait and return SmartWebElement")
         void testFindElementNormallyWithSmartWebElement() {
-            // Arrange
+            // Given
             when(webElement.findElement(by)).thenReturn(webElement);
 
-            // Act
+            // When
             SmartWebElement result = SmartFinder.findElementNormally(smartElement, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(result);
             assertEquals(webElement, result.getOriginal());
             verify(webElement).findElement(by);
@@ -142,14 +140,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementWithShadowRootDriver should return element if found immediately")
         void testFindElementWithShadowRootDriverElementFoundImmediately() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(driver.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             SmartWebElement result = SmartFinder.findElementWithShadowRootDriver(smartDriver, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(result);
             assertEquals(webElement, result.getOriginal());
         }
@@ -157,18 +155,17 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementWithShadowRootDriver should search shadow roots if no elements found and shadow roots exist")
         void testFindElementWithShadowRootDriverSearchShadowRoots() {
-            // Arrange
+            // Given
             SmartWebElement shadowElement = mock(SmartWebElement.class);
             when(driver.findElements(by)).thenReturn(Collections.emptyList());
-
             try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(true);
                 shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by)).thenReturn(shadowElement);
 
-                // Act
+                // When
                 SmartWebElement result = SmartFinder.findElementWithShadowRootDriver(smartDriver, by, waitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(result);
                 assertSame(shadowElement, result);
                 shadowDomUtils.verify(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by));
@@ -178,19 +175,18 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementWithShadowRootDriver should search shadow roots with wait time if provided")
         void testFindElementWithShadowRootDriverWithWaitTime() {
-            // Arrange
+            // Given
             SmartWebElement shadowElement = mock(SmartWebElement.class);
             when(driver.findElements(by)).thenReturn(Collections.emptyList());
             long waitTime = 1000L;
-
             try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(true);
                 shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by, waitTime)).thenReturn(shadowElement);
 
-                // Act
+                // When
                 SmartWebElement result = SmartFinder.findElementWithShadowRootDriver(smartDriver, by, waitConsumer, waitTime);
 
-                // Assert
+                // Then
                 assertNotNull(result);
                 assertSame(shadowElement, result);
                 shadowDomUtils.verify(() -> ShadowDomUtils.findElementInShadowRoots(smartDriver, by, waitTime));
@@ -200,20 +196,15 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementWithShadowRootDriver should wait and find normally if no shadow roots")
         void testFindElementWithShadowRootDriverNoShadowRoots() {
-            // Arrange
+            // When
             when(driver.findElements(by)).thenReturn(Collections.emptyList());
             when(driver.findElement(by)).thenReturn(webElement);
-
-            // Create a mock wait consumer that doesn't actually execute the function
             Consumer<Function<WebDriver, ?>> mockWaitConsumer = mock(Consumer.class);
-
             try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(false);
-
-                // Act
                 SmartWebElement result = SmartFinder.findElementWithShadowRootDriver(smartDriver, by, mockWaitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(result);
                 assertEquals(webElement, result.getOriginal());
                 verify(driver).findElement(by);
@@ -229,14 +220,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementWithShadowRootElement should return element if found immediately")
         void testFindElementWithShadowRootElementFoundImmediately() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(webElement.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             SmartWebElement result = SmartFinder.findElementWithShadowRootElement(smartElement, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(result);
             assertEquals(webElement, result.getOriginal());
         }
@@ -244,7 +235,7 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementWithShadowRootElement should search shadow roots if no elements found and shadow roots exist")
         void testFindElementWithShadowRootElementSearchShadowRoots() {
-            // Arrange
+            // Given
             SmartWebElement shadowElement = mock(SmartWebElement.class);
             when(webElement.findElements(by)).thenReturn(Collections.emptyList());
 
@@ -252,10 +243,10 @@ class SmartFinderTest extends BaseUnitUITest {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartElement)).thenReturn(true);
                 shadowDomUtils.when(() -> ShadowDomUtils.findElementInShadowRoots(smartElement, by)).thenReturn(shadowElement);
 
-                // Act
+                // When
                 SmartWebElement result = SmartFinder.findElementWithShadowRootElement(smartElement, by, waitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(result);
                 assertSame(shadowElement, result);
                 shadowDomUtils.verify(() -> ShadowDomUtils.findElementInShadowRoots(smartElement, by));
@@ -265,17 +256,17 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementWithShadowRootElement should call findElementNormally if no shadow roots")
         void testFindElementWithShadowRootElementNoShadowRoots() {
-            // Arrange
+            // Given
             when(webElement.findElements(by)).thenReturn(Collections.emptyList());
             when(webElement.findElement(by)).thenReturn(webElement);
 
             try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartElement)).thenReturn(false);
 
-                // Act
+                // When
                 SmartWebElement result = SmartFinder.findElementWithShadowRootElement(smartElement, by, waitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(result);
                 assertEquals(webElement, result.getOriginal());
                 verify(webElement).findElement(by);
@@ -290,14 +281,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsNoWrap with WebDriver should return list of SmartWebElements")
         void testFindElementsNoWrapWithWebDriver() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(driver.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsNoWrap(driver, by);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -306,14 +297,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsNoWrap with SmartWebElement should return list of SmartWebElements")
         void testFindElementsNoWrapWithSmartWebElement() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(webElement.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsNoWrap(smartElement, by);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -327,14 +318,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsNormally with WebDriver should return list when elements found")
         void testFindElementsNormallyWithWebDriverElementsFound() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(driver.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsNormally(driver, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -343,14 +334,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsNormally with WebDriver should find single element when list is empty")
         void testFindElementsNormallyWithWebDriverEmptyList() {
-            // Arrange
+            // Given
             when(driver.findElements(by)).thenReturn(Collections.emptyList());
             when(driver.findElement(by)).thenReturn(webElement);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsNormally(driver, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -359,14 +350,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsNormally with SmartWebElement should return list when elements found")
         void testFindElementsNormallyWithSmartWebElementElementsFound() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(webElement.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsNormally(smartElement, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -375,14 +366,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsNormally with SmartWebElement should find single element when list is empty")
         void testFindElementsNormallyWithSmartWebElementEmptyList() {
-            // Arrange
+            // Given
             when(webElement.findElements(by)).thenReturn(Collections.emptyList());
             when(webElement.findElement(by)).thenReturn(webElement);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsNormally(smartElement, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -396,14 +387,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsWithShadowRootDriver should return list if found immediately")
         void testFindElementsWithShadowRootDriverElementsFoundImmediately() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(driver.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootDriver(smartDriver, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -412,7 +403,7 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsWithShadowRootDriver should search shadow roots if no elements found and shadow roots exist")
         void testFindElementsWithShadowRootDriverSearchShadowRoots() {
-            // Arrange
+            // Given
             List<SmartWebElement> shadowElements = List.of(mock(SmartWebElement.class));
             when(driver.findElements(by)).thenReturn(Collections.emptyList());
 
@@ -420,10 +411,10 @@ class SmartFinderTest extends BaseUnitUITest {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(true);
                 shadowDomUtils.when(() -> ShadowDomUtils.findElementsInShadowRoots(smartDriver, by)).thenReturn(shadowElements);
 
-                // Act
+                // When
                 List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootDriver(smartDriver, by, waitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertSame(shadowElements, results);
                 shadowDomUtils.verify(() -> ShadowDomUtils.findElementsInShadowRoots(smartDriver, by));
@@ -433,11 +424,10 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsWithShadowRootDriver should wait and find list if no shadow roots")
         void testFindElementsWithShadowRootDriverNoShadowRootsFoundList() {
-            // Arrange
+            // Given
             List<WebElement> emptyList = Collections.emptyList();
             List<WebElement> foundList = List.of(webElement);
 
-            // First return empty, then after waiting return non-empty
             when(driver.findElements(by))
                     .thenReturn(emptyList)
                     .thenReturn(foundList);
@@ -445,10 +435,10 @@ class SmartFinderTest extends BaseUnitUITest {
             try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(false);
 
-                // Act
+                // When
                 List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootDriver(smartDriver, by, waitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertEquals(1, results.size());
                 assertEquals(webElement, results.get(0).getOriginal());
@@ -459,7 +449,7 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsWithShadowRootDriver should wait and find single element if lists are empty")
         void testFindElementsWithShadowRootDriverNoShadowRootsFoundElement() {
-            // Arrange
+            // Given
             when(driver.findElements(by)).thenReturn(Collections.emptyList());
             when(driver.findElement(by)).thenReturn(webElement);
 
@@ -469,10 +459,10 @@ class SmartFinderTest extends BaseUnitUITest {
             try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartDriver)).thenReturn(false);
 
-                // Act
+                // When
                 List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootDriver(smartDriver, by, mockWaitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertEquals(1, results.size());
                 assertEquals(webElement, results.get(0).getOriginal());
@@ -489,14 +479,14 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsWithShadowRootElement should return list if found immediately")
         void testFindElementsWithShadowRootElementFoundImmediately() {
-            // Arrange
+            // Given
             List<WebElement> elements = List.of(webElement);
             when(webElement.findElements(by)).thenReturn(elements);
 
-            // Act
+            // When
             List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootElement(smartElement, by, waitConsumer);
 
-            // Assert
+            // Then
             assertNotNull(results);
             assertEquals(1, results.size());
             assertEquals(webElement, results.get(0).getOriginal());
@@ -505,7 +495,7 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsWithShadowRootElement should search shadow roots if no elements found and shadow roots exist")
         void testFindElementsWithShadowRootElementSearchShadowRoots() {
-            // Arrange
+            // Given
             List<SmartWebElement> shadowElements = List.of(mock(SmartWebElement.class));
             when(webElement.findElements(by)).thenReturn(Collections.emptyList());
 
@@ -513,10 +503,10 @@ class SmartFinderTest extends BaseUnitUITest {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartElement)).thenReturn(true);
                 shadowDomUtils.when(() -> ShadowDomUtils.findElementsInShadowRoots(smartElement, by)).thenReturn(shadowElements);
 
-                // Act
+                // When
                 List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootElement(smartElement, by, waitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertSame(shadowElements, results);
                 shadowDomUtils.verify(() -> ShadowDomUtils.findElementsInShadowRoots(smartElement, by));
@@ -526,18 +516,18 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("findElementsWithShadowRootElement should call findElementsNormally if no shadow roots")
         void testFindElementsWithShadowRootElementNoShadowRoots() {
-            // Arrange
+            // Given
             when(webElement.findElements(by))
-                    .thenReturn(Collections.emptyList())  // First call: initial check
-                    .thenReturn(List.of(webElement));     // Second call: in findElementsNormally
+                    .thenReturn(Collections.emptyList())
+                    .thenReturn(List.of(webElement));
 
             try (MockedStatic<ShadowDomUtils> shadowDomUtils = mockStatic(ShadowDomUtils.class)) {
                 shadowDomUtils.when(() -> ShadowDomUtils.shadowRootElementsPresent(smartElement)).thenReturn(false);
 
-                // Act
+                // When
                 List<SmartWebElement> results = SmartFinder.findElementsWithShadowRootElement(smartElement, by, waitConsumer);
 
-                // Assert
+                // Then
                 assertNotNull(results);
                 assertEquals(1, results.size());
                 assertEquals(webElement, results.get(0).getOriginal());
@@ -553,20 +543,18 @@ class SmartFinderTest extends BaseUnitUITest {
         @Test
         @DisplayName("Wait consumer should pass expected condition to ExpectedConditions")
         void testWaitConsumerPassesExpectedCondition() {
-            // Arrange
+            // Given
             ArgumentCaptor<Function<WebDriver, ?>> captor = ArgumentCaptor.forClass(Function.class);
             Consumer<Function<WebDriver, ?>> mockConsumer = mock(Consumer.class);
             lenient().when(driver.findElement(by)).thenReturn(webElement);
 
 
-            // Act
+            // When
             SmartFinder.findElementNormally(driver, by, mockConsumer);
 
-            // Assert
+            // Then
             verify(mockConsumer).accept(captor.capture());
             Function<WebDriver, ?> capturedFunction = captor.getValue();
-            // Verify it's the right type of expected condition by calling it
-            // (would throw ClassCastException if wrong type)
             capturedFunction.apply(driver);
         }
     }
