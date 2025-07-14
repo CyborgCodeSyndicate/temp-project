@@ -81,7 +81,7 @@ jobs:
       - name: Upload SpotBugs SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: sarif-merge/spotbugs.sarif
+          sarif_file: sarif-merge/spotbugs-merged.sarif
 
       - name: Upload Dependency‑Check SARIF
         uses: github/codeql-action/upload-sarif@v3
