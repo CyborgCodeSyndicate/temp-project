@@ -56,35 +56,35 @@ jobs:
           path: '**/target/surefire-reports/*.xml'
           reporter: java-junit
 
-      # ─────────────────────── SpotBugs + SARIF upload ──────────────────────
-      - name: SpotBugs static analysis
-        if: always()
-        uses: advanced-security/spotbugs-findsecbugs-action@v1.0.6
-        with:
-          spotbugs_target: target/
-          upload_sarif: true            # pushes to Security → Code scanning
-
-      # ────────────────── OWASP Dependency-Check SARIF upload ───────────────
-      - name: Upload OWASP Dependency-Check SARIF
+      # ────────────────────── SpotBugs SARIF upload (multi-module) ──────────────────────
+      - name: Upload SpotBugs SARIF
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: target/dependency-check-report.sarif
+          # parent aggregate file + any per-module SARIF you may keep
+          sarif_file: '**/spotbugs/*.sarif'
 
-      # ─────────────── convert JaCoCo XML → SARIF (+ upload) ────────────────
+      # ──────────────── OWASP Dependency-Check SARIF upload (multi-module) ───────────────
+      - name: Upload Dependency-Check SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: '**/dependency-check-report.sarif'
+
+      # ──────────────── Convert JaCoCo XML aggregate → SARIF + upload ────────────────────
       - name: Convert JaCoCo XML → SARIF
         if: always()
         uses: airtower-luna/convert-to-sarif@main
         with:
           tool: Jacoco
-          input_file: 'target/site/jacoco/jacoco.xml'
-          sarif_file: 'target/jacoco.sarif'
+          input_file: 'target/jacoco-aggregate/jacoco.xml'   # produced by <id>jacoco-aggregate</id>
+          sarif_file: 'target/jacoco-aggregate/jacoco.sarif'
 
       - name: Upload JaCoCo SARIF
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: target/jacoco.sarif
+          sarif_file: target/jacoco-aggregate/jacoco.sarif
 
       # ──────────────── stage Maven site → GitHub Pages artifact ────────────
       - name: Stage Maven site (HTML)
