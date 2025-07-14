@@ -45,7 +45,6 @@ jobs:
           mvn -B clean verify \
               -Ppr-validator \
               -Dnvd.api.key="$NVD_API_KEY" \
-#              -Ddependency-check.format=HTML,SARIF \   # ensure both formats
               --no-transfer-progress
 
       # ─────────────────────── unit-test report to GitHub ───────────────────
