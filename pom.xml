@@ -410,6 +410,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <runOrder>alphabetical</runOrder>
                         <skipTests>false</skipTests>
                         <testFailureIgnore>false</testFailureIgnore>
                         <parallel>${surefire.parallel.type}</parallel>
