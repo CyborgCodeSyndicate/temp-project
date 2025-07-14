@@ -11,6 +11,7 @@ permissions:
   contents: write
   pull-requests: write
   checks: write
+  security-events: write
 
 env:
   PR_NUM: ${{ github.event.number }}
@@ -77,26 +78,30 @@ jobs:
           merge '*/target/spotbugs/spotbugs*.sarif'     spotbugs-merged.sarif
           merge '**/dependency-check-report.sarif'      dc-merged.sarif
 
-      - name: Upload merged SARIF bundle                # <-- CHANGED
-        if: always()
+      - name: Upload SpotBugs SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: sarif-merge          # uploader will take every *.sarif inside
+          sarif_file: sarif-merge/spotbugs.sarif
+
+      - name: Upload Dependency‑Check SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-merge/dc-merged.sarif
 
       # ───────────── JaCoCo aggregate → SARIF ─────────────
       - name: Convert JaCoCo XML → SARIF
         if: always()
         uses: airtower-luna/convert-to-sarif@main
         with:
-          tool: Jacoco
-          input_file: 'library-parent-pom/target/jacoco-aggregate/jacoco.xml'   # ← aggregate XML
-          sarif_file: 'library-parent-pom/target/jacoco-aggregate/jacoco.sarif' # ← write SARIF next to it
+          tool: jacoco                                                  # ← lower‑case; converter expects this
+          input_file: library-parent-pom/target/jacoco-aggregate/jacoco.xml
+          sarif_file: sarif-merge/jacoco.sarif                          # ← write into the merge folder
 
       - name: Upload JaCoCo SARIF
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: library-parent-pom/target/jacoco-aggregate/jacoco.sarif    # ← same path
+          sarif_file: sarif-merge/jacoco.sarif
 
       # ───────── stage Maven site → Pages artifact ─────────
       - name: Stage Maven site (HTML)
