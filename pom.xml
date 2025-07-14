@@ -65,7 +65,7 @@
         <extra-enforcer-rules.version>1.9.0</extra-enforcer-rules.version>
         <vulnerabilities.threshold>5.0</vulnerabilities.threshold>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.21.3</checkstyle.version>
+        <checkstyle.version>10.22.0</checkstyle.version>
         <maven-checkstyle-plugin.configLocation>roa_checks.xml</maven-checkstyle-plugin.configLocation>
         <delombok-maven-plugin.skip>false</delombok-maven-plugin.skip>
         <maven-spring-boot-plugin.version>3.4.0</maven-spring-boot-plugin.version>
@@ -82,7 +82,7 @@
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
 
-        <spotbugs-maven-plugin.version>4.8.6.6</spotbugs-maven-plugin.version>
+        <spotbugs-maven-plugin.version>4.9.0.0</spotbugs-maven-plugin.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
 
         <maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
@@ -438,7 +438,8 @@
                                         <message>Duplicate dependency versions found! Resolve conflicts.</message>
                                     </banDuplicatePomDependencyVersions>
                                     <dependencyConvergence>
-                                        <message>Dependency convergence issues detected! Resolve conflicting versions.</message>
+                                        <message>Dependency convergence issues detected! Resolve conflicting versions.
+                                        </message>
                                     </dependencyConvergence>
                                     <requireReleaseDeps>
                                         <message>SNAPSHOT dependencies are not allowed in libraries.</message>
@@ -508,7 +509,7 @@
                         <skip>false</skip>
                         <show>protected</show>
                         <source>${java.version}</source>
-                        <defaultAuthor>The AI Rebellion</defaultAuthor>
+                        <defaultAuthor>Cyborg Code Syndicate</defaultAuthor>
                         <linksource>true</linksource>
                         <doclint>none</doclint>
                         <encoding>${project.build.sourceEncoding}</encoding>
@@ -533,16 +534,12 @@
                     </executions>
                 </plugin>
 
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${maven-spring-boot-plugin.version}</version>
-                </plugin>
 
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
                     <version>${dependency-check-maven.version}</version>
+
                     <configuration>
                         <nvdApiKey>${nvd.api.key}</nvdApiKey>
                         <name>OWASP Security Check</name>
@@ -552,21 +549,34 @@
                         <skipTestScope>${dependency-check-maven.skipTestScope}</skipTestScope>
                         <failBuildOnCVSS>${vulnerabilities.threshold}</failBuildOnCVSS>
                         <suppressionFiles>
-                            <suppressionFile>${project.basedir}/../dependency-check-suppressions.xml</suppressionFile>
+                            <suppressionFile>
+                                ${project.basedir}/../dependency-check-suppressions.xml
+                            </suppressionFile>
                         </suppressionFiles>
                         <formats>
                             <format>json</format>
                             <format>html</format>
+                            <format>sarif</format>
                         </formats>
                         <outputDirectory>${project.build.directory}/dependency-check-report</outputDirectory>
                     </configuration>
+
                     <executions>
                         <execution>
-                            <id>security-check</id>
-                            <phase>validate</phase>
+                            <id>dc-aggregate</id>
+                            <phase>verify</phase>
+                            <inherited>false</inherited>
+                            <goals>
+                                <goal>aggregate</goal>
+                            </goals>
+                        </execution>
+
+                        <execution>
+                            <id>dc-check</id>
+                            <phase>verify</phase>
+                            <inherited>true</inherited>
                             <goals>
                                 <goal>check</goal>
-                                <goal>aggregate</goal>
                             </goals>
                         </execution>
                     </executions>
@@ -576,21 +586,30 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
+
+                    <!-- your existing global config -->
                     <configuration>
                         <append>true</append>
                         <dumpOnExit>true</dumpOnExit>
                     </configuration>
+
                     <executions>
+
+                        <!-- 1️⃣  Agent in every module so *.exec files are produced -->
                         <execution>
                             <id>prepare-agent</id>
                             <phase>initialize</phase>
+                            <inherited>true</inherited>          <!-- runs in children too -->
                             <goals>
                                 <goal>prepare-agent</goal>
                             </goals>
                         </execution>
+
+                        <!-- 2️⃣  Optional per-module HTML report (leave for local dev use) -->
                         <execution>
-                            <id>generate-report</id>
+                            <id>module-report</id>
                             <phase>verify</phase>
+                            <inherited>true</inherited>          <!-- runs when dev builds a module -->
                             <goals>
                                 <goal>report</goal>
                             </goals>
@@ -598,14 +617,16 @@
                                 <excludes>
                                     <exclude>**/exceptions/*</exclude>
                                 </excludes>
-                                <outputDirectory>
-                                    ${project.reporting.outputDirectory}/jacoco/ut
-                                </outputDirectory>
+                                <!-- keeps your original path -->
+                                <outputDirectory>${project.reporting.outputDirectory}/jacoco/ut</outputDirectory>
                             </configuration>
                         </execution>
+
+                        <!-- 3️⃣  Coverage rule per module (optional, keep as-is) -->
                         <execution>
                             <id>jacoco-check</id>
                             <phase>verify</phase>
+                            <inherited>true</inherited>
                             <goals>
                                 <goal>check</goal>
                             </goals>
@@ -624,19 +645,25 @@
                                 </rules>
                             </configuration>
                         </execution>
+
+                        <!-- 4️⃣  **Parent-only** aggregate XML (one file for the PR validator) -->
                         <execution>
-                            <id>aggregate-report</id>
+                            <id>jacoco-aggregate</id>
                             <phase>verify</phase>
+                            <inherited>false</inherited>         <!-- runs ONLY in the parent -->
                             <goals>
                                 <goal>report-aggregate</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}/jacoco-aggregate</outputDirectory>
+                                <outputDirectory>
+                                    ${project.build.directory}/jacoco-aggregate
+                                </outputDirectory>
                                 <excludes>
                                     <exclude>**/exceptions/*</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
+
                     </executions>
                 </plugin>
 
@@ -663,17 +690,40 @@
                     <configuration>
                         <xmlOutput>true</xmlOutput>
                         <htmlOutput>true</htmlOutput>
-                        <excludeFilterFile>${project.basedir}/../spotbugs-exclude.xml</excludeFilterFile>
+                        <sarifOutput>true</sarifOutput>
+                        <excludeFilterFile>
+                            ${project.basedir}/../spotbugs-exclude.xml
+                        </excludeFilterFile>
                         <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
                         <failOnError>true</failOnError>
                     </configuration>
                     <executions>
                         <execution>
+                            <id>spotbugs-aggregate</id>
+                            <phase>verify</phase>
+                            <inherited>false</inherited>
+                            <goals>
+                                <goal>aggregate</goal>
+                            </goals>
+                            <configuration>
+                                <xmlOutput>true</xmlOutput>
+                            </configuration>
+                        </execution>
+                        <execution>
                             <id>spotbugs-check</id>
                             <phase>verify</phase>
+                            <inherited>true</inherited>
                             <goals>
+                                <goal>spotbugs</goal>
                                 <goal>check</goal>
                             </goals>
+                            <configuration>
+                                <xmlOutput>true</xmlOutput>
+                                <htmlOutput>true</htmlOutput>
+                                <sarifOutput>true</sarifOutput>
+                                <sarifOutputFilename>spotbugs.sarif</sarifOutputFilename>
+                                <sarifOutputDirectory>${project.build.directory}/spotbugs</sarifOutputDirectory>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -702,14 +752,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
