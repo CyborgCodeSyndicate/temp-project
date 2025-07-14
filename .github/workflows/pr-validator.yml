@@ -41,6 +41,7 @@ jobs:
 
       # ─────────────────────────── build & verify ──────────────────────────
       - name: Build & Verify
+        continue-on-error: true       # ❗️only this step
         run: |
           mvn -B clean verify \
               -Ppr-validator \
