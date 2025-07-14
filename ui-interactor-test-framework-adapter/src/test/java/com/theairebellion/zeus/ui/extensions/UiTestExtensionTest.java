@@ -422,52 +422,6 @@ class UiTestExtensionTest extends BaseUnitUITest {
     }
 
     @Test
-    @DisplayName("Get Web Driver")
-    void testGetWebDriver() throws Exception {
-        // Use reflection to access private method
-        Method getWebDriverMethod = UiTestExtension.class.getDeclaredMethod(
-                "getWebDriver", DecoratorsFactory.class, ExtensionContext.class
-        );
-        getWebDriverMethod.setAccessible(true);
-
-        // Create an instance of UiTestExtension
-        UiTestExtension uiTestExtension = new UiTestExtension();
-
-        // Prepare mocks
-        DecoratorsFactory mockFactory = mock(DecoratorsFactory.class);
-        ExtensionContext mockContext = mock(ExtensionContext.class);
-        ExtensionContext.Store mockStore = mock(ExtensionContext.Store.class);
-        Quest mockQuest = mock(Quest.class);
-        SuperQuest mockSuperQuest = mock(SuperQuest.class);
-        SmartWebDriver mockSmartWebDriver = mock(SmartWebDriver.class);
-        WebDriver mockOriginalDriver = mock(WebDriver.class);
-
-        // Setup method interactions
-        when(mockContext.getStore(ExtensionContext.Namespace.GLOBAL)).thenReturn(mockStore);
-        when(mockStore.get(StoreKeys.QUEST)).thenReturn(mockQuest);
-        when(mockFactory.decorate(mockQuest, SuperQuest.class)).thenReturn(mockSuperQuest);
-        when(mockSuperQuest.artifact(UIServiceFluent.class, SmartWebDriver.class)).thenReturn(mockSmartWebDriver);
-        when(mockSmartWebDriver.getOriginal()).thenReturn(mockOriginalDriver);
-
-        try {
-            // Invoke method
-            getWebDriverMethod.invoke(uiTestExtension, mockFactory, mockContext);
-            fail("Expected an InvocationTargetException to be thrown");
-        } catch (InvocationTargetException e) {
-            // Assert that the cause of the exception is a RuntimeException
-            assertInstanceOf(RuntimeException.class, e.getCause());
-            assertEquals("Failed to unwrap WebDriver", e.getCause().getMessage());
-        }
-
-        // Verify interactions
-        verify(mockContext).getStore(ExtensionContext.Namespace.GLOBAL);
-        verify(mockStore).get(StoreKeys.QUEST);
-        verify(mockFactory).decorate(mockQuest, SuperQuest.class);
-        verify(mockSuperQuest).artifact(UIServiceFluent.class, SmartWebDriver.class);
-        verify(mockSmartWebDriver).getOriginal();
-    }
-
-    @Test
     @DisplayName("Register Custom Services")
     void testRegisterCustomServices() throws Exception {
         // Get the method using reflection

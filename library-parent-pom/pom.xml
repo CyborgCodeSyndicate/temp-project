@@ -20,6 +20,10 @@
             <!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
             <!--            </plugin>-->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
             </plugin>
@@ -34,14 +38,15 @@
         </plugins>
     </build>
 
-    <!-- Reporting -->
     <reporting>
         <plugins>
+
+            <!-- ========== Dependency-Check (security) ========== -->
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>${dependency-check-maven.version}</version>
                 <configuration>
+                    <!-- Skip flag lets you turn the report off via -Ddependency-check-maven.report.skip=true -->
                     <skip>${dependency-check-maven.report.skip}</skip>
                     <outputDirectory>
                         ${project.reporting.outputDirectory}/dependency-check-report
@@ -50,11 +55,47 @@
                 <reportSets>
                     <reportSet>
                         <reports>
+                            <!-- Generates target/site/dependency-check-report/index.html -->
                             <report>aggregate</report>
                         </reports>
                     </reportSet>
                 </reportSets>
             </plugin>
+
+            <!-- ========== JaCoCo (coverage) ========== -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <!-- Generates target/site/jacoco/index.html -->
+                            <report>report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
+            <!-- ========== SpotBugs (static analysis) ========== -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Optional: keep these in sync with build config -->
+                    <xmlOutput>true</xmlOutput>
+                    <htmlOutput>true</htmlOutput>
+                    <outputDirectory>${project.reporting.outputDirectory}/spotbugs</outputDirectory>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <!-- Generates target/site/spotbugs.html -->
+                            <report>spotbugs</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
         </plugins>
     </reporting>
 
