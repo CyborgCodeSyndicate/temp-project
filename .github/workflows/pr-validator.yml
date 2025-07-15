@@ -5,12 +5,13 @@ on:
     types: [ opened, synchronize, reopened ]
 
 # --------------------------------------------------------------------------
-# GLOBAL PERMISSIONS & ENV          (no security-events scope needed now)
+# GLOBAL PERMISSIONS & ENV
 # --------------------------------------------------------------------------
 permissions:
   contents: write
   pull-requests: write
   checks: write
+  security-events: write
 
 env:
   PR_NUM: ${{ github.event.number }}
@@ -19,7 +20,7 @@ env:
   SONAR_ORG: CyborgCodeSyndicate                       # ← adjust if needed
 
 # --------------------------------------------------------------------------
-# JOB 1 ─ build / tests / HTML reports
+# JOB 1 ─ build / test / static‑analysis / reports
 # --------------------------------------------------------------------------
 jobs:
   build:
@@ -28,7 +29,7 @@ jobs:
       pages-path: ${{ steps.stage.outputs.site }}
 
     steps:
-      # ───────── checkout & JDK ─────────
+      # ───────────── checkout & JDK ─────────────
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
 
@@ -38,7 +39,7 @@ jobs:
           java-version: 17
           cache: maven
 
-      # ───────── build & verify ─────────
+      # ───────────── build & verify ─────────────
       - name: Build & Verify
         continue-on-error: true
         run: |
@@ -47,7 +48,7 @@ jobs:
               -Dnvd.api.key="$NVD_API_KEY" \
               --no-transfer-progress
 
-      # ───── unit‑test report in PR UI ─────
+      # ───── unit‑test report to GitHub ─────
       - uses: dorny/test-reporter@v1
         if: always()
         with:
@@ -55,12 +56,59 @@ jobs:
           path: '**/target/surefire-reports/*.xml'
           reporter: java-junit
 
-      # ───────── stage Maven site (HTML) ─────────
+      # ────────────────────────────────────────────────────────────────
+      #  MERGE + UPLOAD  ►  SpotBugs  &  Dependency‑Check  SARIF
+      # ────────────────────────────────────────────────────────────────
+      - name: Merge SARIF files                         # <-- CHANGED
+        if: always()
+        id: merge-sarif
+        shell: bash
+        run: |
+          set -e
+          mkdir -p sarif-merge
+          
+          merge() {
+            local pattern="$1"; local out="$2"
+            mapfile -t FILES < <(find . -path "$pattern")
+            [[ ${#FILES[@]} -eq 0 ]] && { echo "No matches for $pattern"; return; }
+            jq -s '{version:"2.1.0", runs:(map(.runs) | add)}' "${FILES[@]}" > "sarif-merge/$out"
+            echo "Merged ${#FILES[@]} files into sarif-merge/$out"
+          }
+          
+          merge '*/target/spotbugs/spotbugs*.sarif'     spotbugs-merged.sarif
+          merge '**/dependency-check-report.sarif'      dc-merged.sarif
+
+      - name: Upload SpotBugs SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-merge/spotbugs-merged.sarif
+
+      - name: Upload Dependency‑Check SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-merge/dc-merged.sarif
+
+      # ───────────── JaCoCo aggregate → SARIF ─────────────
+      - name: Convert JaCoCo XML → SARIF
+        if: always()
+        uses: airtower-luna/convert-to-sarif@main
+        with:
+          tool: jacoco                                                  # ← lower‑case; converter expects this
+          input_file: library-parent-pom/target/jacoco-aggregate/jacoco.xml
+          sarif_file: sarif-merge/jacoco.sarif                          # ← write into the merge folder
+
+      - name: Upload JaCoCo SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif-merge/jacoco.sarif
+
+      # ───────── stage Maven site → Pages artifact ─────────
       - name: Stage Maven site (HTML)
         if: always()
         run: mvn -B site:stage -Ppr-validator -DstagingDirectory=public -DskipTests
 
-      - name: Move to PR sub‑folder
+      - name: Move to PR sub-folder
         if: always()
         id: stage
         run: |
@@ -72,14 +120,6 @@ jobs:
         if: always()
         with:
           path: ${{ steps.stage.outputs.site }}
-
-      # (optional) also package the HTML site as a downloadable artifact
-      - name: Upload HTML reports as artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-quality-html
-          path: site/pr-${{ env.PR_NUM }}/
 
   # --------------------------------------------------------------------------
   # JOB 2 ─ deploy static site to GitHub Pages
@@ -120,7 +160,7 @@ jobs:
           -Dsonar.qualitygate.wait=true
 
   # --------------------------------------------------------------------------
-  # JOB 4 ─ PR summary comment
+  # JOB 4 ─ PR summary
   # --------------------------------------------------------------------------
   summary:
     needs: [ build, sonar, deploy-pages ]
@@ -133,7 +173,9 @@ jobs:
             echo ""
             echo "| Check | Status | View |"
             echo "|-------|--------|------|"
-            echo "| **Unit Tests** | ${{ needs.build.result }} | (see Checks tab) |"
-            echo "| **HTML Code‑Quality Site** | published | [Open report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html) |"
+            echo "| **Unit Tests & Coverage HTML** | ${{ needs.build.result }} | [Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html) |"
+            echo "| **SpotBugs / FindSecBugs** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
+            echo "| **OWASP Dependency‑Check** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
+            echo "| **JaCoCo Coverage SARIF** | converted & uploaded to *Code scanning results* | open *Security → Code scanning* tab |"
             echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=${{ env.SONAR_PROJECT_KEY }}) |"
           } >> "$GITHUB_STEP_SUMMARY"
