@@ -37,14 +37,4 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>ready</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-    </profiles>
-
-
 </project>
