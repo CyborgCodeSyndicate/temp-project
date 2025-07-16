@@ -103,24 +103,6 @@ jobs:
         with:
           sarif_file: sarif-merge/jacoco.sarif
 
-      # ───────── stage Maven site → Pages artifact ─────────
-      - name: Stage Maven site (HTML)
-        if: always()
-        run: mvn -B site:stage -Ppr-validator -DstagingDirectory=public -DskipTests
-
-      - name: Move to PR sub-folder
-        if: always()
-        id: stage
-        run: |
-          mkdir -p site/pr-${PR_NUM}
-          mv public/* site/pr-${PR_NUM}/
-          echo "site=site" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/upload-pages-artifact@v3
-        if: always()
-        with:
-          path: ${{ steps.stage.outputs.site }}
-
   # --------------------------------------------------------------------------
   # JOB 2 ─ deploy static site to GitHub Pages
   # --------------------------------------------------------------------------
