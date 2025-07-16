@@ -35,8 +35,9 @@ public @interface ApiHook {
    /**
     * When to execute the hook relative to the test lifecycle.
     *
-    * @return {@link HookExecution#BEFORE} to run before all tests,
-    *{@link HookExecution#AFTER} to run after all tests
+    * @return {
+    *     @link HookExecution#BEFORE} to run before all tests,
+    *     {@link HookExecution#AFTER} to run after all tests
     */
    HookExecution when();
 

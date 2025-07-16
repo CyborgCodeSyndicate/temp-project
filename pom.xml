@@ -101,6 +101,8 @@
         <testng.version>7.11.0</testng.version>
         <classgraph.version>4.8.179</classgraph.version>
         <httpclient5.version>5.4.4</httpclient5.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <gson.version>2.13.1</gson.version>
     </properties>
 
     <dependencyManagement>
@@ -367,6 +369,17 @@
                 <version>${httpclient5.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -397,6 +410,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <runOrder>alphabetical</runOrder>
                         <skipTests>false</skipTests>
                         <testFailureIgnore>false</testFailureIgnore>
                         <parallel>${surefire.parallel.type}</parallel>
@@ -490,15 +504,15 @@
                             <version>${checkstyle.version}</version>
                         </dependency>
                     </dependencies>
-<!--                    <executions>-->
-<!--                        <execution>-->
-<!--                            <id>validate</id>-->
-<!--                            <phase>validate</phase>-->
-<!--                            <goals>-->
-<!--                                <goal>check</goal>-->
-<!--                            </goals>-->
-<!--                        </execution>-->
-<!--                    </executions>-->
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
 
                 <plugin>
