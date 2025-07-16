@@ -60,7 +60,7 @@ jobs:
       #  MERGE + UPLOAD  ►  SpotBugs  &  Dependency‑Check  SARIF
       # ────────────────────────────────────────────────────────────────
       - name: Merge SARIF files                         # <-- CHANGED
-        if: always()
+        if: ${{ !github.event.repository.private }}
         id: merge-sarif
         shell: bash
         run: |
@@ -79,11 +79,13 @@ jobs:
           merge '**/dependency-check-report.sarif'      dc-merged.sarif
 
       - name: Upload SpotBugs SARIF
+        if: ${{ !github.event.repository.private }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: sarif-merge/spotbugs-merged.sarif
 
       - name: Upload Dependency‑Check SARIF
+        if: ${{ !github.event.repository.private }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: sarif-merge/dc-merged.sarif
@@ -101,6 +103,7 @@ jobs:
   # JOB 2 ─ SonarCloud quality‑gate
   # --------------------------------------------------------------------------
   sonar:
+    if: ${{ !github.event.repository.private }}
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -128,19 +131,30 @@ jobs:
   # JOB 3 ─ PR summary
   # --------------------------------------------------------------------------
   summary:
-    needs: [ build, sonar ]
+    needs: [ build ]        # <‑‑ remove sonar from the formal dependency list
     runs-on: ubuntu-latest
+
     steps:
-    - name: PR-summary
-      run: |
-        {
-          echo "## ⏱️ PR Quality‑Gate Summary"
-          echo ""
-          echo "| Check | Status | View |"
-          echo "|-------|--------|------|"
-          echo "| **Unit Tests** | ${{ needs.build.result }} | see *Checks* tab |"
-          echo "| **SpotBugs / FindSecBugs** | see *Security → Code scanning* | uploaded SARIF |"
-          echo "| **OWASP Dependency‑Check** | see *Security → Code scanning* | uploaded SARIF |"
-          echo "| **JaCoCo Coverage** | via *jacoco-report* status check | see PR conversation comment |"
-          echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=${{ env.SONAR_PROJECT_KEY }}) |"
-        } >> "$GITHUB_STEP_SUMMARY"
+      - name: PR-summary
+        shell: bash
+        run: |
+          {
+            echo "## ⏱️ PR Quality‑Gate Summary"
+            echo ""
+            echo "| Check | Status | View |"
+            echo "|-------|--------|------|"
+            echo "| **Unit Tests** | ${{ needs.build.result }} | see *Checks* tab |"
+          
+            # SpotBugs & OWASP rows — only when repo is public
+            if [[ "${{ github.event.repository.private }}" == "false" ]]; then
+              echo "| **SpotBugs / FindSecBugs** | see *Security → Code scanning* | uploaded SARIF |"
+              echo "| **OWASP Dependency‑Check** | see *Security → Code scanning* | uploaded SARIF |"
+            fi
+          
+            echo "| **JaCoCo Coverage** | via *jacoco‑report* status check | see PR conversation comment |"
+          
+            # Sonar row — only when repo is public
+            if [[ "${{ github.event.repository.private }}" == "false" ]]; then
+              echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=${{ env.SONAR_PROJECT_KEY }}) |"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
