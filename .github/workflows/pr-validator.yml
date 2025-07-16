@@ -127,7 +127,7 @@ jobs:
   # JOB 3 ─ PR summary
   # --------------------------------------------------------------------------
   summary:
-    needs: [ build, sonar, deploy-pages ]
+    needs: [ build, sonar ]
     runs-on: ubuntu-latest
     steps:
     - name: PR-summary
