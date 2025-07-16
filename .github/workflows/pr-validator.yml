@@ -88,35 +88,17 @@ jobs:
         with:
           sarif_file: sarif-merge/dc-merged.sarif
 
-      # ───────────── JaCoCo aggregate → SARIF ─────────────
-      - name: Convert JaCoCo XML → SARIF
-        if: always()
-        uses: airtower-luna/convert-to-sarif@main
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
         with:
-          tool: jacoco                                                  # ← lower‑case; converter expects this
-          input_file: library-parent-pom/target/jacoco-aggregate/jacoco.xml
-          sarif_file: sarif-merge/jacoco.sarif                          # ← write into the merge folder
-
-      - name: Upload JaCoCo SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: sarif-merge/jacoco.sarif
+          paths: '**/target/site/jacoco/jacoco.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 90
+          min-coverage-changed-files: 90
 
   # --------------------------------------------------------------------------
-  # JOB 2 ─ deploy static site to GitHub Pages
-  # --------------------------------------------------------------------------
-  deploy-pages:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html
-    steps:
-      - uses: actions/deploy-pages@v4
-
-  # --------------------------------------------------------------------------
-  # JOB 3 ─ SonarCloud quality‑gate
+  # JOB 2 ─ SonarCloud quality‑gate
   # --------------------------------------------------------------------------
   sonar:
     needs: build
@@ -142,22 +124,22 @@ jobs:
           -Dsonar.qualitygate.wait=true
 
   # --------------------------------------------------------------------------
-  # JOB 4 ─ PR summary
+  # JOB 3 ─ PR summary
   # --------------------------------------------------------------------------
   summary:
     needs: [ build, sonar, deploy-pages ]
     runs-on: ubuntu-latest
     steps:
-      - name: PR-summary
-        run: |
-          {
-            echo "## ⏱️ PR Quality-Gate Summary"
-            echo ""
-            echo "| Check | Status | View |"
-            echo "|-------|--------|------|"
-            echo "| **Unit Tests & Coverage HTML** | ${{ needs.build.result }} | [Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ env.PR_NUM }}/index.html) |"
-            echo "| **SpotBugs / FindSecBugs** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
-            echo "| **OWASP Dependency‑Check** | attached to *Code scanning results* | open *Security → Code scanning* tab |"
-            echo "| **JaCoCo Coverage SARIF** | converted & uploaded to *Code scanning results* | open *Security → Code scanning* tab |"
-            echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=${{ env.SONAR_PROJECT_KEY }}) |"
-          } >> "$GITHUB_STEP_SUMMARY"
+    - name: PR-summary
+      run: |
+        {
+          echo "## ⏱️ PR Quality‑Gate Summary"
+          echo ""
+          echo "| Check | Status | View |"
+          echo "|-------|--------|------|"
+          echo "| **Unit Tests** | ${{ needs.build.result }} | see *Checks* tab |"
+          echo "| **SpotBugs / FindSecBugs** | see *Security → Code scanning* | uploaded SARIF |"
+          echo "| **OWASP Dependency‑Check** | see *Security → Code scanning* | uploaded SARIF |"
+          echo "| **JaCoCo Coverage** | via *jacoco-report* status check | see PR conversation comment |"
+          echo "| **SonarCloud Quality Gate** | ${{ needs.sonar.result }} | [Dashboard](https://sonarcloud.io/dashboard?id=${{ env.SONAR_PROJECT_KEY }}) |"
+        } >> "$GITHUB_STEP_SUMMARY"
