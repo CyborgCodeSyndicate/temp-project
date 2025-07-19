@@ -1,4 +1,4 @@
-name: PR Validator
+name: PR Validator
 on:
   pull_request:
     branches: [ main ]
@@ -16,14 +16,14 @@ permissions:
 env:
   NVD_API_KEY:        ${{ secrets.NVD_API_KEY }}
   SONAR_TOKEN:        ${{ secrets.SONAR_TOKEN }}
-  SONAR_PROJECT_KEY:  CyborgCodeSyndicate_temp-project   # 🔄 adjust‑me
-  SONAR_ORG:          cyborgcodesyndicate                # 🔄 adjust‑me
+  SONAR_PROJECT_KEY:  CyborgCodeSyndicate_temp-project   # ← adjust if needed
+  SONAR_ORG:          cyborgcodesyndicate                # ← adjust if needed
 
 # ───────────────────────────────────────────────────────────────
-# SINGLE JOB: build • tests • coverage • static analysis • sonar
+# SINGLE JOB: build • tests • coverage • static-analysis • sonar
 # ───────────────────────────────────────────────────────────────
 jobs:
-  pr‑checks:
+  pr-checks:                # ← ASCII minus only
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +38,7 @@ jobs:
           cache: maven
 
       # ───────────── build & verify ─────────────
-      - name: Build & Verify
+      - name: Build & Verify
         id: build
         run: |
           mvn -B clean verify \
@@ -46,7 +46,7 @@ jobs:
               -Dnvd.api.key="$NVD_API_KEY" \
               --no-transfer-progress
 
-      # ───── unit‑test report to GitHub (always show) ─────
+      # ───── unit-test report to GitHub ─────
       - uses: dorny/test-reporter@v2
         if: always()
         with:
@@ -59,10 +59,10 @@ jobs:
           comment-mode: summary
 
       # ─────────────────────────────────────────────────────
-      #  MERGE + UPLOAD  ►  SpotBugs  &  Dependency‑Check
+      #  MERGE + UPLOAD  ►  SpotBugs  &  Dependency-Check
       # ─────────────────────────────────────────────────────
       - name: Merge SARIF files
-        id: merge-sarif
+        id: merge_sarif
         shell: bash
         run: |
           set -e
@@ -83,7 +83,7 @@ jobs:
         with:
           sarif_file: sarif-merge/spotbugs-merged.sarif
 
-      - name: Upload Dependency‑Check SARIF
+      - name: Upload Dependency-Check SARIF
         if: github.event.repository.private == false
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -94,40 +94,37 @@ jobs:
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
         with:
-          paths: '**/target/site/jacoco/ut/jacoco.xml'   # 🔄 adjust if your report path differs
+          paths: '**/target/site/jacoco/ut/jacoco.xml'   # ← confirm this path
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 90
           min-coverage-changed-files: 90
           comment-type: both
 
-      # ───── SonarCloud scan (wait for Q‑gate) ─────
+      # ───── SonarCloud scan ─────
       - name: SonarCloud scan
         id: sonar
-        env:
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
         run: >
           mvn -B sonar:sonar -Ppr-validator
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
           -Dsonar.organization=${{ env.SONAR_ORG }}
-          -Dsonar.login=$SONAR_TOKEN
+          -Dsonar.login=${{ env.SONAR_TOKEN }}
           -Dsonar.qualitygate.wait=true
           -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/ut/jacoco.xml
 
       # ───── PR summary in GITHUB_STEP_SUMMARY ─────
       - name: Write PR summary
         shell: bash
         run: |
           {
-            echo "## ⏱️ PR Quality‑Gate Summary"
+            echo "## ⏱️ PR Quality-Gate Summary"
             echo ""
             echo "| Check | Status | View |"
             echo "|-------|--------|------|"
             echo "| **Unit Tests** | ${{ steps.build.outcome }} | see *Checks* tab |"
             if [[ "${{ github.event.repository.private }}" == "false" ]]; then
               echo "| **SpotBugs / FindSecBugs** | uploaded SARIF | *Security → Code scanning* |"
-              echo "| **OWASP Dependency‑Check** | uploaded SARIF | *Security → Code scanning* |"
+              echo "| **OWASP Dependency-Check** | uploaded SARIF | *Security → Code scanning* |"
             fi
-            echo "| **JaCoCo Coverage** | see PR conversation comment | via *jacoco‑report* |"
+            echo "| **JaCoCo Coverage** | see PR conversation comment | via *jacoco-report* |"
             echo "| **SonarCloud Quality Gate** | ${{ steps.sonar.outcome }} | [Dashboard](https://sonarcloud.io/dashboard?id=${{ env.SONAR_PROJECT_KEY }}) |"
           } >> "$GITHUB_STEP_SUMMARY"
