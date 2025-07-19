@@ -17,7 +17,7 @@ env:
   PR_NUM: ${{ github.event.number }}
   NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
   SONAR_PROJECT_KEY: CyborgCodeSyndicate_temp-project   # ← adjust if needed
-  SONAR_ORG: CyborgCodeSyndicate                       # ← adjust if needed
+  SONAR_ORG: cyborgcodesyndicate                       # ← adjust if needed
 
 # --------------------------------------------------------------------------
 # JOB 1 ─ build / test / static‑analysis / reports
@@ -64,7 +64,6 @@ jobs:
       #  MERGE + UPLOAD  ►  SpotBugs  &  Dependency‑Check  SARIF
       # ────────────────────────────────────────────────────────────────
       - name: Merge SARIF files                         # <-- CHANGED
-        if: ${{ !github.event.repository.private }}
         id: merge-sarif
         shell: bash
         run: |
