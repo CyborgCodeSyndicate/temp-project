@@ -103,6 +103,7 @@
         <httpclient5.version>5.4.4</httpclient5.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <gson.version>2.13.1</gson.version>
+        <jna.version>5.17.0</jna.version>
     </properties>
 
     <dependencyManagement>
@@ -379,6 +380,12 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>${jna.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
