@@ -40,52 +40,70 @@ jobs:
         id: version
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           
-          # 1) Determine requested bump type -------------------------------
+          # ──────────────────────────────────────────────────────────
+          # 1) Determine bump type & enforce “main only” for releases
+          # ──────────────────────────────────────────────────────────
           if [[ "${{ github.event_name }}" == "push" ]]; then
-          bump="minor"          # auto release path
+          bump="minor"
           else
           bump="${{ github.event.inputs.version_bump }}"
           fi
           branch="${GITHUB_REF#refs/heads/}"
           
-          # 2) Safety: real bumps only from main ---------------------------
           if [[ "$bump" != "none" && "$branch" != "main" ]]; then
-          echo "❌  $bump releases allowed only from main. Current branch: $branch"
+          echo "❌  '$bump' releases allowed only on main; you’re on '$branch'" >&2
           exit 1
           fi
           
-          # 3) Ask Maven for parsed version components --------------------
-          mvn -q build-helper:parse-version -Dexec.executable=true -Dexec.args=true
-          maj=$(mvn -q -Dexpression=parsedVersion.majorVersion   -DforceStdout help:evaluate)
-          min=$(mvn -q -Dexpression=parsedVersion.minorVersion   -DforceStdout help:evaluate)
-          pat=$(mvn -q -Dexpression=parsedVersion.incrementalVersion -DforceStdout help:evaluate)
-          qual=$(mvn -q -Dexpression=parsedVersion.qualifier     -DforceStdout help:evaluate)
+          # ──────────────────────────────────────────────────────────
+          # 2) Read current version via Maven (help:evaluate)
+          # ──────────────────────────────────────────────────────────
+          current=$(mvn -q -Dexpression=project.version -DforceStdout help:evaluate 2>/dev/null \
+                 || echo "")
+          if [[ -z "$current" ]]; then
+          echo "❌  Could not determine project.version" >&2
+          exit 1
+          fi
+          echo "Current version: $current"
           
-          base="${maj}.${min}.${pat}"
-          [[ -n "$qual" ]] && base="${base}-${qual}"
+          # ──────────────────────────────────────────────────────────
+          # 3) Strip any '-SNAPSHOT' suffix and split into numbers
+          # ──────────────────────────────────────────────────────────
+          base=${current%-SNAPSHOT}
+          IFS='.' read -ra parts <<<"$base"
+          maj=${parts[0]:-0}
+          min=${parts[1]:-0}
+          pat=${parts[2]:-0}
           
-          case "$bump" in
-          major) ((maj++)); min=0; pat=0; next="${maj}.${min}.${pat}" ;;
-          minor) ((min++)); pat=0;        next="${maj}.${min}.${pat}" ;;
-          patch) ((pat++));               next="${maj}.${min}.${pat}" ;;
-          none)
-           sha=$(git rev-parse --short HEAD)
-           run=$GITHUB_RUN_ID
-           next="${base}-SNAPSHOT-${sha}-${run}"
-           ;;
-          esac
+          # ──────────────────────────────────────────────────────────
+          # 4) Compute the next version
+          # ──────────────────────────────────────────────────────────
+          if [[ "$bump" == "major" ]]; then
+          maj=$((maj+1)); min=0; pat=0
+          next="${maj}.${min}.${pat}"
+          elif [[ "$bump" == "minor" ]]; then
+          min=$((min+1)); pat=0
+          next="${maj}.${min}.${pat}"
+          elif [[ "$bump" == "patch" ]]; then
+          pat=$((pat+1))
+          next="${maj}.${min}.${pat}"
+          else
+          sha=$(git rev-parse --short HEAD)
+          run_id="${GITHUB_RUN_ID:-}"
+          next="${base}-SNAPSHOT-${sha}-${run_id}"
+          fi
           
-          # 4) Export for later steps --------------------------------------
-          {
-          echo "current=${base}"
-          echo "next=${next}"
-          echo "bump=${bump}"
-          echo "branch=${branch}"
-          } >> "$GITHUB_OUTPUT"
+          echo "Next version:    $next"
           
-          echo "Calculated version: $next"
+          # ──────────────────────────────────────────────────────────
+          # 5) Export for downstream steps
+          # ──────────────────────────────────────────────────────────
+          echo "current=$current" >>"$GITHUB_OUTPUT"
+          echo "next=$next"       >>"$GITHUB_OUTPUT"
+          echo "bump=$bump"       >>"$GITHUB_OUTPUT"
+          echo "branch=$branch"   >>"$GITHUB_OUTPUT"
 
       # Always set the working copy POM to the computed version
       - name: Set POM version
