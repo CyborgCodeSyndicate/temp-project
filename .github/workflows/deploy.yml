@@ -41,29 +41,61 @@ jobs:
         shell: bash
         run: |
           set -e
+          
+          # --------------------------------------------------
+          # 1) Determine bump type and branch safety
+          # --------------------------------------------------
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            bump="minor"
+          bump="minor"                             # auto‑release path
           else
-            bump="${{ github.event.inputs.version_bump }}"
+          bump="${{ github.event.inputs.version_bump }}"
           fi
+          
           branch="${GITHUB_REF#refs/heads/}"
+          
           if [[ "$bump" != "none" && "$branch" != "main" ]]; then
-            echo "❌  $bump releases allowed only from main. Current branch: $branch"
-            exit 1
+          echo "❌  $bump releases allowed only from main. Current branch: $branch"
+          exit 1
           fi
-          current=$(mvn -q -Dexpression=project.version -DforceStdout help:evaluate)
+          
+          # --------------------------------------------------
+          # 2) Read current project.version (robust)
+          # --------------------------------------------------
+          current=$(mvn -q -N                    \
+                    -Dexpression=project.version \
+                    -DforceStdout               \
+                    help:evaluate 2>/dev/null || true)
+          
+          # Fallback: grep first <version> in root POM
+          if [[ -z "$current" ]]; then
+          current=$(grep -m1 '<version>' pom.xml | \
+                   sed -E 's/.*<version>([^<]+)<.*/\1/')
+          fi
+          
+          if [[ -z "$current" ]]; then
+          echo "❌  Could not determine current project version"; exit 1
+          fi
+          
+          # --------------------------------------------------
+          # 3) Compute next version string
+          # --------------------------------------------------
           base=${current%-SNAPSHOT}
           IFS='.' read -r maj min pat <<<"$base"
+          
           case "$bump" in
-            major) ((maj++)); min=0; pat=0; next="${maj}.${min}.${pat}" ;;
-            minor) ((min++)); pat=0;        next="${maj}.${min}.${pat}" ;;
-            patch) ((pat++));               next="${maj}.${min}.${pat}" ;;
-            none)
-              sha=$(git rev-parse --short HEAD)
-              run=$GITHUB_RUN_ID
-              next="${base}-SNAPSHOT-${sha}-${run}"
-              ;;
+          major) ((maj++)); min=0; pat=0; next="${maj}.${min}.${pat}" ;;
+          minor) ((min++)); pat=0;        next="${maj}.${min}.${pat}" ;;
+          patch) ((pat++));               next="${maj}.${min}.${pat}" ;;
+          none)
+           sha=$(git rev-parse --short HEAD)
+           run=$GITHUB_RUN_ID
+           next="${base}-SNAPSHOT-${sha}-${run}"
+           ;;
           esac
+          
+          # --------------------------------------------------
+          # 4) Expose values to later steps
+          # --------------------------------------------------
           echo "current=$current" >> $GITHUB_OUTPUT
           echo "next=$next"       >> $GITHUB_OUTPUT
           echo "bump=$bump"       >> $GITHUB_OUTPUT
