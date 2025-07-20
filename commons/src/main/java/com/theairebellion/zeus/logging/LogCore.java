@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 
 /**
- * Provides a core logging mechanism for structured and categorized logging for test.
+ * Provides a core logging mechanism for structured and categorized logging.
  *
  * <p>This abstract class serves as a base for logging operations, utilizing Log4j2
  * for different logging levels, including standard logs (info, warn, error, debug, trace)

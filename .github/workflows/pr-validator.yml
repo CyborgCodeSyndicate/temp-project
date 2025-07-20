@@ -107,7 +107,7 @@ jobs:
           mvn -B sonar:sonar -Ppr-validator
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
           -Dsonar.organization=${{ env.SONAR_ORG }}
-          -Dsonar.login=${{ env.SONAR_TOKEN }}
+          -Dsonar.token=${{ env.SONAR_TOKEN }}
           -Dsonar.qualitygate.wait=true
           -Dsonar.host.url=https://sonarcloud.io
 

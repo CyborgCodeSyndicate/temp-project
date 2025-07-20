@@ -77,7 +77,7 @@
 
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <project.reporting.outputDirectory>${project.build.directory}/site</project.reporting.outputDirectory>
-        <jacoco.minimum.coverage>0.75</jacoco.minimum.coverage>
+        <jacoco.minimum.coverage>0.90</jacoco.minimum.coverage>
 
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
