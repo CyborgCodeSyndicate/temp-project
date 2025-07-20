@@ -1,0 +1,126 @@
+name: Deploy Library
+
+# ─── Triggers ──────────────────────────────────────────────────
+on:
+  # Manual trigger with parameters
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy from'
+        default: main
+        required: true
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        default: minor
+        type: choice
+        options: [major, minor, patch, none]
+
+  # Auto‑trigger after every merge to main (minor bump)
+  push:
+    branches: [ main ]
+
+# ─── Global permissions (needed for pushing tags / commits) ────
+permissions:
+  contents: write
+  packages: write
+
+env:
+  OWNER: ${{ github.repository_owner }}
+  REPO:  ${{ github.event.repository.name }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # If this is workflow_dispatch we respect the chosen branch.
+    # If this is a push event it always runs (branch is main).
+    if: |
+      (github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.branch == github.ref_name)
+
+    steps:
+      # ───────────── checkout & JDK ─────────────
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # ───────────── Compute version ────────────
+      - name: Compute next version
+        id: version
+        shell: bash
+        run: |
+          set -e
+          bump="${{ github.event.inputs.version_bump || 'minor' }}"
+          # auto‑triggered push → default to minor
+          if [[ "${{ github.event_name }}" == "push" ]]; then bump="minor"; fi
+          
+          # prevent major/minor/patch bump from non‑main
+          branch="${GITHUB_REF#refs/heads/}"
+          if [[ "$bump" != "none" && "$branch" != "main" ]]; then
+            echo "❌ Version bumps allowed only from main. Branch = $branch"
+            exit 1
+          fi
+          
+          current=$(mvn -q -Dexec.executable=echo \
+                         -Dexec.args='${project.version}' \
+                         --non-recursive org.codehaus.mojo:exec-maven-plugin:3.1.0:exec)
+          
+          # strip -SNAPSHOT if present
+          base=${current%-SNAPSHOT}
+          
+          IFS='.' read -r maj min pat <<<"$base"
+          case "$bump" in
+            major) ((maj++)); min=0; pat=0 ;;
+            minor) ((min++)); pat=0 ;;
+            patch) ((pat++)) ;;
+            none)  ;;
+          esac
+          
+          if [[ "$bump" == "none" ]]; then
+            next="${maj}.${min}.${pat}-SNAPSHOT"
+          else
+            next="${maj}.${min}.${pat}"
+          fi
+          
+          echo "current=$current"   >> $GITHUB_OUTPUT
+          echo "next=$next"         >> $GITHUB_OUTPUT
+          echo "bump=$bump"         >> $GITHUB_OUTPUT
+          echo "Calculated version: $next"
+
+      # ───────────── Set new version (for release) ─────────────
+      - name: Update POM version
+        if: ${{ steps.version.outputs.bump != 'none' }}
+        run: |
+          mvn -B versions:set -DnewVersion=${{ steps.version.outputs.next }} -DgenerateBackupPoms=false
+          echo "📦 Version set to ${{ steps.version.outputs.next }}"
+
+      # ─────────── Prepare Git credentials (for commit/tag) ────
+      - name: Configure Git user
+        if: ${{ steps.version.outputs.bump != 'none' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # ─────────── Commit & tag (only for major/minor/patch) ───
+      - name: Commit version bump
+        if: ${{ steps.version.outputs.bump != 'none' }}
+        run: |
+          git add -A
+          git commit -m "chore(release): ${{
+            steps.version.outputs.next }}" || echo "No changes to commit"
+          git tag "v${{ steps.version.outputs.next }}"
+          git push --follow-tags
+
+      # ───────────── Deploy to GitHub Packages ─────────────
+      - name: Deploy to GitHub Packages
+        run: |
+          mvn -B -Pdeploy-github -DskipTests \
+              -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${OWNER}/${REPO} \
+              deploy

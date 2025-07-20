@@ -790,4 +790,39 @@
     </build>
 
 
+    <profiles>
+        <profile>
+            <id>deploy-github</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>library-parent-pom</module>
+                <module>commons</module>
+                <module>assertions</module>
+                <module>test-framework</module>
+                <module>ui-interactor</module>
+                <module>api-interactor</module>
+                <module>db-interactor</module>
+                <module>api-interactor-test-framework-adapter</module>
+                <module>db-interactor-test-framework-adapter</module>
+                <module>ui-interactor-test-framework-adapter</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/${project.groupId}/${project.artifactId}</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub Packages Snapshot</name>
+            <url>https://maven.pkg.github.com/${project.groupId}/${project.artifactId}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
 </project>
