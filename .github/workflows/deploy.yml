@@ -42,45 +42,29 @@ jobs:
         run: |
           set -e
           
-          # --------------------------------------------------
-          # 1) Determine bump type and branch safety
-          # --------------------------------------------------
+          # 1) Determine requested bump type -------------------------------
           if [[ "${{ github.event_name }}" == "push" ]]; then
-          bump="minor"                             # auto‑release path
+          bump="minor"          # auto release path
           else
           bump="${{ github.event.inputs.version_bump }}"
           fi
-          
           branch="${GITHUB_REF#refs/heads/}"
           
+          # 2) Safety: real bumps only from main ---------------------------
           if [[ "$bump" != "none" && "$branch" != "main" ]]; then
           echo "❌  $bump releases allowed only from main. Current branch: $branch"
           exit 1
           fi
           
-          # --------------------------------------------------
-          # 2) Read current project.version (robust)
-          # --------------------------------------------------
-          current=$(mvn -q -N                    \
-                    -Dexpression=project.version \
-                    -DforceStdout               \
-                    help:evaluate 2>/dev/null || true)
+          # 3) Ask Maven for parsed version components --------------------
+          mvn -q build-helper:parse-version -Dexec.executable=true -Dexec.args=true
+          maj=$(mvn -q -Dexpression=parsedVersion.majorVersion   -DforceStdout help:evaluate)
+          min=$(mvn -q -Dexpression=parsedVersion.minorVersion   -DforceStdout help:evaluate)
+          pat=$(mvn -q -Dexpression=parsedVersion.incrementalVersion -DforceStdout help:evaluate)
+          qual=$(mvn -q -Dexpression=parsedVersion.qualifier     -DforceStdout help:evaluate)
           
-          # Fallback: grep first <version> in root POM
-          if [[ -z "$current" ]]; then
-          current=$(grep -m1 '<version>' pom.xml | \
-                   sed -E 's/.*<version>([^<]+)<.*/\1/')
-          fi
-          
-          if [[ -z "$current" ]]; then
-          echo "❌  Could not determine current project version"; exit 1
-          fi
-          
-          # --------------------------------------------------
-          # 3) Compute next version string
-          # --------------------------------------------------
-          base=${current%-SNAPSHOT}
-          IFS='.' read -r maj min pat <<<"$base"
+          base="${maj}.${min}.${pat}"
+          [[ -n "$qual" ]] && base="${base}-${qual}"
           
           case "$bump" in
           major) ((maj++)); min=0; pat=0; next="${maj}.${min}.${pat}" ;;
@@ -93,13 +77,14 @@ jobs:
            ;;
           esac
           
-          # --------------------------------------------------
-          # 4) Expose values to later steps
-          # --------------------------------------------------
-          echo "current=$current" >> $GITHUB_OUTPUT
-          echo "next=$next"       >> $GITHUB_OUTPUT
-          echo "bump=$bump"       >> $GITHUB_OUTPUT
-          echo "branch=$branch"   >> $GITHUB_OUTPUT
+          # 4) Export for later steps --------------------------------------
+          {
+          echo "current=${base}"
+          echo "next=${next}"
+          echo "bump=${bump}"
+          echo "branch=${branch}"
+          } >> "$GITHUB_OUTPUT"
+          
           echo "Calculated version: $next"
 
       # Always set the working copy POM to the computed version
