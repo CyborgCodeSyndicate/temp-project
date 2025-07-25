@@ -62,5 +62,6 @@ jobs:
           publish_dir: allure-history
 
       - name: Add summary with report link
+        if: always()
         run: |
           echo "### ✅ [View Allure Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.run_number }}/)" >> $GITHUB_STEP_SUMMARY
