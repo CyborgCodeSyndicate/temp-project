@@ -104,6 +104,7 @@
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <gson.version>2.13.1</gson.version>
         <jna.version>5.17.0</jna.version>
+        <maven-surefire-plugin.excludedGroups>exclude-from-verify</maven-surefire-plugin.excludedGroups>
     </properties>
 
     <dependencyManagement>
@@ -424,7 +425,7 @@
                         <threadCount>${surefire.parallel.threads}</threadCount>
                         <useSystemClassLoader>false</useSystemClassLoader>
                         <printSummary>true</printSummary>
-                        <excludedGroups>exclude-from-verify</excludedGroups>
+                        <excludedGroups>${maven-surefire-plugin.excludedGroups}</excludedGroups>
                     </configuration>
                 </plugin>
 
@@ -761,32 +762,32 @@
             </plugins>
         </pluginManagement>
 
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-surefire-plugin</artifactId>-->
-<!--            </plugin>-->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
 <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-enforcer-plugin</artifactId>-->
 <!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-resources-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-clean-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-release-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
 

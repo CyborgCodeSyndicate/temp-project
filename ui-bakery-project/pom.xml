@@ -22,6 +22,7 @@
         <framework.config.file>config</framework.config.file>
         <include.tags>Regression</include.tags>
         <exclude.tags></exclude.tags>
+        <maven-surefire-plugin.excludedGroups></maven-surefire-plugin.excludedGroups>
     </properties>
 
     <dependencies>
