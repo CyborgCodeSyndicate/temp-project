@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build all modules (including plugin + ui-zerobank-project)
-        run: mvn clean install -pl test-allocator-maven-plugin -am -DskipTests
+        run: mvn clean install -pl test-allocator-maven-plugin -am -Dmaven.test.skip=true
 
       - name: Run plugin to split tests
         run: mvn test-compile -Psetup -pl ui-zerobank-project -am  -DtestSplitter.enabled=true -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" -DtestSplitter.test.engine=junit -DtestSplitter.json.output=grouped-tests -DtestSplitter.parallel.methods=true -DtestSplitter.max.number.runners=20
@@ -196,10 +196,10 @@ jobs:
           CLASSES=$(jq -r '.classes | join(",")' subset.json)
           echo "JobIndex ${{ matrix.testGroup.jobIndex }} => classes: $CLASSES"
           
-          mvn clean install -pl ui-zerobank-project -am -DskipTests
+          mvn clean install -pl ui-zerobank-project -am -Dmaven.test.skip=true
           
           mvn clean test -pl ui-zerobank-project  \
-            -DskipTests=false \
+            -DskipTests=false -Dmaven.test.skip=false -Dskip=false -DskipExec=false \
             -Dtest="$CLASSES" \
             -Dinclude.tags="${{ inputs.tagsInclude }}" \
             -Dexclude.tags="${{ inputs.tagsExclude }}" \
