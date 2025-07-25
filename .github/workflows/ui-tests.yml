@@ -199,7 +199,7 @@ jobs:
           mvn clean install -pl ui-zerobank-project -am -DskipTests
           
           mvn clean test -pl ui-zerobank-project  \
-            -DskipTests=false \ 
+            -DskipTests=false \
             -Dtest="$CLASSES" \
             -Dinclude.tags="${{ inputs.tagsInclude }}" \
             -Dexclude.tags="${{ inputs.tagsExclude }}" \
