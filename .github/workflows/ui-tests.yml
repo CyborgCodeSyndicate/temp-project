@@ -39,11 +39,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Build all modules (including plugin + example-project)
+      - name: Build all modules (including plugin + ui-zerobank-project)
         run: mvn clean install -pl test-allocator-maven-plugin -am
 
       - name: Run plugin to split tests
-        run: mvn test-compile -Psetup -pl example-project -am  -DtestSplitter.enabled=true -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" -DtestSplitter.test.engine=junit -DtestSplitter.json.output=grouped-tests -DtestSplitter.parallel.methods=true -DtestSplitter.max.number.runners=20
+        run: mvn test-compile -Psetup -pl ui-zerobank-project -am  -DtestSplitter.enabled=true -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" -DtestSplitter.test.engine=junit -DtestSplitter.json.output=grouped-tests -DtestSplitter.parallel.methods=true -DtestSplitter.max.number.runners=20
 
       - name: Upload grouped-tests
         uses: actions/upload-artifact@v4
@@ -196,9 +196,9 @@ jobs:
           CLASSES=$(jq -r '.classes | join(",")' subset.json)
           echo "JobIndex ${{ matrix.testGroup.jobIndex }} => classes: $CLASSES"
           
-          mvn clean install -pl example-project -am -DskipTests
+          mvn clean install -pl ui-zerobank-project -am -DskipTests
           
-          mvn clean test -pl example-project \
+          mvn clean test -pl ui-zerobank-project \
             -Dtest="$CLASSES" \
             -Dinclude.tags="${{ inputs.tagsInclude }}" \
             -Dexclude.tags="${{ inputs.tagsExclude }}" \
@@ -212,7 +212,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.testGroup.jobIndex }}
-          path: example-project/allure-results
+          path: ui-zerobank-project/allure-results
 
       - name: Teardown Selenium
         if: ${{ steps.subset.outputs.count != '0' && always() }}
