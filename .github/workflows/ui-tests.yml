@@ -195,9 +195,7 @@ jobs:
         run: |
           CLASSES=$(jq -r '.classes | join(",")' subset.json)
           echo "JobIndex ${{ matrix.testGroup.jobIndex }} => classes: $CLASSES"
-          
-#          mvn clean install -pl ui-zerobank-project -am -DskipTests
-          
+                    
           mvn clean test -pl ui-zerobank-project -am -DskipTests \
             -Dtest="$CLASSES" \
             -Dinclude.tags="${{ inputs.tagsInclude }}" \
