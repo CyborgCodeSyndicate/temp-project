@@ -14,10 +14,18 @@ on:
         description: "Tags to exclude (comma-separated)"
         required: false
         default: "Flaky"
-      maxThreadsPerSession:
-        description: "How many test classes in parallel"
+      numberOfSeleniumNodes:
+        description: "How many selenium nodes to use"
+        required: true
+        default: "3"
+      maxThreadsPerNode:
+        description: "How many test classes to run in a node parallel"
         required: true
         default: "5"
+      sizePerSeleniumContainer:
+        description: "Size in GB for Selenium container"
+        required: true
+        default: "2g"
 
 jobs:
   ui-tests:
@@ -33,7 +41,70 @@ jobs:
             -Dexclude.tags="${{ inputs.tagsExclude }}" \
             -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.maxThreadsPerSession }} \
             -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.maxThreadsPerSession }} \
+            -Dremote.driver.url="http://localhost:4444" \
             -Dheadless="true"
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Create docker-compose.yml
+        run: |
+          cat <<EOF > docker-compose.yml
+          version: "3.9"
+          services:
+            selenium-hub:
+              image: selenium/hub:4.10.0
+              container_name: selenium-hub
+              ports:
+                - "4442:4442"
+                - "4443:4443"
+                - "4444:4444"
+            chrome:
+              image: selenium/node-chrome:4.10.0
+              depends_on:
+                - selenium-hub
+              shm_size: ${{ inputs.sizePerSeleniumContainer }}
+              environment:
+                - SE_EVENT_BUS_HOST=selenium-hub
+                - SE_EVENT_BUS_PUBLISH_PORT=4442
+                - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+                - SE_NODE_MAX_SESSIONS=${{ inputs.maxThreadsPerNode }}
+                - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+          EOF
+
+      - name: Start Selenium Grid
+        if: ${{ steps.subset.outputs.count != '0' }}
+        id: scale-grid
+        run: |
+          docker-compose up -d --scale chrome=${{ inputs.numberOfSeleniumNodes }}
+
+      - name: Wait for Selenium Hub
+        if: ${{ steps.subset.outputs.count != '0' }}
+        run: |
+          set +e
+          
+          for i in {1..30}; do
+            RESPONSE=$(curl -s "http://localhost:4444/status")
+            CURL_EXIT=$?
+          
+            if [ $CURL_EXIT -ne 0 ]; then
+              echo "curl failed with exit code $CURL_EXIT (likely the Grid is not up yet)."
+            fi
+          
+            READY=$(echo "$RESPONSE" | jq -r '.value.ready' 2>/dev/null)
+          
+            if [ "$READY" = "true" ]; then
+              echo "✅ Selenium Grid is ready!"
+              exit 0  # End the loop and mark this step as success
+            fi
+          
+            echo "⏳ Waiting for Selenium Grid... Attempt $i of 30"
+            sleep 2
+          done
+          
+          echo "❌ Selenium Grid was not ready after 30 attempts."          
           
 
       - name: Get Allure history
@@ -60,6 +131,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: allure-history
+
+      - name: Teardown Selenium
+        if: always()
+        run: docker-compose down
 
       - name: Add summary with report link
         run: |
