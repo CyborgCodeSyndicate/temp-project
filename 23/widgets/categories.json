@@ -1,0 +1,1 @@
+{"total":2,"items":[{"uid":"960de71b6f90dcc15dec149cd097b922","name":"Element State & Visibility Issues","statistic":{"failed":0,"broken":8,"skipped":0,"passed":0,"unknown":0,"total":8}},{"uid":"395a5bc2d275d6ef6d7dfe37d8fc35a5","name":"Timing-Related Issues","statistic":{"failed":0,"broken":5,"skipped":0,"passed":0,"unknown":0,"total":5}}]}
