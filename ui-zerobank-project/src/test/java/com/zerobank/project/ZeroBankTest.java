@@ -136,7 +136,6 @@ public class ZeroBankTest extends BaseTest {
    @Test
    @Description("COMPONENTS: Button, Input, Link, List, Validate, Select")
    @Regression
-   @InterceptRequests
    public void paragraphTextValueTestHardAssertions(Quest quest) {
       quest
             .enters(World.EARTH)
