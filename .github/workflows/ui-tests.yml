@@ -34,16 +34,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Run tests
-        run: | 
-          mvn clean test -pl ui-zerobank-project -am \
-            -Dinclude.tags="${{ inputs.tagsInclude }}" \
-            -Dexclude.tags="${{ inputs.tagsExclude }}" \
-            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.maxThreadsPerSession }} \
-            -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.maxThreadsPerSession }} \
-            -Dremote.driver.url="http://localhost:4444" \
-            -Dheadless="true"
-
       - name: Install Docker Compose
         run: |
           sudo apt-get update
@@ -103,6 +93,16 @@ jobs:
           done
           
           echo "❌ Selenium Grid was not ready after 30 attempts."          
+
+      - name: Run tests
+        run: |
+          mvn clean test -pl ui-zerobank-project -am \
+            -Dinclude.tags="${{ inputs.tagsInclude }}" \
+            -Dexclude.tags="${{ inputs.tagsExclude }}" \
+            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.maxThreadsPerSession }} \
+            -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.maxThreadsPerSession }} \
+            -Dremote.driver.url="http://localhost:4444" \
+            -Dheadless="true"          
           
 
       - name: Get Allure history
