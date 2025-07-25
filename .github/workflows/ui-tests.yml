@@ -99,8 +99,8 @@ jobs:
           mvn clean test -pl ui-zerobank-project -am \
             -Dinclude.tags="${{ inputs.tagsInclude }}" \
             -Dexclude.tags="${{ inputs.tagsExclude }}" \
-            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.maxThreadsPerSession }} \
-            -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.maxThreadsPerSession }} \
+            -Djunit.jupiter.execution.parallel.config.fixed.parallelism=${{ inputs.maxThreadsPerNode }} \
+            -Djunit.jupiter.execution.parallel.config.fixed.max-pool-size=${{ inputs.maxThreadsPerNode }} \
             -Dremote.driver.url="http://localhost:4444" \
             -Dheadless="true"          
           
