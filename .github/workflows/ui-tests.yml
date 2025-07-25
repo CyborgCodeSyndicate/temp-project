@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build all modules (including plugin + example-project)
-        run: mvn clean install -pl test-allocator-maven-plugin
+        run: mvn clean install -pl test-allocator-maven-plugin -am
 
       - name: Run plugin to split tests
         run: mvn test-compile -Psetup -pl example-project -am  -DtestSplitter.enabled=true -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" -DtestSplitter.test.engine=junit -DtestSplitter.json.output=grouped-tests -DtestSplitter.parallel.methods=true -DtestSplitter.max.number.runners=20
