@@ -1,4 +1,6 @@
-# API Interactor Test Framework Adapter
+# API Interactor Test Framework Adapter (`api-interactor-test-framework-adapter`)
+
+> 💍 Part of the **One Ring** test automation framework by Cyborg Code Syndicate
 
 ## Purpose
 

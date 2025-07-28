@@ -2,6 +2,8 @@
 
 > 💍 Part of the **One Ring** test automation framework by Cyborg Code Syndicate
 
+## Purpose
+
 The `api-interactor` module provides the reusable, app-agnostic API interaction logic. It handles request execution, dynamic configuration, authentication, endpoint abstraction, and response validation using a fluent and pluggable design.
 
 ---
