@@ -1,7 +1,7 @@
 
 # DB Interactor Test Framework Adapter (`db-interactor-test-framework-adapter`)
 
-> 💍 Part of the **One Ring** test automation framework by Cyborg Code Syndicate
+> 💍 Part of the **One Ring To Rule Them All** test automation framework by Cyborg Code Syndicate
 
 ## Purpose
 
@@ -187,3 +187,6 @@ public class UserDataDbTest extends BaseTestSequential {
 - [`db-interactor`](../db-interactor/README.md): core DB interaction layer
 - [`test-framework`](../test-framework/README.md): quest orchestration, annotations, lifecycle
 - [`assertions`](../assertions/README.md): assertion and validation logic
+
+
+© Cyborg Code Syndicate 💍👨💻

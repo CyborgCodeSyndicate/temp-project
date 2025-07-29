@@ -1,6 +1,6 @@
 # Commons Module (`commons`)
 
-> 💍 Part of the **One Ring** test automation framework by Cyborg Code Syndicate
+> 💍 Part of the **One Ring To Rule Them All** test automation framework by Cyborg Code Syndicate
 
 ## Purpose
 
@@ -54,4 +54,8 @@ classDiagram
 
 ## Summary
 
-This module is foundational to logging, reflection, and configuration mechanisms in the framework. While it does not execute business logic directly, it supports all other modules by enforcing good logging practices and dynamic extensibility through reflection.
+This module is foundational to logging, reflection, and configuration mechanisms in the framework. 
+While it does not execute business logic directly, it supports all other modules by enforcing good logging practices 
+and dynamic extensibility through reflection.
+
+© Cyborg Code Syndicate 💍👨💻

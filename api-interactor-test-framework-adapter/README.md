@@ -1,6 +1,6 @@
 # API Interactor Test Framework Adapter (`api-interactor-test-framework-adapter`)
 
-> 💍 Part of the **One Ring** test automation framework by Cyborg Code Syndicate
+> 💍 Part of the **One Ring To Rule Them All** test automation framework by Cyborg Code Syndicate
 
 ## Purpose
 
@@ -201,3 +201,5 @@ public class CreateUserTest extends BaseTestSequential {
 - [`api-interactor`](../api-interactor/README.md): core REST interaction layer
 - [`test-framework`](../test-framework/README.md): quest orchestration, annotations, lifecycle
 - [`assertions`](../assertions/README.md): assertion and validation logic
+
+© Cyborg Code Syndicate 💍👨💻

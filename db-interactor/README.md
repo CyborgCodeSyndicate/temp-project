@@ -1,6 +1,6 @@
 # DB Interactor Module (`db-interactor`)
 
-> 💍 Part of the **One Ring** test automation framework by Cyborg Code Syndicate
+> 💍 Part of the **One Ring To Rule Them All** test automation framework by Cyborg Code Syndicate
 
 ## Purpose
 
@@ -162,3 +162,4 @@ db-interactor
 ```
 
 ---
+© Cyborg Code Syndicate 💍👨💻
