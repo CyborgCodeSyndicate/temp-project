@@ -134,10 +134,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: grouped-tests
-          path: .
+          path: temp-project
 
       - name: Parse subset
         id: subset
+        working-directory: temp-project
         run: |
           jq ".[] | select(.jobIndex==${{ matrix.testGroup.jobIndex  }})" grouped-tests.json > subset.json
           count=$(jq -r '.classes | length' subset.json 2>/dev/null || echo "0")
@@ -230,8 +231,8 @@ jobs:
           echo "❌ Selenium Grid was not ready after 30 attempts."
 
       - name: Run tests
-        working-directory: temp-project
         if: ${{ steps.subset.outputs.count != '0' }}
+        working-directory: temp-project
         run: |
           CLASSES=$(jq -r '.classes | join(",")' subset.json)
           echo "JobIndex ${{ matrix.testGroup.jobIndex }} => classes: $CLASSES"
