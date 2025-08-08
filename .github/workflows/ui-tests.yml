@@ -4,53 +4,79 @@ permissions:
   contents: write
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
+  workflow_call:
     inputs:
       tagsInclude:
         description: "Tags to include (comma-separated)"
         required: false
         default: "Regression"
+        type: string
       tagsExclude:
         description: "Tags to exclude (comma-separated)"
         required: false
         default: "Flaky"
+        type: string
       maxTestsPerJob:
         description: "Max test methods in each job (the plugin's maxMethods)"
         required: true
         default: "20"
+        type: string
       maxThreadsPerJob:
         description: "Max test methods in each job (the plugin's maxMethods)"
         required: true
         default: "10"
+        type: string
       maxThreadsPerSeleniumContainer:
         description: "Number of sessions per Selenium node"
         required: true
         default: "5"
+        type: string
       sizePerSeleniumContainer:
         description: "Size in GB for Selenium container"
         required: true
         default: "2g"
-
+        type: string
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: Check out temp-project
         uses: actions/checkout@v2
+        with:
+          repository: CyborgCodeSyndicate/temp-project
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: temp-project
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
 
       - name: Build all modules (including plugin + ui-zerobank-project)
+        working-directory: temp-project
         run: mvn clean install -pl test-allocator-maven-plugin -am -Dmaven.test.skip=true
 
       - name: Run plugin to split tests
-        run: mvn test-compile -Psetup -pl ui-zerobank-project -am  -DtestSplitter.enabled=true -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" -DtestSplitter.test.engine=junit -DtestSplitter.json.output=grouped-tests -DtestSplitter.parallel.methods=true -DtestSplitter.max.number.runners=20
+        working-directory: temp-project
+        run: mvn test-compile -Psetup -pl ui-zerobank-project -am \
+          -DtestSplitter.enabled=true \
+          -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" \
+          -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" \
+          -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" \
+          -DtestSplitter.test.engine=junit \
+          -DtestSplitter.json.output=grouped-tests \
+          -DtestSplitter.parallel.methods=true \
+          -DtestSplitter.max.number.runners=20
 
       - name: Upload grouped-tests
         uses: actions/upload-artifact@v4
         with:
           name: grouped-tests
-          path: grouped-tests.json
-
+          path: temp-project/grouped-tests.json
 
   create-matrix:
     needs: [ setup ]
@@ -88,8 +114,19 @@ jobs:
       matrix:
         testGroup: ${{ fromJson(needs.create-matrix.outputs.testMatrix) }}
     steps:
-      - name: Check out code
+      - name: Check out temp-project
         uses: actions/checkout@v2
+        with:
+          repository: CyborgCodeSyndicate/temp-project
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: temp-project
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
 
       - name: Download grouped-tests.json
         uses: actions/download-artifact@v4
@@ -191,6 +228,7 @@ jobs:
           echo "❌ Selenium Grid was not ready after 30 attempts."
 
       - name: Run tests
+        working-directory: temp-project
         if: ${{ steps.subset.outputs.count != '0' }}
         run: |
           CLASSES=$(jq -r '.classes | join(",")' subset.json)
@@ -213,21 +251,23 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.testGroup.jobIndex }}
-          path: ui-zerobank-project/allure-results
+          path: temp-project/ui-zerobank-project/allure-results
 
       - name: Teardown Selenium
         if: ${{ steps.subset.outputs.count != '0' && always() }}
         run: docker-compose down
-
-
 
   merge-allure:
     needs: [ parallel-tests, create-matrix ]
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Check out code
+      - name: Check out temp-project
         uses: actions/checkout@v2
+        with:
+          repository: CyborgCodeSyndicate/temp-project
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: temp-project
 
       - name: Download Allure artifacts dynamically
         uses: actions/download-artifact@v4
