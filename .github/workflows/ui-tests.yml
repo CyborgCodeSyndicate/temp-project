@@ -62,15 +62,17 @@ jobs:
 
       - name: Run plugin to split tests
         working-directory: temp-project
-        run: mvn test-compile -Psetup -pl ui-zerobank-project -am \
-          -DtestSplitter.enabled=true \
-          -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" \
-          -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" \
-          -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" \
-          -DtestSplitter.test.engine=junit \
-          -DtestSplitter.json.output=grouped-tests \
-          -DtestSplitter.parallel.methods=true \
-          -DtestSplitter.max.number.runners=20
+        run: |
+          mvn test-compile -Psetup -pl ui-zerobank-project -am \
+            -DtestSplitter.enabled=true \
+            -DtestSplitter.junit.tags.include="${{ inputs.tagsInclude }}" \
+            -DtestSplitter.junit.tags.exclude="${{ inputs.tagsExclude }}" \
+            -DtestSplitter.maxMethods="${{ inputs.maxTestsPerJob }}" \
+            -DtestSplitter.test.engine=junit \
+            -DtestSplitter.json.output=grouped-tests \
+            -DtestSplitter.parallel.methods=true \
+            -DtestSplitter.max.number.runners=20
+      
 
       - name: Upload grouped-tests
         uses: actions/upload-artifact@v4
